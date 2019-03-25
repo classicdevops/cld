@@ -1,0 +1,131 @@
+#!/bin/bash
+[ "$SUDO_USER" = "" ] && SUDO_USER=root
+#mknod -m 666 /dev/fuse c 10 229 2>&1 >/dev/null
+    echo "Please select VM to enter"
+    VMPX=`cat /var/cld/creds/ct_px_hyper_list | grep -i "$1" | grep -i "$2" | grep -i "$3"`
+    VMVZ=`cat /var/cld/creds/ct_vz_hyper_list | grep -i "$1" | grep -i "$2" | grep -i "$3"`
+    VMS=`cat /var/cld/creds/ct_hyper_list | grep -i "$1" | grep -i "$2" | grep -i "$3"`
+    EXT=`(grep -vh "^$\|^#" /var/cld/creds/ext_do_list ; sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/creds/ext_srv_list | grep -vh "^$\|^#") | grep -i "$1" | grep -i "$2" | grep -i "$3"`
+    OFF=`cat /var/cld/creds/ct_px_hyper_list_offline | grep -i "$1" | grep -i "$2" | grep -i "$3"`
+    select VM in $VMS $VMVZ $VMPX $EXT $OFF
+do
+ if [ "$VM" = "" ] ; then
+   echo "you choosed incorrect VM, please try again and type numbers only"
+ elif echo $VM | grep --quiet "STOPPED" ; then
+   echo "Sorry, container is not running, probably it's duplicate"
+ elif echo $VM | grep --quiet "OFFLINE" ; then
+   echo "Sorry, container is OFFLINE, check hypervisor or hosting status"
+
+### PROXMOX SRV START
+ elif grep --quiet "$VM" /var/cld/creds/ct_px_hyper_list ; then
+   echo
+   echo "You had chosen Proxmox $VM"
+   CTNAME="`echo "$VM" | cut -d "_" -f 1`_`echo "$VM" | cut -d "_" -f 3`"
+   HPROLD=`echo "$VM" | cut -d "_" -f 2`
+   HPR=${HPROLD#*-*-}
+   CT=`echo "$VM" | cut -d "_" -f 3`
+   echo
+   #telegram-cli -D -b -e 'msg LiveLinux_CLD "'$SUDO_USER' logged in \n'$VM'"' >> /dev/null
+   (
+    LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
+    if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
+    fusermount -uzq $LOCALMOUNTPATH >> /dev/null
+    mkdir -p $LOCALMOUNTPATH >> /dev/null
+    DEVICE=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo pct exec $CT -- df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' |  tr -d '\n') >> /dev/null
+    if echo $DEVICE | egrep --quiet "^[/].*" ; then
+     ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo mkdir /mnt/$CT" >> /dev/null ; ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo mount $DEVICE /mnt/$CT" >> /dev/null
+     SFTP_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') >> /dev/null
+     SUDO_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') >> /dev/null
+     sshfs -p 55567 -o sftp_server="$SUDO_PATH $SFTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:/mnt/$CT $LOCALMOUNTPATH >> /dev/null
+    else
+     SFTP_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') >> /dev/null
+     SUDO_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') >> /dev/null
+     sshfs -p 55567 -o sftp_server="$SUDO_PATH $SFTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:/$DEVICE $LOCALMOUNTPATH >> /dev/null
+    fi
+   ) &
+   ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo pct enter $CT"
+   (LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq $LOCALMOUNTPATH >> /dev/null ; rmdir $LOCALMOUNTPATH) &
+### PROXMOX SRV END
+
+###EXTERNAL SRV START
+ elif grep --quiet "$VM" /var/cld/creds/ext_*_list ; then
+   echo
+   echo "You had chosen external $VM"
+   SRV=`echo $VM | cut -d "_" -f 2`
+   PRT=`echo $VM | cut -d "_" -f 3`
+   nc -z ${SRV} 55567 && PRT=55567 && echo port was changed to $PRT
+   USR=`echo $VM | cut -d "_" -f 4`
+   PWD=`grep $VM /var/cld/creds/ext_srv_list | sed -r 's#.*_.*_[0-9]+_[a-zA-Z0-9]+_(.*)#\1#g'`
+   echo
+   #telegram-cli -D -b -e 'msg LiveLinux_CLD "'$SUDO_USER' logged in \n'$VM'"' >> /dev/null
+   (
+    LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
+    if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
+    fusermount -uzq $LOCALMOUNTPATH >> /dev/null
+    mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
+#    DEVICE=$(ssh -q -o "RequestTTY force" $USR@$MSK "sudo prlctl exec $CT df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' | tr -d '\r' | tr -d '\n') >> /dev/null
+#    VZPOINT=$(ssh -q -o "RequestTTY force" $USR@$MSK "df -P" | tr '\r' '\n' | grep "$DEVICE" | awk '{print $6}' | tr -d '\r' | tr -d '\n') >> /dev/null
+   echo $USR | grep -q clouds && SFTP_PATH=$(ssh -q -p 55567 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n')
+   echo $USR | grep -q clouds && SUDO_PATH=$(ssh -q -p 55567 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r' | tr -d '\n')
+#cat << EOL
+#     echo $SFTP_PATH $SUDO_PATH
+     mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
+     echo $USR | grep -q clouds && sshfs -p $PRT -o password_stdin -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH 2>&1 >/dev/null
+     echo $USR | grep -q clouds || sshfs -p $PRT -o password_stdin -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 >/dev/null
+#EOL
+   )&
+    echo $USR | grep -q root && sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV
+    echo $USR | grep -q root || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i"
+   (LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq $LOCALMOUNTPATH >> /dev/null ; rmdir $LOCALMOUNTPATH) &
+###EXTERNAL SRV END
+
+ elif grep --quiet "$VM" /var/cld/creds/ct_hyper_list ; then
+   echo
+   echo "You had chosen Virtuozzo $VM"
+   MSK=`echo "$VM" | cut -d "_" -f 2`
+   CT=`echo "$VM" | cut -d "_" -f 1`
+   echo
+   #telegram-cli -D -b -e 'msg LiveLinux_CLD "'$SUDO_USER' logged in \n'$VM'"' >> /dev/null
+   (
+    LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null
+    if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
+    fusermount -uzq $LOCALMOUNTPATH >> /dev/null
+    mkdir -p $LOCALMOUNTPATH >> /dev/null
+    DEVICE=$(ssh -q -o "RequestTTY force" clouds@$MSK "sudo prlctl exec $CT df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' | tr -d '\r' | tr -d '\n') >> /dev/null
+    VZPOINT=$(ssh -q -o "RequestTTY force" root@$MSK "df -P" | tr '\r' '\n' | grep "$DEVICE" | awk '{print $6}' | tr -d '\r' | tr -d '\n') >> /dev/null
+    SFTP_PATH=$(ssh -q -o "RequestTTY force" clouds@$MSK "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') >> /dev/null
+    SUDO_PATH=$(ssh -q -o "RequestTTY force" clouds@$MSK "which sudo" | tr -d '\r' | tr -d '\n') >> /dev/null
+    sshfs -o sftp_server="$SUDO_PATH S$FTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$MSK:$VZPOINT $LOCALMOUNTPATH >> /dev/null
+   )&
+   ssh -q -o "RequestTTY force" clouds@$MSK "sudo prlctl enter $CT"
+   (LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq $LOCALMOUNTPATH >> /dev/null ; rmdir $LOCALMOUNTPATH) &
+ elif grep --quiet "$VM" /var/cld/creds/ct_vz_hyper_list ; then
+   echo
+   echo "You had chosen OpenVZ $VM"
+   CTNAME="`echo "$VM" | cut -d "_" -f 1`_`echo "$VM" | cut -d "_" -f 3`"
+   HPR=`echo "$VM" | cut -d "_" -f 2`
+   CT=`echo "$VM" | cut -d "_" -f 3`
+   echo
+   (
+    LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null
+    if [ ! -d "$DIR" ]; then mkdir -p LOCALMOUNTPATH ;fi
+    fusermount -uzq $LOCALMOUNTPATH >> /dev/null
+    mkdir -p $LOCALMOUNTPATH >> /dev/null
+    DEVICE=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo pct exec $CT -- df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' |  tr -d '\n') >> /dev/null
+    if echo $DEVICE | egrep --quiet "^[/].*" ; then
+     ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo mkdir /mnt/$CT" >> /dev/null ; ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo mount $DEVICE /mnt/$CT" >> /dev/null
+     SFTP_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') >> /dev/null
+     SUDO_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') >> /dev/null
+     sshfs -p 55567 -o sftp_server="$SUDO_PATH $SFTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:/mnt/$CT $LOCALMOUNTPATH >> /dev/null
+    else
+     SFTP_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') >> /dev/null
+     SUDO_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') >> /dev/null
+     sshfs -p 55567 -o sftp_server="$SUDO_PATH $SFTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:/$DEVICE $LOCALMOUNTPATH >> /dev/null
+    fi
+   ) &
+   ssh -q -o "RequestTTY force" -p 55567 clouds@$HPR "sudo vzctl enter $CT"
+   (LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq $LOCALMOUNTPATH >> /dev/null ; rmdir $LOCALMOUNTPATH) &
+ fi
+ break
+done
+

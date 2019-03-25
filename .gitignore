@@ -1,0 +1,18 @@
+#socket files
+/noVNC/sockets/
+/xtermjs/sockets/
+
+#node modules
+/xtermjs/node_modules/
+
+#creds
+/creds/
+
+#screenlogs
+*screenlog.0*
+
+#pycache
+*__pycache__*
+
+#temp folder
+/tmp/
