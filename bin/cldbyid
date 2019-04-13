@@ -1,0 +1,2 @@
+#!/bin/bash
+grep "$1" /var/cld/creds/id_list | awk '{print $2}'

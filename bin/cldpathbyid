@@ -1,0 +1,27 @@
+#!/bin/bash
+[ "$SUDO_USER" = "" ] && SUDO_USER=root
+#for OPTS in ${@:1}
+#do
+#echo $OPTS | grep -q '\-\-id=' && VMID=$(echo $OPTS | cut -d '=' -f 2)
+#done
+#echo ${VMID}
+#mknod -m 666 /dev/fuse c 10 229 2>&1 >/dev/null
+#    echo "Please select VM to enter"
+    VMPX=`cat /var/cld/creds/ct_px_hyper_list 2>/dev/null`
+    VMVZ=`cat /var/cld/creds/ct_vz_hyper_list 2>/dev/null`
+    VMS=`cat /var/cld/creds/ct_hyper_list 2>/dev/null`
+    EXT=`(grep -vh "^$\|^#" /var/cld/creds/ext_do_list ; sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/creds/ext_srv_list | grep -vh "^$\|^#") 2>/dev/null`
+    OFF=`cat /var/cld/creds/ct_px_hyper_list_offline 2>/dev/null`
+    for VM in $(cat << EOL | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash | grep $1 | head -1 | awk '{print $2}'
+    $VMS
+    $VMVZ
+    $VMPX
+    $EXT
+    $OFF
+EOL
+)
+    do
+    echo "/home/${SUDO_USER}/mnt/${VM}"
+ break
+done
+

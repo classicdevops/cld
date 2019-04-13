@@ -1,0 +1,11 @@
+xtermnginx:
+#  command:
+#    - 'nginx -g daemon off;'
+  container_name: xtermnginx
+  restart: always
+  ports:
+    - 8083:8083
+  hostname: xtermnginx
+  image: nginx
+  volumes:
+    - ./etc/nginx:/etc/nginx

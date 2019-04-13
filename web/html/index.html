@@ -1,0 +1,210 @@
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Cloud dashboard - cld web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/main.css" rel="stylesheet">
+    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
+    <style type="text/css">
+    /* This is not a zero-length file! */
+    </style>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+#searchInput {
+    background-position: 10px 12px;
+    background-repeat: no-repeat;
+    width: 95%;
+    font-size: 14px;
+    padding: 5px 10px 5px 10px;
+    border: 1px solid #1e88e5;
+    margin-bottom: 12px;
+}
+
+#ServerListUl {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#ServerListUl li a {
+    border: 1px solid #1e88e5;
+    margin-top: -1px; /* Prevent double borders */
+    background-color: white;
+    padding: 4px;
+    text-decoration: none;
+    color: black;
+    display: block;
+    font-size: 10;
+    color: lightslategray;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-bottom-width: 0;
+}
+
+#ServerListUl li a:hover:not(.header) {
+  background-color: #eee;
+}
+
+</style>
+    <script>
+    function newtab(id, hostname) {
+        $('#hostTab').append('<li class="nav-item"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-tab\').outerHTML = \'\';document.getElementById(\'' + id + '\').outerHTML = \'\';">×</button><button class="refreshtab" type="button" onclick="document.getElementById(\'frame-' + id + '\').src += \'\';document.getElementById(\'fframe-' + id + '\').src += \'\';">⟳</button>' + hostname + '</a></li>');
+        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"><iframe id="frame-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/xactivate?cloudid=' + id + '"></iframe><br><iframe id="fframe-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/factivate?cloudid=' + id + '"></div>');
+    };
+    </script>
+    <script>
+    function search() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("ServerListUl");
+        li = ul.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+    </script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('[data-toggle=offcanvas]').click(function() {
+            $('.row-offcanvas').toggleClass('active');
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <div class="page-container">
+        <!-- top navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header" style="width: 100%;">
+                    <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".sidebar-nav">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <img src="../img/cld-logo.svg" style="filter: invert(55%) sepia(85%) saturate(4180%) hue-rotate(188deg) brightness(93%) contrast(92%);width: 40;float: left;margin: 5;">
+                    <a class="navbar-brand" href="/panel/">Cloud dashboard</a>
+                    <div class="dropdown" style="float: right;">
+                        <a class="navbar-brand dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">{{ username }}
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% if username == 'admin' %}<li><a href="/admin">Administration</a></li>{% endif %}
+                            <li><a href="/settings">Settings</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row row-offcanvas row-offcanvas-left">
+                <!-- sidebar -->
+                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+                    <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
+                    <ul class="nav" id="ServerListUl">
+                        {% for do_server in do_list %}
+                        <li><a onclick='newtab("{{ do_server.id }}", "{{ do_server.hostname }}")' class="nav-link active" id="{{ do_server.id }}-link" data-toggle="tab" href="#{{ do_server.id }}">{{ do_server.fullname }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- main area -->
+                <div class="col-xs-12 col-sm-9">
+                    <ul class="nav nav-tabs" id="hostTab" role="tablist">
+                        <li class="nav-item active">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" aria-expanded="true">Home</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="hostTabContent">
+                        <div class="tab-pane fade show active in" id="home" role="tabpanel" aria-labelledby="home-tab"><br>Welcome to Cloud Control Dashboard</div>
+                    </div>
+                </div><!-- /.col-xs-12 main -->
+            </div>
+            <!--/.row-->
+        </div>
+        <!--/.container-->
+    </div>
+    <!--/.page-container-->
+    <style>
+    .ad {
+        position: absolute;
+        bottom: 70px;
+        right: 48px;
+        z-index: 992;
+        background-color: white;
+        position: fixed;
+        width: 155px;
+        padding: 1px;
+    }
+
+    .ad-btn-hide {
+        position: absolute;
+        top: -10px;
+        left: -12px;
+        background: #fefefe;
+        background: rgba(240, 240, 240, 0.9);
+        border: 0;
+        border-radius: 26px;
+        cursor: pointer;
+        padding: 2px;
+        height: 25px;
+        width: 25px;
+        font-size: 14px;
+        vertical-align: top;
+        outline: 0;
+    }
+
+    .carbon-img {
+        float: left;
+        padding: 10px;
+    }
+
+    .carbon-text {
+        color: #888;
+        display: inline-block;
+        font-family: Verdana;
+        font-size: 11px;
+        font-weight: 400;
+        height: 60px;
+        margin-left: 9px;
+        width: 142px;
+        padding-top: 10px;
+    }
+
+    .carbon-text:hover {
+        color: #666;
+    }
+
+    .carbon-poweredby {
+        color: #6A6A6A;
+        float: left;
+        font-family: Verdana;
+        font-size: 11px;
+        font-weight: 400;
+        margin-left: 10px;
+        margin-top: 13px;
+        text-align: center;
+    }
+    </style>
+</body>
+
+</html>

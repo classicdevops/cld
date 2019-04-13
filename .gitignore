@@ -3,7 +3,7 @@
 /xtermjs/sockets/
 
 #node modules
-/xtermjs/node_modules/
+*/node_modules/
 
 #creds
 /creds/
@@ -16,3 +16,10 @@
 
 #temp folder
 /tmp/
+
+#Файл phpsessid с правилами в контейнерах докер
+/docker/*/etc/nginx/conf.d/sessid
+
+#logs
+log/
+logs/

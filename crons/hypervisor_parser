@@ -41,7 +41,7 @@ done
 EOCTPXLIST
 )
 
-/usr/bin/cp /var/cld/creds/ct_px_hyper_list /var/cld/creds/ct_px_hyper_list_prev
+/bin/cp /var/cld/creds/ct_px_hyper_list /var/cld/creds/ct_px_hyper_list_prev
 truncate -s 0 /var/cld/tmp/temp_px_ct_hyper_list
 truncate -s 0 /var/cld/tmp/gray_ip_list_tmp
 temp_px_ct_hyper_list="/var/cld/tmp/temp_px_ct_hyper_list"

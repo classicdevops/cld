@@ -1,10 +1,15 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
-#cat /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=root
-#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
-echo "Please select VM to enter"
-select VM in $(VM_LIST | grep -i "$1" | grep -i "$2" | grep -i "$3")
+#for OPTS in ${@:1}
+#do
+#echo $OPTS | grep -q '\-\-id=' && VMID=$(echo $OPTS | cut -d '=' -f 2)
+#done
+#echo ${VMID}
+echo $1
+#mknod -m 666 /dev/fuse c 10 229 2>&1 >/dev/null
+#    echo "Please select VM to enter"
+    for VM in $(cat /var/cld/creds/id_list | awk '{print $2}' | grep "$1")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
@@ -16,27 +21,19 @@ do
   elif grep --quiet "$VM" /var/cld/creds/ct_px_hyper_list ; then
     PROXMOX_VARS
     echo
-    PROXMOX_MOUNT &>/dev/null &
     PROXMOX_TERMINAL
-    PROXMOX_UMOUNT &>/dev/null &
   elif grep --quiet "$VM" /var/cld/creds/ext_*_list ; then
     EXTERNAL_VARS
     echo
-    EXTERNAL_MOUNT &>/dev/null &
     EXTERNAL_TERMINAL
-    EXTERNAM_UMOUNT &>/dev/null &
   elif grep --quiet "$VM" /var/cld/creds/ct_virtuozzo_hyper_list ; then
     VIRTUOZZO_VARS
     echo
-    VIRTUOZZO_MOUNT &>/dev/null &
     VIRTUOZZO_TERMINAL
-    VIRTUOZZO_UMOUNT &>/dev/null &
   elif grep --quiet "$VM" /var/cld/creds/ct_vz_hyper_list ; then
     OPENVZ_VARS
     echo
-    OPENVZ_MOUNT &>/dev/null &
     OPENVZ_TERMINAL
-    OPENVZ_UMOUNT &>/dev/null &
   fi
   break
 done
