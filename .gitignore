@@ -21,5 +21,9 @@
 /docker/*/etc/nginx/conf.d/sessid
 
 #logs
-log/
-logs/
+/log/
+/logs/
+
+#access
+/access/users/
+/access/groups/

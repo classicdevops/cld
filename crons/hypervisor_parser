@@ -87,9 +87,9 @@ temp_vz_ct_hyper_list="/var/cld/tmp/temp_vz_ct_hyper_list"
 ct_vz_hyper_list="/var/cld/creds/ct_vz_hyper_list"
 for vz_hyper in $(cat /var/cld/creds/vz_hyper_list)
 do
-timeout 5 ssh -o "RequestTTY force" -o "StrictHostKeyChecking no" -p 55567 clouds@$vz_hyper "sudo /usr/sbin/vzlist" | grep -v HOSTNAME | tr -d '\r' | awk '{print $5"_HYPER_"$1"_"$4}' | sed "s#HYPER#$vz_hyper#g" >> $temp_vz_ct_hyper_list &
+timeout 20 ssh -o "StrictHostKeyChecking no" -p 55567 clouds@$vz_hyper "sudo /usr/sbin/vzlist" | grep -v HOSTNAME | tr -d '\r' | awk '{print $5"_HYPER_"$1"_"$4}' | sed "s#HYPER#$vz_hyper#g" >> $temp_vz_ct_hyper_list &
 done
-sleep 5s
+wait
 rm -f ct_vz_hyper_list ; mv $temp_vz_ct_hyper_list $ct_vz_hyper_list
 ### OPENVZ PARSE END
 
@@ -102,3 +102,14 @@ done
 ) | tr ',' '\n' | grep -v "x64" | grep -v GrubLoader | egrep -v "\ [0-9]" | grep -Po "\"name\"\:\".*?\""\|"\"ip_address\":\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\"" | sed -e 's#"name":"##g' -e 's#"ip_address":"##g' -e 's#"##g' | tr '\n' ' ' | grep -Po ".*?\ \d+\.\d+\.\d+\.\d+" | awk '{print "DO-"$1"_"$2"_22_root"}' >> /var/cld/tmp/tmp_do_list
 rm -f /var/cld/creds/do_list ; mv /var/cld/tmp/tmp_do_list /var/cld/creds/ext_do_list
 ### GET DIGITALOCEAN DROPLETS LIST END
+
+### ID GENERATOR
+cat << EOL | grep -v '^$' | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash > /var/cld/creds/id_list
+`cat /var/cld/creds/ct_px_hyper_list 2>/dev/null`
+`cat /var/cld/creds/ct_vz_hyper_list 2>/dev/null`
+`cat /var/cld/creds/ct_hyper_list 2>/dev/null`
+`grep -vh "^$\|^#" /var/cld/creds/ext_do_list 2>/dev/null`
+`sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/creds/ext_srv_list | grep -vh "^$\|^#" 2>/dev/null`
+`cat /var/cld/creds/ct_px_hyper_list_offline 2>/dev/null`
+EOL
+###

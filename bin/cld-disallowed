@@ -1,0 +1,12 @@
+#!/bin/bash
+USER=$1
+source /var/cld/bin/include/cldfuncs
+ALLOWED() {
+for GROUP in $(cat /var/cld/access/users/${USER}/groups 2>/dev/null)
+do
+sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
+done
+sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/users/${USER}/clouds 2>/dev/null | grep -vh "^$\|^#" 2>/dev/null
+}
+VM_LIST | grep -v "$(ALLOWED)"
+

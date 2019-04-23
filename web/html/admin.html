@@ -17,8 +17,9 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+    <script type="text/javascript" src="../js/tablesort.js"></script>
     <style>
-    .ad {
+        .ad {
         position: absolute;
         bottom: 70px;
         right: 48px;
@@ -106,35 +107,91 @@
             </div>
         </div>
         <div class="container">
-
-                <!-- sidebar -->
-<div class="panel-group" id="accordion" style="padding-top: 25;">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-        Users</a>
-      </h4>
-    </div>
-    <div id="collapse1" class="panel-collapse collapse in">
-      <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-      sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-      minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat.</div>
-    </div>
+            <!-- sidebar -->
+            <div class="panel-group" id="accordion" style="padding-top: 25;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                Users</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr style="cursor: pointer;">
+                                        <td>#</td>
+                                        <td style="width: 35%%">User</td>
+                                        <td>Role</td>
+                                        <td>Groups</td>
+                                        <td>Last login</td>
+                                        <td style="width: 92;">Status</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    {% if user.status == '1' %}{% set status = 'Active' %}{% set style = 'success' %}{% set link = url_for('disableuser', name=user.user) %}{% elif user.status == '0' %}{% set status = 'Deactivated' %}{% set link = url_for('enableuser', name=user.user) %}{% set style = 'warning' %}{% else %}{% set status = 'Undefined' %}{% set statusstyle = 'success' %}{% endif %}
+                                    {% if user.role == '1' %}{% set role = 'Administrator' %}{% elif user.role == '0' %}{% set role = 'Member' %}{% else %}{% set role = 'Undefined' %}{% endif %}
+                                    <tr>
+                                        <td>{{ user.userid }}</td>
+                                        <td><a href="{{ url_for('user', name=user.user) }}">{{ user.user }}</a></td>
+                                        <td>{{ role }}</td>
+                                        <td>{{ user.groups }}</td>
+                                        <td>{{ user.lastlogin }}</td>
+                                        <td> <a href="{{ link }}" class="btn-sm btn-{{ style }}" data-toggle="tooltip" '="" data-original-title="" title="">{{ status }}</a></td>
+                    </tr>
+                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <form method="POST" action="/adduser" class="form-inline" style="float: right;">  
+<div class="form-group mx-sm-3 mb-2">
+    <input type="text" class="form-control" name="newuser" placeholder="New user">
+  </div><div class="form-group mx-sm-3 mb-2">
+    <input type="password" class="form-control" name="newpass" placeholder="New password" autocomplete="new-password">
+  </div>
+  <button type="submit" class="btn btn-light bt mb-2 ">Add user</button>
+</form>
+                        </div>
+                    </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-        Access rights</a>
+        Groups</a>
       </h4>
     </div>
     <div id="collapse2" class="panel-collapse collapse">
-      <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-      sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-      minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat.</div>
+                        <div class="panel-body">
+                            <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr style="cursor: pointer;">
+                                        <td>Name</td>
+                                        <td style="width: 35%%">Group users</td>
+                                        <td>Cloud count</td>
+                                        <td>Type</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for group in groups %}
+
+                                    <tr>
+                                        <td><a href="{{ url_for('group', name=group.group) }}">{{ group.group }}</a></td>
+                                        <td>{{ group.groupusers }}</td>
+                                        <td>{{ group.cloudcount }}</td>
+                                        <td>{{ group.grouptype }}</td>
+                    </tr>
+                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <form method="POST" action="/adduser" class="form-inline" style="float: right;">  
+<div class="form-group mx-sm-3 mb-2">
+    <input type="text" class="form-control" name="newuser" placeholder="New group">
+  </div>
+  <button type="submit" class="btn btn-light bt mb-2 ">Add group</button>
+</form>
+                        </div>
     </div>
   </div>
   <div class="panel panel-default">

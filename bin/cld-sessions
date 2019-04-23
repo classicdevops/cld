@@ -1,0 +1,14 @@
+#!/bin/bash
+echo
+echo Please choose one of active sessions below
+echo
+select FILE in $(ps ax | grep tee | grep -v grep | awk '{print $7}')
+do
+while read -r LINE; do
+cat << EOL
+$LINE
+EOL
+read -s < "$(tty 0>&2)"
+done < $FILE
+break
+done

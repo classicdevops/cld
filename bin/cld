@@ -1,10 +1,10 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 #cat /var/cld/bin/include/cldfuncs
-[ "$SUDO_USER" = "" ] && SUDO_USER=root
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
 #mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 echo "Please select VM to enter"
-select VM in $(VM_LIST | grep -i "$1" | grep -i "$2" | grep -i "$3")
+select VM in $(CLOUDS_USER_ALLOWED | grep -i "$1" | grep -i "$2" | grep -i "$3")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
