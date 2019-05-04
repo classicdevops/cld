@@ -7,6 +7,7 @@ do
 sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
 done
 sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/users/${USER}/clouds 2>/dev/null | grep -vh "^$\|^#" 2>/dev/null
+echo " "
 }
 VM_LIST | grep -v "$(ALLOWED)"
 

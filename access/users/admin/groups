@@ -1,5 +1,5 @@
-proxmox
-ext_srv
-ext_do
 virtuozzo
 openvz
+proxmox
+ext_do
+ext_srv

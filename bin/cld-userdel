@@ -1,6 +1,8 @@
 #!/bin/bash
 NEWUSER=$1
 userdel ${NEWUSER}
+rm -f /home/${NEWUSER}/*
+rmdir /home/${NEWUSER}
 rm -f /var/cld/access/users/${NEWUSER}/*
 rmdir /var/cld/access/users/${NEWUSER}
 sed -ir "/^${NEWUSER} ALL.*/d" /etc/sudoers

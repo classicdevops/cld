@@ -27,3 +27,4 @@
 #access
 /access/users/
 /access/groups/
+/access/users/admin/*

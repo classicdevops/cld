@@ -16,6 +16,9 @@ done
 done
 ) > /var/cld/docker/xtermnginx/etc/nginx/conf.d/sessid_tmp ; mv -f /var/cld/docker/xtermnginx/etc/nginx/conf.d/sessid_tmp /var/cld/docker/xtermnginx/etc/nginx/conf.d/sessid
 
+#kill apps
+kill -9 `ps axfu | egrep "port(\ |\=)" | grep -v "$(netstat -n | grep '172.17.0.1' | grep ESTABLISHED | awk '{print $4}' | cut -d : -f 2)" | awk '{print $2}'`
+
 #Define XTERMPORT
 for XTERMPORT in $(seq 45001 50000)
 do

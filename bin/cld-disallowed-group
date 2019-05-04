@@ -1,0 +1,9 @@
+#!/bin/bash
+GROUP=$1
+source /var/cld/bin/include/cldfuncs
+ALLOWED() {
+cat /var/cld/access/groups/${GROUP}/clouds 2>/dev/null | grep -vh "^$\|^#" 2>/dev/null
+echo " "
+}
+VM_LIST | grep -v "$(ALLOWED)"
+

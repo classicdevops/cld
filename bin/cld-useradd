@@ -2,12 +2,14 @@
 NEWUSER=$1
 NEWUSERPASSWORD=$2
 ALLOWEDUTILS="cld cldx cldxmount"
-useradd ${NEWUSER}
+useradd ${NEWUSER} --shell /bin/bash
 echo -e "${NEWUSERPASSWORD}\n${NEWUSERPASSWORD}\n" | passwd ${NEWUSER} &>/dev/null
 mkdir -p /var/cld/access/users/${NEWUSER}
+mkdir /home/${NEWUSER} $>/dev/null
+chown ${NEWUSER}:${NEWUSER} /home/${NEWUSER}
 touch /var/cld/access/users/${NEWUSER}/clouds
 touch /var/cld/access/users/${NEWUSER}/groups
 echo 0 > /var/cld/access/users/${NEWUSER}/role
-echo "${NEWUSER} ALL=(ALL) NOPASSWD: $(for i in $ALLOWEDUTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
+echo "${NEWUSER} ALL=(ALL) NOPASSWD: $(for i in $ALLOWEDUTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node" >> /etc/sudoers
 echo user: ${NEWUSER}
 echo password: ${NEWUSERPASSWORD}

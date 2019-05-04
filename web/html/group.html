@@ -6,7 +6,7 @@
     <title>Cloud dashboard - cld web</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="description" content="">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/main.css" rel="stylesheet">
     <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
@@ -18,67 +18,7 @@
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
     <script type="text/javascript" src="../js/tablesort.js"></script>
-    <style>
-        .ad {
-position: absolute;
-bottom: 70px;
-right: 48px;
-z-index: 992;
-background-color: white;
-position: fixed;
-width: 155px;
-padding: 1px;
-}
 
-.ad-btn-hide {
-position: absolute;
-top: -10px;
-left: -12px;
-background: #fefefe;
-background: rgba(240, 240, 240, 0.9);
-border: 0;
-border-radius: 26px;
-cursor: pointer;
-padding: 2px;
-height: 25px;
-width: 25px;
-font-size: 14px;
-vertical-align: top;
-outline: 0;
-}
-
-.carbon-img {
-float: left;
-padding: 10px;
-}
-
-.carbon-text {
-color: #888;
-display: inline-block;
-font-family: Verdana;
-font-size: 11px;
-font-weight: 400;
-height: 60px;
-margin-left: 9px;
-width: 142px;
-padding-top: 10px;
-}
-
-.carbon-text:hover {
-color: #666;
-}
-
-.carbon-poweredby {
-color: #6A6A6A;
-float: left;
-font-family: Verdana;
-font-size: 11px;
-font-weight: 400;
-margin-left: 10px;
-margin-top: 13px;
-text-align: center;
-}
-</style>
 </head>
 
 <body>
@@ -108,46 +48,79 @@ text-align: center;
         </div>
         <div class="container">
             <div class="panel-body">
-                <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
-                    <thead>
-                        <tr style="cursor: pointer;">
-                            <td>#</td>
-                            <td style="width: 35%%">User</td>
-                            <td>Role</td>
-                            <td>Groups</td>
-                            <td>Last login</td>
-                            <td style="width: 92;">Status</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        {% if user.status == '1' %}{% set status = 'Active' %}{% set style = 'success' %}{% set link = url_for('disableuser', name=users[0].user) %}{% elif user.status == '0' %}{% set status = 'Deactivated' %}{% set style = 'warning' %}{% set link = url_for('enableuser', name=users[0].user) %}{% else %}{% set status = 'Undefined' %}{% set statusstyle = 'success' %}{% endif %}
-                        {% if user.role == '1' %}{% set role = 'Administrator' %}{% elif user.role == '0' %}{% set role = 'Member' %}{% else %}{% set role = 'Undefined' %}{% endif %}
-                        <tr>
-                            <td>{{ user.userid }}</td>
-                            <td><a href="{{ url_for('user', name=user.user) }}">{{ user.user }}</a></td>
-                            <td>{{ role }}</td>
-                            <td>{{ user.groups }}</td>
-                            <td>{{ user.lastlogin }}</td>
-                            <td> <a href="{{ link }}" class="btn-sm btn-{{ style }}" data-toggle="tooltip" '="" data-original-title="" title="">{{ status }}</a></td>
-                </tr>
-                {% endfor %}
-                </tbody>
-                </table>
+                            <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr style="cursor: pointer;">
+                                        <td>Name</td>
+                                        <td style="width: 35%%">Group users</td>
+                                        <td>Cloud count</td>
+                                        <td>Type</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for group in groups %}
+
+                                    <tr>
+                                        <td><a href="{{ url_for('group', name=group.group) }}">{{ group.group }}</a></td>
+                                        <td>{{ group.groupusers }}</td>
+                                        <td>{{ group.cloudcount }}</td>
+                                        <td>{{ group.grouptype }}</td>
+                    </tr>
+                    {% endfor %}
+                                </tbody>
+                            </table>
                 <div class="panel-body">
-                    <form action="{{ url_for('usergroups', name=users[0].user) }}" method="POST">
-{% for group in allgroups %}
-{% if group in users[0].groups %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
-<div class="form-check">
+<p>{{ groups[0].group }} users:</p>
+                    <form action="{{ url_for('usergroups', name=groups[0].group) }}" method="POST">
+{% for user in allusers %}
+{% if user in groups[0].groupusers %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
+<div class="form-check form-check-inline">
   <input class="form-check-input" type="checkbox" name="{{ group }}"{{ boxstatus }}>
-  <label class="form-check-label">{{ group }}</label>
+  <label class="form-check-label">{{ user }}</label>
 </div>
 {% endfor %}
-<button type="submit" class="btn btn-light bt mb-2 ">Apply</button>
+<button type="submit" class="btn btn-light bt mb-2" style="float: right">Apply users</button>
+</form><br>
+<p>{{ groups[0].group }} clouds:</p>
+<div class="subject-info-box-1">
+    <script type="text/javascript">
+    function selectAll() 
+    { 
+        selectBox = document.getElementById("lstBox1");
+
+        for (var i = 0; i < selectBox.options.length; i++) 
+        { 
+             selectBox.options[i].selected = true; 
+        } 
+    }
+</script>
+<form action="{{ url_for('groupclouds', name=groups[0].group) }}" id="groupclouds" method="POST">
+  <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
+    {% for cloud in allowedclouds %}
+    <option value="{{ cloud }}">{{ cloud }}</option>
+    {% endfor %}
+  </select>
 </form>
-<!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
-<input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
-  <a href="{{ url_for('deluser', name=users[0].user) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete user</button></a>
+</div>
+<div class="subject-info-arrows text-center">
+  <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
+  <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
+  <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
+  <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
+</div>
+<div class="subject-info-box-2">
+  <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
+    {% for cloud in disallowedclouds %}
+    <option value="{{ cloud }}">{{ cloud }}</option>
+    {% endfor %}
+  </select>
+
+</div>
+  <br>
+<div class="clearfix"></div><br>
+  <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="groupclouds">Apply clouds</button>
+<br><br><br>
+  <br><a href="{{ url_for('deluser', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
 <!-- </form> -->
 </div>
 </div>
@@ -158,7 +131,50 @@ text-align: center;
 <!--/.container-->
 </div>
 <!--/.page-container-->
-
+    <script type="text/javascript">
+(function () {
+    $('#btnRight').click(function (e) {
+        var selectedOpts = $('#lstBox1 option:selected');
+        if (selectedOpts.length == 0) {
+            alert("Nothing to move.");
+            e.preventDefault();
+        }
+        $('#lstBox2').append($(selectedOpts).clone());
+        $(selectedOpts).remove();
+        e.preventDefault();
+    });
+    $('#btnAllRight').click(function (e) {
+        var selectedOpts = $('#lstBox1 option');
+        if (selectedOpts.length == 0) {
+            alert("Nothing to move.");
+            e.preventDefault();
+        }
+        $('#lstBox2').append($(selectedOpts).clone());
+        $(selectedOpts).remove();
+        e.preventDefault();
+    });
+    $('#btnLeft').click(function (e) {
+        var selectedOpts = $('#lstBox2 option:selected');
+        if (selectedOpts.length == 0) {
+            alert("Nothing to move.");
+            e.preventDefault();
+        }
+        $('#lstBox1').append($(selectedOpts).clone());
+        $(selectedOpts).remove();
+        e.preventDefault();
+    });
+    $('#btnAllLeft').click(function (e) {
+        var selectedOpts = $('#lstBox2 option');
+        if (selectedOpts.length == 0) {
+            alert("Nothing to move.");
+            e.preventDefault();
+        }
+        $('#lstBox1').append($(selectedOpts).clone());
+        $(selectedOpts).remove();
+        e.preventDefault();
+    });
+}(jQuery));
+</script>
 </body>
 
 </html>

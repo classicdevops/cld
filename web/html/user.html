@@ -88,11 +88,24 @@
 </form><br>
 <p>Clouds:</p>
 <div class="subject-info-box-1">
-  <select multiple="multiple" id='lstBox1' class="content-info-box form-control">
+    <script type="text/javascript">
+    function selectAll() 
+    { 
+        selectBox = document.getElementById("lstBox1");
+
+        for (var i = 0; i < selectBox.options.length; i++) 
+        { 
+             selectBox.options[i].selected = true; 
+        } 
+    }
+</script>
+<form action="{{ url_for('userclouds', name=users[0].user) }}" id="userclouds" method="POST">
+  <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
     {% for cloud in allowedclouds %}
     <option value="{{ cloud }}">{{ cloud }}</option>
     {% endfor %}
   </select>
+</form>
 </div>
 <div class="subject-info-arrows text-center">
   <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
@@ -110,7 +123,8 @@
 </div>
   <br>
 <div class="clearfix"></div><br>
-<button type="submit" class="btn btn-light bt mb-2" style="float: right">Apply clouds</button><br><br><br>
+  <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="userclouds">Apply clouds</button>
+<br><br><br>
 <!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
 <input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
   <br><a href="{{ url_for('deluser', name=users[0].user) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete user</button></a>
