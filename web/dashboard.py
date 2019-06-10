@@ -205,7 +205,8 @@ def group():
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
-    allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
+    # allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
+    allowedclouds = bash("sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/"+request.args['name']+"/clouds | tr -d '\001' | grep -vh '^$\|^#'").split('\n')[:-1]
     disallowedclouds = bash('/var/cld/bin/cld-disallowed-group '+request.args['name']).split('\n')[:-1]
     return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
@@ -222,6 +223,20 @@ def deluser():
   if 'username' in session:
     deluser = request.args['name']
     bash('/var/cld/bin/cld-userdel '+deluser).replace('\n', ' ')
+    return redirect('/admin', code=302)
+
+@app.route('/addgroup', methods=['POST'])
+def addgroup():
+  if 'username' in session:
+    newgroup = request.form['newgroup']
+    bash('/var/cld/bin/cld-groupadd '+newgroup).replace('\n', ' ')
+    return redirect('/admin', code=302)
+
+@app.route('/delgroup', methods=['GET'])
+def delgroup():
+  if 'username' in session:
+    delgroup = request.args['name']
+    bash('/var/cld/bin/cld-groupdel '+delgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
 
 @app.route('/enableuser', methods=['GET'])
@@ -267,21 +282,36 @@ def userclouds():
       usersfile.close()
     return redirect('/admin', code=302)
 
+@app.route('/groupusers', methods=['GET','POST'])
+def groupusers():
+  if 'username' in session:
+    group = request.args['name']
+    users = ",".join(list(request.form.to_dict())).split(',')
+    # return str(",".join(groups).split(','))
+    denyusers = [os.path.basename(name) for name in os.listdir("/var/cld/access/users/") if os.path.isdir('/var/cld/access/users/'+name) and name not in users]
+    for user in users:
+      if user != '':
+        bash('grep '+group+' /var/cld/access/users/'+user+'/groups || echo '+group+' >> /var/cld/access/users/'+user+'/groups')
+    for denyuser in denyusers:
+      if denyuser != '':
+        bash("sed -i '/"+group+"/d' /var/cld/access/users/"+denyuser+"/groups")
+    return redirect('/admin', code=302)
+
 @app.route('/groupclouds', methods=['GET','POST'])
 def groupclouds():
   if 'username' in session:
-    user = request.args['name']
+    group = request.args['name']
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     # return str(str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(','))
     # print(dir(request.form))
     # sys.stdout.flush()
     # return str(clouds)
     if str(clouds) == "['([])']":
-      bash('truncate -s 0 /var/cld/access/users/'+user+'/clouds')
+      bash('truncate -s 0 /var/cld/access/groups/'+group+'/clouds')
     else:
-      usersfile = open('/var/cld/access/users/'+user+'/clouds', 'w')
-      usersfile.write("\n".join(clouds))
-      usersfile.close()
+      groupsfile = open('/var/cld/access/groups/'+group+'/clouds', 'w')
+      groupsfile.write("\n".join(clouds))
+      groupsfile.close()
     return redirect('/admin', code=302)
 
 @app.route('/settings')

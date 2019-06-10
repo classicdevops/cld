@@ -71,11 +71,11 @@
                             </table>
                 <div class="panel-body">
 <p>{{ groups[0].group }} users:</p>
-                    <form action="{{ url_for('usergroups', name=groups[0].group) }}" method="POST">
+                    <form action="{{ url_for('groupusers', name=groups[0].group) }}" method="POST">
 {% for user in allusers %}
 {% if user in groups[0].groupusers %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
 <div class="form-check form-check-inline">
-  <input class="form-check-input" type="checkbox" name="{{ group }}"{{ boxstatus }}>
+  <input class="form-check-input" type="checkbox" name="{{ user }}"{{ boxstatus }}>
   <label class="form-check-label">{{ user }}</label>
 </div>
 {% endfor %}
@@ -120,7 +120,7 @@
 <div class="clearfix"></div><br>
   <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="groupclouds">Apply clouds</button>
 <br><br><br>
-  <br><a href="{{ url_for('deluser', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
+  <br><a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
 <!-- </form> -->
 </div>
 </div>

@@ -1,0 +1,7 @@
+#!/bin/bash
+GROUP=$1
+if [ ! -z "$GROUP" ] ; then
+rm -f /var/cld/access/groups/${GROUP}/*
+rmdir /var/cld/access/groups/${GROUP}
+sed -i '/'${GROUP}'/d' /var/cld/access/users/*/groups
+fi

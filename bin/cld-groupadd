@@ -1,0 +1,5 @@
+#!/bin/bash
+GROUP=$1
+mkdir -p /var/cld/access/groups/${GROUP}
+touch /var/cld/access/groups/${GROUP}/clouds
+chmod -R 700 /var/cld/access/

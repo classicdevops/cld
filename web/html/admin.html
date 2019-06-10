@@ -185,9 +185,9 @@
                     {% endfor %}
                                 </tbody>
                             </table>
-                            <form method="POST" action="/adduser" class="form-inline" style="float: right;">  
+                            <form method="POST" action="{{ url_for('addgroup') }}" class="form-inline" style="float: right;">  
 <div class="form-group mx-sm-3 mb-2">
-    <input type="text" class="form-control" name="newuser" placeholder="New group">
+    <input type="text" class="form-control" name="newgroup" placeholder="New group">
   </div>
   <button type="submit" class="btn btn-light bt mb-2 ">Add group</button>
 </form>
