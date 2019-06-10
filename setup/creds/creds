@@ -2,4 +2,4 @@ DEFAULT_MIKROTIK_USER='mikrotikuser'
 DEFAULT_MIKROTIK_PASSWORD='MikroTikPassword'
 DIGITALOCEAN_TOKEN='YourTokerHere'
 FLASKSECRETKEY=YourFlaskSecret
-DOCKERHOST=your.host.or.ip:30004
+DOCKERHOST=your.host.or.ip:8083
