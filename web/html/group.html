@@ -120,11 +120,11 @@
 <div class="clearfix"></div><br>
   <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="groupclouds">Apply clouds</button>
 <br><br><br>
+{% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeplaceholder = parsingscript %}{% set typeboxstatus = ' checked' %}{% endif %}
 <form action="{{ url_for('grouptype', name=groups[0].group) }}" id="grouptype" method="POST">
-Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"> <br><br>
+Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
 Parsing script: <br>
-<textarea disabled id="ScriptArea" name="parsingscript" style="width: 100%">
-</textarea>
+<textarea{{typestatus}} id="ScriptArea" name="parsingscript" class="form-control" rows="4" style="resize: none">{{typeplaceholder}}</textarea>
 <br><br>
 <button type="submit" class="btn btn-light bt mb-2" style="float: right" form="grouptype">Apply type</button>
 
@@ -132,6 +132,12 @@ Parsing script: <br>
 document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
     var textArea = document.getElementById('ScriptArea')
     textArea.disabled = !textArea.disabled
+});
+</script>
+<script>
+    $('#ScriptArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
 });
 </script>
 </form>
