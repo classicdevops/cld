@@ -120,6 +120,22 @@
 <div class="clearfix"></div><br>
   <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="groupclouds">Apply clouds</button>
 <br><br><br>
+<form action="{{ url_for('grouptype', name=groups[0].group) }}" id="grouptype" method="POST">
+Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"> <br><br>
+Parsing script: <br>
+<textarea disabled id="ScriptArea" name="parsingscript" style="width: 100%">
+</textarea>
+<br><br>
+<button type="submit" class="btn btn-light bt mb-2" style="float: right" form="grouptype">Apply type</button>
+
+<script>
+document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
+    var textArea = document.getElementById('ScriptArea')
+    textArea.disabled = !textArea.disabled
+});
+</script>
+</form>
+<br><br><br>
   <br><a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
 <!-- </form> -->
 </div>

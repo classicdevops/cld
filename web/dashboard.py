@@ -314,6 +314,24 @@ def groupclouds():
       groupsfile.close()
     return redirect('/admin', code=302)
 
+@app.route('/grouptype', methods=['GET','POST'])
+def grouptype():
+  if 'username' in session:
+    group = request.args['name']
+    grouptype = ''
+    try:
+      grouptype = request.form['grouptype']
+      parsingscript = request.form['parsingscript']
+    except:
+      pass
+    if grouptype == 'on':
+      bash('rm -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/creds/'+group+'_list ; ln -s /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds')
+      bash("cat >/var/cld/access/groups/"+group+"/parsingscript << 'EOPARSINGSCRIPT'"+os.linesep+parsingscript+os.linesep+'EOPARSINGSCRIPT')
+      return redirect('/admin', code=302)
+    else:
+      bash('rm -f /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/access/groups/'+group+'/clouds ; mv -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds')
+      return redirect('/admin', code=302)
+
 @app.route('/settings')
 def settings():
   if 'username' in session:
