@@ -40,7 +40,7 @@ def remoteaddr():
   return remote_addr
 
 def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf8')
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
 
 # def sessionparse(value):
@@ -326,41 +326,29 @@ def grouptype():
     except:
       pass
     if grouptype == 'on':
-      bash('rm -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/creds/'+group+'_list ; ln -s /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds')
+      bash('rm -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/creds/'+group+'_list ; ln -s /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; echo 1 > /var/cld/access/groups/'+group+'/type')
       bash("cat > /var/cld/access/groups/"+group+"/parsingscript << 'EOPARSINGSCRIPT' | tr -d '\r'"+os.linesep+parsingscript+os.linesep+'EOPARSINGSCRIPT')
       return redirect('/admin', code=302)
     else:
-      bash('rm -f /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/access/groups/'+group+'/clouds ; mv -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds')
+      bash('rm -f /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/access/groups/'+group+'/clouds ; mv -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; echo 0 > /var/cld/access/groups/'+group+'/type')
       return redirect('/admin', code=302)
 
 @app.route('/cloudadd')
 def cloudadd():
   if 'username' in session:
     username = session['username']
-    userlist = bash('echo -n $(ls /var/cld/access/users/ | cat)').split(' ')
-    users = list()
-    for user in userlist:
-      userid = bash('grep ^'+user+': /etc/passwd | cut -d : -f 3').replace('\n', '')
-      role = bash('cat /var/cld/access/users/'+user+'/role').replace('\n', '')
-      groups = bash('echo -n $(cat /var/cld/access/users/'+user+'/groups)').replace(' ', ',')
-      status = bash("grep -q '"+user+":!' /etc/shadow && echo -n 0 || echo -n 1")
-      lastlogin = bash('''echo -n $(last '''+user+''' -R | head -1 | awk '{$1=$2=""; print $0}')''')
-      users.append(userid+";"+user+";"+role+";"+groups+";"+status+";"+lastlogin)
-    init_list = ['userid', 'user', 'role', 'groups', 'status', 'lastlogin']
-    for n, i in enumerate(users):
-      users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
-    grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
-    groups = list()
-    for group in grouplist:
-      grouptype = bash('ls -l /var/cld/access/groups/'+group+'/clouds | grep -q "\->" && echo -n "parsing" || echo -n "manual"').replace('\n', '')
-      groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
-      cloudcount = bash('wc -l /var/cld/access/groups/'+group+'/clouds | cut -d \  -f 1').replace('\n', '')
-      groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
-    init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
-    for n, i in enumerate(groups):
-      groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
-    return render_template('html/cloudadd.html', username=username, users=users, groups=groups)
+    groups = bash('''source <(awk '{print "grep -q 1 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
+    # return str(groups)
+    return render_template('html/cloudadd.html', username=username, groups=groups)
 
+@app.route('/addcloud')
+def addcloud():
+  if 'username' in session:
+    username = session['username']
+    groups = bash('''source <(awk '{print "grep -q 1 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
+    # return str(groups)
+    return render_template('html/addcloud.html', username=username, groups=groups)
+  
 @app.route('/settings')
 def settings():
   if 'username' in session:

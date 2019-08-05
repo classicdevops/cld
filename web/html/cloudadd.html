@@ -117,7 +117,7 @@
                     </div>
                     <div id="collapse1" class="panel-collapse collapse in">
                         <div class="panel-body">
-<form>
+<form action="{{ url_for('addcloud') }}" method="POST">
   <div class="form-group row">
     <label class="col-sm-2">Name</label>
     <div class="col-sm-5">
@@ -152,18 +152,15 @@
     <div class="row">
       <legend class="col-form-label col-sm-2 pt-0">Group:</legend>
       <div class="col-sm-5">
+      {% for group in groups %}
+      {% if group == groups[0] %}{% set checked = ' checked' %}{% else %}{% set checked = '' %}{% endif %}
         <div class="form-check">
-          <input type="radio" name="gridRadios" value="option1" checked="">
-          <label class="form-check-label" for="gridRadios1">
-            First group
+          <input type="radio" name="cloudgroup" value="{{ group }}"{{ checked }}>
+          <label class="form-check-label">
+            {{ group }}
           </label>
         </div>
-        <div class="form-check">
-          <input type="radio" name="gridRadios" value="option2">
-          <label class="form-check-label" for="gridRadios2">
-            Second group
-          </label>
-        </div>
+      {% endfor %}
       </div>
     </div>
   </fieldset>
