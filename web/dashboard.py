@@ -337,17 +337,29 @@ def grouptype():
 def cloudadd():
   if 'username' in session:
     username = session['username']
-    groups = bash('''source <(awk '{print "grep -q 1 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
+    groups = bash('''source <(awk '{print "grep -q 0 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
     # return str(groups)
     return render_template('html/cloudadd.html', username=username, groups=groups)
 
-@app.route('/addcloud')
+@app.route('/addcloud', methods=['GET','POST'])
 def addcloud():
   if 'username' in session:
     username = session['username']
-    groups = bash('''source <(awk '{print "grep -q 1 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
+    cloudname = request.form['cloudname']
+    cloudip = request.form['cloudip']
+    cloudport = request.form['cloudport']
+    clouduser = request.form['clouduser']
+    cloudpassword = request.form['cloudpassword']
+    if cloudport == '':
+      cloudport='22'
+    if clouduser == '':
+      clouduser='root'
+    if cloudpassword != '':
+      cloudpassword='_'+cloudpassword
+    cloudgroup = request.form['cloudgroup']
+    bash('echo "'+cloudname+'_'+cloudip+'_'+cloudport+'_'+clouduser+cloudpassword+'" >> /var/cld/access/groups/'+cloudgroup+'/clouds')
     # return str(groups)
-    return render_template('html/addcloud.html', username=username, groups=groups)
+    return redirect('/admin', code=302)
   
 @app.route('/settings')
 def settings():

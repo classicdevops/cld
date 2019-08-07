@@ -119,33 +119,33 @@
                         <div class="panel-body">
 <form action="{{ url_for('addcloud') }}" method="POST">
   <div class="form-group row">
-    <label class="col-sm-2">Name</label>
+    <label class="col-sm-2" style="color: blue;">name</label>
     <div class="col-sm-5">
-      <input type="name" class="form-control" id="cloudname" placeholder="cloud.local">
+      <input type="name" class="form-control" id="cloudname" name="cloudname" placeholder="cloud.local">
     </div>
   </div>
   <div class="form-group row">
-    <label class="col-sm-2">Ip</label>
+    <label class="col-sm-2" style="color: blue;">ip</label>
     <div class="col-sm-5">
-      <input type="text" class="form-control" id="cloudip" placeholder="1.2.3.4">
+      <input type="text" class="form-control" id="cloudip" name="cloudip" placeholder="1.2.3.4">
     </div>
   </div>
   <div class="form-group row">
-    <label class="col-sm-2">Port</label>
+    <label class="col-sm-2">port</label>
     <div class="col-sm-5">
-      <input type="text" class="form-control" id="cloudport" placeholder="22">
+      <input type="text" class="form-control" id="cloudport" name="cloudport" placeholder="22">
     </div>
   </div>
   <div class="form-group row">
-    <label class="col-sm-2">User</label>
+    <label class="col-sm-2">user</label>
     <div class="col-sm-5">
-      <input type="text" class="form-control" id="clouduser" placeholder="root">
+      <input type="text" class="form-control" id="clouduser" name="clouduser" placeholder="root">
     </div>
   </div>
   <div class="form-group row">
-    <label for="inputPassword3" class="col-sm-2">Password</label>
+    <label class="col-sm-2">password</label>
     <div class="col-sm-5">
-      <input type="password" class="form-control" id="cloudpassword" placeholder="PassWord">
+      <input type="password" class="form-control" id="cloudpassword" name="cloudpassword" placeholder="PassWord" autocomplete="new-password">
     </div>
   </div>
   <fieldset class="form-group">
