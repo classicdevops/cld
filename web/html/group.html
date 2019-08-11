@@ -119,13 +119,13 @@
   <br>
 <div class="clearfix"></div><br>
   <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="groupclouds">Apply clouds</button>
-<br><br><br>
-{% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeplaceholder = parsingscript %}{% set typeboxstatus = ' checked' %}{% endif %}
+<br><br>
+{% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
 <form action="{{ url_for('grouptype', name=groups[0].group) }}" id="grouptype" method="POST">
 Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
 Parsing script: <br>
-<textarea{{typestatus}} id="ScriptArea" name="parsingscript" class="form-control" rows="4" style="resize: none">{{typeplaceholder}}</textarea>
-<br><br>
+<textarea{{typestatus}} id="ScriptArea" name="parsingscript" class="form-control" rows="4" style="resize: none">{{parsingscript}}</textarea>
+<br>
 <button type="submit" class="btn btn-light bt mb-2" style="float: right" form="grouptype">Apply type</button>
 
 <script>
@@ -136,6 +136,55 @@ document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function
 </script>
 <script>
     $('#ScriptArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
+});
+</script>
+</form>
+<br><br>
+{% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
+<form action="{{ url_for('groupfuncs', name=groups[0].group) }}" id="groupfuncs" method="POST">
+Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
+Define variables: <br>
+<textarea{{funcstatus}} id="FuncVarsArea" name="groupfuncvars" class="form-control" rows="4" style="resize: none">{{groupfuncvars}}</textarea>
+<br>
+Terminal  function: <br>
+<textarea{{funcstatus}} id="FuncTermArea" name="groupfuncterm" class="form-control" rows="4" style="resize: none">{{groupfuncterm}}</textarea>
+<br>
+Mount  function: <br>
+<textarea{{funcstatus}} id="FuncMountArea" name="groupfuncmount" class="form-control" rows="4" style="resize: none">{{groupfuncmount}}</textarea>
+<br>
+Umount  function: <br>
+<textarea{{funcstatus}} id="FuncUmountArea" name="groupfuncumount" class="form-control" rows="4" style="resize: none">{{groupfuncumount}}</textarea>
+<br>
+<button type="submit" class="btn btn-light bt mb-2" style="float: right" form="groupfuncs">Apply functions</button>
+
+<script>
+document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
+    var FuncVarsArea = document.getElementById('FuncVarsArea')
+    var FuncTermArea = document.getElementById('FuncTermArea')
+    var FuncMountArea = document.getElementById('FuncMountArea')
+    var FuncUmountArea = document.getElementById('FuncUmountArea')
+    FuncVarsArea.disabled = !FuncVarsArea.disabled
+    FuncTermArea.disabled = !FuncTermArea.disabled
+    FuncMountArea.disabled = !FuncMountArea.disabled
+    FuncUmountArea.disabled = !FuncUmountArea.disabled
+});
+</script>
+<script>
+    $('#FuncVarsArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
+});
+    $('#FuncTermArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
+});
+    $('#FuncMountArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
+});
+    $('#FuncUnountArea').keyup(function(){
     $(this).height(100);
     $(this).height(this.scrollHeight);
 });

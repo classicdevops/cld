@@ -9,32 +9,32 @@ source /var/cld/bin/include/cldfuncs
 echo $1
 #mknod -m 666 /dev/fuse c 10 229 2>&1 >/dev/null
 #    echo "Please select VM to enter"
-    for VM in $(CLOUDS_USER_ALLOWED | grep "$(cat /var/cld/creds/id_list | awk '{print $2}')" | grep "$1")
+for VM in $(CLOUDS_USER_ALLOWED | grep "$(cat /var/cld/creds/id_list | awk '{print $2}')" | grep "$1")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
    echo "you choosed incorrect VM, please try again and type numbers only"
-  elif echo $VM | grep --quiet "STOPPED" ; then
-   echo "Sorry, container is not running, probably it's duplicate"
-  elif echo $VM | grep --quiet "OFFLINE" ; then
-   echo "Sorry, container is OFFLINE, check hypervisor or hosting status"
-  elif grep --quiet "$VM" /var/cld/creds/ct_px_hyper_list ; then
-    PROXMOX_VARS
+  else
+    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6)
+    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
+    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
+    then
+    source <(for GROUPFUNC in funcvars functerm 
+        do
+          echo "${GROUP}_${GROUPFUNC}(){"
+          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+          echo '}'
+        done)
+      CLD_VARS=${GROUP}_funcvars
+      CLD_TERMINAL=${GROUP}_functerm
+    else
+      CLD_VARS=EXTERNAL_VARS
+      CLD_TERMINAL=EXTERNAL_TERMINAL
+    fi
+    echo "You had chosen ${GROUP} $VM"
+    $CLD_VARS
     echo
-    PROXMOX_TERMINAL
-  elif grep --quiet "$VM" /var/cld/creds/ext_*_list ; then
-    EXTERNAL_VARS
-    echo
-    EXTERNAL_TERMINAL
-  elif grep --quiet "$VM" /var/cld/creds/ct_virtuozzo_hyper_list ; then
-    VIRTUOZZO_VARS
-    echo
-    VIRTUOZZO_TERMINAL
-  elif grep --quiet "$VM" /var/cld/creds/ct_vz_hyper_list ; then
-    OPENVZ_VARS
-    echo
-    OPENVZ_TERMINAL
+    $CLD_TERMINAL
   fi
   break
 done
-

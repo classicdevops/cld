@@ -151,3 +151,17 @@ sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/${GROUP}/c
 done
 sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
 }
+
+CUSTOM_FUNCS_ACTIVATE(){
+source  <(for GROUPFUNC in funcvars functerm funcmount funcumount 
+    do
+      echo "${GROUP}_${GROUPFUNC}(){"
+      cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+      echo '}'
+    done)
+  alias EXTERNAL_VARS=${GROUP}_funcvars
+  alias EXTERNAL_MOUNT=${GROUP}_funcmount
+  alias EXTERNAL_TERMINAL=${GROUP}_functerm
+  alias EXTERNAL_UMOUNT=${GROUP}_funcumount
+  echo CUSTOM_FUNCS_ACTIVATE
+}

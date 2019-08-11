@@ -42,6 +42,7 @@ echo ${CLOUD} >> /var/log/cld/cmd.log
 screen -dm timeout 30m sudo -u ${CLDUSER} sudo /usr/bin/node /var/cld/wetty/index.js ${CLOUD} --command "/var/cld/bin/cldx" --base "/xterm/${CLOUDID}/" --title "CloudPlatform terminal" --host "172.17.0.1" --port ${XTERMPORT}
 echo "$(date) - /usr/bin/node /var/cld/wetty/index.js ${CLOUD} --command \"/var/cld/bin/cldx\" --base \"/xterm/${CLOUDID}/\" --title \"CloudPlatform terminal\" --host "172.17.0.1" --port ${XTERMPORT}" >> /var/log/cld/cmd.log
 
+ip addr show docker0 | grep -q '172.17.0.250' || ip addr add 172.17.0.250/24 dev docker0
 #(sudo -u ${CLDUSER} sudo /var/cld/bin/cldxmount ${CLOUD} ; screen -s bash -dm sudo timeout 30m python3 /var/cld/flaskfilemanager/cldapp/app.py --targetpath=/home/${CLDUSER}/mnt/${CLOUD} --listenport=${XTERMPORT}) &>/dev/null & disown
 (sudo -u ${CLDUSER} sudo /var/cld/bin/cldxmount ${CLOUD} ; screen -s bash -dm sudo timeout 30m python3 /var/cld/RichFilemanager-Python3Flask/FlaskApp.py --targetpath=/home/${CLDUSER}/mnt/${CLOUD} --listenport=${XTERMPORT}) &>/dev/null & disown
 screen -dm docker exec -it xtermnginx service nginx reload

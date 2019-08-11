@@ -159,7 +159,7 @@ def admin():
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
     groups = list()
     for group in grouplist:
-      grouptype = bash('ls -l /var/cld/access/groups/'+group+'/clouds | grep -q "\->" && echo -n "parsing" || echo -n "manual"').replace('\n', '')
+      grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
       groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
       cloudcount = bash('wc -l /var/cld/access/groups/'+group+'/clouds | cut -d \  -f 1').replace('\n', '')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
@@ -197,19 +197,25 @@ def group():
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
     groups = list()
     for group in name:
-      grouptype = bash('ls -l /var/cld/access/groups/'+group+'/clouds | grep -q "\->" && echo -n "parsing" || echo -n "manual"').replace('\n', '')
+      grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
+      groupfuncs = bash('grep -qs "1" /var/cld/access/groups/'+group+'/funcs && echo -n "custom" || echo -n "default"').replace('\n', '')
       groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
       cloudcount = bash('wc -l /var/cld/access/groups/'+group+'/clouds | cut -d \  -f 1').replace('\n', '')
-      groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
-    init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
+      groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype+";"+groupfuncs)
+    init_group = ['group', 'groupusers', 'cloudcount', 'grouptype', 'groupfuncs']
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
     # allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
-    allowedclouds = bash("sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/"+request.args['name']+"/clouds | tr -d '\001' | grep -vh '^$\|^#'").split('\n')[:-1]
+    allowedclouds = bash("sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/"+request.args['name']+"/clouds | tr -d '\001' | grep -vh '^$\|^#'").split('\n')
+    #[:-1]
     disallowedclouds = bash('/var/cld/bin/cld-disallowed-group '+request.args['name']).split('\n')[:-1]
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
-    return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript)
+    groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/bin/include/defaultvars')
+    groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/bin/include/defaultterm')
+    groupfuncmount = bash('cat /var/cld/access/groups/'+group+'/funcmount || cat /var/cld/bin/include/defaultmount')
+    groupfuncumount = bash('cat /var/cld/access/groups/'+group+'/funcumount || cat /var/cld/bin/include/defaultumount')
+    return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount)
 
 @app.route('/adduser', methods=['POST'])
 def adduser():
@@ -292,7 +298,7 @@ def groupusers():
     denyusers = [os.path.basename(name) for name in os.listdir("/var/cld/access/users/") if os.path.isdir('/var/cld/access/users/'+name) and name not in users]
     for user in users:
       if user != '':
-        bash('grep '+group+' /var/cld/access/users/'+user+'/groups || echo '+group+' >> /var/cld/access/users/'+user+'/groups')
+        bash('grep '+group+' /var/cld/access/users/'+user+'/groups || echo -e "\n'+group+'" >> /var/cld/access/users/'+user+'/groups')
     for denyuser in denyusers:
       if denyuser != '':
         bash("sed -i '/"+group+"/d' /var/cld/access/users/"+denyuser+"/groups")
@@ -327,10 +333,34 @@ def grouptype():
       pass
     if grouptype == 'on':
       bash('rm -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/creds/'+group+'_list ; ln -s /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; echo 1 > /var/cld/access/groups/'+group+'/type')
-      bash("cat > /var/cld/access/groups/"+group+"/parsingscript << 'EOPARSINGSCRIPT' | tr -d '\r'"+os.linesep+parsingscript+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/parsingscript"+os.linesep+parsingscript+os.linesep+'EOPARSINGSCRIPT')
       return redirect('/admin', code=302)
     else:
       bash('rm -f /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/access/groups/'+group+'/clouds ; mv -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; echo 0 > /var/cld/access/groups/'+group+'/type')
+      return redirect('/admin', code=302)
+
+@app.route('/groupfuncs', methods=['GET','POST'])
+def groupfuncs():
+  if 'username' in session:
+    group = request.args['name']
+    groupfuncs = ''
+    try:
+      groupfuncs = request.form['groupfuncs']
+      groupfuncvars = request.form['groupfuncvars']
+      groupfuncterm = request.form['groupfuncterm']
+      groupfuncmount = request.form['groupfuncmount']
+      groupfuncumount = request.form['groupfuncumount']
+    except:
+      pass
+    if groupfuncs == 'on':
+      bash('echo 1 > /var/cld/access/groups/'+group+'/funcs')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcvars"+os.linesep+groupfuncvars+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/functerm"+os.linesep+groupfuncterm+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcmount"+os.linesep+groupfuncmount+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcumount"+os.linesep+groupfuncumount+os.linesep+'EOPARSINGSCRIPT')
+      return redirect('/admin', code=302)
+    else:
+      bash('echo 0 > /var/cld/access/groups/'+group+'/funcs')
       return redirect('/admin', code=302)
 
 @app.route('/cloudadd')
