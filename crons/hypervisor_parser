@@ -3,17 +3,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../config/variables
 source ../creds/creds
 
-### MIKROTIK FORWARDING LIST START
-truncate -s0 /var/cld/creds/mikrotik_ip_list
-for MK in `cat /var/cld/creds/mk_list | cut -d '_' -f 1`
-do
-#ssh newadmin@${MK} "/export"
-timeout 15 sshpass -p "${DEFAULT_MIKROTIK_PASSWORD}" ssh -o "StrictHostKeyChecking no" ${DEFAULT_MIKROTIK_USER}@${MK} "/export" | tr -d '\r' | grep -A1 -B1 "dst\-nat\|netmap" | sed 's#\\#_#g' | tr '\n' '@' | sed 's#_@#___#g' | sed 's#@#\n#g' | egrep ".*=80"\|".*=443" | egrep -v  "80[0-9]+" | sed 's#___    ##g' | grep -Po "dst-address=\d+\.\d+\.\d+\.\d+.*to-addresses=\d+\.\d+\.\d+\.\d+" | sed 's#=# #g' | awk '{print $8"_"$2}' | sort -n | uniq >> /var/cld/creds/mikrotik_ip_list &
-done
-wait
-### MIKROTIK FORWARDING LIST END
-
-
 for GROUP in $(ls /var/cld/access/groups/)
 do grep -qs '1' /var/cld/access/groups/${GROUP}/type && source /var/cld/access/groups/${GROUP}/parsingscript
 done
