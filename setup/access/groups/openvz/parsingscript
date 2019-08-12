@@ -1,0 +1,10 @@
+temp_vz_ct_hyper_list="/var/cld/tmp/temp_vz_ct_hyper_list"
+ct_vz_hyper_list="/var/cld/creds/ct_vz_hyper_list"
+for vz_hyper in $(cat /var/cld/creds/vz_hyper_list)
+do
+timeout 20 ssh -o "StrictHostKeyChecking no" -p 55567 clouds@$vz_hyper "sudo /usr/sbin/vzlist" | grep -v HOSTNAME | tr -d '\r' | awk '{print $5"_HYPER_"$1"_"$4}' | sed "s#HYPER#$vz_hyper#g" >> $temp_vz_ct_hyper_list &
+done
+wait
+rm -f ct_vz_hyper_list ; mv $temp_vz_ct_hyper_list $ct_vz_hyper_list
+
+

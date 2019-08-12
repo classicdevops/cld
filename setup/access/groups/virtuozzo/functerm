@@ -1,0 +1,1 @@
+ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" clouds@$HPR "sudo prlctl enter $CT" | tee -a $CLD_LOG

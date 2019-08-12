@@ -1,0 +1,9 @@
+LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}" >> /dev/null
+if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
+fusermount -uzq $LOCALMOUNTPATH >> /dev/null
+mkdir -p $LOCALMOUNTPATH >> /dev/null
+DEVICE=$(ssh -q -o "RequestTTY force" clouds@$HPR "sudo prlctl exec $CT df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' | tr -d '\r' | tr -d '\n') >> /dev/null
+VZPOINT=$(ssh -q -o "RequestTTY force" root@$HPR "df -P" | tr '\r' '\n' | grep "$DEVICE" | awk '{print $6}' | tr -d '\r' | tr -d '\n') >> /dev/null
+SFTP_PATH=$(ssh -q -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') >> /dev/null
+SUDO_PATH=$(ssh -q -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') >> /dev/null
+sshfs -o sftp_server="$SUDO_PATH S$FTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:$VZPOINT $LOCALMOUNTPATH >> /dev/null

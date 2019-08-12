@@ -1,0 +1,8 @@
+(
+for cycle in $(seq 1 3)
+do
+curl -s -X GET "https://api.digitalocean.com/v2/droplets/$(echo $cycle | grep -q '^1$' || echo \?page=${cycle})" -H "Authorization: Bearer ${DIGITALOCEAN_TOKEN}"
+done
+) | tr ',' '\n' | grep -v "x64" | grep -v GrubLoader | egrep -v "\ [0-9]" | grep -Po "\"name\"\:\".*?\""\|"\"ip_address\":\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\"" | sed -e 's#"name":"##g' -e 's#"ip_address":"##g' -e 's#"##g' | tr '\n' ' ' | grep -Po ".*?\ \d+\.\d+\.\d+\.\d+" | awk '{print "DO-"$1"_"$2"_22_root"}' >> /var/cld/tmp/tmp_do_list
+rm -f /var/cld/creds/do_list ; mv /var/cld/tmp/tmp_do_list /var/cld/access/groups/digitalocean/clouds
+

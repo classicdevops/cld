@@ -1,0 +1,15 @@
+LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}" >> /dev/null
+if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
+fusermount -uzq $LOCALMOUNTPATH &>/dev/null
+mkdir -p $LOCALMOUNTPATH &>/dev/null
+DEVICE=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo pct exec $CT -- df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' |  tr -d '\n') &>/dev/null
+if echo $DEVICE | egrep --quiet "^[/].*" ; then
+ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo mkdir /mnt/$CT" &>/dev/null ; ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "sudo mount $DEVICE /mnt/$CT" &>/dev/null
+SFTP_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') &>/dev/null
+SUDO_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') &>/dev/null
+sshfs -p 55567 -o sftp_server="$SUDO_PATH $SFTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:/mnt/$CT $LOCALMOUNTPATH &>/dev/null
+else
+SFTP_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n') &>/dev/null
+SUDO_PATH=$(ssh -q -p 55567 -o "RequestTTY force" clouds@$HPR "which sudo" | tr -d '\r' | tr -d '\n') &>/dev/null
+sshfs -p 55567 -o sftp_server="$SUDO_PATH $SFTP_PATH" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no clouds@$HPR:/$DEVICE $LOCALMOUNTPATH &>/dev/null
+fi

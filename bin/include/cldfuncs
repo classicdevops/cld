@@ -1,11 +1,11 @@
 VM_LIST() {
 (
-cat /var/cld/creds/ct_px_hyper_list 2>/dev/null
-cat /var/cld/creds/ct_vz_hyper_list 2>/dev/null
-cat /var/cld/creds/ct_virtuozzo_hyper_list 2>/dev/null
-grep -vh "^$\|^#" /var/cld/creds/ext_do_list 2>/dev/null
-sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/creds/ext_srv_list | grep -vh "^$\|^#" 2>/dev/null
-cat /var/cld/creds/ct_px_hyper_list_offline 2>/dev/null
+for GROUP in $(ls /var/cld/access/groups/)
+do
+grep -qs "1" /var/cld/access/groups/${GROUP}/type \
+&& cat /var/cld/access/groups/${GROUP}/clouds \
+|| sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/${GROUP}/clouds
+done
 ) | grep -v "^$"
 }
 
@@ -57,7 +57,7 @@ SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 timeout 1 nc -z ${SRV} 55567 && PRT=55567 && echo port was changed to $PRT
 USR=`echo $VM | cut -d "_" -f 4`
-PWD=`grep $VM /var/cld/creds/ext_srv_list | sed -r 's#.*_.*_[0-9]+_[a-zA-Z0-9]+_(.*)#\1#g'`
+PWD=`grep $VM /var/cld/access/groups/${GROUP}/clouds | sed -r 's#.*_.*_[0-9]+_[a-zA-Z0-9]+_(.*)#\1#g'`
 }
 
 EXTERNAL_MOUNT() {

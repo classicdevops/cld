@@ -1,0 +1,9 @@
+truncate -s 0 /var/cld/tmp/temp_ct_vz_hyper_list
+temp_ct_vz_hyper_list="/var/cld/tmp/temp_ct_vz_hyper_list"
+ct_hyper_list="/var/cld/access/groups/virtuozzo/clouds"
+for hyper in $(cat /var/cld/creds/hyper_list)
+do timeout 5 ssh clouds@$hyper "sudo prlctl list | grep -v 'UUID\|stopped'" | awk '{print $5"_HYPER"}' | sed "s#HYPER#$hyper#g" >> $temp_ct_vz_hyper_list
+done
+rm -f $ct_hyper_list ; mv $temp_ct_vz_hyper_list $ct_hyper_list
+
+
