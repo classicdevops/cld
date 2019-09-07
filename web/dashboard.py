@@ -131,6 +131,12 @@ def factivate():
 def dashboard():
   if 'username' in session:
     username = session['username']
+    return render_template('html/index.html', username=username)
+
+@app.route('/terminal')
+def terminal():
+  if 'username' in session:
+    username = session['username']
     # ext_do_list_file = open("../creds/ext_do_list", "r")
     # ext_do_list = ext_do_list_file.readlines()
     # ext_do_list_file.close()
@@ -138,7 +144,7 @@ def dashboard():
     srv_list = bash('''/var/cld/bin/cld-allowed '''+username+''' | xargs -I {} awk "/{}/" /var/cld/creds/id_list''').split('\n')
     for n, i in enumerate(srv_list):
       srv_list[n] = {k:v for k,v in zip(init_list,srv_list[n].split(' '))}
-    return render_template('html/index.html', username=username, srv_list=srv_list)
+    return render_template('html/terminal.html', username=username, srv_list=srv_list)
 
 @app.route('/admin')
 def admin():
@@ -393,6 +399,71 @@ def addcloud():
   
 @app.route('/settings')
 def settings():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/settings.html', username=username)
+
+@app.route('/devops')
+def devops():
+  if 'username' in session:
+    username = session['username']
+    templatelist = bash('ls /var/cld/devops/templates/ | cat').split('\n')[:-1]
+    templates = list()
+    for template in templatelist:
+      templatedesc = bash('cat /var/cld/devops/templates/'+template+'/description').replace('\n', ' ')
+      templatesync = bash('cat /var/cld/devops/templates/'+template+'/sync').replace('\n', '')
+      templatedebug = bash('cat /var/cld/devops/templates/'+template+'/debug').replace('\n', '')
+      templatebackup = bash('cat /var/cld/devops/templates/'+template+'/backup').replace('\n', '')
+      templates.append(template+";"+templatedesc+";"+templatesync+";"+templatebackup+";"+templatedebug)
+    init_template = ['name', 'description', 'sync', 'backup', 'debug']
+    for n, i in enumerate(templates):
+      templates[n] = {k:v for k,v in zip(init_template,templates[n].split(';'))}
+    deploylist = bash('ls -t /var/cld/devops/deploys/ | cat').split('\n')[:-1]
+    deploys = list()
+    for deploy in deploylist:
+      deploytemplate = bash('cat /var/cld/devops/deploys/'+deploy+'/template').replace('\n', '')
+      deploycloudcount = bash('wc -l /var/cld/devops/deploys/'+deploy+'/clouds | cut -d \  -f 1').replace('\n', '')
+      deploygroupcount = bash('wc -l /var/cld/devops/deploys/'+deploy+'/groups | cut -d \  -f 1').replace('\n', '')
+      deploysync = bash('cat /var/cld/devops/deploys/'+deploy+'/sync').replace('\n', ' ')
+      deploycron = bash('cat /var/cld/devops/deploys/'+deploy+'/cron').replace('\n', ' ')
+      deploydebug = bash('cat /var/cld/devops/deploys/'+deploy+'/debug').replace('\n', ' ')
+      deploybackup = bash('cat /var/cld/devops/deploys/'+deploy+'/backup').replace('\n', ' ')
+      deploycreated = bash('''stat /var/cld/devops/deploys/'''+deploy+''' | tr . ' ' | awk '/Modify/ {print $2" "$3}' ''').replace('\n', ' ')
+      deploys.append(deploy+";"+deploytemplate+";"+deploycloudcount+";"+deploygroupcount+";"+deploysync+";"+deploycron+";"+deploydebug+";"+deploybackup+";"+deploycreated)
+    init_deploy = ['name', 'template', 'cloudcount', 'groupcount', 'sync', 'cron', 'debug', 'backup', 'created']
+    for n, i in enumerate(deploys):
+      deploys[n] = {k:v for k,v in zip(init_deploy,deploys[n].split(';'))}
+    actionlist = bash('ls -t /var/cld/devops/actions/ | cat').split('\n')[:-1]
+    actions = list()
+    for action in actionlist:
+      actiondeploy = bash('''echo '''+action+''' | awk -F _ '{print $1"_"$2}' ''').replace('\n', '')
+      actioncloudcount = bash('wc -l /var/cld/devops/actions/'+action+'/clouds | cut -d \  -f 1').replace('\n', '')
+      actiongroupcount = bash('wc -l /var/cld/devops/actions/'+action+'/groups | cut -d \  -f 1').replace('\n', '')
+      actionsync = bash('cat /var/cld/devops/actions/'+action+'/sync').replace('\n', ' ')
+      actiondebug = bash('cat /var/cld/devops/actions/'+action+'/debug').replace('\n', ' ')
+      actionbackup = bash('cat /var/cld/devops/actions/'+action+'/backup').replace('\n', ' ')
+      actioncreated = bash('''stat /var/cld/devops/actions/'''+action+''' | tr . ' ' | awk '/Modify/ {print $2" "$3}' ''').replace('\n', ' ')
+      actiondone = bash('cat /var/cld/devops/actions/'+action+'/done').replace('\n', ' ')
+      actions.append(action+";"+actiondeploy+";"+actioncloudcount+";"+actiongroupcount+";"+actionsync+";"+actiondebug+";"+actionbackup+";"+actioncreated+";"+actiondone)
+    init_action = ['name', 'deploy', 'cloudcount', 'groupcount', 'sync', 'debug', 'backup', 'created', 'done']
+    for n, i in enumerate(actions):
+      actions[n] = {k:v for k,v in zip(init_action,actions[n].split(';'))}
+    return render_template('html/deploy.html', username=username, templates=templates, deploys=deploys, actions=actions)
+
+@app.route('/devops/template')
+def devopstemplate():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/settings.html', username=username)
+
+@app.route('/devops/deploy')
+def devopsdeploy():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/settings.html', username=username)
+
+@app.route('/devops/action')
+def devopsaction():
   if 'username' in session:
     username = session['username']
     return render_template('html/settings.html', username=username)

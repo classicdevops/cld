@@ -21,6 +21,64 @@ label {
     font-weight: 500;
 }
 
+.paymentWrap {
+	#padding: 50px;
+	margin-left: 10px;
+}
+label {
+
+    font-weight: 100;
+}
+.paymentWrap .paymentBtnGroup {
+	max-width: 100%;
+	margin: auto;
+	color: #e6e6e6;
+	
+}
+
+.paymentWrap .paymentBtnGroup .paymentMethod {
+	padding: 112px;
+	box-shadow: none;
+	position: relative;
+	margin-right: 20px;
+	
+}
+
+.paymentWrap .paymentBtnGroup .paymentMethod.active {
+	outline: none !important;
+	
+}
+
+.paymentWrap .paymentBtnGroup .paymentMethod.active .method {
+	border-color: #0275d8;
+	color: #0275d8;
+	outline: none !important;
+
+}
+
+.paymentWrap .paymentBtnGroup .paymentMethod .method {
+	position: absolute;
+	right: 3px;
+	top: 3px;
+	bottom: 3px;
+	left: 3px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	border: 1px solid #e6e6e6;
+	border-radius: 5px;
+	color: #0275d8;
+	transition: all 0.1s;
+}
+
+
+
+
+.paymentWrap .paymentBtnGroup .paymentMethod .method:hover {
+	border-color: #0275d8;
+	outline: none !important;
+}
+
 .subject-info-box-1,
 .subject-info-box-2 {
     float: left;

@@ -7,7 +7,7 @@ source /var/cld/bin/include/cldfuncs
 #done
 #echo ${VMID}
 echo $1
-#mknod -m 666 /dev/fuse c 10 229 2>&1 >/dev/null
+#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 #    echo "Please select VM to enter"
 for VM in $(cat /var/cld/creds/id_list | awk '{print $2}' | grep "$1")
 #    for VM in $(cat /var/cld/creds/id_list | awk '{print $2}' | grep "$1" | grep "$(CLOUDS_USER_ALLOWED)")

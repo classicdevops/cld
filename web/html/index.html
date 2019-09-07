@@ -14,139 +14,11 @@
     <style type="text/css">
     /* This is not a zero-length file! */
     </style>
-    <style>
-* {
-  box-sizing: border-box;
-}
-
-#searchInput {
-    background-position: 10px 12px;
-    background-repeat: no-repeat;
-    width: 95%;
-    font-size: 14px;
-    padding: 5px 10px 5px 10px;
-    border: 1px solid #1e88e5;
-    margin-bottom: 12px;
-}
-
-#ServerListUl {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#ServerListUl li a {
-    border: 1px solid #1e88e5;
-    margin-top: -1px; /* Prevent double borders */
-    background-color: white;
-    padding: 4px;
-    text-decoration: none;
-    color: black;
-    display: block;
-    font-size: 10;
-    color: lightslategray;
-    border-right-width: 0;
-    border-left-width: 0;
-    border-bottom-width: 0;
-}
-
-#ServerListUl li a:hover:not(.header) {
-  background-color: #eee;
-}
-
-</style>
-    <script>
-    function newtab(id, hostname) {
-        $('#hostTab').append('<li class="nav-item"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-tab\').outerHTML = \'\';document.getElementById(\'' + id + '\').outerHTML = \'\';">×</button><button class="refreshtab" type="button" onclick="document.getElementById(\'frame-' + id + '\').src += \'\';document.getElementById(\'fframe-' + id + '\').src += \'\';">⟳</button>' + hostname + '</a></li>');
-        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"><iframe id="frame-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/xactivate?cloudid=' + id + '"></iframe><br><iframe id="fframe-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/factivate?cloudid=' + id + '"></div>');
-    };
-    </script>
-    <script>
-    function search() {
-        var input, filter, ul, li, a, i, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        ul = document.getElementById("ServerListUl");
-        li = ul.getElementsByTagName("li");
-        for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("a")[0];
-            txtValue = a.textContent || a.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                li[i].style.display = "";
-            } else {
-                li[i].style.display = "none";
-            }
-        }
-    }
-    </script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $('[data-toggle=offcanvas]').click(function() {
-            $('.row-offcanvas').toggleClass('active');
-        });
-    });
-    </script>
-</head>
-
-<body>
-    <div class="page-container">
-        <!-- top navbar -->
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header" style="width: 100%;">
-                    <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".sidebar-nav">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <img src="../img/cld-logo.svg" style="filter: invert(55%) sepia(85%) saturate(4180%) hue-rotate(188deg) brightness(93%) contrast(92%);width: 40;float: left;margin: 5;">
-                    <a class="navbar-brand" href="/panel/">Cloud dashboard</a>
-                    <div class="dropdown" style="float: right;">
-                        <a class="navbar-brand" href="{{ url_for('cloudadd') }}" style="cursor: pointer;">add cloud</a>
-                        <a class="navbar-brand dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">{{ username }}
-                            <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            {% if username == 'admin' %}<li><a href="/admin">Administration</a></li>{% endif %}
-                            <li><a href="/settings">Settings</a></li>
-                            <li><a href="/logout">Logout</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row row-offcanvas row-offcanvas-left">
-                <!-- sidebar -->
-                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-                    <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
-                    <ul class="nav" id="ServerListUl">
-                        {% for srv in srv_list %}
-                        <li><a onclick='newtab("{{ srv.id }}", "{{ srv.fullname.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv.id }}-link" data-toggle="tab" href="#{{ srv.id }}">{{ srv.fullname }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <!-- main area -->
-                <div class="col-xs-12 col-sm-9">
-                    <ul class="nav nav-tabs" id="hostTab" role="tablist">
-                        <li class="nav-item active">
-                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" aria-expanded="true">Home</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="hostTabContent">
-                        <div class="tab-pane fade show active in" id="home" role="tabpanel" aria-labelledby="home-tab"><br>Welcome to Cloud Control Dashboard</div>
-                    </div>
-                </div><!-- /.col-xs-12 main -->
-            </div>
-            <!--/.row-->
-        </div>
-        <!--/.container-->
-    </div>
-    <!--/.page-container-->
     <style>
-    .ad {
+        .ad {
         position: absolute;
         bottom: 70px;
         right: 48px;
@@ -206,6 +78,106 @@
         text-align: center;
     }
     </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <!-- top navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header" style="width: 100%;">
+                    <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".sidebar-nav">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <img src="../img/cld-logo.svg" style="filter: invert(55%) sepia(85%) saturate(4180%) hue-rotate(188deg) brightness(93%) contrast(92%);width: 40;float: left;margin: 5;">
+                    <a class="navbar-brand" href="/panel/">Cloud dashboard</a>
+                    <div class="dropdown" style="float: right;">
+                        <a class="navbar-brand dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">{{ username }}
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% if username == 'admin' %}<li><a href="/admin">Administration</a></li>{% endif %}
+                            <li><a href="/settings">Settings</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <!-- sidebar -->
+<br>
+<div class="panel-group" id="accordion" style="padding-top: 25;">
+<div class="paymentWrap">
+    
+<div class="btn-group paymentBtnGroup btn-group-justified" data-toggle="buttons">
+
+<label class="btn paymentMethod">
+<a href="{{ url_for('terminal') }}" onclick="window.location.href = '{{ url_for('terminal') }}';">
+<div class="method visa" style="border-radius: 3px;text-align: center;">
+<br>
+<img src="../img/shell.svg" style="height: 80;">
+<br>
+<span style="color:#177ddb;font-size:1.4rem;font-weight: 300;">Terminal</span>
+<hr class="pricer" style="margin-top:10px;margin-bottom:6px;">
+<span style="color:#b5b5b5;font-size:1.4rem;font-weight: 100;"><br>Web terminal and file manager</span>
+</div>
+</a>
+</label>
+
+<label class="btn paymentMethod">
+<a href="{{ url_for('devops') }}" onclick="window.location.href = '{{ url_for('devops') }}';">
+<div class="method visa" style="border-radius: 3px;text-align: center;">
+<br>
+<img src="../img/devops.svg" style="height: 80;">
+<br>
+<span style="color:#177ddb;font-size:1.4rem;font-weight: 300;">Deploy</span>
+<hr class="pricer" style="margin-top:10px;margin-bottom:6px;">
+<span style="color:#b5b5b5;font-size:1.4rem;font-weight: 100;"><br>DevOps tools</span>
+</div>
+</a>
+</label>
+
+<label class="btn paymentMethod">
+<a href="{{ url_for('settings') }}"  onclick="window.location.href = '{{ url_for('settings') }}';">
+<div class="method visa" style="border-radius: 3px;text-align: center;">
+<br>
+<img src="../img/profile.svg" style="height: 80;">
+<br>
+<span style="color:#177ddb;font-size:1.4rem;font-weight: 300;">Profile</span>
+<hr class="pricer" style="margin-top:10px;margin-bottom:6px;">
+<span style="color:#b5b5b5;font-size:1.4rem;font-weight: 100;"><br>Profile settings</span>
+</div>
+</a>
+</label>
+
+{% if username == 'admin' %}
+<label class="btn paymentMethod">
+<a href="{{ url_for('admin') }}" onclick="window.location.href = '{{ url_for('admin') }}';">
+<div class="method visa" style="border-radius: 3px;text-align: center;">
+<br>
+<img src="../img/administration.svg" style="height: 80;">
+<br>
+<span style="color:#177ddb;font-size:1.4rem;font-weight: 300;">Administration</span>
+<hr class="pricer" style="margin-top:10px;margin-bottom:6px;">
+<span style="color:#b5b5b5;font-size:1.4rem;font-weight: 100;"><br>User and groups managing</span>
+</div>
+</a>
+</label>
+{% endif %}
+
+                             
+                            </div>      
+                        
+                        </div>
+            </div>
+            </div>
+            <!--/.row-->
+        </div>
+        <!--/.container-->
+    </div>
+    <!--/.page-container-->
 </body>
 
 </html>

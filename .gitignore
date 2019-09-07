@@ -28,3 +28,8 @@
 /access/users/
 /access/groups/
 /access/users/admin/*
+
+#deploy
+/devops/templates/
+/devops/deploys/
+/devops/actions/

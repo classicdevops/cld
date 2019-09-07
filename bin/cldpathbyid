@@ -5,7 +5,7 @@
 #echo $OPTS | grep -q '\-\-id=' && VMID=$(echo $OPTS | cut -d '=' -f 2)
 #done
 #echo ${VMID}
-#mknod -m 666 /dev/fuse c 10 229 2>&1 >/dev/null
+#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 #    echo "Please select VM to enter"
     VMPX=`cat /var/cld/creds/ct_px_hyper_list 2>/dev/null`
     VMVZ=`cat /var/cld/creds/ct_vz_hyper_list 2>/dev/null`
