@@ -421,7 +421,7 @@ def devops():
     deploylist = bash('ls -t /var/cld/devops/deploys/ | cat').split('\n')[:-1]
     deploys = list()
     for deploy in deploylist:
-      deploytemplate = bash('cat /var/cld/devops/deploys/'+deploy+'/template').replace('\n', '')
+      deploytemplate = bash('''echo '''+deploy+''' | awk -F _ '{print $1}' ''').replace('\n', '')
       deploycloudcount = bash('wc -l /var/cld/devops/deploys/'+deploy+'/clouds | cut -d \  -f 1').replace('\n', '')
       deploygroupcount = bash('wc -l /var/cld/devops/deploys/'+deploy+'/groups | cut -d \  -f 1').replace('\n', '')
       deploysync = bash('cat /var/cld/devops/deploys/'+deploy+'/sync').replace('\n', ' ')
@@ -448,25 +448,43 @@ def devops():
     init_action = ['name', 'deploy', 'cloudcount', 'groupcount', 'sync', 'debug', 'backup', 'created', 'done']
     for n, i in enumerate(actions):
       actions[n] = {k:v for k,v in zip(init_action,actions[n].split(';'))}
-    return render_template('html/deploy.html', username=username, templates=templates, deploys=deploys, actions=actions)
+    return render_template('html/devops.html', username=username, templates=templates, deploys=deploys, actions=actions)
 
 @app.route('/devops/template')
 def devopstemplate():
   if 'username' in session:
     username = session['username']
-    return render_template('html/settings.html', username=username)
+    return render_template('html/devops/template.html', username=username)
 
 @app.route('/devops/deploy')
 def devopsdeploy():
   if 'username' in session:
     username = session['username']
-    return render_template('html/settings.html', username=username)
+    return render_template('html/devops/deploy.html', username=username)
 
 @app.route('/devops/action')
 def devopsaction():
   if 'username' in session:
     username = session['username']
-    return render_template('html/settings.html', username=username)
+    return render_template('html/devops/action.html', username=username)
+
+@app.route('/devops/templateadd')
+def devopstemplateadd():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/devops/templateadd.html', username=username)
+
+@app.route('/devops/deployadd')
+def devopsdeployadd():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/devops/deployadd.html', username=username)
+
+@app.route('/devops/actionadd')
+def devopsactionadd():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/devops/actionadd.html', username=username)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=80)

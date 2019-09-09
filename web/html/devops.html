@@ -111,8 +111,8 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-                                Templates</a>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Templates</a>
+                            <a href="{{ url_for('devopstemplateadd') }}" style="cursor: pointer;float: right;">add template</a>
                         </h4>
                     </div>
                     <div id="collapse3" class="panel-collapse collapse">
@@ -197,7 +197,7 @@
                               <thead>
                               <tr style="cursor: pointer;">
                               <td>Name</td>
-                              <td>Template</td>
+                              <td>Deploy</td>
                               <td>Clouds</td>
                               <td>Groups</td>
                               <td>Sync</td>
@@ -211,7 +211,7 @@
                               {% for action in actions %}
                               <tr>
                               <td><a href="{{ url_for('devopsaction', name=action.name) }}">{{ action.name }}</a></td>
-                              <td><a href="{{ url_for('devopstemplate', name=action.template) }}">{{ action.deploy }}</a></td>
+                              <td><a href="{{ url_for('devopstemplate', name=action.deploy) }}">{{ action.deploy }}</a></td>
                               <td>{{ action.cloudcount }}</td>
                               <td>{{ action.groupcount }}</td>
                               <td>{{ action.sync }}</td>
