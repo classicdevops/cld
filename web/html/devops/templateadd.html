@@ -108,18 +108,18 @@
             <!-- sidebar -->
             
 <div class="panel-body">
-<form class="form-horizontal" action="/sp/ticketcreate" method="POST" enctype="multipart/form-data">
+<form class="form-horizontal" action="{{ url_for('adddevopstemplate') }}" method="POST" enctype="multipart/form-data">
   <legend style="text-align: center;">Create template</legend><br>
   <div class="form-group">
       <div class="col-md-3" style="
     width: 100%;
 ">
-          <input id="cloudid" name="cloudid" type="text" placeholder="Template name" class="form-control input-md">
+          <input id="tempatename" name="tempatename" type="text" placeholder="Template name" class="form-control input-md">
       </div>
   </div>
   <div class="form-group">
       <div class="col-md-12" style="width: 100%;">
-          <input placeholder="Description" class="form-control" id="nameticket" name="nameticket">
+          <input placeholder="Description" class="form-control" id="description" name="description">
       </div>
   </div>
   <div class="form-group">
@@ -162,9 +162,9 @@ document.getElementById('BackupStateCheckbox').addEventListener( 'click', functi
 Custom backup script <input type="checkbox" id="CustomBackupStateCheckbox" name="custombackupstate">
 <br>
 Backup script:<br>
-<textarea id="CustomBackupScriptArea" name="custombackupscript" class="form-control" rows="4" style="resize: none" disabled></textarea>
+<textarea id="CustomBackupScriptArea" name="custombackupscript" class="form-control" rows="1" style="resize: none" disabled></textarea>
 Restore script:<br>
-<textarea id="CustomRestoreScriptArea" name="customrestorescript" class="form-control" rows="4" style="resize: none" disabled></textarea>
+<textarea id="CustomRestoreScriptArea" name="customrestorescript" class="form-control" rows="1" style="resize: none" disabled></textarea>
 <br>
 <script>
 document.getElementById('CustomBackupStateCheckbox').addEventListener( 'click', function(){
@@ -207,6 +207,7 @@ document.getElementById('CronState').addEventListener( 'click', function(){
 </script>
 </div></div>
 </div>
+<button type="submit" class="btn btn-success bt mb-2" style="float: right">Create template</button>
 </form>
 <br>
 

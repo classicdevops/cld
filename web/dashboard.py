@@ -456,29 +456,59 @@ def devopstemplate():
     username = session['username']
     return render_template('html/devops/template.html', username=username)
 
-@app.route('/devops/deploy')
-def devopsdeploy():
-  if 'username' in session:
-    username = session['username']
-    return render_template('html/devops/deploy.html', username=username)
-
-@app.route('/devops/action')
-def devopsaction():
-  if 'username' in session:
-    username = session['username']
-    return render_template('html/devops/action.html', username=username)
-
 @app.route('/devops/templateadd')
 def devopstemplateadd():
   if 'username' in session:
     username = session['username']
     return render_template('html/devops/templateadd.html', username=username)
 
+@app.route('/devops/addtemplate', methods=['GET','POST'])
+def adddevopstemplate():
+  if 'username' in session:
+    username = session['username']
+    tempatename = request.form['tempatename']
+    description = request.form['description']
+    cloudscript = request.form['cloudscript']
+    try:
+      backupstate = request.form['backupstate']
+      backupfilelist = request.form['backupfilelist']
+      custombackupstate = request.form['custombackupstate']
+      custombackupscript = request.form['custombackupscript']
+      sync = request.form['sync']
+      debug = request.form['debug']
+      cron = request.form['cron']
+      crontime = request.form['crontime']
+    except:
+      pass
+    # if cloudport == '':
+      # cloudport='22'
+    # if clouduser == '':
+      # clouduser='root'
+    # if cloudpassword != '':
+      # cloudpassword='_'+cloudpassword
+    # cloudgroup = request.form['cloudgroup']
+    # bash('echo "'+cloudname+'_'+cloudip+'_'+cloudport+'_'+clouduser+cloudpassword+'" >> /var/cld/access/groups/'+cloudgroup+'/clouds')
+    # return str(groups)
+    # return redirect('/admin', code=302)
+    return str(request.form)
+
+@app.route('/devops/deploy')
+def devopsdeploy():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/devops/deploy.html', username=username)
+
 @app.route('/devops/deployadd')
 def devopsdeployadd():
   if 'username' in session:
     username = session['username']
     return render_template('html/devops/deployadd.html', username=username)
+
+@app.route('/devops/action')
+def devopsaction():
+  if 'username' in session:
+    username = session['username']
+    return render_template('html/devops/action.html', username=username)
 
 @app.route('/devops/actionadd')
 def devopsactionadd():
