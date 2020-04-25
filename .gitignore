@@ -35,4 +35,4 @@
 /devops/actions/
 
 #certs
-/docker/xtermnginx/etc/nginx/ssl
+#/docker/xtermnginx/etc/nginx/ssl
