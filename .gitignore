@@ -17,7 +17,7 @@
 #temp folder
 /tmp/
 
-#Файл phpsessid с правилами в контейнерах докер
+#sessid file with validating rules
 /docker/*/etc/nginx/conf.d/sessid
 
 #logs
@@ -33,3 +33,6 @@
 /devops/templates/
 /devops/deploys/
 /devops/actions/
+
+#certs
+/docker/xtermnginx/etc/nginx/ssl
