@@ -1,36 +1,4 @@
 PROXMOX_HYPER_LIST=$(cat << 'EOPXLIST'
-ovh-1-ns3021676.ip-149-202-70.eu
-ovh-2-ns3023968.ip-149-202-81.eu
-ovh-3-ns3031283.ip-149-202-94.eu
-ovh-4-ns3032085.ip-149-202-94.eu
-ovh-5-ns3032398.ip-149-202-94.eu
-ovh-6-ns3032403.ip-149-202-94.eu
-ovh-7-ns3032404.ip-149-202-94.eu
-ovh-8-ns3032408.ip-149-202-94.eu
-ovh-9-ns3035733.ip-51-255-81.eu
-ovh-10-ns3035737.ip-51-255-81.eu
-ovh-11-ns3037982.ip-51-255-81.eu
-ovh-12-ns3038010.ip-51-255-81.eu
-ovh-13-ns3040776.ip-51-255-87.eu
-ovh-14-ns3040777.ip-51-255-87.eu
-ovh-15-ns3040782.ip-51-255-87.eu
-ovh-16-ns3041106.ip-51-255-87.eu
-ovh-17-ns3041108.ip-51-255-87.eu
-ovh-18-ns3042113.ip-149-202-93.eu
-ovh-19-ns3042115.ip-149-202-93.eu
-ovh-20-ns3042117.ip-149-202-93.eu
-ovh-21-ns3042704.ip-149-202-93.eu
-ovh-22-ns3043386.ip-149-202-93.eu
-ovh-23-ns3043387.ip-149-202-93.eu
-ovh-24-ns33672723.ip-51-255-94.eu
-ovh-25-ns33672724.ip-51-255-94.eu
-ovh-26-ns3057922.ip-213-32-27.eu
-ovh-27-ns3624517.ip-149-202-85.eu
-ovh-29-ns340301.ip-5-196-79.eu
-ovh-30-ns3018760.ip-149-202-82.eu
-ovh-31-ns3608657.ip-149-202-78.eu
-ovh-32-ns3082016.ip-145-239-66.eu
-ovh-33-ns3019693.ip-149-202-79.eu
 ovh-34-ns3067596.ip-79-137-64.eu
 EOPXLIST
 )
@@ -101,4 +69,4 @@ grep -vf /var/cld/access/groups/proxmox/clouds /var/cld/access/groups/proxmox/cl
 grep -vf /var/cld/access/groups/proxmox/clouds /var/cld/access/groups/proxmox/clouds_offline > /var/cld/access/groups/proxmox/clouds_offline_temp
 mv /var/cld/access/groups/proxmox/clouds_offline_temp /var/cld/access/groups/proxmox/clouds_offline
 
-
+touch /var/cld/access/groups/proxmox/clouds

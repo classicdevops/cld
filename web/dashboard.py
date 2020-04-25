@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 #import json
 import re
 import os
@@ -108,6 +108,7 @@ def xactivate():
     username = session['username']
     sessid = str(request.cookies.get('session'))
     cloudid = str(request.args['cloudid'])
+    bash('echo /var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username+' >> /var/log/cld/cmd.log')
     test1 = subprocess.Popen('/var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username, shell=True, stdout=subprocess.PIPE).communicate()
     print('/var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username)
     return redirect('http://'+DOCKERHOST+'/xterm/'+cloudid, code=302)
@@ -517,4 +518,5 @@ def devopsactionadd():
     return render_template('html/devops/actionadd.html', username=username)
 
 if __name__ == '__main__':
+#    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
     app.run(debug=True, host='0.0.0.0', port=80)

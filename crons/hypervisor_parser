@@ -8,12 +8,12 @@ do grep -qs '1' /var/cld/access/groups/${GROUP}/type && source /var/cld/access/g
 done
 
 ### ID GENERATOR
-cat << EOL | grep -v '^$' | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash > /var/cld/creds/id_list
-`cat /var/cld/creds/ct_px_hyper_list 2>/dev/null`
-`cat /var/cld/creds/ct_vz_hyper_list 2>/dev/null`
-`cat /var/cld/creds/ct_hyper_list 2>/dev/null`
-`grep -vh "^$\|^#" /var/cld/creds/ext_do_list 2>/dev/null`
-`sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/creds/ext_srv_list | grep -vh "^$\|^#" 2>/dev/null`
-`cat /var/cld/creds/ct_px_hyper_list_offline 2>/dev/null`
-EOL
+#cat << EOL | grep -v '^$' | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash > /var/cld/creds/id_list
+#`cat /var/cld/creds/ct_px_hyper_list 2>/dev/null`
+#`cat /var/cld/creds/ct_vz_hyper_list 2>/dev/null`
+#`cat /var/cld/creds/ct_hyper_list 2>/dev/null`
+#`grep -vh "^$\|^#" /var/cld/creds/ext_do_list 2>/dev/null`
+#`sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/creds/ext_srv_list | grep -vh "^$\|^#" 2>/dev/null`
+#`cat /var/cld/creds/ct_px_hyper_list_offline 2>/dev/null`
+#EOL
 ###
