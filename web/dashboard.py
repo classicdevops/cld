@@ -350,9 +350,21 @@ def groupfuncs():
     groupfuncs = ''
     try:
       groupfuncs = request.form['groupfuncs']
+    except:
+      pass
+    try:
       groupfuncvars = request.form['groupfuncvars']
+    except:
+      pass
+    try:  
       groupfuncterm = request.form['groupfuncterm']
+    except:
+      pass
+    try:  
       groupfuncmount = request.form['groupfuncmount']
+    except:
+      pass
+    try:  
       groupfuncumount = request.form['groupfuncumount']
     except:
       pass
@@ -469,16 +481,24 @@ def adddevopstemplate():
     cloudscript = request.form['cloudscript']
     bash('mkdir /var/cld/deploy/templates/'+templatename+' &>/dev/null')
     bash('echo "'+description+'" > /var/cld/deploy/templates/'+templatename+'/description')
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/cloudscript"+os.linesep+groupfuncvars+os.linesep+'EOPARSINGSCRIPT')
+    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/script"+os.linesep+cloudscript+os.linesep+'EOPARSINGSCRIPT')
+    backupstate=''
     try:
       backupstate = request.form['backupstate']
     except:
       pass
+    if backupstate == 'on':
+      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/backup')
+    else:
+      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/backup')
+    backupfilelist=''
     try:
       backupfilelist = request.form['backupfilelist']
     except:
       pass
-    try:  
+    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/backup_files"+os.linesep+backupfilelist+os.linesep+'EOPARSINGSCRIPT')
+    custombackupstate=''
+    try:
       custombackupstate = request.form['custombackupstate']
     except:
       pass
@@ -486,14 +506,35 @@ def adddevopstemplate():
       custombackupscript = request.form['custombackupscript']
     except:
       pass
-    try:  
+    try: 
+      customrestorescript = request.form['customrestorescript']
+    except:
+      pass
+    if custombackupstate == 'on':
+      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/custombackup')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/custom_backup_script"+os.linesep+custombackupscript+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/custom_restore_script"+os.linesep+customrestorescript+os.linesep+'EOPARSINGSCRIPT')
+    else:
+      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/custombackup')
+    sync=''
+    try:
       sync = request.form['sync']
     except:
       pass
-    try:  
+    if sync == 'on':
+      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/sync')
+    else:
+      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/sync')
+    debug=''
+    try:
       debug = request.form['debug']
     except:
       pass
+    if debug == 'on':
+      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/debug')
+    else:
+      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/debug')
+    cron=''
     try: 
       cron = request.form['cron']
     except:
@@ -502,16 +543,12 @@ def adddevopstemplate():
       crontime = request.form['crontime']
     except:
       pass
-    # if cloudport == '':
-      # cloudport='22'
-    # if clouduser == '':
-      # clouduser='root'
-    # if cloudpassword != '':
-      # cloudpassword='_'+cloudpassword
-    # cloudgroup = request.form['cloudgroup']
-    # bash('echo "'+cloudname+'_'+cloudip+'_'+cloudport+'_'+clouduser+cloudpassword+'" >> /var/cld/access/groups/'+cloudgroup+'/clouds')
-    # return str(groups)
-    # return redirect('/admin', code=302)
+    if cron == 'on':
+      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/cron')
+      bash("echo '"+crontime+"' > /var/cld/deploy/templates/"+templatename+"/cron_time")
+    else:
+      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/cron')
+    # return redirect('/devops', code=302)
     return str(request.form)
 
 @app.route('/devops/deploy')
