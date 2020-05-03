@@ -14,8 +14,8 @@ import time
 import logging
 import sys
 
-# def bash(cmd):
-#   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf8')
+def bash(cmd):
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
@@ -38,9 +38,6 @@ def remoteaddr():
   else:
     remote_addr = request.remote_addr
   return remote_addr
-
-def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
 
 # def sessionparse(value):
@@ -470,14 +467,38 @@ def adddevopstemplate():
     templatename = request.form['templatename']
     description = request.form['description']
     cloudscript = request.form['cloudscript']
+    bash('mkdir /var/cld/deploy/templates/'+templatename+' &>/dev/null')
+    bash('echo "'+description+'" > /var/cld/deploy/templates/'+templatename+'/description')
+    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/cloudscript"+os.linesep+groupfuncvars+os.linesep+'EOPARSINGSCRIPT')
     try:
       backupstate = request.form['backupstate']
+    except:
+      pass
+    try:
       backupfilelist = request.form['backupfilelist']
+    except:
+      pass
+    try:  
       custombackupstate = request.form['custombackupstate']
+    except:
+      pass
+    try: 
       custombackupscript = request.form['custombackupscript']
+    except:
+      pass
+    try:  
       sync = request.form['sync']
+    except:
+      pass
+    try:  
       debug = request.form['debug']
+    except:
+      pass
+    try: 
       cron = request.form['cron']
+    except:
+      pass
+    try:  
       crontime = request.form['crontime']
     except:
       pass
