@@ -548,8 +548,8 @@ def adddevopstemplate():
       bash("echo '"+crontime+"' > /var/cld/deploy/templates/"+templatename+"/cron_time")
     else:
       bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/cron')
-    return redirect('/devops', code=302)
-    #return str(request.form)
+    #return redirect('/devops', code=302)
+    return str(request.form)
 
 @app.route('/devops/deploy')
 def devopsdeploy():
