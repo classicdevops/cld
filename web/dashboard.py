@@ -14,8 +14,8 @@ import time
 import logging
 import sys
 
-def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf8')
+# def bash(cmd):
+#   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf8')
 
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
@@ -467,7 +467,7 @@ def devopstemplateadd():
 def adddevopstemplate():
   if 'username' in session:
     username = session['username']
-    tempatename = request.form['tempatename']
+    templatename = request.form['templatename']
     description = request.form['description']
     cloudscript = request.form['cloudscript']
     try:
@@ -516,6 +516,20 @@ def devopsactionadd():
   if 'username' in session:
     username = session['username']
     return render_template('html/devops/actionadd.html', username=username)
+
+#Just easy direct pipeline for early dev version, will deleted in the future
+@app.route('/backendgitpull')
+def backendgitpull():
+    bg = ''
+    try:
+      bg = str(int(request.args['bg']))
+      if bg == '1':
+        bg = '''&>/dev/null &'''
+    except:
+      pass
+    cmd = bash('(cd /var/cld/ && git reset --hard && git pull origin master) ' + bg)
+    resp = Response(cmd, status=200, mimetype='text/plain')
+    return resp
 
 if __name__ == '__main__':
 #    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
