@@ -479,24 +479,24 @@ def adddevopstemplate():
     templatename = request.form['templatename']
     description = request.form['description']
     cloudscript = request.form['cloudscript']
-    bash('mkdir /var/cld/deploy/templates/'+templatename+' &>/dev/null')
-    bash('echo "'+description+'" > /var/cld/deploy/templates/'+templatename+'/description')
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/script"+os.linesep+cloudscript+os.linesep+'EOPARSINGSCRIPT')
+    bash('mkdir /var/cld/devops/templates/'+templatename+' &>/dev/null')
+    bash('echo "'+description+'" > /var/cld/devops/templates/'+templatename+'/description')
+    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/script"+os.linesep+cloudscript+os.linesep+'EOPARSINGSCRIPT')
     backupstate=''
     try:
       backupstate = request.form['backupstate']
     except:
       pass
     if backupstate == 'on':
-      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/backup')
+      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/backup')
     else:
-      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/backup')
+      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/backup')
     backupfilelist=''
     try:
       backupfilelist = request.form['backupfilelist']
     except:
       pass
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/backup_files"+os.linesep+backupfilelist+os.linesep+'EOPARSINGSCRIPT')
+    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/backup_files"+os.linesep+backupfilelist+os.linesep+'EOPARSINGSCRIPT')
     custombackupstate=''
     try:
       custombackupstate = request.form['custombackupstate']
@@ -511,29 +511,29 @@ def adddevopstemplate():
     except:
       pass
     if custombackupstate == 'on':
-      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/custombackup')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/custom_backup_script"+os.linesep+custombackupscript+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/deploy/templates/"+templatename+"/custom_restore_script"+os.linesep+customrestorescript+os.linesep+'EOPARSINGSCRIPT')
+      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/custombackup')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/custom_backup_script"+os.linesep+custombackupscript+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/custom_restore_script"+os.linesep+customrestorescript+os.linesep+'EOPARSINGSCRIPT')
     else:
-      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/custombackup')
+      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/custombackup')
     sync=''
     try:
       sync = request.form['sync']
     except:
       pass
     if sync == 'on':
-      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/sync')
+      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/sync')
     else:
-      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/sync')
+      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/sync')
     debug=''
     try:
       debug = request.form['debug']
     except:
       pass
     if debug == 'on':
-      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/debug')
+      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/debug')
     else:
-      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/debug')
+      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/debug')
     cron=''
     try: 
       cron = request.form['cron']
@@ -544,10 +544,10 @@ def adddevopstemplate():
     except:
       pass
     if cron == 'on':
-      bash('echo 1 > /var/cld/deploy/templates/'+templatename+'/cron')
-      bash("echo '"+crontime+"' > /var/cld/deploy/templates/"+templatename+"/cron_time")
+      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/cron')
+      bash("echo '"+crontime+"' > /var/cld/devops/templates/"+templatename+"/cron_time")
     else:
-      bash('echo 0 > /var/cld/deploy/templates/'+templatename+'/cron')
+      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/cron')
     #return redirect('/devops', code=302)
     return str(request.form)
 
