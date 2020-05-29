@@ -1,0 +1,91 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+source /var/cld/creds/creds_backup_monitoring
+
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
+
+mkdir -p /var/cld/log/check_backup/$(date +%F) &>/dev/null
+truncate -s 0 /var/cld/log/check_backup/$(date +%F)/status &>/dev/null
+CHECK_SCRIPT=$(cat << 'EOCHECK'
+for VM in $(qm list | awk 'NR>1 {print $1"_"$2}' | grep -v "^500")
+do
+VMID=$(echo ${VM} | cut -d _ -f 1)
+VMNAME=$(echo ${VM} | cut -d _ -f 2)
+
+for BACKUP_STORAGE in $(cat /etc/pve/storage.cfg | tr '\n' '@' | sed 's#@@#$#g' | tr '$' '\n' | tr -d '@' | grep ",backup\|backup," | tr '\t' '_' | tr ' ' '_')
+do
+unset STORAGE_NAME BACKUP_PATH BACKUP_FILE BACKUP_SIZE LAST_BACKUP LAST_BACKUP_DATE
+STORAGE_NAME=$(echo $BACKUP_STORAGE | cut -d _ -f 2)
+BACKUP_PATH=$(echo $BACKUP_STORAGE | tr '_' '\n' | grep -A1 path | tail -1)
+BACKUP_FILE=$(ls ${BACKUP_PATH}/dump/vzdump-qemu-${VMID}-*.gz 2>/dev/null | grep "$(date +%F | tr '-' '_')")
+LAST_BACKUP=$(ls -h ${BACKUP_PATH}/dump/vzdump-qemu-${VMID}-*.gz 2>/dev/null | tail -1)
+if [ "${BACKUP_FILE}" != "" ]
+then
+BACKUP_SIZE=$(du ${BACKUP_FILE} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024/1024)}')
+test $(echo ${BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 500 && echo "OK - ${VMNAME} - ${BACKUP_SIZE}G - ${STORAGE_NAME}" || echo "FAIL - ${VMNAME} - ${BACKUP_SIZE}G - ${STORAGE_NAME}"
+elif [ "${LAST_BACKUP}" != "" ]
+then
+LAST_BACKUP_DATE=$(echo "${LAST_BACKUP}" | cut -d . -f 1 | rev | cut -d / -f -1 | rev | cut -d - -f 4)
+LAST_BACKUP_SIZE=$(du ${LAST_BACKUP} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024/1024)}')
+
+test $(echo ${LAST_BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 500 && echo "OK - ${VMNAME} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}G - ${STORAGE_NAME}" || echo "FAIL - ${VMNAME} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}G - ${STORAGE_NAME}"
+fi
+done | grep "OK\|FAIL" ||  echo "BACKUP NOT FOUND - $VMNAME"
+done
+
+echo
+echo Storage:
+for BACKUP_STORAGE in $(cat /etc/pve/storage.cfg | tr '\n' '@' | sed 's#@@#$#g' | tr '$' '\n' | tr -d '@' | grep ",backup\|backup," | tr '\t' '_' | tr ' ' '_')
+do
+unset STORAGE_NAME BACKUP_PATH BACKUP_FILE BACKUP_SIZE LAST_BACKUP LAST_BACKUP_DATE
+STORAGE_NAME=$(echo $BACKUP_STORAGE | cut -d _ -f 2)
+BACKUP_PATH=$(echo $BACKUP_STORAGE | tr '_' '\n' | grep -A1 path | tail -1)
+df -h $BACKUP_PATH | tail -1 | awk -v STORAGE_NAME="$STORAGE_NAME" '{print STORAGE_NAME" - free space - "$4" of "$2}'
+done
+EOCHECK
+)
+
+echo \`Hypervisor backup status:\` | tee -a /var/cld/log/check_backup/$(date +%F)/status
+for HPR in $(CLOUDS_USER_ALLOWED | grep HPR)
+do
+HPR_NAME=`echo $HPR | cut -d "_" -f 1`
+SRV=`echo $HPR | cut -d "_" -f 2`
+PRT=`echo $HPR | cut -d "_" -f 3`
+USR=`echo $HPR | cut -d "_" -f 4`
+mkdir -p /var/cld/log/check_backup/$(date +%F)/ &>/dev/null
+echo \`\*${HPR_NAME}\*\`
+ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << EOSSH
+$CHECK_SCRIPT
+EOSSH
+echo
+done | tee -a /var/cld/log/check_backup/$(date +%F)/status
+
+mkdir -p /var/cld/log/check_backup/$(date +%F)/ &>/dev/null
+rm -f /var/cld/log/check_backup/$(date +%F)/status_etc &>/dev/null
+echo \`Configuration backup status:\` | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
+for VM in $(CLOUDS_USER_ALLOWED | cut -d _ -f -2)
+do
+unset STORAGE_NAME BACKUP_PATH BACKUP_FILE BACKUP_SIZE LAST_BACKUP LAST_BACKUP_DATE
+STORAGE_NAME=${ETC_STORAGE_NAME}
+BACKUP_PATH=${ETC_BACKUP_PATH}
+BACKUP_FILE=$(ls -h $BACKUP_PATH/$(date +%F)/$VM*.gz 2>/dev/null | tail -1)
+LAST_BACKUP=$(ls -h $BACKUP_PATH/*/$VM*.gz 2>/dev/null | tail -1)
+if [ "${BACKUP_FILE}" != "" ]
+then
+BACKUP_SIZE=$(du ${BACKUP_FILE} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024)}')
+test $(echo ${BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 500 && echo "OK - ${VM} - ${BACKUP_SIZE}M" || echo "FAIL - ${VM} - ${BACKUP_SIZE}M"
+elif [ "${LAST_BACKUP}" != "" ]
+then
+LAST_BACKUP_DATE=$(echo "${LAST_BACKUP}" | cut -d / -f 6)
+LAST_BACKUP_SIZE=$(du ${LAST_BACKUP} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024)}')
+test $(echo ${LAST_BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 500 && echo "OK - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M" || echo "FAIL - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M"
+else
+echo "BACKUP NOT FOUND - $VM"
+fi
+
+done | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
+
+for STATUS_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
+do
+test "$1" == "send" && wget -qO- "https://api.telegram.org/bot${MONITORING_BOT_TOKEN}/sendMessage?chat_id=${MONITORING_CHAT_ID}&parse_mode=Markdown&text=$(cat ${STATUS_FILE} | awk '{print "\`"$0"\`"}' | sed -e 's#Last#\`\*Last\*\`#g' -e 's#FAIL#\`\*FAIL\*\`#g' -e 's#NOT FOUND#\`\*NOT FOUND\*\`#g' | sed ':a;N;$!ba;s#\n#%0A#g')"
+done

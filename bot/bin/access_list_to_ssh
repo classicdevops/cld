@@ -1,0 +1,87 @@
+#!/bin/bash
+DEPLOY_ACCESS_LIST=$(cat << EOACCESSLIST
+cat > /etc/hosts.allow << 'EOHOSTSACCESS'
+`(
+grep -vh "^$\|^#" /var/cld/bot/myips | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/bot/enabledips | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+grep -vh "^$\|^#" /var/cld/access/groups/*/clouds | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
+)`
+EOHOSTSACCESS
+
+cat > /etc/hosts.deny << 'EOHOSTSDENY'
+sshd: ALL
+EOHOSTSDENY
+
+cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
+53-55 2-3 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
+EOCRON
+chmod 644 /etc/cron.d/hosts_deny_drop
+
+cat > /etc/cron.d/iptables_access << 'EOCRON'
+MAILTO=""
+* * * * * root bash -lc "/root/sbin/iptables_access"
+EOCRON
+chmod 644 /etc/cron.d/iptables_access
+
+mkdir -p /root/sbin/ &>/dev/null
+
+cat > /root/sbin/iptables_access << 'EOIPTABLES'
+#!/bin/bash
+ALLOWED_IPS=\$(cat << EOIPS
+\$(cat /etc/hosts.allow | awk '{print \$2}'  | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+EOIPS
+)
+
+#Should be MORE than 1 ports
+ALLOWED_PORTS=\$(cat << 'EOPORTS'
+21
+3306
+5672
+6379
+8006
+8888
+10050
+11211
+15672
+25672
+EOPORTS
+)
+
+source <(
+iptables-save | grep -v "\$ALLOWED_PORTS" | iptables-restore
+echo "iptables -A INPUT -s 172.16.0.0/24 -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
+for IP in \$ALLOWED_IPS
+do
+cat << EOL
+iptables -A INPUT -s \${IP}/32 -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT
+EOL
+done
+cat << EOL
+iptables -A INPUT -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
+EOL
+)
+
+EOIPTABLES
+chmod 700 /root/sbin/iptables_access
+
+EOACCESSLIST
+)
+
+cat << EOL | bash
+$DEPLOY_ACCESS_LIST
+EOL
+
+EXT=`cat /var/cld/access/groups/default/clouds | grep -v "^$\|^#"`
+    for VM in $EXT
+     do
+       SRV=`echo $VM | cut -d "_" -f 2`
+       PRT=`echo $VM | cut -d "_" -f 3`
+       USR=`echo $VM | cut -d "_" -f 4`
+(
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << EOSSH
+$DEPLOY_ACCESS_LIST
+EOSSH
+) &
+echo
+     done
+

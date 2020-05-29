@@ -36,3 +36,9 @@
 
 #certs
 /docker/xtermnginx/etc/nginx/ssl
+
+#security_system
+/bot/enabledips
+/bot/myips
+/bot/myip_tokens
+/api/accesslist
