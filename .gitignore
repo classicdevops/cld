@@ -42,3 +42,6 @@
 /bot/myips
 /bot/myip_tokens
 /api/accesslist
+
+#legacy simlink
+/ext_srv

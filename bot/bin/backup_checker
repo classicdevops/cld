@@ -85,6 +85,12 @@ fi
 
 done | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
 
+for SOURCE_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
+do
+split --suffix-length=2 --lines=92 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FILE}_
+rm -f ${SOURCE_FILE}
+done
+
 for STATUS_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
 do
 test "$1" == "send" && wget -qO- "https://api.telegram.org/bot${MONITORING_BOT_TOKEN}/sendMessage?chat_id=${MONITORING_CHAT_ID}&parse_mode=Markdown&text=$(cat ${STATUS_FILE} | awk '{print "\`"$0"\`"}' | sed -e 's#Last#\`\*Last\*\`#g' -e 's#FAIL#\`\*FAIL\*\`#g' -e 's#NOT FOUND#\`\*NOT FOUND\*\`#g' | sed ':a;N;$!ba;s#\n#%0A#g')"
