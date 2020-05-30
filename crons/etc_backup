@@ -1,0 +1,19 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+source /var/cld/creds/creds_backup_monitoring
+
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
+for VM in $(CLOUDS_USER_ALLOWED)
+do
+cldmount $VM
+LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
+
+mkdir -p /backup/files/all_etc/ &>/dev/null
+
+/usr/bin/ionice -c3 tar -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/*
+umount $LOCALMOUNTPATH
+fusermount -uz $LOCALMOUNTPATH
+done
+
+mkdir -p ${ETC_BACKUP_PATH}/$(date +%F) &>/dev/null
+rsync -avP /backup/files/all_etc/ ${ETC_BACKUP_PATH}/$(date +%F)/
