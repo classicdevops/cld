@@ -87,7 +87,7 @@ done | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
 
 for SOURCE_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
 do
-split --suffix-length=2 --lines=80 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FILE}_
+split --suffix-length=2 --lines=50 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FILE}_
 rm -f ${SOURCE_FILE}
 done
 
