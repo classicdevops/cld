@@ -7,7 +7,7 @@ source /var/cld/creds/creds_backup_monitoring
 mkdir -p /var/cld/log/check_backup/$(date +%F) &>/dev/null
 truncate -s 0 /var/cld/log/check_backup/$(date +%F)/status &>/dev/null
 CHECK_SCRIPT=$(cat << 'EOCHECK'
-for VM in $(qm list | awk 'NR>1 {print $1"_"$2}' | grep -v "^500")
+for VM in $(qm list | grep running | awk '{print $1"_"$2}')
 do
 VMID=$(echo ${VM} | cut -d _ -f 1)
 VMNAME=$(echo ${VM} | cut -d _ -f 2)
@@ -87,7 +87,7 @@ done | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
 
 for SOURCE_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
 do
-split --suffix-length=2 --lines=92 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FILE}_
+split --suffix-length=2 --lines=80 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FILE}_
 rm -f ${SOURCE_FILE}
 done
 
