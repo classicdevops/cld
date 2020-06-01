@@ -4,7 +4,7 @@ cat > /etc/hosts.allow << 'EOHOSTSACCESS'
 `(
 grep -vh "^$\|^#" /var/cld/bot/myips | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
 grep -vh "^$\|^#" /var/cld/bot/enabledips | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
-grep -vh "^$\|^#" /var/cld/access/groups/*/clouds | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
+grep -vh "^$\|^#" /var/cld/access/groups/default/clouds | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
 )`
 EOHOSTSACCESS
 
