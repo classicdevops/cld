@@ -5,6 +5,6 @@ $(for GROUP in $(ls /var/cld/access/groups/)
 do
 grep -qs "1" /var/cld/access/groups/${GROUP}/type \
 && cat /var/cld/access/groups/${GROUP}/clouds 2>/dev/null \
-|| sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/${GROUP}/clouds 2>/dev/null
+|| cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds 2>/dev/null
 done)
 EOL

@@ -1,16 +1,9 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-#for OPTS in ${@:1}
-#do
-#echo $OPTS | grep -q '\-\-id=' && VMID=$(echo $OPTS | cut -d '=' -f 2)
-#done
-#echo ${VMID}
-#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
-#    echo "Please select VM to enter"
-    for VM in $(CLOUDS_USER_ALLOWED | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash | grep $1 | head -1 | awk '{print $2}')
-    do
-    echo "/home/${SUDO_USER}/mnt/${VM}"
- break
+for VM in $(CLOUDS_USER_ALLOWED | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash | grep $1 | head -1 | awk '{print $2}')
+do
+  echo "/home/${SUDO_USER}/mnt/${VM}"
+break
 done
 
