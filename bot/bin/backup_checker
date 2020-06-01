@@ -73,12 +73,12 @@ LAST_BACKUP=$(ls -h $BACKUP_PATH/*/$VM*.gz 2>/dev/null | tail -1)
 if [ "${BACKUP_FILE}" != "" ]
 then
 BACKUP_SIZE=$(du ${BACKUP_FILE} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024)}')
-test $(echo ${BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 500 && echo "OK - ${VM} - ${BACKUP_SIZE}M" || echo "FAIL - ${VM} - ${BACKUP_SIZE}M"
+test $(echo ${BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 400 && echo "OK - ${VM} - ${BACKUP_SIZE}M" || echo "FAIL - ${VM} - ${BACKUP_SIZE}M"
 elif [ "${LAST_BACKUP}" != "" ]
 then
 LAST_BACKUP_DATE=$(echo "${LAST_BACKUP}" | cut -d / -f 6)
 LAST_BACKUP_SIZE=$(du ${LAST_BACKUP} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024)}')
-test $(echo ${LAST_BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 500 && echo "OK - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M" || echo "FAIL - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M"
+test $(echo ${LAST_BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 400 && echo "OK - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M" || echo "FAIL - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M"
 else
 echo "BACKUP NOT FOUND - $VM"
 fi
