@@ -1,3 +1,4 @@
+#!/bin/bash
 LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
 fusermount -uzq $LOCALMOUNTPATH >> /dev/null

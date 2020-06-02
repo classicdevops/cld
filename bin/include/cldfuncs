@@ -1,3 +1,4 @@
+#!/bin/bash
 VM_LIST() {
 (
 for GROUP in $(ls /var/cld/access/groups/)

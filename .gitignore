@@ -14,6 +14,9 @@
 #pycache
 *__pycache__*
 
+#local files
+*.local
+
 #temp folder
 /tmp/
 
