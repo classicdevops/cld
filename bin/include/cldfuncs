@@ -30,7 +30,7 @@ fusermount -uzq $LOCALMOUNTPATH >> /dev/null
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 #    DEVICE=$(ssh -q -o "RequestTTY force" $USR@$MSK "sudo prlctl exec $CT df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' | tr -d '\r' | tr -d '\n') >> /dev/null
 #    VZPOINT=$(ssh -q -o "RequestTTY force" $USR@$MSK "df -P" | tr '\r' '\n' | grep "$DEVICE" | awk '{print $6}' | tr -d '\r' | tr -d '\n') >> /dev/null
-echo $USR | grep -q clouds && SFTP_PATH=$(ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n')
+echo $USR | grep -q clouds && SFTP_PATH=$(ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "sudo grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n')
 echo $USR | grep -q clouds && SUDO_PATH=$(ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r' | tr -d '\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $USR | grep -q clouds && sshfs -p $PRT -o password_stdin -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH 2>&1 >/dev/null
