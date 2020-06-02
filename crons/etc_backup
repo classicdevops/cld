@@ -19,7 +19,7 @@ timeout 300 tar -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc
 fi
 
 umount $LOCALMOUNTPATH
-fusermount -uz $LOCALMOUNTPATH
+fusermount -uz $LOCALMOUNTPATH &>/dev/null
 done
 
 mkdir -p ${ETC_BACKUP_PATH}/$(date +%F) &>/dev/null
