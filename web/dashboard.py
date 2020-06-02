@@ -211,7 +211,7 @@ def group():
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
     # allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
-    allowedclouds = bash("sed -r 's#(.*_.*_[0-9]+_[a-zA-Z0-9]+)_.*#\1#g' /var/cld/access/groups/"+request.args['name']+"/clouds | tr -d '\001' | grep -vh '^$\|^#'").split('\n')
+    allowedclouds = bash("cut -d _ -f -4 /var/cld/access/groups/"+request.args['name']+"/clouds | tr -d '\001' | grep -vh '^$\|^#'").split('\n')
     #[:-1]
     disallowedclouds = bash('/var/cld/bin/cld-disallowed-group '+request.args['name']).split('\n')[:-1]
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
