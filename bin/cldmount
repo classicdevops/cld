@@ -1,7 +1,6 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-echo $1
 for VM in $(CLOUDS_USER_ALLOWED | grep $1 | tail -1)
 do
   CLD_LOGS
