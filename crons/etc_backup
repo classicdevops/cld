@@ -10,10 +10,10 @@ LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 
 mkdir -p /backup/files/all_etc/ &>/dev/null
 
-if grep -qi "debian\|ubuntu" $LOCALMOUNTPATH/etc/*-release
+if grep -qi "debian\|ubuntu" /etc/*-release
 then
 tar --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/* -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc
-elif grep -qi "centos\|rhel\|fedora" $LOCALMOUNTPATH/etc/*-release
+elif grep -qi "centos\|rhel\|fedora" /etc/*-release
 then
 tar -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/*
 fi
