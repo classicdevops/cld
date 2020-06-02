@@ -5,15 +5,15 @@ source /var/cld/creds/creds_backup_monitoring
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 for VM in $(CLOUDS_USER_ALLOWED)
 do
-cldmount $VM
+cldmount $VM || continue
 LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 
 mkdir -p /backup/files/all_etc/ &>/dev/null
 
-if grep -qi "debian\|ubuntu" /etc/*-release
+if grep -qi "debian\|ubuntu" $LOCALMOUNTPATH/etc/*-release
 then
 tar --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/* -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc
-elif grep -qi "centos\|rhel\|fedora" /etc/*-release
+elif grep -qi "centos\|rhel\|fedora" $LOCALMOUNTPATH/etc/*-release
 then
 tar -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/*
 fi
