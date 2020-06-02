@@ -5,7 +5,7 @@ source /var/cld/creds/creds_backup_monitoring
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 for VM in $(CLOUDS_USER_ALLOWED)
 do
-cldmount $VM || continue
+cldmount $VM
 LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 
 mkdir -p /backup/files/all_etc/ &>/dev/null
