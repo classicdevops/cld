@@ -1,0 +1,1 @@
+0 17 * * * root bash -lc "/var/cld/bot/bin/backup_checker send"

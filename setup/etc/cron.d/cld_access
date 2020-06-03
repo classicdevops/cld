@@ -1,0 +1,1 @@
+#* * * * * root bash -lc "/var/cld/bot/bin/access_list_to_ssh" &>/dev/null

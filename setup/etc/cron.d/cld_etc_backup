@@ -1,0 +1,1 @@
+0 12 * * * root bash -lc "/var/cld/crons/etc_backup"

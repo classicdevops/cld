@@ -1,3 +1,2 @@
-CLD is classic infrastructure management tool based on bash
-
+cld is classic infrastructure management system based on bash
 
