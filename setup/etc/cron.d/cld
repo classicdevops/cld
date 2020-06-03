@@ -1,2 +1,5 @@
 @reboot root bash -lc "ip addr add 172.17.0.250/16 dev docker0"
 */5 * * * * root bash -lc "/var/cld/crons/hypervisor_parser ; /var/cld/crons/cldidgen"
+#0 17 * * * root bash -lc "/var/cld/bot/bin/backup_checker send"
+#* * * * * root bash -lc "/var/cld/bot/bin/access_list_to_ssh" &>/dev/null
+0 12 * * * root bash -lc "/var/cld/crons/etc_backup"
