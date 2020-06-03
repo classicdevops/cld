@@ -61,7 +61,7 @@ EOL
 
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
-ps axfu | grep -q "/root/sbin/iptables_access" || /root/sbin/iptables_access
+ps axfu | grep -v grep | grep -q "/root/sbin/iptables_access" || /root/sbin/iptables_access
 EOACCESSLIST
 )
 

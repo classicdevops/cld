@@ -1,7 +1,7 @@
 #!/bin/bash
 NEWUSER=$1
 NEWUSERPASSWORD=$2
-ALLOWEDUTILS="cld cldx cldxmount"
+ALLOWEDUTILS="cld cldmount cldx cldxmount"
 useradd ${NEWUSER} --shell /bin/bash
 echo -e "${NEWUSERPASSWORD}\n${NEWUSERPASSWORD}\n" | passwd ${NEWUSER} &>/dev/null
 mkdir -p /var/cld/access/users/${NEWUSER}
