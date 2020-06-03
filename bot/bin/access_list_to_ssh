@@ -45,6 +45,7 @@ EOPORTS
 )
 
 source <(
+iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables-save | grep -v "\$ALLOWED_PORTS" | iptables-restore
 echo "iptables -A INPUT -s 172.16.0.0/24 -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
 for IP in \$ALLOWED_IPS
@@ -60,7 +61,7 @@ EOL
 
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
-
+ps axfu | grep -q "/root/sbin/iptables_access" || /root/sbin/iptables_access
 EOACCESSLIST
 )
 
