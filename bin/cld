@@ -1,5 +1,6 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
+CHECK_DNS $1
 #cat /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 #mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null

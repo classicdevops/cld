@@ -55,6 +55,15 @@ done
 cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
 }
 
+CHECK_DNS()
+{
+grep "$1" -qR --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date +%F`/ \
+&& echo \
+&& echo "Info by matching first argument with DNS lists:" | grep --color=always "DNS" \
+&& grep "$1" -R --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date +%F`/ \
+&& echo "###############################################"
+}
+
 CUSTOM_FUNCS_ACTIVATE(){
 source  <(for GROUPFUNC in funcvars functerm funcmount funcumount 
     do
