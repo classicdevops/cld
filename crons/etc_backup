@@ -10,6 +10,8 @@ LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 
 mkdir -p /backup/files/all_etc/ &>/dev/null
 
+rm -f /backup/files/all_etc/${VM}*_etc.tar.gz
+
 if grep -qi "debian\|ubuntu" /etc/*-release
 then
 timeout 300 tar --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/* -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc

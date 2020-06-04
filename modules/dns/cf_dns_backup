@@ -1,7 +1,7 @@
 #!/bin/bash
-[ -e /var/cld/cf/`TZ=Europe/Moscow date +%F` ] || mkdir -p /var/cld/cf/`TZ=Europe/Moscow date +%F`/
-truncate -s 0 /var/cld/cf/`TZ=Europe/Moscow date +%F`/cf_dns_list
-for CFAPI in $(cat /var/cld/cf/api_list | grep -v "^#")
+[ -e /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F) ] || mkdir -p /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)
+truncate -s 0 /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list
+for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 echo "${CFAPI}"
 CFACC=`echo "${CFAPI}" | cut -d "_" -f 1` ; echo $CFACC
@@ -9,18 +9,18 @@ CFKEY=`echo "${CFAPI}" | cut -d "_" -f 2` ; echo $CFKEY
 curl -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
-     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | sed 's#$#_'${CFACC}'#g' | awk '{print $2"_"$4}' >> /var/cld/cf/`TZ=Europe/Moscow date +%F`/cf_dns_list
+     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | sed 's#$#_'${CFACC}'#g' | awk '{print $2"_"$4}' >> /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list
 done
 
-for CFSITE in $(cat /var/cld/cf/`TZ=Europe/Moscow date +%F`/cf_dns_list )
+for CFSITE in $(cat /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list )
 do
    CFNAME=`echo "$CFSITE" | cut -d "_" -f 1` ; echo $CFNAME
    CFID=`echo "$CFSITE" | cut -d "_" -f 2` ; echo $CFID
    CFACC=`echo "$CFSITE" | cut -d "_" -f 3` ; echo $CFACC
-   CFKEY=`grep $CFACC /var/cld/cf/api_list | cut -d "_" -f 2` ; echo $CFKEY
+   CFKEY=`grep $CFACC var/cld/creds/creds_dns_cf_api_list | cut -d "_" -f 2` ; echo $CFKEY
 
 curl -X GET "https://api.cloudflare.com/client/v4/zones/${CFID}/dns_records/export" \
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
-     -H "Content-Type: application/json" > /var/cld/cf/`TZ=Europe/Moscow date +%F`/${CFNAME}
+     -H "Content-Type: application/json" > /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/${CFNAME}
 done

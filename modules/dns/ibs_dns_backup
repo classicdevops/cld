@@ -1,0 +1,24 @@
+#!/bin/bash
+[ -e /var/cld/ibs/`TZ=Europe/Moscow date +%F` ] || mkdir -p /var/cld/ibs/`TZ=Europe/Moscow date +%F`/
+truncate -s 0 /var/cld/modules/dns/data/ibs/$(TZ=Europe/Moscow date +%F)/ibs_dns_list
+for IBSAPI in $(cat /var/cld/creds/creds_dns_ibs_api_list | grep -v "^#")
+do
+echo "${IBSAPI}"
+IBSACC=`echo "${IBSAPI}" | cut -d "_" -f 1` ; echo $IBSACC
+IBSKEY=`echo "${IBSAPI}" | cut -d "_" -f 2` ; echo $IBSKEY
+IBSPWD=`echo "${IBSAPI}" | cut -d "_" -f 3` ; echo $IBSPWD
+IBSPRX=`echo "${IBSAPI}" | cut -d "_" -f 4` ; echo $IBSPRX
+echo ${IBSPRX} | grep -q "^$" && IBSPROXY="" || IBSPROXY="-e use_proxy=yes -e https_proxy=${IBSPRX} " ; echo ${IBSPROXY}
+wget ${IBSPROXY}-qO- "https://api.internet.bs/Domain/List?apiKey=${IBSKEY}&password=${IBSPWD}" | grep -v "transactid=\|status=\|domaincount=" | sed -r "s#(.*?)\=(.*)#\2_${IBSACC}#g" >> /var/cld/modules/dns/data/ibs/$(TZ=Europe/Moscow date +%F)/ibs_dns_list
+done
+
+for IBSSITE in $(cat /var/cld/modules/dns/data/ibs/$(TZ=Europe/Moscow date +%F)/ibs_dns_list )
+do
+   IBSNAME=`echo "$IBSSITE" | cut -d "_" -f 1` ; echo $IBSNAME
+   IBSACC=`echo "$IBSSITE" | cut -d "_" -f 2` ; echo $IBSACC
+   IBSKEY=`grep $IBSACC /var/cld/creds/creds_dns_ibs_api_list | cut -d "_" -f 2` ; echo $IBSKEY
+   IBSPWD=`grep $IBSACC /var/cld/creds/creds_dns_ibs_api_list | cut -d "_" -f 3` ; echo $IBSPWD
+   IBSPRX=`grep $IBSACC /var/cld/creds/creds_dns_ibs_api_list | cut -d "_" -f 4` ; echo $IBSPRX
+   echo ${IBSPRX} | grep -q "^$" && IBSPROXY="" || IBSPROXY="-e use_proxy=yes -e https_proxy=${IBSPRX} " ; echo ${IBSPROXY}
+   wget ${IBSPROXY}-qO- "https://api.internet.bs/Domain/DnsRecord/List?apiKey=${IBSKEY}&password=${IBSPWD}&Domain=${IBSNAME}" > /var/cld/ibs/`TZ=Europe/Moscow date +%F`/${IBSNAME}
+done

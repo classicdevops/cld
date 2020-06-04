@@ -1,27 +1,14 @@
-#socket files
-/noVNC/sockets/
-/xtermjs/sockets/
-
-#node modules
-*/node_modules/
-
 #creds
 /creds/
 
-#screenlogs
-*screenlog.0*
-
-#pycache
-*__pycache__*
+#cld modules generated data
+/modules/*/data/
 
 #local files
 *.local
 
 #temp folder
 /tmp/
-
-#sessid file with validating rules
-/docker/*/etc/nginx/conf.d/sessid
 
 #logs
 /log/
@@ -48,3 +35,19 @@
 
 #legacy simlink
 /ext_srv
+
+#socket files
+/noVNC/sockets/
+/xtermjs/sockets/
+
+#sessid file with validating rules
+/docker/*/etc/nginx/conf.d/sessid
+
+#node modules
+*/node_modules/
+
+#screenlogs
+*screenlog.0*
+
+#pycache
+*__pycache__*
