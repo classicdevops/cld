@@ -6,6 +6,3 @@ source ../creds/creds
 for GROUP in $(ls /var/cld/access/groups/)
 do grep -qs '1' /var/cld/access/groups/${GROUP}/type && source /var/cld/access/groups/${GROUP}/parsingscript
 done
-
-chmod -R 700 $(ls -d /var/cld/* | grep -vi "flask\|log\|filemanager\|wetty")
-find $(ls -d /var/cld/* | grep -vi "flask\|log\|filemanager\|wetty") -type f -exec chmod 600 {} \;
