@@ -17,7 +17,7 @@ do
    CFNAME=`echo "$CFSITE" | cut -d "_" -f 1` ; echo $CFNAME
    CFID=`echo "$CFSITE" | cut -d "_" -f 2` ; echo $CFID
    CFACC=`echo "$CFSITE" | cut -d "_" -f 3` ; echo $CFACC
-   CFKEY=`grep $CFACC var/cld/creds/creds_dns_cf_api_list | cut -d "_" -f 2` ; echo $CFKEY
+   CFKEY=`grep $CFACC /var/cld/creds/creds_dns_cf_api_list | cut -d "_" -f 2` ; echo $CFKEY
 
 curl -X GET "https://api.cloudflare.com/client/v4/zones/${CFID}/dns_records/export" \
      -H "X-Auth-Email: ${CFACC}" \
