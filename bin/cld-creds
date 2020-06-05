@@ -25,7 +25,7 @@ do
     $CLD_VARS
     for CRED in $(declare -f $CLD_VARS | cut -d = -f 1)
     do
-      echo $(echo $CRED | sed -e 's#VNM#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`$CRED\`
+      echo $(echo $CRED | sed -e 's#VNM#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`${!CRED}\`
     done
   fi
   break
