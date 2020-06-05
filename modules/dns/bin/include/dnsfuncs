@@ -1,31 +1,55 @@
 #!/bin/bash
-CF_DNS_DOMAIN_ADD()
+cf-dns-api-creds()
+{
+CFACC=`echo "${CFAPI}" | cut -d "_" -f 1`
+CFKEY=`echo "${CFAPI}" | cut -d "_" -f 2`
+CF_ACC_ID=`echo "${CFAPI}" | cut -d "_" -f 3`
+}
+
+cf-dns-define-cf-api()
+{
+CFAPI=$(grep -v "^#" /var/cld/creds/creds_dns_cf_api_list | grep "$1")
+test $CFAPI || CFAPI=$(grep -v "^#" /var/cld/creds/creds_dns_cf_api_list | head -1)
+}
+
+cf-dns-domain-add()
 {
 curl -s -X POST -H "X-Auth-Key: $CF_API_KEY" -H "X-Auth-Email: $CF_API_EMAIL" \
      -H "Content-Type: application/json" \
      "https://api.cloudflare.com/client/v4/zones" \
-     --data '{"account": {"id": "$CF_ACC_ID"}, "name":"'$DOMAIN'","jump_start":false}' | jq . | grep id | head -1 | cut -d '"' -f 4
+     --data '{"account": {"id": "$CF_ACC_ID"}, "name":"'$1'","jump_start":false}' | jq . | grep id | head -1 | cut -d '"' -f 4
 }
 
-CF_DNS_A_RECORD_ADD()
+cf-dns-get-zone-id()
 {
-curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CFDNSID}/dns_records" \
+curl -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
+     -H "X-Auth-Email: ${CFACC}" \
+     -H "X-Auth-Key: ${CFKEY}" \
+     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | grep "\ $1\ " | awk '{print $4}'
+}
+
+cf-dns-record-add()
+{
+TYPE=${1^^}
+MAIN_ZONE=${echo $2 | rev | cut -d . -f -2 | rev}
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records" \
      -H "X-Auth-Email: $CF_API_EMAIL" \
      -H "X-Auth-Key: $CF_API_KEY" \
      -H "Content-Type: application/json" \
-     --data '{"type":"A","name":"@","content":"${SERVER_IP}","ttl":1,"priority":10,"proxied":false}' | jq .
+     --data '{"type":"'${TYPE}'","name":"'$2'","content":"'$3'","ttl":1,"priority":10,"proxied":false}' | jq .
 }
 
-CF_DNS_CNAME_RECORD_ADD()
+cf-dns-cname-record-add()
 {
-curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CFDNSID}/dns_records" \
+curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$1/dns_records" \
      -H "X-Auth-Email: $CF_API_EMAIL" \
      -H "X-Auth-Key: $CF_API_KEY" \
      -H "Content-Type: application/json" \
-     --data '{"type":"CNAME","name":"${CNAME}","content":"'$DOMAIN'","ttl":1,"priority":10,"proxied":false}' | jq .
+     --data '{"type":"CNAME","name":"${CNAME}","content":"'$2'","ttl":1,"priority":10,"proxied":false}' | jq .
 }
 
-CF_DNS_RECORD_DELETE()
+cf-dns-record-delete()
 {
 curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${CFID}/dns_records/${RECORDID}" \
      -H "X-Auth-Email: ${CFACC}" \
@@ -33,7 +57,7 @@ curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${CFID}/dns_records/$
      -H "Content-Type: application/json" | jq .
 }
 
-CF_DNS_RECORDS_GET()
+cf-dns-records-get()
 {
 curl -X GET "https://api.cloudflare.com/client/v4/zones/${CFID}/dns_records?type=A&page=1&per_page=300&match=all" \
      -H "X-Auth-Email: ${CFACC}" \

@@ -1,0 +1,30 @@
+#!/bin/bash
+source /var/cld/modules/bin/include/dnsfuncs
+TYPE=${1^^}
+DNS_ZONE=$2
+MAIN_ZONE=${echo $DNS_ZONE | rev | cut -d . -f -2 | rev}
+CONTENT=$3
+CFACC=$4
+test $CFACC || CFACC=$(grep "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list)
+test $CFACC || CFACC=$(grep "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list)
+test $CFACC || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+do
+cf-dns-api-creds
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+test ${CF_ZONE_ID} && break
+done
+test $CF_ZONE_ID || echo domain ${MAIN_ZONE} not found in known accounts - trying to add
+test $CF_ZONE_ID || cf-dns-define-cf-api 
+test $CF_ZONE_ID || cf-dns-api-creds
+
+test $CF_ZONE_ID || for ITTER in $(seq 1 10)
+do
+cf-dns-domain-add ${MAIN_ZONE}
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+test $CF_ZONE_ID && echo domain added successfully to account ${CFACC}
+test $CF_ZONE_ID && break
+done
+
+test $CF_ZONE_ID && cf-dns-record-add $TYPE $DNS_ZONE || echo Error - DNS 
+test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == $TYPE and .content == $CONTENT) | .id")
+test $CF_RECORD_ID && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
