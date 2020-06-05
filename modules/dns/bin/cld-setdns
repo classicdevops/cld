@@ -2,7 +2,7 @@
 source /var/cld/modules/dns/bin/include/dnsfuncs
 TYPE=${1^^}
 DNS_ZONE=$2
-MAIN_ZONE=${echo $DNS_ZONE | rev | cut -d . -f -2 | rev}
+MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
 CONTENT=$3
 CFACC=$4
 test $CFACC || CFACC=$(grep "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list)
