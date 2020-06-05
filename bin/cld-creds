@@ -11,7 +11,7 @@ do
     if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
     if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
     then
-    source <(for GROUPFUNC in funcvars functerm funcmount funcumount 
+    source <(for GROUPFUNC in funcvars 
         do
           echo "${GROUP}_${GROUPFUNC}(){"
           cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
@@ -21,8 +21,12 @@ do
     else
       CLD_VARS=EXTERNAL_VARS
     fi
-    echo "You had chosen ${GROUP} $VM"
+    echo
     $CLD_VARS
+    for CRED in $(declare -f $CLD_VARS | cut -d = -f 1)
+    do
+      echo $(echo $CRED | sed -e 's#VNM#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`$CRED\`
+    done
   fi
   break
 done
