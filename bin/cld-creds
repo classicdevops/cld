@@ -22,7 +22,7 @@ do
       CLD_VARS=EXTERNAL_VARS
     fi
     echo "You had chosen ${GROUP} $VM"
-    echo $$CLD_VARS
+    $CLD_VARS
   fi
   break
 done
