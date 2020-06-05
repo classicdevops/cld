@@ -1,10 +1,17 @@
 #!/bin/bash
 source /var/cld/modules/dns/bin/include/dnsfuncs
 TYPE=${1^^}
-DNS_ZONE=$2
+DNS_ZONE=${2,,}
 MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
 CONTENT=$3
 CFACC=$4
+
+echo $TYPE | grep -q "^A$\|^AAAA$\|^CNAME$\|^TXT$\|^SRV$\|^LOC$\|^MX$\|^NS$\|^SPF$\|^CERT$\|^DNSKEY$\|^DS$\|^NAPTR$\|^SMIMEA$\|^SSHFP$\|^TLSA$\|^URI$" \
+|| echo "incorrect type - allowed types: A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF, CERT, DNSKEY, DS, NAPTR, SMIMEA, SSHFP, TLSA, URI"
+echo $DNS_ZONE | egrep -q "^[a-z0-9.-]+\.[a-z0-9.-]+$" \
+|| echo "incorrect domain - only full domain names allowed: example.com test.example.com"
+
+test $CONTENT == "@" && CONTENT=$MAIN_ZONE
 test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list)
 test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list)
 test $CFACC || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
