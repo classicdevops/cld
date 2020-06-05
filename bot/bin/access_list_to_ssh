@@ -49,10 +49,23 @@ echo \$ALLOWED_PORTS | grep "^\$" && ALLOWED_PORTS=\$(cat << 'EOPORTS'
 EOPORTS
 )
 
+LOCAL_NETS=\$(cat << 'EOPORTS'
+$(cat /var/cld/creds/local_nets 2>/dev/null)
+EOPORTS
+)
+
+echo \$LOCAL_NETS | grep "^\$" && LOCAL_NETS=\$(cat << 'EOPORTS'
+172.16.0.0/24
+EOPORTS
+)
+
 source <(
 iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | iptables-restore
-echo "iptables -A INPUT -s 172.16.0.0/24 -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
+for LOCAL_NET in \$LOCAL_NETS
+do
+echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
+done
 for IP in \$ALLOWED_IPS
 do
 cat << EOL
