@@ -28,5 +28,4 @@ do
       echo $(echo $CRED | sed -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`${!CRED}\`
     done
   fi
-  break
 done
