@@ -3,12 +3,12 @@ source /var/cld/bin/include/cldfuncs
 #cat /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 #mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
-echo "Please select VM to enter"
+echo "Please select instance to enter"
 select VM in $(CLOUDS_USER_ALLOWED | grep -i "$1" | grep -i "$2" | grep -i "$3")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
-   echo "you choosed incorrect VM, please try again and type numbers only"
+   echo "you choosed incorrect instance, please try again and type numbers only"
   else
     GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
     if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
