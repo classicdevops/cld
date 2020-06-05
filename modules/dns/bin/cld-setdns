@@ -1,5 +1,5 @@
 #!/bin/bash
-source /var/cld/modules/bin/include/dnsfuncs
+source /var/cld/modules/dns/bin/include/dnsfuncs
 TYPE=${1^^}
 DNS_ZONE=$2
 MAIN_ZONE=${echo $DNS_ZONE | rev | cut -d . -f -2 | rev}
