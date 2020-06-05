@@ -17,7 +17,7 @@ cf-dns-domain-add()
 curl -s -X POST -H "X-Auth-Key: $CFKEY" -H "X-Auth-Email: $CFACC" \
      -H "Content-Type: application/json" \
      "https://api.cloudflare.com/client/v4/zones" \
-     --data '{"account": {"id": "$CF_ACC_ID"}, "name":"'$1'","jump_start":false}' | jq . | grep id | head -1 | cut -d '"' -f 4
+     --data '{"account": {"id": "'$CF_ACC_ID'"}, "name":"'$1'","jump_start":false}' | jq . | grep id | head -1 | cut -d '"' -f 4
 }
 
 cf-dns-get-zone-id()
