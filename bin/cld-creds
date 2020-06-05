@@ -1,0 +1,27 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "$1" | grep -i "$2" | grep -i "$3")
+do
+  CLD_LOGS
+  if [ "$VM" = "" ] ; then
+   echo "you choosed incorrect VM, please try again and type numbers only"
+  else
+    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
+    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
+    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
+    then
+    source <(for GROUPFUNC in funcvars functerm funcmount funcumount 
+        do
+          echo "${GROUP}_${GROUPFUNC}(){"
+          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+          echo '}'
+        done)
+      CLD_VARS=${GROUP}_funcvars
+    else
+    fi
+    echo "You had chosen ${GROUP} $VM"
+    echo $CLD_VARS
+  fi
+  break
+done
