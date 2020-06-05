@@ -19,6 +19,7 @@ do
         done)
       CLD_VARS=${GROUP}_funcvars
     else
+      CLD_VARS=EXTERNAL_VARS
     fi
     echo "You had chosen ${GROUP} $VM"
     echo $CLD_VARS
