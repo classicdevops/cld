@@ -34,6 +34,11 @@ EOIPS
 
 #Should be MORE than 1 ports
 ALLOWED_PORTS=\$(cat << 'EOPORTS'
+$(cat /var/cld/creds/protected_ports)
+EOPORTS
+)
+
+echo \$ALLOWED_PORTS | grep "^\$" && ALLOWED_PORTS=\$(cat << 'EOPORTS'
 21
 5672
 8006
