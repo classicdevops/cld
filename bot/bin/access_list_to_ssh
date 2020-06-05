@@ -34,7 +34,7 @@ EOIPS
 
 #Should be MORE than 1 ports
 ALLOWED_PORTS=\$(cat << 'EOPORTS'
-$(cat /var/cld/creds/protected_ports)
+$(cat /var/cld/creds/protected_ports 2>/dev/null)
 EOPORTS
 )
 
