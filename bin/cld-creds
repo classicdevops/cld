@@ -25,7 +25,7 @@ do
     $CLD_VARS
     for CRED in $(declare -f $CLD_VARS | grep "=" | cut -d = -f 1)
     do
-      test $CRED && echo $(echo $CRED | sed -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`${!CRED}\`
+      test ${!CRED} && echo $(echo $CRED | sed -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`${!CRED}\`
     done
   fi
 done
