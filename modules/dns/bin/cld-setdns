@@ -21,7 +21,7 @@ test $CF_ZONE_ID || for ITTER in $(seq 1 10)
 do
 CF_ZONE_ID=$(cf-dns-domain-add ${MAIN_ZONE})
 test ${CF_ZONE_ID} || CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
-test $CF_ZONE_ID && echo domain ${MAIN_ZONE} added successfully to account ${CFACC}
+test $CF_ZONE_ID && echo domain ${MAIN_ZONE} successfully added to account ${CFACC}
 test $CF_ZONE_ID && break
 done
 
