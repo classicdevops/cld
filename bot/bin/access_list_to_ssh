@@ -19,7 +19,7 @@ chmod 644 /etc/cron.d/hosts_deny_drop
 
 cat > /etc/cron.d/iptables_access << 'EOCRON'
 MAILTO=""
-* * * * * root bash -lc "/root/sbin/iptables_access"
+* * * * * root bash -lc "ps axfu | grep -v grep | grep -q /root/sbin/iptables_access || /root/sbin/iptables_access"
 EOCRON
 chmod 644 /etc/cron.d/iptables_access
 
