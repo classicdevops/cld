@@ -19,4 +19,4 @@ test ${CF_ZONE_ID} && break
 done
 test $CF_ZONE_ID || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
-cf-dns-records-get $CF_ZONE_ID | jq -r '.result[] | [.type,.name,.content]|@tsv'
+cf-dns-records-get $CF_ZONE_ID | jq -r '.result[] | select(.content == \"$CONTENT\") | [.type,.name,.content]|@tsv'
