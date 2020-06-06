@@ -51,6 +51,6 @@ test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT"
 test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "false" && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"
 test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && CONTENT=$NEW_CONTENT
 
-test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
-test $CF_RECORD_ID || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
-test $CF_RECORD_ID && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
+test "$CF_ZONE_ID" && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
+test "$CF_RECORD_ID" || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
+test "$CF_RECORD_ID" && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
