@@ -18,7 +18,7 @@ test "$CONTENT" == "$NEW_CONTENT" && echoexit1 Old and New DNS record content ar
 test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
 test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
 test $CFACC && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
-test $CFACC || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+test $CFAPI || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
