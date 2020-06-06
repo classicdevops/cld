@@ -52,10 +52,11 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$1/dns_records" \
 cf-dns-record-delete()
 {
 TYPE=${1^^}
+DNS_ZONE=${2,,}
 MAIN_ZONE=$(echo $2 | rev | cut -d . -f -2 | rev)
 CONTENT="$3"
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
-CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
+CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\" and .content == \"$CONTENT\") | .id")
 curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records/${CF_RECORD_ID}" \
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
