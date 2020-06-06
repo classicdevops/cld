@@ -8,7 +8,7 @@ CFACC=$4
 
 echo $TYPE | grep -q "^A$\|^AAAA$\|^CNAME$\|^TXT$\|^SRV$\|^LOC$\|^MX$\|^NS$\|^SPF$\|^CERT$\|^DNSKEY$\|^DS$\|^NAPTR$\|^SMIMEA$\|^SSHFP$\|^TLSA$\|^URI$" \
 || echo "incorrect type - allowed types: A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF, CERT, DNSKEY, DS, NAPTR, SMIMEA, SSHFP, TLSA, URI"
-echo $DNS_ZONE | egrep -q "^[a-z0-9.-]+\.[a-z0-9.-]+$" \
+echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 || echo "incorrect domain - only full domain names allowed: example.com test.example.com"
 
 test $CONTENT == "@" && CONTENT=$MAIN_ZONE
