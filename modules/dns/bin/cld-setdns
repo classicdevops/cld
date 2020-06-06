@@ -43,7 +43,8 @@ test "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_C
 To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
 
 test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CF_RECORD_CONTENT | jq -r .success)
-test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && echo "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT successfully deleted" || echoexit1 "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT delete error"
+test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && echo "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT successfully deleted"
+test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "false" && echoexit1 "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT delete error"
 test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && CONTENT=$NEW_CONTENT
 
 test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id") || echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT add error"
