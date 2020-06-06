@@ -1,0 +1,23 @@
+#!/bin/bash
+source /var/cld/modules/dns/bin/include/dnsfuncs
+DNS_ZONE=${1,,}
+MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
+CONTENT=$(echo $2 | cut -d _ -f 1)
+
+echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
+|| echo "incorrect domain - only full domain names allowed: example.com test.example.com"
+
+test "$CONTENT" == "@" && CONTENT=$MAIN_ZONE
+test "$NEW_CONTENT" == "@" && NEW_CONTENT=$MAIN_ZONE
+test "$CONTENT" == "$NEW_CONTENT" && echoexit1 Old and New DNS record content are the same - exit
+test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list)
+test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list)
+test $CFACC || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+do
+cf-dns-api-creds
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+test ${CF_ZONE_ID} && break
+done
+test $CF_ZONE_ID || echoexit1 "domain $MAIN_ZONE not found in known accounts"
+
+cf-dns-records-get $CF_ZONE_ID | jq -r '.result[] | [.type,.name,.content]|@tsv'
