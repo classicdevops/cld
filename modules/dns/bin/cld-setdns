@@ -39,9 +39,12 @@ CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 
 test "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
 
-test "$CF_RECORD_ID" && test $NEW_CONTENT || echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist \
-To aprove changes use command: setdns $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
+test "$CF_RECORD_ID" && test $NEW_CONTENT || echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT \
+To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
 
-test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id") || echo Something went wrond while add DNS record
+test "$CF_RECORD_ID" && test $NEW_CONTENT && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CF_RECORD_CONTENT | jq -r .success)
+test "$CF_RECORD_DELETE_RESULT" == "true" && echo "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT successfully deleted" || echoexit1 "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT delete error"
+
+test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id") || echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT add error"
 test $CF_RECORD_ID || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
 test $CF_RECORD_ID && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
