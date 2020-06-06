@@ -1,0 +1,36 @@
+#!/bin/bash
+source /var/cld/modules/dns/bin/include/dnsfuncs
+TYPE=${1^^}
+DNS_ZONE=${2,,}
+MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
+CONTENT=$(echo $3)
+
+echo $TYPE | grep -q "^A$\|^AAAA$\|^CNAME$\|^TXT$\|^SRV$\|^LOC$\|^MX$\|^NS$\|^SPF$\|^CERT$\|^DNSKEY$\|^DS$\|^NAPTR$\|^SMIMEA$\|^SSHFP$\|^TLSA$\|^URI$" \
+|| echoexit1 "incorrect type - allowed types: A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF, CERT, DNSKEY, DS, NAPTR, SMIMEA, SSHFP, TLSA, URI"
+echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
+|| echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
+test $CONTENT || echoexit1 DNS content not defined
+
+test "$CONTENT" == "@" && CONTENT=$MAIN_ZONE
+test "$NEW_CONTENT" == "@" && NEW_CONTENT=$MAIN_ZONE
+test "$CONTENT" == "$NEW_CONTENT" && echoexit1 Old and New DNS record content are the same - exit
+test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
+test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
+test $CFACC && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+test $CFAPI || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+do
+cf-dns-api-creds
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+test ${CF_ZONE_ID} && break
+done
+test $CF_ZONE_ID || echoexit1 "domain $MAIN_ZONE not found in known accounts - exit"
+
+CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\")")
+CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
+CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
+
+test "$CF_RECORD_CONTENT" != "$CONTENT" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
+
+test "$CF_RECORD_ID" != ""  && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
+test "$CF_RECORD_ID" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully deleted"
+test "$CF_RECORD_ID" != "" -a "$CF_RECORD_DELETE_RESULT" != "true" && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"
