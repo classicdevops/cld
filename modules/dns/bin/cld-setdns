@@ -40,7 +40,7 @@ CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
 CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 
 test "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
-test "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
+test "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" != "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
 
 test "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT \
 To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
