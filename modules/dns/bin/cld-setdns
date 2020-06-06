@@ -14,6 +14,7 @@ echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 
 test "$CONTENT" == "@" && CONTENT=$MAIN_ZONE
 test "$NEW_CONTENT" == "@" && NEW_CONTENT=$MAIN_ZONE
+test "$CONTENT" == "$NEW_CONTENT" && echoexit1 Old and New DNS record content are the same - exit
 test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list)
 test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list)
 test $CFACC || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
