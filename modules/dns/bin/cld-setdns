@@ -33,10 +33,13 @@ test $CF_ZONE_ID && echo "domain $MAIN_ZONE successfully added to account $CFACC
 test $CF_ZONE_ID && break
 done
 
-CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\")")
+CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\")")
 CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
 CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
-test $CF_RECORD_ID && test $NEW_CONTENT || echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist \
+
+test "$CF_RECORD_CONTENT" == "$CONTENT" && test $NEW_CONTENT || echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
+
+test "$CF_RECORD_ID" && test $NEW_CONTENT || echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist \
 To aprove changes use command: setdns $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
 
 test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id") || echo Something went wrond while add DNS record
