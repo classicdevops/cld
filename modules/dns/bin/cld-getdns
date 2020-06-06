@@ -5,7 +5,7 @@ MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
 CONTENT=$(echo $2 | cut -d _ -f 1)
 
 echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
-|| echo "incorrect domain - only full domain names allowed: example.com test.example.com"
+|| echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
 
 test "$CONTENT" == "@" && CONTENT=$MAIN_ZONE
 test "$NEW_CONTENT" == "@" && NEW_CONTENT=$MAIN_ZONE
