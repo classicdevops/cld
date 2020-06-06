@@ -64,3 +64,9 @@ curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$1/dns_records?type=A
      -H "X-Auth-Key: ${CFKEY}" \
      -H "Content-Type: application/json" | jq .
 }
+
+echoexit1()
+{
+echo ${@:1}
+exit 1
+}
