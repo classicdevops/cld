@@ -67,6 +67,6 @@ curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$1/dns_records?type=$
 
 echoexit1()
 {
-echo ${@:1}
+echo "${@:1}"
 exit 1
 }
