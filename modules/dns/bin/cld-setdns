@@ -37,7 +37,7 @@ CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type
 CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
 CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 
-test "$CF_RECORD_CONTENT" == "$CONTENT" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
+test "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
 
 test "$CF_RECORD_ID" && test $NEW_CONTENT || echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist \
 To aprove changes use command: setdns $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
