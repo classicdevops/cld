@@ -6,6 +6,7 @@ def cmd_getdns(message):
      if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*@-]+)?', message.text):
         dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*@-]+)?', message.text)
         dnszone = dnsargs.group(1)
+        dnscontent = ''
         dnscontent = dnsargs.group(2)
         cmdoutput = bash('/var/cld/modules/dns/bin/cld-getdns '+str(dnszone)+' '+str(dnscontent))
         bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
