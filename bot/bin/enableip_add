@@ -1,7 +1,0 @@
-#!/bin/bash
-echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || echo "ip address is incorrect please fix it and try again"
-echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || exit 1
-grep -q "${1}" /var/cld/bot/enabledips && echo "ip \`${1}\` already enabled in access list" || (echo "${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/bot/enabledips && echo "ip \`${1}\` successfully added to access list with comment *${2}*")
-cat /var/cld/bot/myips /var/cld/bot/enabledips | cut -d _ -f 1 | uniq > /var/cld/api/accesslist 2>/dev/null
-(cat /var/cld/bot/myips /var/cld/bot/enabledips | cut -d _ -f 1 | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts; systemctl reload squid) &>/dev/null
-#bash -lc "/var/cld/bot/bin/access_list_to_mikrotik" &
