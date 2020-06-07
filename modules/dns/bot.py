@@ -3,8 +3,8 @@
 def cmd_getdns(message):
    valid_id = str(message.from_user.id)
    if valid_id in allowusers():
-     if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*@-]+)?', message.text):
-        dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*@-]+)?', message.text)
+     if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*=@-]+)?', message.text):
+        dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*=@-]+)?', message.text)
         dnszone = dnsargs.group(1)
         dnscontent = ''
         dnscontent = str(dnsargs.group(2)).replace('None', '')
@@ -20,8 +20,8 @@ def cmd_getdns(message):
 def cmd_setdns(message):
    valid_id = str(message.from_user.id)
    if valid_id in allowusers():
-     if re.findall(r'([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_-]+)', message.text):
-        dnsargs = re.search('([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_-]+)', message.text)
+     if re.findall(r'([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*=@/_-]+)', message.text):
+        dnsargs = re.search('([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*=@/_-]+)', message.text)
         dnstype = dnsargs.group(1)
         dnszone = dnsargs.group(2)
         dnscontent = ''
