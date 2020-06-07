@@ -23,7 +23,8 @@ cf-dns-api-creds
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
 test ${CF_ZONE_ID} && break
 done
-test $CF_ZONE_ID || echoexit1 "domain $MAIN_ZONE not found in known accounts - exit"
+(
+test $CF_ZONE_ID || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
 CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\")")
 CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
@@ -34,3 +35,4 @@ test "$CF_RECORD_CONTENT" != "$CONTENT" && echoexit1 "Record $TYPE $DNS_ZONE $CO
 test "$CF_RECORD_ID" != ""  && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
 test "$CF_RECORD_ID" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully deleted"
 test "$CF_RECORD_ID" != "" -a "$CF_RECORD_DELETE_RESULT" != "true" && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"
+) | awk '{print "`"$0"`"}'
