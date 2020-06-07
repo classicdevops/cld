@@ -24,6 +24,7 @@ cf-dns-api-creds
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
 test ${CF_ZONE_ID} && break
 done
+(
 test $CF_ZONE_ID || echo "domain $MAIN_ZONE not found in known accounts - trying to add"
 test $CF_ZONE_ID || cf-dns-define-cf-api 
 test $CF_ZONE_ID || cf-dns-api-creds
@@ -54,3 +55,4 @@ test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT"
 test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
 test $CF_RECORD_ID || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
 test $CF_RECORD_ID && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
+) | awk '{print "`"$0"`"}'
