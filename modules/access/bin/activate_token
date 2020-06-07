@@ -1,0 +1,13 @@
+#!/bin/bash
+mkdir -p /var/cld/modules/access/data/ &>/dev/null
+grep -q "${2}" /var/cld/modules/access/data/myip_tokens || echo 403
+grep -q "${2}" /var/cld/modules/access/data/myip_tokens || exit 1
+TOKEN=$(grep "${2}" /var/cld/modules/access/data/myip_tokens | cut -d _ -f 1)
+USERID=$(grep "${2}" /var/cld/modules/access/data/myip_tokens | cut -d _ -f 2)
+USERNAME=$(grep "${2}" /var/cld/modules/access/data/myip_tokens | cut -d _ -f 3)
+IP=${1}
+grep -q ${USERID} /var/cld/modules/access/data/myips && (sed -i "s#.*${USERID}.*#${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private ip \`${IP}\` successfully updated for user *${USERNAME}*") || (echo "${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myips ; echo "private ip \`${IP}\` successfully added to access list for user *${USERNAME}*")
+sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens
+cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq > /var/cld/modules/access/data/api_accesslist 2>/dev/null
+(cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts; systemctl reload squid) &>/dev/null
+bash -lc "/var/cld/bot/bin/access_list_to_ssh" &>/dev/null &
