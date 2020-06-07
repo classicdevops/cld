@@ -9,6 +9,7 @@ def cmd_getdns(message):
         dnscontent = ''
         dnscontent = dnsargs.group(2)
         cmdoutput = bash('/var/cld/modules/dns/bin/cld-getdns '+str(dnszone)+' '+str(dnscontent))
+        print('/var/cld/modules/dns/bin/cld-getdns '+str(dnszone)+' '+str(dnscontent))
         print(cmdoutput)
         # bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
      else:
