@@ -7,7 +7,7 @@ def cmd_getdns(message):
         dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@-]+)', message.text)
         dnszone = dnsargs.group(1)
         dnscontent = dnsargs.group(2)
-        cmdoutput = bash('/var/cld/modules/dns/bin/cld-getdns '+str(enable_ip)+' '+str(enable_cmnt))
+        cmdoutput = bash('/var/cld/modules/dns/bin/cld-getdns '+str(dnszone)+' '+str(dnscontent))
         bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
      else:
         bot.send_message(message.chat.id, text="DNS zone or DNS content is not defined, please use format:\n`/getdns example.com 1.2.3.4`", parse_mode='Markdown')
