@@ -14,10 +14,10 @@ rm -f /backup/files/all_etc/${VM}*_etc.tar.gz
 
 if grep -qi "debian\|ubuntu" /etc/*-release
 then
-timeout 300 tar --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/* -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc
+timeout 600 tar --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/* -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc
 elif grep -qi "centos\|rhel\|fedora" /etc/*-release
 then
-timeout 300 tar -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/*
+timeout 600 tar -cvzf /backup/files/all_etc/${VM}_etc.tar.gz $LOCALMOUNTPATH/etc --exclude=*.gz --exclude=*.log --exclude=*/selinux/targeted/*
 fi
 
 umount $LOCALMOUNTPATH
