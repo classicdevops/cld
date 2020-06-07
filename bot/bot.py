@@ -99,5 +99,8 @@ def cmd_getid(message):
       pass
     bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
+for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
+  exec(open(botfile).read())
+
 if __name__ == '__main__':
      bot.polling(none_stop=True)
