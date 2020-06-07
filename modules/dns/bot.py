@@ -3,8 +3,8 @@
 def cmd_getdns(message):
    valid_id = str(message.from_user.id)
    if valid_id in allowusers():
-     if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@-]+)', message.text):
-        dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@-]+)', message.text)
+     if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@-]+)?', message.text):
+        dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@-]+)?', message.text)
         dnszone = dnsargs.group(1)
         dnscontent = dnsargs.group(2)
         cmdoutput = bash('/var/cld/modules/dns/bin/cld-getdns '+str(dnszone)+' '+str(dnscontent))
