@@ -58,7 +58,7 @@ def cmd_deldns(message):
    if valid_id in allowusers():
      if re.findall(r'([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|all)', message.text):
         ipargs = re.search('([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|all)', message.text)
-        ipaddr = dnsargs.group(1)
+        ipaddr = ipargs.group(1)
         cmdoutput = bash('/var/cld/modules/dns/bin/cld-getip '+str(ipaddr))
         bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
      else:
