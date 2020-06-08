@@ -13,5 +13,5 @@ echo Instance info:
 grep "$CHECKIP" /var/cld/access/groups/*/clouds | cut -d : -f 2- | cut -d _ -f -2 | sed 's#_# - #g'
 echo
 echo DNS info:
-grep "$CHECKIP" -R --color=always /var/cld/modules/dns/data/cf/`TZ=Europe/Moscow date +%F`/ | cut -d : -f 2-
+grep "$CHECKIP" -R /var/cld/modules/dns/data/cf/`TZ=Europe/Moscow date +%F`/ | cut -d : -f 2-
 ) | awk '{print "`"$0"`"}'
