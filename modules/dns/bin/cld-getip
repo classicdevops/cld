@@ -2,4 +2,4 @@
 source /var/cld/modules/dns/bin/include/dnsfuncs
 CHECKIP=$(egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 test $CHECKIP || echoexit1 incorrect ip address
-grep "$1" -R --color=always /var/cld/modules/dns/data/cf/`TZ=Europe/Moscow date +%F`/ | cut -d : -f 2-
+grep "$1" -R --color=always /var/cld/modules/dns/data/cf/`TZ=Europe/Moscow date +%F`/ | cut -d : -f 2- | awk '{print "`"$0"`"}'
