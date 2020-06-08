@@ -1,0 +1,10 @@
+#!/bin/bash
+source /var/cld/modules/dns/bin/include/dnsfuncs
+DNS_ZONE=${1,,}
+MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
+
+for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+do
+cf-dns-api-creds
+cf-dns-get-zone ${MAIN_ZONE}
+done | grep "${MAIN_ZONE}" | awk '{print "`"$2"`"}'

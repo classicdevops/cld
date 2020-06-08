@@ -28,6 +28,14 @@ curl -s -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&
      -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | grep "\ $1\ " | awk '{print $4}'
 }
 
+cf-dns-get-zone()
+{
+curl -s -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
+     -H "X-Auth-Email: ${CFACC}" \
+     -H "X-Auth-Key: ${CFKEY}" \
+     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | grep "$1"
+}
+
 cf-dns-record-add()
 {
 TYPE=${1^^}
