@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 for OPTS in ${@:1}
 do
@@ -13,7 +13,9 @@ echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
 mkdir /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
-echo "${DESCRIPTION}" > /var/cld/deploy/templates/${TEMPLATE}/description
+
+test "$DESCRIPTION" && DESCRIPTION_STATE=1
+test "$DESCRIPTION_STATE" && echo "${DESCRIPTION}" > /var/cld/deploy/templates/${TEMPLATE}/description
 
 touch /var/cld/deploy/templates/${TEMPLATE}/script
 
@@ -39,3 +41,5 @@ echo ${DEBUG} > /var/cld/deploy/templates/${TEMPLATE}/debug
 echo "$CRON" | egrep -q "^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|[0-6]\*\-[0-6]|[0-6])$" && CRON_STATE=1 || CRON_STATE=0
 echo ${CRON_STATE} > /var/cld/deploy/templates/${TEMPLATE}/cron
 test ${CRON_STATE} == 1 && echo ${CRON} > /var/cld/deploy/templates/${TEMPLATE}/cron_time
+
+ls /var/cld/deploy/templates/${TEMPLATE}/*
