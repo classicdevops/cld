@@ -16,7 +16,7 @@ done
 create-deploy()
 {
 stat /var/cld/deploy/deploys/${TEMPLATE} &>/dev/null && DEPLOY_EXIST=1
-DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}* 2>/dev/null | tail -1 | egrep "_[0-9]+$" | tr -d _)
+DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
 test "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" && let "DEPLOY_ID++"
 test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TEMPLATE}"
 
