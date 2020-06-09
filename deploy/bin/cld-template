@@ -12,7 +12,7 @@ echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
-mkdir /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
+mkdir -p /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
 
 test "$DESCRIPTION" && DESCRIPTION_STATE=1
 test "$DESCRIPTION_STATE" && echo "${DESCRIPTION}" > /var/cld/deploy/templates/${TEMPLATE}/description
