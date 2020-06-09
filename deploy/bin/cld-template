@@ -15,9 +15,9 @@ done
 
 create-deploy()
 {
-DEPLOY_PREFIX=$(uuidgen | cut -d - -f 1)
-DEPLOY_ID=$(ls /var/cld/deploy/deploys/${TEMPLATE}* | tail -1 | egrep "_[0-9]+$") 2>/dev/null
-test "$DEPLOY_ID" && let "DEPLOY_ID++"
+stat /var/cld/deploy/deploys/${TEMPLATE} &>/dev/null && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}* 2>/dev/null | tail -1 | egrep "_[0-9]+$")
+test "$DEPLOY_ID" != "" or "$DEPLOY_EXIST" == 1 && let "DEPLOY_ID++"
 test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TEMPLATE}"
 
 mkdir -p /var/cld/deploy/deploys/ &>/dev/null
