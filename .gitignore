@@ -20,9 +20,9 @@
 /access/users/admin/*
 
 #deploy
-/devops/templates/
-/devops/deploys/
-/devops/actions/
+/deploy/templates/*
+/deploy/deploys/*
+/deploy/actions/*
 
 #certs
 /docker/xtermnginx/etc/nginx/ssl
