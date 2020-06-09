@@ -10,8 +10,22 @@ echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d 
 echo $OPTS | grep -q  '\--sync=' && SYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 done
 
+create-deploy()
+{
+DEPLOY_PREFIX=$(uuidgen | cut -d - -f 1)
+DEPLOY_ID=$(ls /var/cld/deploy/deploys/${TEMPLATE}* | tail -1 | egrep "_[0-9]+$")
+test "$DEPLOY_ID" && let "DEPLOY_ID++"
+test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TEMPLATE}"
+
+cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY_NAME}
+ls /var/cld/deploy/deploys/${DEPLOY_NAME}/* | cat
+}
+
+create-template()
+{
 mkdir -p /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
 
 test "$DESCRIPTION" && DESCRIPTION_STATE=1
@@ -43,3 +57,6 @@ echo ${CRON_STATE} > /var/cld/deploy/templates/${TEMPLATE}/cron
 test ${CRON_STATE} == 1 && echo ${CRON} > /var/cld/deploy/templates/${TEMPLATE}/cron_time
 
 ls /var/cld/deploy/templates/${TEMPLATE}/* | cat
+}
+
+test "$DEPLOY" && create-deploy || create-template
