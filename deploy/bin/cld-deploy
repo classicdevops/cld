@@ -57,7 +57,7 @@ do
           echo '}'
         done)
       CLD_VARS=${GROUP}_funcvars
-      CLD_TERMINAL=${GROUP}_funcdeploy
+      CLD_DEPLOY=${GROUP}_funcdeploy
     else
       CLD_VARS=EXTERNAL_VARS
       CLD_DEPLOY=EXTERNAL_DEPLOY
@@ -66,8 +66,9 @@ do
     $CLD_VARS
     echo
     $CLD_DEPLOY << EODEPLOYRUN
-stty rows 50 columns 180 ; TERM=xterm
+stty rows 50 columns 180 ; TERM=xterm ; clear
 $DEPLOY_SCRIPT
+exit
 EODEPLOYRUN
 echo "$CLD_ACTION_LOG"
   fi
