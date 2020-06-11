@@ -47,10 +47,10 @@ PS1='\[\033[01;34m\]\d \t \[\033[00m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033
 exec 9>&2
 exec 8> >(
 while [ "$r" != "1" ]; do
-IFS='' read -rt 0.05 line; r=$?
+IFS='' read -rt 0.01 line; r=$?
 if ! [ "${#line}" = "0" ]; then echo -ne "\e[1;31m${line}" ; fi
 if [ "$r" = "0" ] ; then echo -e "\e[0m"; fi
-if ! [ "$r" = "0" ] && ! [ "$r" = "142" ]; then sleep 0.05; fi
+if ! [ "$r" = "0" ] && ! [ "$r" = "142" ]; then sleep 0.01; fi
 done)
 function undirect(){ exec 2>&9; }
 function redirect(){ exec 2>&8; }
