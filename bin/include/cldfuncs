@@ -74,6 +74,16 @@ grep "$1" -qR --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date 
 && echo "###############################################" && echo
 }
 
+ctail()
+{
+while read -e LINE
+do
+test "$iln" -gt "$1" &>/dev/null && cat << EOL || let iln++
+$LINE
+EOL
+done
+}
+
 CUSTOM_FUNCS_ACTIVATE(){
 source  <(for GROUPFUNC in funcvars functerm funcmount funcumount 
     do
