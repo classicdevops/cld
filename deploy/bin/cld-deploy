@@ -20,6 +20,7 @@ done
 
 ACTION_PREFIX=$(uuidgen  | cut -b -5)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
+mkdir -p /var/cld/deploy/actions/ &>/dev/null
 cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
 
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
