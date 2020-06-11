@@ -108,4 +108,5 @@ echo "Log file: $CLD_ACTION_LOG"
 echo
   fi
 done
-test "$BACKGROUND" && bg && disown
+test "$BACKGROUND" && bg
+test "$BACKGROUND" && disown
