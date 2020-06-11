@@ -1,0 +1,71 @@
+#!/bin/bash
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+done
+
+source /var/cld/deploy/templates/${DEPLOY}/vars
+
+for OPTS in ${@:1}
+echo $OPTS | grep -q  '\--clouds=' && CLOUDS=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--sync=' && SYNC=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
+done
+
+ACTION_PREFIX=$(uuidgen  | cut -b -5)
+ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
+cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
+
+DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
+
+cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
+DESCRIPTION="${DESCRIPTION}"
+CLOUDS="${CLOUDS}"
+BACKUP=${BACKUP}
+CUSTOM_BACKUP=${CUSTOM_BACKUP}
+TEST=${TEST}
+SYNC=${SYNC}
+DEBUG=${DEBUG}
+CRON="${CRON}"
+EOVARS
+
+source /var/cld/deploy/actions/${ACTION_NAME}/vars
+source /var/cld/bin/include/cldfuncs
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
+#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
+for VM in $(CLOUDS_USER_ALLOWED | grep "$(echo $CLOUDS | tr ',' '\n')")
+do
+  CLD_DEPLOY_LOGS
+  if [ "$VM" = "" ] ; then
+   echo "you choosed incorrect VM, please try again and type numbers only"
+  else
+    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6)
+    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
+    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
+    then
+    source <(for GROUPFUNC in funcvars funcdeploy
+        do
+          echo "${GROUP}_${GROUPFUNC}(){"
+          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+          echo '}'
+        done)
+      CLD_VARS=${GROUP}_funcvars
+      CLD_TERMINAL=${GROUP}_funcdeploy
+    else
+      CLD_VARS=EXTERNAL_VARS
+      CLD_DEPLOY=EXTERNAL_DEPLOY
+    fi
+    echo "Deploy started at $VM"
+    $CLD_VARS
+    echo
+    $CLD_DEPLOY << EODEPLOYRUN
+stty rows 50 columns 180 ; TERM=xterm ; clear
+$DEPLOY_SCRIPT
+EODEPLOYRUN
+  fi
+done

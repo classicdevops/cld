@@ -15,6 +15,11 @@ mkdir -p /var/cld/log/session/ &>/dev/null
 CLD_LOG=/var/cld/log/session/${SUDO_USER}_${VM}_`date +"%d-%m-%y_%H-%M"`
 }
 
+CLD_DEPLOY_LOGS() {
+mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/deploy_log &>/dev/null
+CLD_ACTION_LOG=/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${VM}
+}
+
 EXTERNAL_VARS() {
 VMN=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
@@ -41,6 +46,11 @@ echo $USR | grep -q root && sshfs -p $PRT ${PWDOPT} -o allow_other,UserKnownHost
 EXTERNAL_TERMINAL() {
 echo $USR | grep -q root && sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV | tee -a $CLD_LOG
 echo $USR | grep -q root || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i" | tee -a $CLD_LOG
+}
+
+EXTERNAL_DEPLOY() {
+echo $USR | grep -q root && sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" | tee -a $CLD_ACTION_LOG
+echo $USR | grep -q root || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" | tee -a $CLD_ACTION_LOG
 }
 
 EXTERNAL_UMOUNT() {
