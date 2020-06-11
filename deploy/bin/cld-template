@@ -7,7 +7,7 @@ echo $OPTS | grep -q  '\--desc=' && DESCRIPTION=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--sync=' && SYNC=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--deploy' && DEPLOY=1
@@ -43,7 +43,7 @@ test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/cust
 test "$TEST" || TEST=0
 test "${TEST}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/test_script
 
-test "$SYNC" || SYNC=1
+test "$ASYNC" || ASYNC=0
 
 test "$DEBUG" || DEBUG=0
 
@@ -54,7 +54,7 @@ DESCRIPTION="${DESCRIPTION}"
 BACKUP=${BACKUP}
 CUSTOM_BACKUP=${CUSTOM_BACKUP}
 TEST=${TEST}
-SYNC=${SYNC}
+ASYNC=${ASYNC}
 DEBUG=${DEBUG}
 CRON="${CRON}"
 EOVARS

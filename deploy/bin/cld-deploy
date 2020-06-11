@@ -13,7 +13,7 @@ echo $OPTS | grep -q  '\--clouds=' && CLOUDS=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--sync=' && SYNC=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
@@ -31,7 +31,7 @@ CLOUDS="${CLOUDS}"
 BACKUP=${BACKUP}
 CUSTOM_BACKUP=${CUSTOM_BACKUP}
 TEST=${TEST}
-SYNC=${SYNC}
+ASYNC=${ASYNC}
 DEBUG=${DEBUG}
 CRON="${CRON}"
 EOVARS
@@ -39,7 +39,7 @@ EOVARS
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
 source /var/cld/bin/include/cldfuncs
 
-test "$SYNC" == 0 && BACKGROUND='&>/dev/null &'
+test "$ASYNC" == 1 && BACKGROUND='&>/dev/null &'
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 180 ; TERM=xterm
@@ -83,7 +83,7 @@ do
     echo "Deploy started at $VM"
     $CLD_VARS
     echo
-    SCRIPT_LENGHT=$(wc -l << EODEPLOYRUN
+    SCRIPT_LENGTH=$(wc -l << EODEPLOYRUN
 $OUTPUT_FORMAT
 $DEPLOY_SCRIPT
 $OUTPUT_FORMAT
@@ -92,7 +92,7 @@ EODEPLOYRUN
     source <(
     echo "("
     cat << 'EOSOURCE'
-$CLD_DEPLOY << EODEPLOYRUN  | cldtail ${SCRIPT_LENGHT} | tee -a $CLD_ACTION_LOG
+$CLD_DEPLOY << EODEPLOYRUN  | cldtail ${SCRIPT_LENGTH} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_SCRIPT
 exit
@@ -103,6 +103,7 @@ EOSOURCE
      echo
      echo "Log file: $CLD_ACTION_LOG"
      echo
+     test "$BACKGROUND" && sleep 0.1s
   fi
 done
 test "$BACKGROUND" && bg
