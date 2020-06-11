@@ -91,7 +91,7 @@ echo
 exit
 EODEPLOYRUN
 )
-let SCRIPT_LENGHT+5
+let SCRIPT_LENGHT+4
 source <(
 echo "("
 cat << 'EOSOURCE'
