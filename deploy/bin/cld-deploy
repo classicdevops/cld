@@ -41,6 +41,8 @@ source /var/cld/bin/include/cldfuncs
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 180 ; TERM=xterm
 PS1='\[\033[01;34m\]\d \t \[\033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]$ \[\033[00m\] '
+exec 3>&2
+exec 2> >(sed -u 's/^\(.*\)$/'$'\e''[31m\1'$'\e''[m/' >&3)
 EOUTPUT
 )
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
