@@ -42,7 +42,7 @@ source /var/cld/bin/include/cldfuncs
 test "$ASYNC" == 1 && BACKGROUND='&>/dev/null &'
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
-stty rows 50 columns 180 ; TERM=xterm
+stty rows 50 columns 980 ; TERM=xterm
 PS1='\[\033[01;34m\]\d \t \[\033[00m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]$ \[\033[00m\] '
 exec 9>&2
 exec 8> >(
