@@ -1,4 +1,4 @@
-x
+#!/bin/bash
 
 for OPTS in ${@:1}
 do
