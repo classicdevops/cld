@@ -49,8 +49,8 @@ echo $USR | grep -q root || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/
 }
 
 EXTERNAL_DEPLOY() {
-echo $USR | grep -q root && sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1 | tee -a $CLD_ACTION_LOG
-echo $USR | grep -q root || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" 2>&1 | tee -a $CLD_ACTION_LOG
+echo $USR | grep -q root && sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1 | tee -a $CLD_ACTION_LOG
+echo $USR | grep -q root || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo bash -s" 2>&1 | tee -a $CLD_ACTION_LOG
 }
 
 EXTERNAL_UMOUNT() {

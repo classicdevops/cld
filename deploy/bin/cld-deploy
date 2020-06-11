@@ -66,9 +66,10 @@ do
     $CLD_VARS
     echo
     $CLD_DEPLOY << EODEPLOYRUN
-#stty rows 50 columns 180 ; TERM=xterm
-set -x
+PS1='\[\033[01;34m\]\d \t \033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]$ \[\033[00m\] '
+stty rows 50 columns 180 ; TERM=xterm
 $DEPLOY_SCRIPT
+exit
 EODEPLOYRUN
 echo "$CLD_ACTION_LOG"
   fi
