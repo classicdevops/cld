@@ -74,7 +74,7 @@ grep "$1" -qR --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date 
 && echo "###############################################" && echo
 }
 
-ctail()
+cldtail()
 {
 while read -e LINE
 do
