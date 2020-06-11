@@ -84,7 +84,7 @@ $DEPLOY_SCRIPT
 exit
 EODEPLOYRUN
 echo
-echo "$CLD_ACTION_LOG"
+echo "Log file: $CLD_ACTION_LOG"
 echo
   fi
 done
