@@ -66,8 +66,9 @@ do
     $CLD_VARS
     echo
     $CLD_DEPLOY << EODEPLOYRUN
-stty rows 50 columns 180 ; TERM=xterm ; clear
+stty rows 50 columns 180 ; TERM=xterm
 $DEPLOY_SCRIPT
 EODEPLOYRUN
+echo "$CLD_ACTION_LOG"
   fi
 done
