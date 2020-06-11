@@ -94,19 +94,19 @@ EODEPLOYRUN
 )
 let SCRIPT_LENGHT+5
 source <(
+echo "("
 cat << 'EOSOURCE'
-(
 $CLD_DEPLOY << EODEPLOYRUN
 $OUTPUT_FORMAT
 $DEPLOY_SCRIPT
 exit
 EODEPLOYRUN
 EOSOURCE
-echo ')' ${BACKGROUND}
+echo ") ${BACKGROUND}"
 )
 echo
 echo "Log file: $CLD_ACTION_LOG"
 echo
   fi
 done
-test "$BACKGROUND" && wait
+test "$BACKGROUND" && bg && disown
