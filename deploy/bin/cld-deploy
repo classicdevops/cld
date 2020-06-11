@@ -101,7 +101,7 @@ EOSOURCE
     echo ") ${BACKGROUND}"
 )
      echo
-     echo -e "43mLog file: \033[$CLD_ACTION_LOG\033[00m"
+     echo -e "Log file: \033[43m$CLD_ACTION_LOG\033[00m"
      echo
      test "$BACKGROUND" && sleep 0.1s
   fi
