@@ -67,8 +67,8 @@ do
     echo
     $CLD_DEPLOY << EODEPLOYRUN
 stty rows 50 columns 180 ; TERM=xterm
+set -x
 $DEPLOY_SCRIPT
-exit
 EODEPLOYRUN
 echo "$CLD_ACTION_LOG"
   fi
