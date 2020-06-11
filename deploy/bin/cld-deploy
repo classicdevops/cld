@@ -105,5 +105,6 @@ EOSOURCE
      test "$BACKGROUND" && sleep 0.1s
   fi
 done
+test "$BACKGROUND" && while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/deploy/actions/${ACTION_NAME}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars && break ; sleep 1s ; done &
 test "$BACKGROUND" && bg
 test "$BACKGROUND" && disown
