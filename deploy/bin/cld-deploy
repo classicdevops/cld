@@ -39,7 +39,8 @@ EOVARS
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
 source /var/cld/bin/include/cldfuncs
 
-test "$SYNC" == 0 && BACKGROUND='&'
+#test "$SYNC" == 0 && 
+BACKGROUND='&'
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 180 ; TERM=xterm
@@ -58,7 +59,6 @@ trap "redirect;" DEBUG ; PROMPT_COMMAND='undirect;'
 EOUTPUT
 )
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 for VM in $(CLOUDS_USER_ALLOWED | grep "$(echo $CLOUDS | tr ',' '\n')")
 do
   CLD_DEPLOY_LOGS
@@ -109,4 +109,4 @@ echo "Log file: $CLD_ACTION_LOG"
 echo
   fi
 done
-test "$BACKGROUND" && bg && disown
+test "$BACKGROUND" && wait
