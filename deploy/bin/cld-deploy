@@ -39,7 +39,7 @@ EOVARS
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
 source /var/cld/bin/include/cldfuncs
 
-test "$SYNC" == 0 && BACKGROUND='&'
+test "$SYNC" == 0 && BACKGROUND='&>/dev/null &'
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 180 ; TERM=xterm
