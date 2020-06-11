@@ -78,7 +78,7 @@ cldtail()
 {
 while read -e LINE
 do
-test "$iln" -gt "$1" &>/dev/null && cat << EOL || let iln++
+[ "$iln" -gt "$1" ] &>/dev/null && cat << EOL || let iln++
 $LINE
 EOL
 done
