@@ -62,7 +62,7 @@ for VM in $(CLOUDS_USER_ALLOWED | grep "$(echo $CLOUDS | tr ',' '\n')")
 do
   CLD_DEPLOY_LOGS
   if [ "$VM" = "" ] ; then
-   echo "you choosed incorrect VM, please try again and type numbers only"
+   echo "VM is not defined"
   else
     GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6)
     if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
@@ -89,20 +89,20 @@ $DEPLOY_SCRIPT
 $OUTPUT_FORMAT
 EODEPLOYRUN
 )
-source <(
-echo "("
-cat << 'EOSOURCE'
+    source <(
+    echo "("
+    cat << 'EOSOURCE'
 $CLD_DEPLOY << EODEPLOYRUN  | cldtail ${SCRIPT_LENGHT} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_SCRIPT
 exit
 EODEPLOYRUN
 EOSOURCE
-echo ") ${BACKGROUND}"
+    echo ") ${BACKGROUND}"
 )
-echo
-echo "Log file: $CLD_ACTION_LOG"
-echo
+     echo
+     echo "Log file: $CLD_ACTION_LOG"
+     echo
   fi
 done
 test "$BACKGROUND" && bg
