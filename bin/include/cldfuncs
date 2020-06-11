@@ -76,7 +76,7 @@ grep "$1" -qR --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date 
 
 cldtail()
 {
-while read -e LINE
+while read -re LINE
 do
 [ "$iln" -gt "$1" ] &>/dev/null && cat << EOL || let iln++
 $LINE
