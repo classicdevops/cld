@@ -3,6 +3,13 @@
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '\--template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--deploy' && DEPLOY=1
+done
+
+test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
+
+for OPTS in ${@:1}
+do
 echo $OPTS | grep -q  '\--desc=' && DESCRIPTION=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
@@ -10,7 +17,6 @@ echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d 
 echo $OPTS | grep -q  '\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--deploy' && DEPLOY=1
 done
 
 create-deploy()
@@ -22,6 +28,15 @@ test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TE
 
 mkdir -p /var/cld/deploy/deploys/ &>/dev/null
 cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY_NAME}
+cat > /var/cld/deploy/deploys/${DEPLOY_NAME}/vars << EOVARS
+DESCRIPTION="${DESCRIPTION}"
+BACKUP=${BACKUP}
+CUSTOM_BACKUP=${CUSTOM_BACKUP}
+TEST=${TEST}
+ASYNC=${ASYNC}
+DEBUG=${DEBUG}
+CRON="${CRON}"
+EOVARS
 ls /var/cld/deploy/deploys/${DEPLOY_NAME}/* | cat
 }
 
