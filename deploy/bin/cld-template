@@ -1,4 +1,4 @@
-#!/bin/bash
+x
 
 for OPTS in ${@:1}
 do
@@ -10,7 +10,7 @@ echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d 
 echo $OPTS | grep -q  '\--sync=' && SYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--deploy' && DEPLOY=1
 done
 
 create-deploy()
@@ -29,33 +29,35 @@ create-template()
 {
 mkdir -p /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
 
-test "$DESCRIPTION" && DESCRIPTION_STATE=1
-test "$DESCRIPTION_STATE" && echo "${DESCRIPTION}" > /var/cld/deploy/templates/${TEMPLATE}/description
+test "$DESCRIPTION" || DESCRIPTION=0
 
 touch /var/cld/deploy/templates/${TEMPLATE}/script
 
 test "$BACKUP" || BACKUP=0
-echo ${BACKUP} > /var/cld/deploy/templates/${TEMPLATE}/backup
 test "${BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/backup_files
 
 test "$CUSTOM_BACKUP" || CUSTOM_BACKUP=0
-echo ${CUSTOM_BACKUP} > /var/cld/deploy/templates/${TEMPLATE}/custom_backup
 test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_backup_script
 test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_restore_script
 
 test "$TEST" || TEST=0
-echo ${TEST} > /var/cld/deploy/templates/${TEMPLATE}/test
 test "${TEST}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/test_script
 
 test "$SYNC" || SYNC=1
-echo ${SYNC} > /var/cld/deploy/templates/${TEMPLATE}/sync
 
 test "$DEBUG" || DEBUG=0
-echo ${DEBUG} > /var/cld/deploy/templates/${TEMPLATE}/debug
 
-echo "$CRON" | egrep -q "^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|[0-6]\*\-[0-6]|[0-6])$" && CRON_STATE=1 || CRON_STATE=0
-echo ${CRON_STATE} > /var/cld/deploy/templates/${TEMPLATE}/cron
-test ${CRON_STATE} == 1 && echo ${CRON} > /var/cld/deploy/templates/${TEMPLATE}/cron_time
+echo "$CRON" | egrep -q "^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|[0-6]\*\-[0-6]|[0-6])$" || CRON=0
+
+cat > /var/cld/deploy/templates/${TEMPLATE}/vars << EOVARS
+DESCRIPTION="${DESCRIPTION}"
+BACKUP=${BACKUP}
+CUSTOM_BACKUP=${CUSTOM_BACKUP}
+TEST=${TEST}
+SYNC=${SYNC}
+DEBUG=${DEBUG}
+CRON="${CRON}"
+EOVARS
 
 ls /var/cld/deploy/templates/${TEMPLATE}/* | cat
 }
