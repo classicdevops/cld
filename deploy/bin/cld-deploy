@@ -89,7 +89,6 @@ $DEPLOY_SCRIPT
 $OUTPUT_FORMAT
 EODEPLOYRUN
 )
-#let SCRIPT_LENGHT+4
 source <(
 echo "("
 cat << 'EOSOURCE'
