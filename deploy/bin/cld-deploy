@@ -50,7 +50,6 @@ exec 8> >(
         if ! [ "$r" = "0" ] && ! [ "$r" = "142" ]; then sleep 0.05; fi
     done
 )
-
 function undirect(){ exec 2>&9; }
 function redirect(){ exec 2>&8; }
 trap "redirect;" DEBUG
