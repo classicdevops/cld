@@ -38,6 +38,11 @@ EOVARS
 
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
 source /var/cld/bin/include/cldfuncs
+OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+stty rows 50 columns 180 ; TERM=xterm
+PS1='\[\033[01;34m\]\d \t \[\033[01;31m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]$ \[\033[00m\] '
+EOUTPUT
+)
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 #mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 for VM in $(CLOUDS_USER_ALLOWED | grep "$(echo $CLOUDS | tr ',' '\n')")
@@ -65,8 +70,14 @@ do
     echo "Deploy started at $VM"
     $CLD_VARS
     echo
+    SCRIPT_LENGHT=$(wc -l << EODEPLOYRUN
+$OUTPUT_FORMAT
+$DEPLOY_SCRIPT
+exit
+EODEPLOYRUN
+)
     $CLD_DEPLOY << EODEPLOYRUN
-stty rows 50 columns 180 ; TERM=xterm
+$OUTPUT_FORMAT
 $DEPLOY_SCRIPT
 exit
 EODEPLOYRUN
