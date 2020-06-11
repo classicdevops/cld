@@ -80,7 +80,7 @@ do
       CLD_VARS=EXTERNAL_VARS
       CLD_DEPLOY=EXTERNAL_DEPLOY
     fi
-    echo -e "\033[43mDeploy started at $VM\033[00m"
+    echo -e "Deploy started at \033[43m$VM\033[00m"
     $CLD_VARS
     echo
     SCRIPT_LENGTH=$(wc -l << EODEPLOYRUN
@@ -101,7 +101,7 @@ EOSOURCE
     echo ") ${BACKGROUND}"
 )
      echo
-     echo -e "\033[43mLog file: $CLD_ACTION_LOG\033[00m"
+     echo -e "43mLog file: \033[$CLD_ACTION_LOG\033[00m"
      echo
      test "$BACKGROUND" && sleep 0.1s
   fi
