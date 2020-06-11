@@ -45,7 +45,7 @@ exec 9>&2
 exec 8> >(
     while [ "$r" != "1" ]; do
         IFS='' read -rt 0.05 line; r=$?
-        if ! [ "${#line}" = "0" ]; then echo -ne "\e[1;32m${line}" ; fi
+        if ! [ "${#line}" = "0" ]; then echo -ne "\e[1;31m${line}" ; fi
         if [ "$r" = "0" ] ; then echo -e "\e[0m"; fi
         if ! [ "$r" = "0" ] && ! [ "$r" = "142" ]; then sleep 0.05; fi
     done
