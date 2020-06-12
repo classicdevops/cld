@@ -44,6 +44,16 @@ test "$ASYNC" == 1 && BACKGROUND='&>/dev/null &'
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 2000 ; TERM=xterm
 PS1='\[\033[01;34m\]\d \t \[\033[00m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]$ \[\033[00m\] '
+exec 9>&2
+exec 8> >(
+while :; do
+IFS='' read -r line; r=$?
+! [ "${#line}" = "0" ] && echo -ne "\e[1;31m${line}"
+[ "$r" = "0" ] && echo -e "\e[0m"
+done)
+function undirect(){ exec 2>&9; }
+function redirect(){ exec 2>&8; }
+trap "redirect;" DEBUG ; PROMPT_COMMAND='undirect;'
 unset HISTFILE
 EOUTPUT
 )
