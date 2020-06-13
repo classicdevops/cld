@@ -25,7 +25,7 @@ done
 test "$CLOUDS" || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
 test "$CLOUDS" || echoexit1 "CLOUDS is not defined"
 
-ACTION_PREFIX=$(date +%d%m%Y_%H-%M-%)
+ACTION_PREFIX=$(date +%d%m%Y_%H-%M-%S)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
 mkdir -p /var/cld/deploy/actions/ &>/dev/null
 cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
