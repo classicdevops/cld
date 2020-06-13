@@ -67,7 +67,7 @@ LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq 
 CLOUDS_USER_ALLOWED() {
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--groups=' && GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--groups=' && GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')" || GROUPS=""
 done
 for GROUP in $(cat /var/cld/access/users/${SUDO_USER}/groups | grep "${GROUPS}")
 do
