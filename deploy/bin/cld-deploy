@@ -125,10 +125,32 @@ EOSOURCE
      test "$BACKGROUND" && sleep 0.1s
   fi
 done
+if [ "$BACKGROUND" ]
+	then
+	    while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/deploy/actions/${ACTION_NAME}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars && break ; sleep 1s ; done &>/dev/null &
+    else
+        DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars
+fi
+if [ "$TEST" == "1" ]
+    then
+        AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | wc -l)
+        AMOUNT_INSTANCES=$($(CLOUDS_USER_ALLOWED | grep "${CLOUDS}" | wc -l)
+        if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
+        then 
+            echo TEST_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status
+            echo All tests passed succesfully
+        else
+            echo TEST_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status	
+            echo Tests failed for:
+            for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED | grep "${CLOUDS}" | grep -v  "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)")
+            do
+            echo "/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE}"
+            done
+        fi
+fi
 test "$NEXT_DEPLOY" && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before start next deploy; echo ; wait")
 /var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $(test "$NEXT_DEPLOY_ARGS" && echo "${NEXT_DEPLOY_ARGS}")
 EONEXTDEPLOY
 )
-test "$BACKGROUND" && while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/deploy/actions/${ACTION_NAME}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars && break ; sleep 1s ; done &>/dev/null &
 test "$BACKGROUND" && disown
