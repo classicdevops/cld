@@ -9,7 +9,7 @@ source /var/cld/deploy/templates/${DEPLOY}/vars
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '\--clouds=' && CLOUDS=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
@@ -18,14 +18,16 @@ echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
+test $CLOUDS || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds)"
+test $CLOUDS || echo CLOUDS is not defined && exit 1
+
 ACTION_PREFIX=$(uuidgen  | cut -b -5)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
 mkdir -p /var/cld/deploy/actions/ &>/dev/null
 cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
 
-test $CLOUDS || CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
-test $CLOUDS || echo CLOUDS is not defined && exit 1
-
+echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
+CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
 test $DEPLOY_TEST_SCRIPT || TEST=0
