@@ -65,16 +65,23 @@ LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq 
 }
 
 CLOUDS_USER_ALLOWED() {
-GROUPS=""
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--groups=' && GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')" || GROUPS=""
+echo $OPTS | grep -q  '^\--groups=' && GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 done
-for GROUP in $(cat /var/cld/access/users/${SUDO_USER}/groups | grep "${GROUPS}")
+if [ "${GROUPS}" ] 
+then
+for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${GROUPS}")
 do
 cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
 done
-[ "${GROUPS}" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
+else
+for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups)
+do
+cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
+done
+cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
+fi
 }
 
 CHECK_DNS()
