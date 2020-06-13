@@ -131,6 +131,7 @@ if [ "$BACKGROUND" ]
     else
         DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars
 fi
+[ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status; echo ; wait")
 if [ "$TEST" == "1" ]
     then
         AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | wc -l)
