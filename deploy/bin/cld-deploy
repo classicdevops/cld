@@ -11,6 +11,7 @@ source /var/cld/deploy/templates/${DEPLOY}/vars
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
@@ -38,6 +39,7 @@ test "$DEPLOY_TEST_SCRIPT" || TEST=0
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
+CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
@@ -67,7 +69,7 @@ ACTION_NAME="${ACTION_NAME}"
 EOACTIONVARS
 )
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-for VM in $(CLOUDS_USER_ALLOWED | grep "${CLOUDS}")
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}")
 do
   CLD_DEPLOY_LOGS
   if [ "$VM" = "" ] ; then
