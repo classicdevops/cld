@@ -1,2 +1,2 @@
-cld - classic infrastructure management tool based on bash
+cld - classic infrastructure deploy and management system based on bash
 
