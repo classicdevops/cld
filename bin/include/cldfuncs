@@ -73,7 +73,7 @@ for GROUP in $(cat /var/cld/access/users/${SUDO_USER}/groups | grep "${GROUPS}")
 do
 cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
 done
-cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
+[ "${GROUPS}" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
 }
 
 CHECK_DNS()
