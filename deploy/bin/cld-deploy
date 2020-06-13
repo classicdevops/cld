@@ -31,7 +31,7 @@ echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
 CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
-test $DEPLOY_TEST_SCRIPT || TEST=0
+test "$DEPLOY_TEST_SCRIPT" || TEST=0
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
