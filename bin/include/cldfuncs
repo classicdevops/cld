@@ -69,19 +69,11 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 done
-if [ "$CLD_GROUPS" != "" ]
-then
 for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
 do
 cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
 done
-else
-for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups)
-do
-cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
-done
-cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
-fi
+[ "$CLD_GROUPS" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
 }
 
 CHECK_DNS()
