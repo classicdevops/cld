@@ -2,21 +2,24 @@
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '\--template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--deploy' && DEPLOY=1
+echo $OPTS | grep -q  '^\--template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--deploy' && DEPLOY=1
 done
 
 test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '\--desc=' && DESCRIPTION=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2-)
+echo $OPTS | grep -q  '^\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
 create-deploy()
@@ -28,12 +31,16 @@ test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TE
 
 mkdir -p /var/cld/deploy/deploys/ &>/dev/null
 cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY_NAME}
+test "${CLOUDS}" && echo "${CLOUDS}" > /var/cld/deploy/deploys/${DEPLOY_NAME}/clouds
 cat > /var/cld/deploy/deploys/${DEPLOY_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
-BACKUP=${BACKUP}
-CUSTOM_BACKUP=${CUSTOM_BACKUP}
-TEST=${TEST}
-ASYNC=${ASYNC}
+BACKUP="${BACKUP}"
+CUSTOM_BACKUP="${CUSTOM_BACKUP}"
+TEST="${TEST}"
+ASYNC="${ASYNC}"
+NEXT_DEPLOY="${NEXT_DEPLOY}"
+NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
+NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
 DEBUG=${DEBUG}
 CRON="${CRON}"
 EOVARS
@@ -66,10 +73,13 @@ echo "$CRON" | egrep -q "^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0
 
 cat > /var/cld/deploy/templates/${TEMPLATE}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
-BACKUP=${BACKUP}
-CUSTOM_BACKUP=${CUSTOM_BACKUP}
-TEST=${TEST}
-ASYNC=${ASYNC}
+BACKUP="${BACKUP}"
+CUSTOM_BACKUP="${CUSTOM_BACKUP}"
+TEST="${TEST}"
+ASYNC="${ASYNC}"
+NEXT_DEPLOY="${NEXT_DEPLOY}"
+NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
+NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
 DEBUG=${DEBUG}
 CRON="${CRON}"
 EOVARS
