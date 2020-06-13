@@ -11,6 +11,7 @@ test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
@@ -34,6 +35,7 @@ cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY_NAM
 test "${CLOUDS}" && echo "${CLOUDS}" > /var/cld/deploy/deploys/${DEPLOY_NAME}/clouds
 cat > /var/cld/deploy/deploys/${DEPLOY_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
+CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
