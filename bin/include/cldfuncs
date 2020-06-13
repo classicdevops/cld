@@ -69,7 +69,7 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--groups=' && GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 done
-if [ "${GROUPS}" ] 
+if [ "${GROUPS}" != "" ]
 then
 for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${GROUPS}")
 do
