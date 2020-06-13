@@ -154,4 +154,4 @@ $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before sta
 /var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $(test "$NEXT_DEPLOY_ARGS" && echo "${NEXT_DEPLOY_ARGS}")
 EONEXTDEPLOY
 )
-test "$BACKGROUND" && disown
+test "$BACKGROUND" && disown &>/dev/null
