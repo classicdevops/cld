@@ -19,8 +19,8 @@ echo $OPTS | grep -q  '\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
-test $CLOUDS || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds)"
-test $CLOUDS || echoexit1 "CLOUDS is not defined"
+test "$CLOUDS" || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
+test "$CLOUDS" || echoexit1 "CLOUDS is not defined"
 
 ACTION_PREFIX=$(uuidgen  | cut -b -5)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
