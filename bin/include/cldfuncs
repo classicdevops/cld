@@ -95,6 +95,12 @@ EOL
 done
 }
 
+echoexit1()
+{
+echo "${@:1}"
+exit 1
+}
+
 CUSTOM_FUNCS_ACTIVATE(){
 source  <(for GROUPFUNC in funcvars functerm funcmount funcumount 
     do

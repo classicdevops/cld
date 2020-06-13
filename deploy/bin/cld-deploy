@@ -19,7 +19,7 @@ echo $OPTS | grep -q  '\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
 test $CLOUDS || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds)"
-test $CLOUDS || echo CLOUDS is not defined && exit 1
+test $CLOUDS || echoexit1 echo CLOUDS is not defined
 
 ACTION_PREFIX=$(uuidgen  | cut -b -5)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
