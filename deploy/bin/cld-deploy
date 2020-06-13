@@ -54,7 +54,7 @@ unset HISTFILE
 EOUTPUT
 )
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-for VM in $(CLOUDS_USER_ALLOWED | grep "$(echo $CLOUDS | tr ',' '\n')")
+for VM in $(CLOUDS_USER_ALLOWED | grep "${CLOUDS}")
 do
   CLD_DEPLOY_LOGS
   if [ "$VM" = "" ] ; then
