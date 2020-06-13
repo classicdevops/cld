@@ -96,6 +96,7 @@ $DEPLOY_INIT
 $OUTPUT_FORMAT
 EODEPLOYRUN
 )
+    [ "$DEBUG" == "1" ] && SCRIPT_LENGTH=0
     source <(
     echo "("
     cat << 'EOSOURCE'
