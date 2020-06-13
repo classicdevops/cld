@@ -126,7 +126,7 @@ EOSOURCE
   fi
 done
 test "$NEXT_DEPLOY" && source <(cat << EONEXTDEPLOY
-$([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "wait; echo waiting deploy end before start next deploy")
+$([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo waiting deploy end before start next deploy; wait")
 /var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $(test "$NEXT_DEPLOY_ARGS" && echo "${NEXT_DEPLOY_ARGS}")
 EONEXTDEPLOY
 )
