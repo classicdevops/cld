@@ -12,6 +12,9 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--nextdeployasync=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
@@ -35,10 +38,13 @@ test "$DEPLOY_TEST_SCRIPT" || TEST=0
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
-BACKUP=${BACKUP}
-CUSTOM_BACKUP=${CUSTOM_BACKUP}
-TEST=${TEST}
-ASYNC=${ASYNC}
+BACKUP="${BACKUP}"
+CUSTOM_BACKUP="${CUSTOM_BACKUP}"
+TEST="${TEST}"
+ASYNC="${ASYNC}"
+NEXT_DEPLOY="${NEXT_DEPLOY}"
+NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
+NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
 DEBUG=${DEBUG}
 CRON="${CRON}"
 EOVARS
@@ -116,8 +122,13 @@ EOSOURCE
      echo
      echo -e "Log file: \033[43m$CLD_ACTION_LOG\033[00m"
      echo
+     )
      test "$BACKGROUND" && sleep 0.1s
   fi
 done
+test "$NEXT_DEPLOY" && source <(cat << EONEXTDEPLOY
+$([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "wait; echo waiting deploy end before start next deploy")
+/var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $(test "$NEXT_DEPLOY_ARGS" && echo "${NEXT_DEPLOY_ARGS}")
+EONEXTDEPLOY
 test "$BACKGROUND" && while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/deploy/actions/${ACTION_NAME}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars && break ; sleep 1s ; done &>/dev/null &
 test "$BACKGROUND" && disown
