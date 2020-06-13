@@ -14,7 +14,7 @@ echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | 
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2-)
 echo $OPTS | grep -q  '^\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
