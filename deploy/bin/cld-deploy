@@ -93,7 +93,7 @@ do
     fi
     echo -e "Deploy started at \033[43m$VM\033[00m"
     $CLD_VARS
-    [ "$BACKGROUND" ] || echo
+#    [ "$BACKGROUND" ] || echo
     SCRIPT_LENGTH=$(wc -l << EODEPLOYRUN
 $OUTPUT_FORMAT
 $DEPLOY_INIT
@@ -119,7 +119,7 @@ EODEPLOYTEST
 EOSOURCE
     echo ") ${BACKGROUND}"
 )
-     [ "$BACKGROUND" ] || echo
+#     [ "$BACKGROUND" ] || echo
      echo -e "Log file: \033[43m$CLD_ACTION_LOG\033[00m"
      echo
      test "$BACKGROUND" && sleep 0.1s
