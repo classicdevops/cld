@@ -141,7 +141,7 @@ if [ "$TEST" == "1" ]
             echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
         else
             echo TEST_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status	
-            echo -e "${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:\n"  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
+            echo -e "${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
             for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED | grep "${CLOUDS}" | grep -v  "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)")
             do
             echo "/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE}"
