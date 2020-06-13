@@ -122,7 +122,6 @@ EOSOURCE
      echo
      echo -e "Log file: \033[43m$CLD_ACTION_LOG\033[00m"
      echo
-     )
      test "$BACKGROUND" && sleep 0.1s
   fi
 done
@@ -130,5 +129,6 @@ test "$NEXT_DEPLOY" && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "wait; echo waiting deploy end before start next deploy")
 /var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $(test "$NEXT_DEPLOY_ARGS" && echo "${NEXT_DEPLOY_ARGS}")
 EONEXTDEPLOY
+)
 test "$BACKGROUND" && while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/deploy/actions/${ACTION_NAME}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars && break ; sleep 1s ; done &>/dev/null &
 test "$BACKGROUND" && disown
