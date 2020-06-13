@@ -18,11 +18,12 @@ CLD_LOG=/var/cld/log/session/${SUDO_USER}_${VM}_`date +"%d-%m-%y_%H-%M"`
 CLD_DEPLOY_LOGS() {
 mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/deploy_log &>/dev/null
 CLD_ACTION_LOG=/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${VM}
+[ "$TEST" == "1" ] && mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/test_log &>/dev/null
+[ "$TEST" == "1" ] && CLD_ACTION_TEST_LOG=/var/cld/deploy/actions/${ACTION_NAME}/test_log/${VM}
 }
 
 CLD_DEPLOY_TEST_LOGS() {
-mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/test_log &>/dev/null
-CLD_ACTION_LOG=/var/cld/deploy/actions/${ACTION_NAME}/test_log/${VM}
+
 }
 
 EXTERNAL_VARS() {

@@ -23,11 +23,15 @@ ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
 mkdir -p /var/cld/deploy/actions/ &>/dev/null
 cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
 
+test $CLOUDS || CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
+test $CLOUDS || echo CLOUDS is not defined && exit 1
+
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
+[ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
+test $DEPLOY_TEST_SCRIPT || TEST=0
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
-CLOUDS="${CLOUDS}"
 BACKUP=${BACKUP}
 CUSTOM_BACKUP=${CUSTOM_BACKUP}
 TEST=${TEST}
@@ -60,7 +64,7 @@ do
     if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
     if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
     then
-    source <(for GROUPFUNC in funcvars funcdeploy
+    source <(for GROUPFUNC in funcvars funcdeploy funcdeploynotty
         do
           echo "${GROUP}_${GROUPFUNC}(){"
           cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
@@ -68,9 +72,11 @@ do
         done)
       CLD_VARS=${GROUP}_funcvars
       CLD_DEPLOY=${GROUP}_funcdeploy
+      CLD_DEPLOY_NOTTY=${GROUP}_funcdeploynotty
     else
       CLD_VARS=EXTERNAL_VARS
       CLD_DEPLOY=EXTERNAL_DEPLOY
+      CLD_DEPLOY_NOTTY=EXTERNAL_DEPLOY_NOTTY
     fi
     echo -e "Deploy started at \033[43m$VM\033[00m"
     $CLD_VARS
@@ -89,6 +95,9 @@ $OUTPUT_FORMAT
 $DEPLOY_SCRIPT
 exit &>/dev/null
 EODEPLOYRUN
+[ "$TEST" == "1" ] && $CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG 
+$DEPLOY_TEST_SCRIPT
+EODEPLOYTEST
 EOSOURCE
     echo ") ${BACKGROUND}"
 )
