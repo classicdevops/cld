@@ -95,7 +95,7 @@ update-templates-from-repo()
 stat /tmp/temprepos &>/dev/null && rm -rf /tmp/temprepos/
 mkdir /tmp/temprepos &>/dev/null
 cd /tmp/temprepos
-for TEMPLATE_REPO in $(cat /deploy/template_repos)
+for TEMPLATE_REPO in $(cat /var/cld/deploy/template_repos)
 do
   git clone $TEMPLATE_REPO
   TEMPLATE_REPO_NAME=$(echo "${TEMPLATE_REPO}" | rev | cut -d . -f 2- | rev)
