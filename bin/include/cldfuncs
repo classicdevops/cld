@@ -91,7 +91,7 @@ iln=0
 while IFS='' read -e LINE
 do
 [ "$iln" -gt "$1" ] &>/dev/null && cat << EOL || let iln++
-${LINE}
+$([ ${#LINE} -ge 200 ] && printf "${LINE:0:200}\n${LINE:200:9999}\n" || printf "${LINE}\n")
 EOL
 done
 }
