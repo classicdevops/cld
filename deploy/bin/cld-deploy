@@ -23,8 +23,8 @@ echo $OPTS | grep -q  '^\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
-test "$CLOUDS" || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
-test "$CLOUDS" || echoexit1 "CLOUDS is not defined"
+[ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
+[ "$CLOUDS" ] || echoexit1 "CLOUDS is not defined"
 
 ACTION_PREFIX=$(date +%d%m%Y_%H-%M-%S)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
@@ -151,9 +151,9 @@ if [ "$TEST" == "1" ]
             done  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
         fi
 fi
-test "$NEXT_DEPLOY" && source <(cat << EONEXTDEPLOY
+[ "$NEXT_DEPLOY" ] && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before start next deploy; echo ; wait")
-/var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $(test "$NEXT_DEPLOY_ARGS" && echo "${NEXT_DEPLOY_ARGS}")
+/var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $([ "$NEXT_DEPLOY_ARGS" ] && echo "${NEXT_DEPLOY_ARGS}")
 EONEXTDEPLOY
 )
-test "$BACKGROUND" && disown &>/dev/null
+[ "$BACKGROUND" ] && disown &>/dev/null

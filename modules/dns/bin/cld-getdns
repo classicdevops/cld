@@ -7,21 +7,21 @@ CONTENT=$(echo $2 | cut -d _ -f 1)
 echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 || echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
 
-test "$CONTENT" == "@" && CONTENT=$MAIN_ZONE
-test "$NEW_CONTENT" == "@" && NEW_CONTENT=$MAIN_ZONE
-#test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
-#test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
-test $CFACC && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
-test $CFAPI || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+[ "$CONTENT" == "@" ] && CONTENT=$MAIN_ZONE
+[ "$NEW_CONTENT" == "@" ] && NEW_CONTENT=$MAIN_ZONE
+#[ $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
+#[ $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
+[ "$CFACC" ] && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+[ "$CFAPI" ] || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
-test ${CF_ZONE_ID} && break
+[ "${CF_ZONE_ID}" ] && break
 done
 (
-test $CF_ZONE_ID || echoexit1 "domain $MAIN_ZONE not found in known accounts"
+[ "$CF_ZONE_ID" ] || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
-test "$CONTENT" == "all" && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content]|@tsv"
-test "$CONTENT" != "" -a "$CONTENT" != "all" && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content]|@tsv"
-test "$CONTENT" == "" && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content]|@tsv"
+[ "$CONTENT" == "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content]|@tsv"
+[ "$CONTENT" != "" -a "$CONTENT" != "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content]|@tsv"
+[ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content]|@tsv" | grep "^$" && echo Records for ${DNS_ZONE} not found
 ) | awk '{print "`"$0"`"}'
