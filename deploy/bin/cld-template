@@ -98,7 +98,7 @@ cd /tmp/temprepos
 for TEMPLATE_REPO in $(cat /var/cld/deploy/template_repos)
 do
   git clone $TEMPLATE_REPO
-  TEMPLATE_REPO_NAME=$(echo "${TEMPLATE_REPO}" | rev | cut -d . -f 2- | rev)
+  TEMPLATE_REPO_NAME=$(echo "${TEMPLATE_REPO}" | rev | cut -d . -f 2- | cut -d / -f -1 | rev)
   for TEMPLATE in $(ls -d ${TEMPLATE_REPO_NAME}/*/ | sed 's#/$##g')
   do
     rsync -avP ${TEMPLATE} /var/cld/deploy/templates/ --delete
