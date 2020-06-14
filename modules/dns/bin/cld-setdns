@@ -12,47 +12,47 @@ echo $TYPE | grep -q "^A$\|^AAAA$\|^CNAME$\|^TXT$\|^SRV$\|^LOC$\|^MX$\|^NS$\|^SP
 echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 || echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
 
-test "$CONTENT" == "@" && CONTENT=$MAIN_ZONE
-test "$NEW_CONTENT" == "@" && NEW_CONTENT=$MAIN_ZONE
-test "$CONTENT" == "$NEW_CONTENT" && echoexit1 Old and New DNS record content are the same - exit
+[ "$CONTENT" == "@" ] && CONTENT=$MAIN_ZONE
+[ "$NEW_CONTENT" == "@" ] && NEW_CONTENT=$MAIN_ZONE
+[ "$CONTENT" == "$NEW_CONTENT" ] && echoexit1 Old and New DNS record content are the same - exit
 #test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
 #test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
-test $CFACC && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
-test $CFAPI || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+[ "$CFACC" ] && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+[ "$CFAPI" ] || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
-test ${CF_ZONE_ID} && break
+[ "${CF_ZONE_ID}" ] && break
 done
 (
-test $CF_ZONE_ID || echo "domain $MAIN_ZONE not found in known accounts - trying to add"
-test $CF_ZONE_ID || cf-dns-define-cf-api 
-test $CF_ZONE_ID || cf-dns-api-creds
+[ "$CF_ZONE_ID" ] || echo "domain $MAIN_ZONE not found in known accounts - trying to add"
+[ "$CF_ZONE_ID" ] || cf-dns-define-cf-api 
+[ "$CF_ZONE_ID" ] || cf-dns-api-creds
 
-test $CF_ZONE_ID || for ITTER in $(seq 1 10)
+[ "$CF_ZONE_ID" ] || for ITTER in $(seq 1 10)
 do
 CF_ZONE_ID=$(cf-dns-domain-add ${MAIN_ZONE})
-test $CF_ZONE_ID || CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
-test $CF_ZONE_ID && echo "domain $MAIN_ZONE successfully added to account $CFACC"
-test $CF_ZONE_ID && break
+[ "$CF_ZONE_ID" ] || CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+[ "$CF_ZONE_ID" ] && echo "domain $MAIN_ZONE successfully added to account $CFACC"
+[ "$CF_ZONE_ID" ] && break
 done
 
 CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\")")
 CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
 CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 
-test "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
-test "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" != "" && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
+[ "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" ] && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
+[ "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" != "" ] && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
 
-test "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT
+[ "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" ] && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT
 To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
 
-test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
-test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully deleted"
-test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "false" && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"
-test "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" && CONTENT=$NEW_CONTENT
+[ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" ] && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
+[ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" ] && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully deleted"
+[ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "false" ] && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"
+[ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" ] && CONTENT=$NEW_CONTENT
 
-test $CF_ZONE_ID && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
-test $CF_RECORD_ID || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
-test $CF_RECORD_ID && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
+[ "$CF_ZONE_ID" ] && CF_RECORD_ID=$(cf-dns-record-add $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
+[ "$CF_RECORD_ID" ] || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
+[ "$CF_RECORD_ID" ] && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
 ) | awk '{print "`"$0"`"}'
