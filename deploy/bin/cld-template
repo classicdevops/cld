@@ -4,6 +4,7 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--deploy' && DEPLOY=1
+echo $OPTS | grep -q  '^\--repoupdate' && REPOUPDATE=1
 done
 
 test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
@@ -89,4 +90,21 @@ EOVARS
 ls /var/cld/deploy/templates/${TEMPLATE}/* | cat
 }
 
-test "$DEPLOY" && create-deploy || create-template
+update-templates-from-repo()
+{
+stat /tmp/temprepos &>/dev/null && rm -rf /tmp/temprepos/
+mkdir /tmp/temprepos &>/dev/null
+cd /tmp/temprepos
+for TEMPLATE_REPO in $(cat /deploy/template_repos)
+do
+  git clone $TEMPLATE_REPO
+  TEMPLATE_REPO_NAME=$(echo "${TEMPLATE_REPO}" | rev | cut -d . -f 2- | rev)
+  for TEMPLATE in $(ls -d ${TEMPLATE_REPO_NAME}/*/ | sed 's#/$##g')
+  do
+    rsync -avP ${TEMPLATE} /var/cld/deploy/templates/ --delete
+  done
+done
+}
+
+[ "$REPOUPDATE" ] && source <(echo "update-templates-from-repo ; exit 0")
+[ "$DEPLOY" ] && create-deploy || create-template
