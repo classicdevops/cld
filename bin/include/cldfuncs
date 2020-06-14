@@ -89,7 +89,8 @@ cldtailcut()
 {
 cat << CLDTAILCUT
 ${LINE:0:200}
-${LINE:200}
+${LINE:200:400}
+${LINE:400:600}
 CLDTAILCUT
 }
 
@@ -102,7 +103,7 @@ CLDTAILCUT
 
 cldtaillogic()
 {
-[ ${#LINE} -ge 200 ] && cldtailcut || cldtailfull
+[ ${#LINE} -gt 200 ] && cldtailcut || cldtailfull
 }
 
 cldtail()
