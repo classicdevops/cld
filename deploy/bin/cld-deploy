@@ -72,7 +72,7 @@ stty rows 50 columns 200 ; TERM=xterm
 PS1='\[\033[01;34m\]\D{%d-%m-%Y %T} \[\e[38;5;172m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]> \[\033[00m\]'
 exec 9>&2; exec 8> >(while IFS='' read -e line || [ -n "$line" ]; do printf "\033[31m${line}\033[0m\n"; done)
 trap "exec 2>&8;" DEBUG; PROMPT_COMMAND='exec 2>&9;'
-unset HISTFILE
+END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
 DEPLOY_INIT=$(cat << EOACTIONVARS
