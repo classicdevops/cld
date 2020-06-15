@@ -121,7 +121,7 @@ do
 CLD_ACTION_LOG_SIZE=$(du $CLD_ACTION_LOG 2>/dev/null || echo 0)
 if [ "$DEBUG" == "1" -a "$CLD_ACTION_LOG_SIZE" -le "4" -o "$DEBUG" == "0" -a "$CLD_ACTION_LOG_SIZE" -eq "0" ]
 then
-[ "$DEBUG" == "1" ] && truncate -s 0 $CLD_ACTION_LOG
+[ "$DEBUG" == "1" ] && truncate -s 0 $CLD_ACTION_LOG &>/dev/null
 $CLD_DEPLOY $CONNECT_ARGS << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_INIT
@@ -134,9 +134,9 @@ break
 fi
 done
 
-[ "$TEST" == "1" ] && for DEPLOY__TEST_ITTER in $(seq 1 $RETRY)
+[ "$TEST" == "1" ] && for DEPLOY_TEST_ITTER in $(seq 1 $RETRY)
 do
-CLD_ACTION_TEST_LOG_SIZE=$(du $CLD_ACTION_LOG 2>/dev/null || echo 0)
+CLD_ACTION_TEST_LOG_SIZE=$(du $CLD_ACTION_TEST_LOG 2>/dev/null || echo 0)
 if [ "$DEBUG" == "1" -a "$CLD_ACTION_TEST_LOG_SIZE" -le "4" -o "$DEBUG" == "0" -a "$CLD_ACTION_TEST_LOG_SIZE" -eq "0" ]
 then
 $CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG
