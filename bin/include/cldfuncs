@@ -108,7 +108,20 @@ cldtaillogic()
 [ ${#LINE} -gt 200 ] && cldtailcut || cldtailfull
 }
 
+cldtaillbegin()
+{
+[[ "$TESTVAR" =~ .*\>\ #BEGIN_DEPLOY ]] BEGIN_DEPLOY=1
+}
+
 cldtail()
+{
+while IFS='' read -e LINE
+do
+[ "$BEGIN_DEPLOY" == "1" ] &>/dev/null && cldtaillogic || cldtaillbegin
+done
+}
+
+cldtail_old()
 {
 iln=0
 while IFS='' read -e LINE
