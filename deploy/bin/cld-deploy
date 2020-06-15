@@ -136,7 +136,7 @@ done
 [ "$TEST" == "1" ] && for DEPLOY_TEST_ITTER in $(seq 1 $RETRY)
 do
 DEPLOY_TEST_CHECK_LOG=$(grep -qs "[0-9]" $CLD_ACTION_TEST_LOG && echo 0 || echo 1)
-if [ "$DEPLOY_CHECK_LOG" == "1" ]
+if [ "$DEPLOY_TEST_CHECK_LOG" == "1" ]
 then
 $CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG
 $DEPLOY_INIT
