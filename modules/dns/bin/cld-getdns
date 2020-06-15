@@ -23,5 +23,5 @@ done
 
 [ "$CONTENT" == "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content]|@tsv"
 [ "$CONTENT" != "" -a "$CONTENT" != "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content]|@tsv"
-[ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content]|@tsv" | grep "^$" && echo Records for ${DNS_ZONE} not found
+[ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content]|@tsv"
 ) | awk '{print "`"$0"`"}'
