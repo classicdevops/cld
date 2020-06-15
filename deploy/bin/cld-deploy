@@ -11,7 +11,7 @@ source /var/cld/deploy/templates/${DEPLOY}/vars
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--timeout=' && TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--testtimeout=' && TEST_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
