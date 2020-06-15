@@ -54,6 +54,7 @@ EXTERNAL_TERMINAL() {
 EXTERNAL_DEPLOY() {
 [ "$USR" == "root" ] && timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1
 [ "$USR" == "root" ] || timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo bash -s" 2>&1
+echo -n
 }
 
 [ "$TIMEOUT_NOTTY" ] && TIMEOUT_NOTTY=3600
