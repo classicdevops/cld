@@ -13,6 +13,7 @@ do
 echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--retry=' && RETRY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--timeout=' && TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--testtimeout=' && TEST_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--backuptimeout=' && BACKUP_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
@@ -38,6 +39,7 @@ echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
 CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
+[ "$RETRY" ] || RETRY=1
 [ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
 [ "$TIMEOUT" ] || TIMEOUT=3600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
@@ -49,6 +51,7 @@ CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
+RETRY="${RETRY}"
 ASYNC="${ASYNC}"
 TIMEOUT="${TIMEOUT}"
 TEST_TIMEOUT="${TEST_TIMEOUT}"
@@ -112,6 +115,12 @@ do
     echo "("
     cat << 'EOSOURCE'
 [ "$TIMEOUT" ] || TIMEOUT=3600
+[ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
+for DEPLOY_ITTER in $(seq 1 $RETRY)
+do
+CLD_ACTION_LOG_SIZE=$(du $CLD_ACTION_LOG 2>/dev/null || echo 0)
+if [ "$DEBUG" == "1" -a "$CLD_ACTION_LOG_SIZE" -le "4" -o "$DEBUG" == "0" -a "$CLD_ACTION_LOG_SIZE" -eq "0" ]
+then
 $CLD_DEPLOY $CONNECT_ARGS << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_INIT
@@ -119,11 +128,24 @@ $DEPLOY_INIT
 $DEPLOY_SCRIPT
 exit &>/dev/null
 EODEPLOYRUN
-[ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
-[ "$TEST" == "1" ] && $CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG 
+else
+break
+fi
+done
+
+[ "$TEST" == "1" ] && for DEPLOY__TEST_ITTER in $(seq 1 $RETRY)
+do
+CLD_ACTION_TEST_LOG_SIZE=$(du $CLD_ACTION_LOG 2>/dev/null || echo 0)
+if [ "$DEBUG" == "1" -a "$CLD_ACTION_TEST_LOG_SIZE" -le "4" -o "$DEBUG" == "0" -a "$CLD_ACTION_TEST_LOG_SIZE" -eq "0" ]
+then
+$CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG
 $DEPLOY_INIT
 $DEPLOY_TEST_SCRIPT
 EODEPLOYTEST
+else
+break
+fi
+done
 EOSOURCE
     echo ") ${BACKGROUND}"
 )
