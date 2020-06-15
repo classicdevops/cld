@@ -110,7 +110,7 @@ cldtaillogic()
 
 cldtaillbegin()
 {
-[[ "${LINE}" =~ .*\>.*#BEGIN_DEPLOY ]] && BEGIN_DEPLOY=1
+[[ "${LINE}" =~ .*\>.*#BEGIN_DEPLOY ]] && BEGIN_DEPLOY=1 && cldtailfull
 }
 
 cldtail()
