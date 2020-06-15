@@ -115,6 +115,7 @@ cldtaillbegin()
 
 cldtail()
 {
+BEGIN_DEPLOY=$1
 while IFS='' read -e LINE
 do
 [ "$BEGIN_DEPLOY" == "1" ] &>/dev/null && cldtaillogic || cldtaillbegin
