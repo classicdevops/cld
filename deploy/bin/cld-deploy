@@ -107,11 +107,12 @@ do
     $CLD_VARS
 #    [ "$BACKGROUND" ] || echo
     [ "$DEBUG" == "1" ] && SHOW_ALL=1 || SHOW_ALL=0
+    [ "$DEBUG" == "1" ] && CONNECT_ARGS="-v" || CONNECT_ARGS="-q"
     source <(
     echo "("
     cat << 'EOSOURCE'
 [ "$TIMEOUT" ] || TIMEOUT=3600
-$CLD_DEPLOY << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACTION_LOG
+$CLD_DEPLOY $CONNECT_ARGS << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_INIT
 #BEGIN_DEPLOY
