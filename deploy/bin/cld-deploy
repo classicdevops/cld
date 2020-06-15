@@ -153,8 +153,8 @@ if [ "$TEST" == "1" ]
             for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v  "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)")
             do
             echo "$(du /var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
-            done  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
-        fi
+            done
+        fi | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
 fi
 [ "$NEXT_DEPLOY" ] && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before start next deploy; echo ; wait")
