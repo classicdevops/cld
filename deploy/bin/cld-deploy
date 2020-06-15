@@ -105,14 +105,6 @@ do
     echo -e "Deploy started at \033[43m$VM\033[00m"
     $CLD_VARS
 #    [ "$BACKGROUND" ] || echo
-    SCRIPT_LENGTH=$(wc -l << EODEPLOYRUN
-$OUTPUT_FORMAT
-$DEPLOY_INIT
-$DEPLOY_SCRIPT
-$OUTPUT_FORMAT
-$DEPLOY_INIT
-EODEPLOYRUN
-)
     [ "$DEBUG" == "1" ] && SHOW_ALL=1 || SHOW_ALL=0
     source <(
     echo "("
@@ -123,7 +115,7 @@ $OUTPUT_FORMAT
 $DEPLOY_INIT
 #BEGIN_DEPLOY
 $DEPLOY_SCRIPT
-sleep 1s; exit &>/dev/null
+exit &>/dev/null
 EODEPLOYRUN
 [ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
 [ "$TEST" == "1" ] && $CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG 
