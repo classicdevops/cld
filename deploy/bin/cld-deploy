@@ -121,6 +121,7 @@ do
 CLD_ACTION_LOG_SIZE=$(du $CLD_ACTION_LOG 2>/dev/null || echo 0)
 if [ "$DEBUG" == "1" -a "$CLD_ACTION_LOG_SIZE" -le "4" -o "$DEBUG" == "0" -a "$CLD_ACTION_LOG_SIZE" -eq "0" ]
 then
+[ "$DEBUG" == "1" ] && truncate -s 0 $CLD_ACTION_LOG
 $CLD_DEPLOY $CONNECT_ARGS << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_INIT
