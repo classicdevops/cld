@@ -152,7 +152,7 @@ if [ "$TEST" == "1" ]
             echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
             for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v  "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)")
             do
-            echo "/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE}"
+            echo "$(du /var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
             done  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
         fi
 fi
