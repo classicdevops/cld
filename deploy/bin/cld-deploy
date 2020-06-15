@@ -141,7 +141,7 @@ fi
 if [ "$TEST" == "1" ]
     then
         AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | wc -l)
-        AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED | grep "${CLOUDS}" | wc -l)
+        AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -l)
         if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
             echo TEST_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status
