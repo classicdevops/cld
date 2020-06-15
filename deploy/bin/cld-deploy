@@ -107,7 +107,7 @@ do
       CLD_DEPLOY_NOTTY=EXTERNAL_DEPLOY_NOTTY
     fi
 
-    echo -e "echo -e "\e[48;5;Deploy started at $VM\e[K\e[00m"
+    echo -e "echo -e "\e\[48;5;74mDeploy started at $VM\e\[K\e\[00m"
     $CLD_VARS
 #    [ "$BACKGROUND" ] || echo
     [ "$DEBUG" == "1" ] && SHOW_ALL=1 || SHOW_ALL=0
@@ -151,7 +151,7 @@ EOSOURCE
     echo ") ${BACKGROUND}"
 )
 #     [ "$BACKGROUND" ] || echo
-     echo -e "\e[48;5;Log file: $CLD_ACTION_LOG\e[K\e[00m"
+     echo -e "\e\[48;5;74mLog file: $CLD_ACTION_LOG\e\[K\e\[00m"
      echo
      test "$BACKGROUND" && sleep 0.1s
   fi
