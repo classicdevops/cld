@@ -13,6 +13,9 @@ do
 echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--timeout=' && TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--testtimeout=' && TEST_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--backuptimeout=' && BACKUP_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2-)
@@ -35,7 +38,10 @@ echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
 CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
-test "$DEPLOY_TEST_SCRIPT" || TEST=0
+[ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
+[ "$TIMEOUT" ] || TIMEOUT=3600
+[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
+[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=600
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
@@ -44,6 +50,9 @@ BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
 ASYNC="${ASYNC}"
+TIMEOUT="${TIMEOUT}"
+TEST_TIMEOUT="${TEST_TIMEOUT}"
+BACKUP_TIMEOUT="${BACKUP_TIMEOUT}"
 NEXT_DEPLOY="${NEXT_DEPLOY}"
 NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
 NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
@@ -108,12 +117,14 @@ EODEPLOYRUN
     source <(
     echo "("
     cat << 'EOSOURCE'
+[ "$TIMEOUT" ] || TIMEOUT=3600
 $CLD_DEPLOY << EODEPLOYRUN | cldtail ${SCRIPT_LENGTH} | tee -a $CLD_ACTION_LOG
 $OUTPUT_FORMAT
 $DEPLOY_INIT
 $DEPLOY_SCRIPT
 exit &>/dev/null
 EODEPLOYRUN
+[ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
 [ "$TEST" == "1" ] && $CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG 
 $DEPLOY_INIT
 $DEPLOY_TEST_SCRIPT
