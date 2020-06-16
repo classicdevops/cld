@@ -6,7 +6,7 @@ do
 echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 done
 
-source /var/cld/deploy/templates/${DEPLOY}/vars
+source /var/cld/deploy/deploys/${DEPLOY}/vars
 
 for OPTS in ${@:1}
 do
