@@ -14,6 +14,7 @@ do
 echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--retry=' && RETRY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--timeout=' && TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--testtimeout=' && TEST_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--backuptimeout=' && BACKUP_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
@@ -37,6 +38,7 @@ test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TE
 [ "$TIMEOUT" ] || TIMEOUT=3600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
 [ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=600
+[ "$RETRY" ] || RETRY=1
 
 mkdir -p /var/cld/deploy/deploys/ &>/dev/null
 cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY_NAME}
@@ -47,6 +49,7 @@ CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
+RETRY="${RETRY}"
 TIMEOUT="${TIMEOUT}"
 TEST_TIMEOUT="${TEST_TIMEOUT}"
 BACKUP_TIMEOUT="${BACKUP_TIMEOUT}"
@@ -78,9 +81,10 @@ test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/cust
 test "$TEST" || TEST=0
 test "${TEST}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/test_script
 
-[ "$TIMEOUT" ] || TIMEOUT=3600
+[ "$TIMEOUT" ] || TIMEOUT=600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
 [ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=600
+[ "$RETRY" ] || RETRY=1
 
 test "$ASYNC" || ASYNC=0
 
@@ -93,6 +97,7 @@ DESCRIPTION="${DESCRIPTION}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
+RETRY="${RETRY}"
 TIMEOUT="${TIMEOUT}"
 TEST_TIMEOUT="${TEST_TIMEOUT}"
 BACKUP_TIMEOUT="${BACKUP_TIMEOUT}"
