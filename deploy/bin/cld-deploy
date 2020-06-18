@@ -189,7 +189,7 @@ if [ "$BACKUP" == "1" ]
     then
         AMOUNT_BACKUP_PASSED=$(grep -l "BACKUP_OK" /var/cld/deploy/actions/${ACTION_NAME}/backup_log/* | wc -l)
         AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -l)
-        if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
+        if [ "${AMOUNT_BACKUP_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
             echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status
             echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
