@@ -1,7 +1,32 @@
 #!/bin/bash
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--mtputty' && MTPUTTY_EXPORT="1"
+done
+
 source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "$1" | grep -i "$2" | grep -i "$3")
+showcreds()
+{
+    echo
+    for CRED in $(declare -f $CLD_VARS | grep "=" | cut -d = -f 1)
+    do
+      test ${!CRED} && echo $(echo $CRED | sed -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`${!CRED}\`
+    done
+}
+exportputty()
+{
+cat << EOMTPUTTY
+<Node Type="1"><SavedSession>Default Settings</SavedSession><DisplayName>${VMN}</DisplayName><UID>{$(echo $(uuidgen) | tr [:lower:] [:upper:])}</UID><ServerName>${SRV}</ServerName><PuttyConType>0</PuttyConType><Port>${PRT}</Port><UserName>root</UserName><Password></Password><PasswordDelay>0</PasswordDelay><CLParams>${SRV} -l root -P ${PRT}</CLParams><ScriptDelay>0</ScriptDelay></Node>
+EOMTPUTTY
+}
+
+[ "$MTPUTTY_EXPORT" ] && echo "<ClipNodes><Node Type=\"0\" Expanded=\"1\"><DisplayName>$(hostname)</DisplayName>"
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
@@ -21,11 +46,8 @@ do
     else
       CLD_VARS=EXTERNAL_VARS
     fi
-    echo
     $CLD_VARS
-    for CRED in $(declare -f $CLD_VARS | grep "=" | cut -d = -f 1)
-    do
-      test ${!CRED} && echo $(echo $CRED | sed -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') \`${!CRED}\`
-    done
+    [ "$MTPUTTY_EXPORT" ] && exportputty || showcreds
   fi
 done
+[ "$MTPUTTY_EXPORT" ] && echo "</Node></ClipNodes>"
