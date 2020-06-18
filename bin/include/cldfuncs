@@ -20,6 +20,8 @@ mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/deploy_log &>/dev/null
 CLD_ACTION_LOG=/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${VM}
 [ "$TEST" == "1" ] && mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/test_log &>/dev/null
 [ "$TEST" == "1" ] && CLD_ACTION_TEST_LOG=/var/cld/deploy/actions/${ACTION_NAME}/test_log/${VM}
+[ "$BACKUP" == "1" ] && mkdir -p /var/cld/deploy/actions/${ACTION_NAME}/backup_log &>/dev/null
+[ "$BACKUP" == "1" ] && CLD_ACTION_BACKUP_LOG=/var/cld/deploy/actions/${ACTION_NAME}/backup_log/${VM}
 }
 
 EXTERNAL_VARS() {

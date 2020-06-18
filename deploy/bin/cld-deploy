@@ -21,12 +21,15 @@ echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '='
 echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2-)
 echo $OPTS | grep -q  '^\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--backuplist=' && BACKUP_LIST="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 done
 
+[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && BACKUP_LIST="$(cat /var/cld/deploy/deploys/${DEPLOY}/backup_list 2>/dev/null)"
+[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] || echoexit1 "BACKUP_LIST is not defined" 
 [ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
 [ "$CLOUDS" ] || echoexit1 "CLOUDS is not defined"
 
@@ -65,7 +68,9 @@ EOVARS
 
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
-test "$ASYNC" == 1 && BACKGROUND='&>/dev/null &'
+[ "$ASYNC" == 1 ] && BACKGROUND='&>/dev/null &'
+[ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)"
+[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] || echoexit1 "BACKUP_LIST is not defined"
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 2000 ; TERM=xterm
@@ -116,6 +121,20 @@ do
     cat << 'EOSOURCE'
 [ "$TIMEOUT" ] || TIMEOUT=3600
 [ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
+[ "$BACKUP" == "1" ] && for DEPLOY_BACKUP_ITTER in $(seq 1 $RETRY)
+do
+DEPLOY_BACKUP_CHECK_LOG=$(grep -qs "BACKUP_OK" $CLD_ACTION_BACKUP_LOG && echo 0 || echo 1)
+if [ "$DEPLOY_BACKUP_CHECK_LOG" != "0" ]
+then
+$CLD_DEPLOY_NOTTY << EODEPLOYBACKUP | tee -a $CLD_ACTION_BACKUP_LOG
+$DEPLOY_INIT
+tar zcvf /tmp/backup_${ACTION_PREFIX}.tar.gz -T <(echo "$BACKUP_LIST") && echo BACKUP_OK || echo BACKUP_FAIL
+EODEPLOYBACKUP
+else
+break
+fi
+done
+
 for DEPLOY_ITTER in $(seq 1 $RETRY)
 do
 DEPLOY_CHECK_LOG=$(grep -qs "@.*>.*#BEGIN_DEPLOY" $CLD_ACTION_LOG && echo 0 || echo 1)
