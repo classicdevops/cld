@@ -71,7 +71,7 @@ source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
 [ "$ASYNC" == 1 ] && BACKGROUND='&>/dev/null &'
 [ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)"
-[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] || echoexit1 "BACKUP_LIST is not defined"
+[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined"
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 stty rows 50 columns 2000 ; TERM=xterm
