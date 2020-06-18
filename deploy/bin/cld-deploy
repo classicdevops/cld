@@ -130,6 +130,7 @@ $CLD_DEPLOY_NOTTY << EODEPLOYBACKUP | tee -a $CLD_ACTION_BACKUP_LOG
 $DEPLOY_INIT
 tar zcvf /tmp/backup_${ACTION_PREFIX}.tar.gz -T <(echo "$BACKUP_LIST") && echo BACKUP_OK || echo BACKUP_FAIL
 EODEPLOYBACKUP
+DEPLOY_BACKUP_CHECK_LOG=$(grep -qs "BACKUP_OK" $CLD_ACTION_BACKUP_LOG && echo 0 || echo 1)
 else
 break
 fi
