@@ -184,6 +184,20 @@ if [ "$BACKGROUND" ]
     else
         DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${ACTION_NAME}/vars
 fi
+[ "$BACKUP" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check backups status; echo ; wait")
+if [ "$BACKUP" == "1" ]
+    then
+        AMOUNT_BACKUP_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/backup_log/* | wc -l)
+        AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -l)
+        if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
+        then 
+            echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status
+            echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
+        else
+            echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status 
+            echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
+        fi | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
+fi
 [ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status; echo ; wait")
 if [ "$TEST" == "1" ]
     then
