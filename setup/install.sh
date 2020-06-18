@@ -43,6 +43,11 @@ rsync -avzP /var/cld/setup/etc/ /etc/
 rsync -avzP /var/cld/setup/access /var/cld/
 rsync -avzP /var/cld/setup/creds /var/cld/
 
+#set path
+sed -i '/PATH/d' /root/.bashrc ; 
+echo 'export CLD_PATH="/var/cld/bin:/var/cld/deploy/bin:$(echo -n "$(ls -d /var/cld/modules/*/bin)" | tr "\n" ':')"' >> /root/.bashrc
+echo 'PATH="$PATH:$CLD_PATH"' >> /root/.bashrc
+
 #xtermnginx enable
 cd /var/cld/docker/xtermnginx/
 touch /var/cld/docker/xtermnginx/etc/nginx/conf.d/sessid
