@@ -26,7 +26,7 @@ EOMTPUTTY
 }
 
 [ "$MTPUTTY_EXPORT" ] && echo "<ClipNodes><Node Type=\"0\" Expanded=\"1\"><DisplayName>$(hostname)</DisplayName>"
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+for VM in $(CLOUDS_USER_ALLOWED --group=default | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
