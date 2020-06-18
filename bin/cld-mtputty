@@ -1,7 +1,7 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-echo "<ClipNodes><Node Type="0" Expanded="1"><DisplayName>$(hostname)</DisplayName>"
+echo "<ClipNodes><Node Type=\"0\" Expanded=\"1\"><DisplayName>$(hostname)</DisplayName>"
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "$1" | grep -i "$2" | grep -i "$3")
 do
   CLD_LOGS
