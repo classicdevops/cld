@@ -192,7 +192,7 @@ if [ "$BACKUP" == "1" ]
         if [ "${AMOUNT_BACKUP_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
             echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status
-            echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
+            echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed successfully
         else
             echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status 
             echo -e "\e[01;31m${AMOUNT_BACKUP_PASSED}\e[00m/${AMOUNT_INSTANCES} backups completed successfully"
@@ -206,7 +206,7 @@ if [ "$TEST" == "1" ]
         if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
             echo TEST_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status
-            echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
+            echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed
         else
             echo TEST_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status	
             echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"
