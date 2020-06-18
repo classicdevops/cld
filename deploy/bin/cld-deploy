@@ -192,10 +192,10 @@ if [ "$BACKUP" == "1" ]
         if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
             echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status
-            echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
+            echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} backup completed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
         else
             echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status 
-            echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
+            echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} backup completed" 
         fi | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
 fi
 [ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status; echo ; wait")
@@ -209,7 +209,7 @@ if [ "$TEST" == "1" ]
             echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
         else
             echo TEST_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status	
-            echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"  | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/test_log/status_log
+            echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"
             for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v  "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)")
             do
             echo "$(du /var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
