@@ -22,7 +22,6 @@ do
     else
       CLD_VARS=EXTERNAL_VARS
     fi
-    echo
     $CLD_VARS
 cat << EOMTPUTTY
 <Node Type="1"><SavedSession>Default Settings</SavedSession><DisplayName>${VMN}/DisplayName><UID>{$(echo $(uuidgen) | tr [:lower:] [:upper:])}</UID><ServerName>${SRV}</ServerName><PuttyConType>0</PuttyConType><Port>${PRT}</Port><UserName>root</UserName><Password></Password><PasswordDelay>0</PasswordDelay><CLParams>${SRV} -l root -P ${PRT}</CLParams><ScriptDelay>0</ScriptDelay></Node>
