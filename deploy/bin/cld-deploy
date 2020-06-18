@@ -192,10 +192,10 @@ if [ "$BACKUP" == "1" ]
         if [ "${AMOUNT_BACKUP_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
             echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status
-            echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed successfully
+            echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed
         else
             echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status 
-            echo -e "\e[01;31m${AMOUNT_BACKUP_PASSED}\e[00m/${AMOUNT_INSTANCES} backups completed successfully"
+            echo -e "\e[01;31m${AMOUNT_BACKUP_PASSED}\e[00m/${AMOUNT_INSTANCES} backups completed"
         fi | tee -a  /var/cld/deploy/actions/${ACTION_NAME}/backup_log/status_log
 fi
 [ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status; echo ; wait")
