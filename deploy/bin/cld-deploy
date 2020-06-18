@@ -39,14 +39,15 @@ mkdir -p /var/cld/deploy/actions/ &>/dev/null
 cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
 
 echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
+echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${ACTION_NAME}/backup_list
 CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
 [ "$RETRY" ] || RETRY=1
 [ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
-[ "$TIMEOUT" ] || TIMEOUT=3600
-[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
-[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=600
+[ "$TIMEOUT" ] || TIMEOUT=600
+[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
+[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
@@ -111,7 +112,7 @@ do
       CLD_DEPLOY=EXTERNAL_DEPLOY
       CLD_DEPLOY_NOTTY=EXTERNAL_DEPLOY_NOTTY
     fi
-    echo -e "\e[48;5;6mDeploy started at $VM\e[K\e[00m"
+    echo -e "Deploy started at $VM\e[48;5;6m          \e[K\e[00m"
     $CLD_VARS
 #    [ "$BACKGROUND" ] || echo
     [ "$DEBUG" == "1" ] && SHOW_ALL=1 || SHOW_ALL=0
@@ -119,8 +120,7 @@ do
     source <(
     echo "("
     cat << 'EOSOURCE'
-[ "$TIMEOUT" ] || TIMEOUT=3600
-[ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
+[ "$BACKUP_TIMEOUT" ] && TIMEOUT_NOTTY=$BACKUP_TIMEOUT || TIMEOUT_NOTTY=600
 [ "$BACKUP" == "1" ] && for DEPLOY_BACKUP_ITTER in $(seq 1 $RETRY)
 do
 DEPLOY_BACKUP_CHECK_LOG=$(grep -qs "BACKUP_OK" $CLD_ACTION_BACKUP_LOG && echo 0 || echo 1)
@@ -135,6 +135,8 @@ break
 fi
 done
 
+[ "$BACKUP" == "1" -a "$DEPLOY_BACKUP_CHECK_LOG" != "0" ] && continue
+[ "$TIMEOUT" ] || TIMEOUT=3600
 for DEPLOY_ITTER in $(seq 1 $RETRY)
 do
 DEPLOY_CHECK_LOG=$(grep -qs "@.*>.*#BEGIN_DEPLOY" $CLD_ACTION_LOG && echo 0 || echo 1)
@@ -152,6 +154,7 @@ break
 fi
 done
 
+[ "$TEST_TIMEOUT" ] && TIMEOUT_NOTTY=$TEST_TIMEOUT || TIMEOUT_NOTTY=600
 [ "$TEST" == "1" ] && for DEPLOY_TEST_ITTER in $(seq 1 $RETRY)
 do
 DEPLOY_TEST_CHECK_LOG=$(grep -qs "[0-9]" $CLD_ACTION_TEST_LOG && echo 0 || echo 1)
@@ -169,7 +172,7 @@ EOSOURCE
     echo ") ${BACKGROUND}"
 )
 #     [ "$BACKGROUND" ] || echo
-     echo -e "\e[48;5;6mLog file: $CLD_ACTION_LOG\e[K\e[00m"
+     echo -e "Log file: $CLD_ACTION_LOG\e[48;5;6m          \e[K\e[00m"
      echo
      test "$BACKGROUND" && sleep 0.1s
   fi
