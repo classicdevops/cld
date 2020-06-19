@@ -191,7 +191,7 @@ source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
 if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list | wc -l)" != "0" ]
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list 2>/dev/null | wc -l)" != "0" ]
     then
     echo Backup file list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)" || \
     echo
@@ -227,7 +227,7 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/clouds -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds | wc -l)" != "0" ]
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/clouds -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds 2>/dev/null | wc -l)" != "0" ]
         then
         echo Instance list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
         echo
@@ -239,8 +239,8 @@ then
         [ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && break
         done
         else
-           echo Backup file list is EMPTY
-    select BACKUP_LIST_SELECT in edit
+           echo Instance list is EMPTY
+    select INSTANCE_LIST_SELECT in edit
     do
         if [ "$INSTANCE_LIST_SELECT" == "edit" ] 
         then
@@ -264,11 +264,11 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/script -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/script | wc -l)" != "0" ]
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/script -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/script 2>/dev/null | wc -l)" != "0" ]
         then
         echo Deploy script is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
         echo
-        select INSTANCE_LIST_SELECT in continue edit
+        select DEPLOY_SCRIPT_SELECT in continue edit
         do
         [ "$DEPLOY_SCRIPT_SELECT" == "continue" ] && echo -n ""
         [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/script
@@ -276,8 +276,8 @@ then
         [ "$DEPLOY_SCRIPT_SELECT" == "continue" -o "$DEPLOY_SCRIPT_SELECT" == "edit" ] && break
         done
         else
-           echo Backup file list is EMPTY
-    select BACKUP_LIST_SELECT in edit
+           echo Deploy script file is EMPTY
+    select DEPLOY_SCRIPT_SELECT in edit
     do
         if [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] 
         then
