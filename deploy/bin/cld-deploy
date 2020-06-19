@@ -16,6 +16,7 @@ echo Please choose deploy:
 select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
 DEPLOY=$DEPLOY_SELECT
+echo
 break
 done
 fi
