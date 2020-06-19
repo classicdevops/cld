@@ -98,7 +98,7 @@ source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
 if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
 then
-echo Backup list is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)
+echo Backup list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)"
 echo
 select BACKUP_LIST_SELECT in continue edit
 do
@@ -111,7 +111,7 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-echo Instance list is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)
+echo Instance list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 echo
 select INSTANCE_LIST_SELECT in continue edit
 do
