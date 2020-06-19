@@ -289,7 +289,6 @@ then
 ####################################
 EOINSTANCELIST
         nano /var/cld/deploy/actions/${ACTION_NAME}/script
-        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${ACTION_NAME}/script
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
