@@ -1,5 +1,8 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 for OPTS in ${@:1}
 do
@@ -7,11 +10,15 @@ echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--run' && RUN=1
 done
 
-[ "$DEPLOY" == "" -a "$RUN" != "1" ] && select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/)
+if [ "$DEPLOY" == "" -a "$RUN" != "1" ]
+then
+echo Please choose deploy:
+select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
 DEPLOY=$DEPLOY_SELECT
 break
 done
+fi
 
 [ "$DEPLOY" ] && source /var/cld/deploy/deploys/${DEPLOY}/vars
 
