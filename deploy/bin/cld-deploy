@@ -87,6 +87,7 @@ select DEPLOY_CONFIG_SELECT in continue edit
 do
 [ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
 [ "$DEPLOY_CONFIG_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/vars
+echo
 break
 done
 fi
@@ -100,6 +101,7 @@ select BACKUP_LIST_SELECT in continue edit
 do
 [ "$BACKUP_LIST_SELECT" == "continue" ] && echo -n ""
 [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+echo
 break
 done
 fi
@@ -111,6 +113,7 @@ select INSTANCE_LIST_SELECT in continue edit
 do
 [ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
 [ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
+echo
 break
 done
 fi
