@@ -1,6 +1,7 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 source /var/cld/deploy/bin/include/deployfuncs
+unalias cp
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
@@ -465,3 +466,12 @@ $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before sta
 EONEXTDEPLOY
 )
 [ "$BACKGROUND" ] && disown &>/dev/null
+if [ "$RUN" != "1" ]
+    echo "Save this action to deploy?"
+        select SAVE_DEPLOY in yes no
+        do
+        [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
+        [ "$SAVE_DEPLOY" == "no" ] && echo done
+        [ "$SAVE_DEPLOY" ] && break
+        done
+fi
