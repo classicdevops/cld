@@ -10,6 +10,7 @@ echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--run' && RUN=1
 done
 
+ [ "$DEPLOY" == "" -a "$RUN" == "1" ] && echoexit1 Deploy is not defined
 if [ "$DEPLOY" == "" -a "$RUN" != "1" ]
 then
 echo "Please choose deploy:"
@@ -22,6 +23,7 @@ do
 done
 fi
 
+[ -f /var/cld/deploy/deploys/${DEPLOY} ] || echoexit1 Deploy is not exist
 [ "$DEPLOY" ] && source /var/cld/deploy/deploys/${DEPLOY}/vars
 
 for OPTS in ${@:1}
