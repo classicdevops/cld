@@ -14,12 +14,13 @@ done
 
 if [ "$RUN" != "1" ]
 then
-START_ARRAY=("Create new deploy" "Select from deploys" "Select from templates")
+START_ARRAY=("New deploy" "Existing deploy" "Existing template")
+echo "Run action from:"
 select START_CASE in "${START_ARRAY[@]}"
 do
-[ "$START_CASE" == "Create new deploy" ] && CREATE_NEW=1 && break
-[ "$START_CASE" == "Select from deploys" ] && FROM_DEPLOYS=1 && break
-[ "$START_CASE" == "Select from templates" ] && FROM_TEMPLATES=1 && break
+[ "$START_CASE" == "New deploy" ] && CREATE_NEW=1 && break
+[ "$START_CASE" == "Existing deploy" ] && FROM_DEPLOYS=1 && break
+[ "$START_CASE" == "Existing template" ] && FROM_TEMPLATES=1 && break
 done
 fi
 
@@ -73,7 +74,6 @@ DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}* 2>/dev/null | tail -1 | e
 test "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" && let "DEPLOY_ID++"
 test "$DEPLOY_ID" && DEPLOY="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY="${TEMPLATE}"
 
-mkdir -p /var/cld/deploy/deploys/${DEPLOY}
 [ -d /var/cld/deploy/deploys ] || mkdir -p /var/cld/deploy/deploys
 cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY}
 
