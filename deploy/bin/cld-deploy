@@ -56,6 +56,12 @@ cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
 [ "$CLOUDS" ] && echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
 [ "$BACKUP_LIST" ] && echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${ACTION_NAME}/backup_list
 
+[ "$RETRY" ] || RETRY=1
+[ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
+[ "$TIMEOUT" ] || TIMEOUT=600
+[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
+[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
+
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
 CLD_GROUPS="${CLD_GROUPS}"
@@ -120,17 +126,10 @@ echo
 break
 done
 fi
-[ "$RUN" != "1" ]  && source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
 CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
 DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
-[ "$RETRY" ] || RETRY=1
-[ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
-[ "$TIMEOUT" ] || TIMEOUT=600
-[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
-[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
-
 [ "$ASYNC" == 1 ] && BACKGROUND='&>/dev/null &'
 [ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)"
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined"
