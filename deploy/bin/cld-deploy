@@ -98,7 +98,7 @@ source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
 if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
 then
-    if stat /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list ]
     then
     echo Backup list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)" || \
     echo
@@ -111,7 +111,7 @@ then
     done
     else
     echo Backup list is EMPTY
-    select BACKUP_LIST_SELECT in continue edit
+    select BACKUP_LIST_SELECT in edit
     do
     [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
     echo -e "\e[48;5;6m          \e[K\e[00m"
