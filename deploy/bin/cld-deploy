@@ -466,7 +466,7 @@ $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before sta
 EONEXTDEPLOY
 )
 [ "$BACKGROUND" ] && disown &>/dev/null
-if [ "$RUN" != "1" ]
+if [ "$RUN" != "1" -a "$CREATE_NEW" != "1" ]
 then
     echo "Save this action to deploy?"
     select SAVE_DEPLOY in yes no
@@ -474,4 +474,6 @@ then
     [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
     [ "$SAVE_DEPLOY" ] && echo done && break
     done
+    elif [ "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
+    cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
 fi
