@@ -16,9 +16,9 @@ then
 START_ARRAY=("Create new deploy" "Select from deploys" "Select from templates")
 select START_CASE in "${START_ARRAY[@]}"
 do
-[ "$START_CASE" == "Create new deploy" ] && CREATE_NEW=1
-[ "$START_CASE" == "Select from deploys" ] && FROM_DEPLOYS=1
-[ "$START_CASE" == "Select from templates" ] && FROM_TEMPLATES=1
+[ "$START_CASE" == "Create new deploy" ] && CREATE_NEW=1 && break
+[ "$START_CASE" == "Select from deploys" ] && FROM_DEPLOYS=1 && break
+[ "$START_CASE" == "Select from templates" ] && FROM_TEMPLATES=1 && break
 done
 fi
 
