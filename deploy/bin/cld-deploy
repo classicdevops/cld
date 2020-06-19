@@ -191,7 +191,7 @@ source /var/cld/deploy/actions/${ACTION_NAME}/vars
 
 if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list ]
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list | wc -l)" != "0" ]
     then
     echo Backup file list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)" || \
     echo
@@ -227,15 +227,78 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-echo Instance list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
-echo
-select INSTANCE_LIST_SELECT in continue edit
-do
-[ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
-[ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
-[ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
-[ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && break
-done
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/clouds -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds | wc -l)" != "0" ]
+        then
+        echo Instance list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
+        echo
+        select INSTANCE_LIST_SELECT in continue edit
+        do
+        [ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
+        [ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
+        [ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+        [ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && break
+        done
+        else
+           echo Backup file list is EMPTY
+    select BACKUP_LIST_SELECT in edit
+    do
+        if [ "$INSTANCE_LIST_SELECT" == "edit" ] 
+        then
+        cat > /var/cld/deploy/actions/${ACTION_NAME}/clouds << 'EOINSTANCELIST'
+####################################
+# Instance list                    #
+# example usage:                   #
+# instance-name_1.2.3.4_22_root    #
+# instance2.*                      #
+# .*                               #
+####################################
+EOINSTANCELIST
+        nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
+        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${ACTION_NAME}/clouds
+        echo -e "\e[48;5;6m          \e[K\e[00m"
+        break
+        fi
+        done
+    fi
+fi
+
+if [ "$RUN" != "1" ]
+then
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/script -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/script | wc -l)" != "0" ]
+        then
+        echo Deploy script is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
+        echo
+        select INSTANCE_LIST_SELECT in continue edit
+        do
+        [ "$DEPLOY_SCRIPT_SELECT" == "continue" ] && echo -n ""
+        [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/script
+        [ "$DEPLOY_SCRIPT_SELECT" == "continue" -o "$DEPLOY_SCRIPT_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+        [ "$DEPLOY_SCRIPT_SELECT" == "continue" -o "$DEPLOY_SCRIPT_SELECT" == "edit" ] && break
+        done
+        else
+           echo Backup file list is EMPTY
+    select BACKUP_LIST_SELECT in edit
+    do
+        if [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] 
+        then
+        cat > /var/cld/deploy/actions/${ACTION_NAME}/script << 'EOINSTANCELIST'
+####################################
+# Deploy script                    #
+# example usage:                   #
+# yum install htop -y              #
+# echo test > /tmp/test            #
+#                                  #
+# Delete this text before writing  #  
+# Or it will put in deploy log     #
+####################################
+EOINSTANCELIST
+        nano /var/cld/deploy/actions/${ACTION_NAME}/script
+        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${ACTION_NAME}/script
+        echo -e "\e[48;5;6m          \e[K\e[00m"
+        break
+        fi
+        done
+    fi
 fi
 
 if [ "$TEST" == 1 -a "$RUN" != "1" ]
