@@ -111,11 +111,12 @@ fi
 
 if [ "$TEST" == 1 -a "$RUN" != "1" ]
 then
-echo Test script is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)
+echo Test script is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
 select DEPLOY_TEST_SELECT in continue edit
 do
 [ "$DEPLOY_TEST_SELECT" == "continue" ] && echo -n ""
 [ "$DEPLOY_TEST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
+echo
 break
 done
 fi
