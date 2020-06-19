@@ -467,11 +467,12 @@ EONEXTDEPLOY
 )
 [ "$BACKGROUND" ] && disown &>/dev/null
 if [ "$RUN" != "1" ]
+then
     echo "Save this action to deploy?"
-        select SAVE_DEPLOY in yes no
-        do
-        [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
-        [ "$SAVE_DEPLOY" == "no" ] && echo done
-        [ "$SAVE_DEPLOY" ] && break
-        done
+    select SAVE_DEPLOY in yes no
+    do
+    [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
+    [ "$SAVE_DEPLOY" == "no" ] && echo done
+    [ "$SAVE_DEPLOY" ] && break
+    done
 fi
