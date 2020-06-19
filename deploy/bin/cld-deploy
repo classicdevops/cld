@@ -1,5 +1,6 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
+source /var/cld/deploy/bin/include/deployfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
@@ -10,8 +11,97 @@ echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--run' && RUN=1
 done
 
- [ "$DEPLOY" == "" -a "$RUN" == "1" ] && echoexit1 Deploy is not defined
-if [ "$DEPLOY" == "" -a "$RUN" != "1" ]
+if [ "$RUN" != "1" ]
+then
+START_ARRAY=("Create new deploy" "Select from deploys" "Select from templates")
+select START_CASE in "${START_ARRAY[@]}"
+do
+[ "$START_CASE" == "Create new deploy" ] && CREATE_NEW=1
+[ "$START_CASE" == "Select from deploys" ] && FROM_DEPLOYS=1
+[ "$START_CASE" == "Select from templates" ] && FROM_TEMPLATES=1
+done
+fi
+
+if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
+then
+while ! [[ "$DEPLOY" =~  [A-Za-z0-9-]+ ]]
+do
+echo "Please enter the deploy name using only A-Z a-z 0-9 - symbols"
+read DEPLOY
+done
+
+[ -d /var/cld/deploy/deploys/${DEPLOY} ] && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${DEPLOY}* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
+[ "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" ] && let "DEPLOY_ID++"
+[ "$DEPLOY_ID" && DEPLOY="${DEPLOY}_${DEPLOY_ID}" ]
+mkdir -p /var/cld/deploy/deploys/${DEPLOY}
+
+defaultvars
+cat > /var/cld/deploy/deploys/${DEPLOY}/vars << EOVARS
+DESCRIPTION="${DESCRIPTION}"
+CLD_GROUPS="${CLD_GROUPS}"
+BACKUP="${BACKUP}"
+CUSTOM_BACKUP="${CUSTOM_BACKUP}"
+TEST="${TEST}"
+RETRY="${RETRY}"
+TIMEOUT="${TIMEOUT}"
+TEST_TIMEOUT="${TEST_TIMEOUT}"
+BACKUP_TIMEOUT="${BACKUP_TIMEOUT}"
+ASYNC="${ASYNC}"
+NEXT_DEPLOY="${NEXT_DEPLOY}"
+NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
+NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
+DEBUG="${DEBUG}"
+CRON="${CRON}"
+EOVARS
+fi
+
+if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_TEMPLATES" == "1" ]
+then
+echo "Please choose template:"
+echo
+select TEMPLATE_SELECT in $(ls /var/cld/deploy/templates/)
+do
+[ "$TEMPLATE_SELECT" ] && TEMPLATE=$TEMPLATE_SELECT
+[ "$TEMPLATE_SELECT" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+[ "$TEMPLATE_SELECT" ] && break
+done
+
+[ -d /var/cld/deploy/deploys/${TEMPLATE} ] && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
+test "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" && let "DEPLOY_ID++"
+test "$DEPLOY_ID" && DEPLOY="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY="${TEMPLATE}"
+
+[ -d /var/cld/deploy/deploys/${DEPLOY} ] && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${DEPLOY}* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
+[ "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" ] && let "DEPLOY_ID++"
+[ "$DEPLOY_ID" && DEPLOY="${DEPLOY}_${DEPLOY_ID}" ]
+mkdir -p /var/cld/deploy/deploys/${DEPLOY}
+[ -d /var/cld/deploy/deploys ] || mkdir -p /var/cld/deploy/deploys
+cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY}
+
+defaultvars
+cat > /var/cld/deploy/deploys/${DEPLOY}/vars << EOVARS
+DESCRIPTION="${DESCRIPTION}"
+CLD_GROUPS="${CLD_GROUPS}"
+BACKUP="${BACKUP}"
+CUSTOM_BACKUP="${CUSTOM_BACKUP}"
+TEST="${TEST}"
+RETRY="${RETRY}"
+TIMEOUT="${TIMEOUT}"
+TEST_TIMEOUT="${TEST_TIMEOUT}"
+BACKUP_TIMEOUT="${BACKUP_TIMEOUT}"
+ASYNC="${ASYNC}"
+NEXT_DEPLOY="${NEXT_DEPLOY}"
+NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
+NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
+DEBUG="${DEBUG}"
+CRON="${CRON}"
+EOVARS
+fi
+
+[ "$DEPLOY" == "" -a "$RUN" == "1" ] && echoexit1 Deploy is not defined
+if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_DEPLOYS" == "1" ]
 then
 echo "Please choose deploy:"
 echo

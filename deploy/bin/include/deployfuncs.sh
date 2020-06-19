@@ -1,0 +1,18 @@
+defaultvars()
+{
+[ "$DESCRIPTION" ] || DESCRIPTION="${DESCRIPTION}"
+[ "$CLD_GROUPS" ] || CLD_GROUPS="${CLD_GROUPS}"
+[ "$BACKUP" ] || BACKUP="0"
+[ "$CUSTOM_BACKUP" ] || CUSTOM_BACKUP="0"
+[ "$TEST" ] || TEST="0"
+[ "$RETRY" ] || RETRY="$1"
+[ "$TIMEOUT" ] || TIMEOUT="60"
+[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT="60"
+[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT="60"
+[ "$ASYNC" ] || ASYNC="0"
+[ "$NEXT_DEPLOY" ] || NEXT_DEPLOY=""
+[ "$NEXT_DEPLOY_WAIT" ] || NEXT_DEPLOY_WAIT=""
+[ "$NEXT_DEPLOY_ARGS" ] || NEXT_DEPLOY_ARGS=""
+[ "$DEBUG" ] || DEBUG="0"
+[ "$CRON" ] || CRON="0"
+}
