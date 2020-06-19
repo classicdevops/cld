@@ -18,7 +18,7 @@ select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$AR
 do
 DEPLOY=$DEPLOY_SELECT
 echo -e "\e[48;5;6m          \e[K\e[00m"
-break
+[ "$DEPLOY" ]  && break
 done
 fi
 
@@ -89,8 +89,8 @@ select DEPLOY_CONFIG_SELECT in continue edit
 do
 [ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
 [ "$DEPLOY_CONFIG_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/vars
-echo -e "\e[48;5;6m          \e[K\e[00m"
-break
+[ "$DEPLOY_CONFIG_SELECT" == "continue" -o "$DEPLOY_CONFIG_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+[ "$DEPLOY_CONFIG_SELECT" == "continue" -o "$DEPLOY_CONFIG_SELECT" == "edit" ] && break
 done
 fi
 
@@ -125,9 +125,9 @@ then
 EOBACKULIST
         nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
         sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+        echo -e "\e[48;5;6m          \e[K\e[00m"
+        break
         fi
-    echo -e "\e[48;5;6m          \e[K\e[00m"
-    break
     done
     fi
 fi
@@ -140,8 +140,8 @@ select INSTANCE_LIST_SELECT in continue edit
 do
 [ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
 [ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
-echo -e "\e[48;5;6m          \e[K\e[00m"
-break
+[ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+[ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && break
 done
 fi
 
@@ -153,8 +153,8 @@ select DEPLOY_TEST_SELECT in continue edit
 do
 [ "$DEPLOY_TEST_SELECT" == "continue" ] && echo -n ""
 [ "$DEPLOY_TEST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
-echo -e "\e[48;5;6m          \e[K\e[00m"
-break
+[ "$DEPLOY_TEST_SELECT" == "continue" -o "$DEPLOY_TEST_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+[ "$DEPLOY_TEST_SELECT" == "continue" -o "$DEPLOY_TEST_SELECT" == "edit" ] && break
 done
 fi
 
