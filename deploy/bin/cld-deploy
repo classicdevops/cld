@@ -4,9 +4,16 @@ source /var/cld/bin/include/cldfuncs
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--run' && RUN=1
 done
 
-source /var/cld/deploy/deploys/${DEPLOY}/vars
+[ "$DEPLOY" == "" -a "$RUN" != "1" ] && select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/)
+do
+DEPLOY=$DEPLOY_SELECT
+break
+done
+
+[ "$DEPLOY" ] && source /var/cld/deploy/deploys/${DEPLOY}/vars
 
 for OPTS in ${@:1}
 do
@@ -30,6 +37,7 @@ done
 
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && BACKUP_LIST="$(cat /var/cld/deploy/deploys/${DEPLOY}/backup_list 2>/dev/null)"
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined" 
+
 [ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
 [ "$CLOUDS" ] || echoexit1 "CLOUDS is not defined"
 
@@ -37,17 +45,8 @@ ACTION_PREFIX=$(date +%d%m%Y_%H-%M-%S)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
 mkdir -p /var/cld/deploy/actions/ &>/dev/null
 cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
-
-echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
-echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${ACTION_NAME}/backup_list
-CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
-DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
-[ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
-[ "$RETRY" ] || RETRY=1
-[ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
-[ "$TIMEOUT" ] || TIMEOUT=600
-[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
-[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
+[ "$CLOUDS" ] && echo "${CLOUDS}" > /var/cld/deploy/actions/${ACTION_NAME}/clouds
+[ "$BACKUP_LIST" ] && echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${ACTION_NAME}/backup_list
 
 cat > /var/cld/deploy/actions/${ACTION_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
@@ -67,7 +66,61 @@ DEBUG=${DEBUG}
 CRON="${CRON}"
 EOVARS
 
+if [ "$RUN" != "1" ]
+then
+echo Deploy config: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/vars)
+select DEPLOY_CONFIG_SELECT in continue edit
+do
+[ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
+[ "$DEPLOY_CONFIG_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/vars
+break
+done
+fi
+
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
+
+if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
+then
+echo Backup list is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)
+select BACKUP_LIST_SELECT in continue edit
+do
+[ "$BACKUP_LIST_SELECT" == "continue" ] && echo -n ""
+[ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+break
+done
+fi
+
+if [ "$RUN" != "1" ]
+then
+echo Instance list is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)
+select INSTANCE_LIST_SELECT in continue edit
+do
+[ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
+[ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
+break
+done
+fi
+
+if [ "$TEST" == 1 -a "$RUN" != "1" ]
+then
+echo Test script is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)
+select DEPLOY_TEST_SELECT in continue edit
+do
+[ "$DEPLOY_TEST_SELECT" == "continue" ] && echo -n ""
+[ "$DEPLOY_TEST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
+break
+done
+fi
+[ "$RUN" != "1" ]  && source /var/cld/deploy/actions/${ACTION_NAME}/vars
+
+CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
+DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
+[ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
+[ "$RETRY" ] || RETRY=1
+[ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
+[ "$TIMEOUT" ] || TIMEOUT=600
+[ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
+[ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
 
 [ "$ASYNC" == 1 ] && BACKGROUND='&>/dev/null &'
 [ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)"
