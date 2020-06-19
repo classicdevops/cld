@@ -141,7 +141,7 @@ done
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined" 
 
 [ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
-[ "$CLOUDS" ] || echoexit1 "CLOUDS is not defined"
+[ "$CLOUDS" == "" -a "$RUN" == "1" ] && echoexit1 "CLOUDS is not defined"
 
 ACTION_PREFIX=$(date +%d%m%Y_%H-%M-%S)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
