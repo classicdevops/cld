@@ -113,8 +113,19 @@ then
     echo Backup file list is EMPTY
     select BACKUP_LIST_SELECT in edit
     do
-    [ "$BACKUP_LIST_SELECT" == "edit" ] && echo -e "/etc/sshd/\n/root/.bashrc\n" >> /var/cld/deploy/actions/${ACTION_NAME}/backup_list
-    [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+        if [ "$BACKUP_LIST_SELECT" == "edit" ] 
+        then
+        cat > /var/cld/deploy/actions/${ACTION_NAME}/backup_list << 'EOBACKULIST'
+##################################
+# Backup file and directory list #
+# example usage:                 #
+# /etc/passwd                    #
+# /etc/ssh/                      #
+##################################
+EOBACKULIST
+        nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+        fi
     echo -e "\e[48;5;6m          \e[K\e[00m"
     break
     done
