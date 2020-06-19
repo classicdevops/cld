@@ -474,6 +474,7 @@ then
     [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
     [ "$SAVE_DEPLOY" ] && echo done && break
     done
-    elif [ "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
+elif [ "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
+then    
     cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
 fi
