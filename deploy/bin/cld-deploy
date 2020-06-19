@@ -36,7 +36,7 @@ done
 [ -d /var/cld/deploy/deploys/${DEPLOY} ] && DEPLOY_EXIST=1
 DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${DEPLOY}* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
 [ "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" ] && let "DEPLOY_ID++"
-[ "$DEPLOY_ID" && DEPLOY="${DEPLOY}_${DEPLOY_ID}" ]
+[ "$DEPLOY_ID" ] && DEPLOY="${DEPLOY}_${DEPLOY_ID}"
 mkdir -p /var/cld/deploy/deploys/${DEPLOY}
 
 defaultvars
