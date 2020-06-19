@@ -100,7 +100,7 @@ if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
 then
     if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list ]
     then
-    echo Backup list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)" || \
+    echo Backup file list is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)" || \
     echo
     select BACKUP_LIST_SELECT in continue edit
     do
@@ -110,13 +110,14 @@ then
     break
     done
     else
-    echo Backup list is EMPTY
-    select BACKUP_LIST_SELECT in edit
-    do
-    [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+    #echo Backup file list is EMPTY
+    #select BACKUP_LIST_SELECT in edit
+    #do
+    echo -e "/etc/sshd/\n/root/.bashrc" >> /var/cld/deploy/actions/${ACTION_NAME}/backup_list
+    nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
     echo -e "\e[48;5;6m          \e[K\e[00m"
-    break
-    done
+    #break
+    #done
     fi
 fi
 
