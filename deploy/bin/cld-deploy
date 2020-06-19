@@ -12,7 +12,8 @@ done
 
 if [ "$DEPLOY" == "" -a "$RUN" != "1" ]
 then
-echo Please choose deploy:
+echo "Please choose deploy:"
+echo
 select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
 DEPLOY=$DEPLOY_SELECT
@@ -83,6 +84,7 @@ EOVARS
 if [ "$RUN" != "1" ]
 then
 echo Action config: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/vars)"
+echo
 select DEPLOY_CONFIG_SELECT in continue edit
 do
 [ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
@@ -97,6 +99,7 @@ source /var/cld/deploy/actions/${ACTION_NAME}/vars
 if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
 then
 echo Backup list is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)
+echo
 select BACKUP_LIST_SELECT in continue edit
 do
 [ "$BACKUP_LIST_SELECT" == "continue" ] && echo -n ""
@@ -109,6 +112,7 @@ fi
 if [ "$RUN" != "1" ]
 then
 echo Instance list is: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)
+echo
 select INSTANCE_LIST_SELECT in continue edit
 do
 [ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
@@ -121,6 +125,7 @@ fi
 if [ "$TEST" == 1 -a "$RUN" != "1" ]
 then
 echo Test script is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
+echo
 select DEPLOY_TEST_SELECT in continue edit
 do
 [ "$DEPLOY_TEST_SELECT" == "continue" ] && echo -n ""
