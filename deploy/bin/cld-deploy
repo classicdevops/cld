@@ -16,9 +16,9 @@ echo "Please choose deploy:"
 echo
 select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
-DEPLOY=$DEPLOY_SELECT
-echo -e "\e[48;5;6m          \e[K\e[00m"
-[ "$DEPLOY" ]  && break
+[ "$DEPLOY_SELECT" ] && DEPLOY=$DEPLOY_SELECT
+[ "$DEPLOY_SELECT" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+[ "$DEPLOY_SELECT" ] && break
 done
 fi
 
