@@ -16,7 +16,7 @@ echo Please choose deploy:
 select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
 DEPLOY=$DEPLOY_SELECT
-echo
+echo -e "\e[48;5;6m          \e[K\e[00m"
 break
 done
 fi
@@ -87,7 +87,7 @@ select DEPLOY_CONFIG_SELECT in continue edit
 do
 [ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
 [ "$DEPLOY_CONFIG_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/vars
-echo
+echo -e "\e[48;5;6m          \e[K\e[00m"
 break
 done
 fi
@@ -101,7 +101,7 @@ select BACKUP_LIST_SELECT in continue edit
 do
 [ "$BACKUP_LIST_SELECT" == "continue" ] && echo -n ""
 [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/backup_list
-echo
+echo -e "\e[48;5;6m          \e[K\e[00m"
 break
 done
 fi
@@ -113,7 +113,7 @@ select INSTANCE_LIST_SELECT in continue edit
 do
 [ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
 [ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/clouds
-echo
+echo -e "\e[48;5;6m          \e[K\e[00m"
 break
 done
 fi
@@ -125,7 +125,7 @@ select DEPLOY_TEST_SELECT in continue edit
 do
 [ "$DEPLOY_TEST_SELECT" == "continue" ] && echo -n ""
 [ "$DEPLOY_TEST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
-echo
+echo -e "\e[48;5;6m          \e[K\e[00m"
 break
 done
 fi
