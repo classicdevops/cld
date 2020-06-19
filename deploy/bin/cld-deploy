@@ -23,7 +23,7 @@ do
 done
 fi
 
-[ -f /var/cld/deploy/deploys/${DEPLOY} ] || echoexit1 Deploy is not exist
+[ -d /var/cld/deploy/deploys/${DEPLOY} ] || echoexit1 Deploy is not exist
 [ "$DEPLOY" ] && source /var/cld/deploy/deploys/${DEPLOY}/vars
 
 for OPTS in ${@:1}
