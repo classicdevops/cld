@@ -75,7 +75,7 @@ EOVARS
 
 if [ "$RUN" != "1" ]
 then
-echo Deploy config: $(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/vars)
+echo Deploy config: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/vars)"
 select DEPLOY_CONFIG_SELECT in continue edit
 do
 [ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
