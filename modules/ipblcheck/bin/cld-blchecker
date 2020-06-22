@@ -1,0 +1,5 @@
+#!/bin/bash
+for MAIL_IP in  $(ip addr show | egrep -o "inet [0-9./]+" | cut -d ' ' -f 2 | cut -d / -f 1 | grep -v 127.0.0.1 | sort -u)
+do
+cld-ipblcheck ${MAIL_IP} | grep blacklisted | cut -d ' ' -f 2 | cud -d '[' -f -1 | xargs -I ^ echo "${MAIL_IP} - ^"
+done > /tmp/blacklisted
