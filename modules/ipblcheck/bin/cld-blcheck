@@ -2,8 +2,8 @@
 fqdntrue()
 {
 echo "Domain entered : $CHECKVAR"
-DOMAIN=$(host $CHECKVAR | head -n1 | awk '{print $4}')
-reverse $DOMAIN "IP not valid or domain could not be resolved."
+DOMAIN_IP=$(host $CHECKVAR | head -1 | awk '{print $4}')
+reverse $DOMAIN_IP "IP not valid or domain could not be resolved."
 }
 
 fqdnfalse()
@@ -15,7 +15,7 @@ reverse $CHECKVAR "IP not valid."
 reverse() {
 reverse=$(echo $1 |
 sed -ne "s~^\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)$~\4.\3.\2.\1~p")
-[ "x${reverse}" = "x" ] && echoexit2 $2
+[ "x${reverse}" = "x" ] && echoexit1 $2
 }
 
 blcheck() {
@@ -43,10 +43,6 @@ done
 
 echoexit1() {
 echo $0 ; exit 1
-}
-
-echoexit2() {
-echo $0 ; exit 2
 }
 
 # BLACKLISTS - https://hetrixtools.com/blacklist-check
