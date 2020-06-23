@@ -13,9 +13,9 @@ reverse $CHECKVAR "IP not valid."
 }
 
 reverse() {
-reverse=$(echo $1 |
+REVERSE=$(echo $1 |
 sed -ne "s~^\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)\.\([0-9]\{1,3\}\)$~\4.\3.\2.\1~p")
-[ "x${reverse}" = "x" ] && echoexit1 $2
+[ "x${REVERSE}" = "x" ] && echoexit1 $2
 }
 
 blcheck() {
@@ -30,8 +30,8 @@ blacklistchecker() {
 REVERSE_DNS=$(dig +short -x $1)
 echo $1 name ${REVERSE_DNS:----}
 for bl in ${BLACKLISTS} ; do
-printf "%-40s" " ${reverse}.${bl}."
-LISTED="$(dig +short -t a ${reverse}.${bl}.)"
+printf "%-40s" " ${REVERSE}.${bl}."
+LISTED="$(dig +short -t a ${REVERSE}.${bl}.)"
 if [ "$LISTED" ]
 then
 [[ "$LISTED" =~ .*timed\ out.* ]] && echo "timed out" || echo "blacklisted (${LISTED})"
