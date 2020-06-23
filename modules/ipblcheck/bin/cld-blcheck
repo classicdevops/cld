@@ -41,8 +41,10 @@ fi
 done
 }
 
-echoexit1() {
-echo $0 ; exit 1
+echoexit1()
+{
+echo "${@:1}"
+exit 1
 }
 
 # BLACKLISTS - https://hetrixtools.com/blacklist-check
