@@ -34,7 +34,7 @@ printf "%-40s" " ${reverse}.${bl}."
 LISTED="$(dig +short -t a ${reverse}.${bl}.)"
 if [ "$LISTED" ]
 then
-[ "$LISTED" =~ .*timed out.* ] && echo "timed out" || echo "blacklisted (${LISTED})"
+[[ "$LISTED" =~ .*timed out.* ]] && echo "timed out" || echo "blacklisted (${LISTED})"
 else
 echo "not listed"
 fi
