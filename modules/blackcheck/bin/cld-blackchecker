@@ -18,8 +18,9 @@ do
   if [ "$VM" = "" ] ; then
    echo "you choosed incorrect VM, please try again and type numbers only"
   else
-    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
-    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
+    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6)
+    if [ "$GROUP" = "" ] ; then sleep 1s; GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6) ; fi
+    if [ "$GROUP" = "" ] ; then echo "$VM have incorrect GROUP" ; continue ; fi
     if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
     then
     source <(for GROUPFUNC in funcvars 
