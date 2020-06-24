@@ -31,13 +31,12 @@ REVERSE_DNS=$(dig +short -x $1)
 echo $1 name ${REVERSE_DNS:----}
 for bl in ${BLACKLISTS} ; do
 (
-printf "%-40s" " ${REVERSE}.${bl}."
 LISTED="$(dig +short -t a ${REVERSE}.${bl}.)"
 if [ "$LISTED" ]
 then
-[[ "$LISTED" =~ .*timed\ out.* ]] && echo "timed out" || echo "blacklisted (${LISTED})"
+[[ "$LISTED" =~ .*timed\ out.* ]] && echo "${REVERSE}.${bl}. timed out" || echo "${REVERSE}.${bl}. blacklisted (${LISTED})"
 else
-echo "not listed"
+echo "${REVERSE}.${bl}. not listed"
 fi
 ) &
 done
