@@ -33,6 +33,6 @@ do
       CLD_VARS=EXTERNAL_VARS
     fi
     $CLD_VARS
-    cld-blackcheck ${SRV} | grep blacklisted
+    cld-blackcheck ${SRV} | grep blacklisted | xargs -I ^ echo $VMN 
   fi
 done | tee -a /tmp/blacklisted
