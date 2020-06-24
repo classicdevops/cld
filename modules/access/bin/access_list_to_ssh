@@ -8,9 +8,9 @@ grep -vh "^$\|^#" /var/cld/access/groups/default/clouds | awk -F"_" '{print "ssh
 )`
 EOHOSTSACCESS
 
-cat > /etc/hosts.deny << 'EOHOSTSDENY'
-sshd: ALL
-EOHOSTSDENY
+truncate -s 0 /etc/hosts.deny
+ALLOWED_IPS_LINES=\$(grep sshd /etc/hosts.allow | wc -l)
+[ "\$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny
 
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
 53-55 2-3 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
