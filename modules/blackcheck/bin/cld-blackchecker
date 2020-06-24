@@ -1,0 +1,38 @@
+#!/bin/bash
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--groups' && CLD_GROUPS="1"
+done
+
+source /var/cld/bin/include/cldfuncs
+[ "$SUDO_USER" ] || SUDO_USER=admin
+[ "$CLD_GROUPS" ] || CLD_GROUPS=default
+truncate -s 0 /tmp/blacklisted
+for VM in $(CLOUDS_USER_ALLOWED --group=${CLD_GROUPS} | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+do
+  CLD_LOGS
+  if [ "$VM" = "" ] ; then
+   echo "you choosed incorrect VM, please try again and type numbers only"
+  else
+    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
+    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
+    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
+    then
+    source <(for GROUPFUNC in funcvars 
+        do
+          echo "${GROUP}_${GROUPFUNC}(){"
+          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+          echo '}'
+        done)
+      CLD_VARS=${GROUP}_funcvars
+    else
+      CLD_VARS=EXTERNAL_VARS
+    fi
+    $CLD_VARS
+    cld-ipblcheck ${SRV} | grep blacklisted | cut -d ' ' -f 2 | cud -d '[' -f -1 | xargs -I ^ echo "${VMN}_${SRV} - ^"
+  fi
+done | tee -a /tmp/blacklisted
