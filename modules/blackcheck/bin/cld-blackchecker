@@ -5,7 +5,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--groups' && CLD_GROUPS="1"
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 done
 
 source /var/cld/bin/include/cldfuncs
