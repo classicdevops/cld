@@ -1,13 +1,13 @@
 #!/bin/bash
 source /var/cld/modules/dns/bin/include/dnsfuncs
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -3 | tail -1)
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--cfacc=' && CFACC="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--proxy' && CFPROXY=1
+echo $OPTS | grep -q  '^\--cfacc=\|^\-cfacc=' && CFACC="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--proxy\|^\-proxy' && CFPROXY=1
 done
 
 TYPE=${ARG1^^}
