@@ -57,6 +57,27 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$1/dns_records" \
      --data '{"type":"CNAME","name":"${CNAME}","content":"'$2'","ttl":1,"priority":10,"proxied":false}' | jq .
 }
 
+cf-dns-proxy-record-add()
+{
+TYPE=${1^^}
+MAIN_ZONE=$(echo $2 | rev | cut -d . -f -2 | rev)
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records" \
+     -H "X-Auth-Email: $CFACC" \
+     -H "X-Auth-Key: $CFKEY" \
+     -H "Content-Type: application/json" \
+     --data '{"type":"'${TYPE}'","name":"'$2'","content":"'$3'","ttl":1,"priority":10,"proxied":true}' | jq .
+}
+
+cf-dns-proxy-cname-record-add()
+{
+curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$1/dns_records" \
+     -H "X-Auth-Email: $CF_API_EMAIL" \
+     -H "X-Auth-Key: $CF_API_KEY" \
+     -H "Content-Type: application/json" \
+     --data '{"type":"CNAME","name":"${CNAME}","content":"'$2'","ttl":1,"priority":10,"proxied":true}' | jq .
+}
+
 cf-dns-record-delete()
 {
 TYPE=${1^^}
