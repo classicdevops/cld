@@ -49,7 +49,7 @@ def cmd_deldns(message):
    valid_id2 = str(message.from_user.id)
    if valid_id in allowdnsgroups() or valid_id2 in allowusers():
      if re.findall(r'([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_-]+)', message.text):
-        dnsargs = re.search('(A|AAAA|CNAME|TXT|SRV|LOC|MX|NS|SPF|CERT|DNSKEY|DS|NAPTR|SMIMEA|SSHFP|TLSA|URI|a|aaaa|cname|txt|srv|loc|mx|ns|spf|cert|dnskey|ds|naptr|smimea|sshfp|tlsa|uri)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_-]+)', message.text)
+        dnsargs = re.search('(A|AAAA|CNAME|TXT|SRV|LOC|MX|NS|SPF|CERT|DNSKEY|DS|NAPTR|SMIMEA|SSHFP|TLSA|URI|a|aaaa|cname|txt|srv|loc|mx|ns|spf|cert|dnskey|ds|naptr|smimea|sshfp|tlsa|uri)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_=-]+)', message.text)
         dnstype = dnsargs.group(1)
         dnszone = dnsargs.group(2)
         dnscontent = ''
