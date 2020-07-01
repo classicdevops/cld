@@ -66,4 +66,5 @@ To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}
 [ "$CF_ZONE_ID" ] && CF_RECORD_ID=$($recordadd $TYPE $DNS_ZONE $CONTENT | jq -r ".result | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
 [ "$CF_RECORD_ID" ] || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
 [ "$CF_RECORD_ID" ] && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
+[ "$CFPROXY" ]  && echo Proxied by cloudflare
 ) | awk '{print "`"$0"`"}'
