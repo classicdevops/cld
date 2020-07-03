@@ -33,8 +33,8 @@ sed -i -r 's#(.*res\.setHeader.*)#//\1#g' /var/cld/wetty/node_modules/frameguard
 
 #install RichFileManager
 cd /var/cld
-git clone https://github.com/achendev/RichFilemanager-Python3Flask.git
-cd RichFilemanager-Python3Flask
+git clone https://github.com/achendev/richfilemanagerflask.git
+cd richfilemanagerflask
 pip3 install Image
 ip addr add 172.17.0.250/16 dev docker0
 
