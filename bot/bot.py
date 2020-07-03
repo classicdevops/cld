@@ -21,7 +21,7 @@ def allowgroups():
 # Generate password
 @bot.message_handler(commands=["passwd"])
 def cmd_passwd(message):
-    chars = 'abcdefjhijklmnopqrstuvwxyzABCDEFJHIGKLMNOPQRSTUVWXYZ1234567890'
+    chars = 'abcdefjhigkmnopqrstuvwxyzABCDEFJHGKLMNOPQRSTUVWXYZ1234567890'
     password = ''
     for c in range(21):
        password += random.choice(chars)
