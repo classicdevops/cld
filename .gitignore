@@ -23,8 +23,8 @@
 /deploy/templates/*
 /deploy/deploys/*
 /deploy/actions/*
-/deploy/template_repos
-
+/deploy/repo_list
+/devops/
 #certs
 /docker/xtermnginx/etc/nginx/ssl
 
