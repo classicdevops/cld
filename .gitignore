@@ -6,6 +6,7 @@
 
 #local files
 *.local
+*.local/*
 
 #temp folder
 /tmp/

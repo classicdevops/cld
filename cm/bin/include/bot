@@ -1,0 +1,10 @@
+BOT_TOKEN=""
+TG_GROUP=""
+send_tg()
+{
+(wget -qO- "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=Markdown&text=$(echo -n ${@:1} | sed -e 's#\\n#%0A#g' -e 's#<b>#*#g' -e 's#&#%26#g')" &>/dev/null ) &>/dev/null &
+cat >> /tmp/tg_send << EOLOG
+${@:1}
+wget -qO- "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=Markdown&text=$(echo -n ${@:1} | sed -e 's#\\n#%0A#g' -e 's#<b>#*#g' -e 's#&#%26#g')"
+EOLOG
+}

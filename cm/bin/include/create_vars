@@ -1,0 +1,358 @@
+CENTOS7_CREATE=$(cat << 'EOL'
+qm clone 50001 $VMID --full --storage $STORAGE
+EOL
+)
+
+UBUNTU16_CREATE=$(cat << 'EOL'
+qm clone 50002 $VMID --full --storage $STORAGE
+EOL
+)
+
+DEBIAN9_CREATE=$(cat << 'EOL'
+qm clone 50003 $VMID --full --storage $STORAGE
+EOL
+)
+
+FEDORA28_CREATE=$(cat << 'EOL'
+qm clone 50004 $VMID --full --storage $STORAGE
+EOL
+)
+
+FREEBSD11_CREATE=$(cat << 'EOL'
+qm clone 50006 $VMID --full --storage $STORAGE
+EOL
+)
+
+CENTOS6_CREATE=$(cat << 'EOL'
+qm clone 50007 $VMID --full --storage $STORAGE
+EOL
+)
+
+UBUNTU18_CREATE=$(cat << 'EOL'
+qm clone 50008 $VMID --full --storage $STORAGE
+EOL
+)
+
+CONFIGURE_KVM=$(cat << 'EOL'
+qm set $VMID --name $VMNAME --cores $VMCPU --memory $VMMEMORY --onboot yes
+#if echo $IPADDR | grep --quiet "172.1" ; then sed -i 's#vmbr0#vmbr1#g' /etc/pve/qemu-server/$VMID.conf ; fi
+qm resize $VMID scsi0 ${DISK}G
+qm set $VMID --net0 virtio,bridge=vmbr0,firewall=1
+EOL
+)
+
+CLOUD_IP_FILTER=$(cat << 'EOL'
+mkdir /etc/pve/firewall -p &>/dev/null
+cat > /etc/pve/firewall/${VMID}.fw << EOIP
+[OPTIONS]
+enable: 1
+policy_out: ACCEPT
+policy_in: ACCEPT
+
+[IPSET ipfilter-net0] # only allow specified IPs on net0
+${IPADDR}
+EOIP
+EOL
+)
+
+DETECT_RESIZE_MOUNT_ZFS_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | awk '{print $2}'`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/zvol/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+if echo "$filepath" | grep --quiet "zd"; then echo -e "d\n2\nn\np\n2\n\n\n\nw\n" | fdisk $filepath; else echo "FILEPATH IS EMPTY"; fi
+mkdir -p /mnt/vm$VMID
+mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm$VMID
+EOL
+)
+
+DETECT_RESIZE_MOUNT_ZFS_STORAGE_GPT=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | awk '{print $2}'`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/zvol/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+echo "$filepath" | grep --quiet "zd" && (expect << EOF
+spawn parted $filepath
+expect "(parted)"
+send "resizepart 2\n"
+expect "Fix/Ignore?"
+send "Fix\n"
+expect "Partition number?"
+send "2\n"
+expect "End?"
+send "100%\n"
+expect "(parted)"
+send "quit\n"
+expect eof;
+EOF
+)
+mkdir -p /mnt/vm$VMID
+mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm$VMID
+EOL
+)
+
+DETECT_RESIZE_MOUNT_ZFS_STORAGE_FREEBSD=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | awk '{print $2}'`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/zvol/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+ln -s ${filepath}p6 /dev/mapper/${filepath#/*/*}p6
+$(zpool import -d /dev/mapper/ -s | grep -B10 ${filepath#/*/*} | head -10 | grep "pool:\|id:" | tr -d ':' | awk -v VMID="$VMID" '{print "export "$1VMID"="$2}')
+mkdir -p /mnt/vm${VMID}
+ZFSVMID=`echo echo \$\{id${VMID}\} | bash`
+ZFSVMPOOL=`echo echo \$\{pool${VMID}\} | bash`
+zpool import -f -N -R /mnt/vm${VMID} $ZFSVMID -o expand=on
+mkdir -p /mnt/vm${VMID}
+zfs mount ${ZFSVMPOOL}/ROOT/default
+EOL
+)
+
+DETECT_RESIZE_MOUNT_ZFS_STORAGE_UFS=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | awk '{print $2}'`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/zvol/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+mkdir -p /mnt/vm${VMID}
+#kpartx -a ${filepath}
+fuse-ufs ${filepath}p1 /mnt/vm${VMID} -o rw -o allow_other -o fsname=ufs2
+sleep 1s
+EOL
+)
+
+DETECT_RESIZE_MOUNT_LVM_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 " $storage" /etc/pve/storage.cfg | grep "pool\ " | awk '{print $2}'`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep part2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+if echo "$filepath" | grep --quiet "dm\-"; then echo -e "d\n2\nn\np\n2\n\n\n\nw\n" | fdisk $filepath; else echo "FILEPATH IS EMPTY"; fi
+mkdir -p /mnt/vm$VMID
+mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm$VMID
+EOL
+)
+
+DETECT_RESIZE_MOUNT_QCOW2_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep path | cut -d ' ' -f 2`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=$path1/images/$path2
+qemu-img resize -f qcow2 $filepath ${DISK}G
+qemu-nbd -c /dev/nbd0 $filepath
+if echo "$filepath" | grep --quiet "qcow2"; then echo -e "d\n2\nn\np\n2\n\n\n\nw\n" | fdisk /dev/nbd0; else echo "FILEPATH IS EMPTY"; fi
+mkdir /mnt/vm$VMID
+mount /dev/nbd0p2 /mnt/vm$VMID
+EOL
+)
+
+CENTOS7_CONFIGURATION=$(cat << 'EOL'
+sed -i 's#SELINUX=enforcing#SELINUX=disabled#g' /mnt/vm$VMID/etc/selinux/config
+usermod -R /mnt/vm$VMID -p `mkpasswd -m sha-512 $ROOTPASSWORD` root
+echo "$VMNAME" > /mnt/vm$VMID/etc/hostname
+#echo '@reboot root stty -F /dev/ttyS0 speed 9600 ; systemctl restart getty@ttyS0 ; systemctl enable getty@ttyS0 ; rm -f /etc/cron.d/getty' > /mnt/vm$VMID/etc/cron.d/getty
+#sed -i 's#quiet"#quiet console=ttyS0"#g' /mnt/vm$VMID/etc/sysconfig/grub
+#sed -i 's#ExecStart=-/sbin/agetty#ExecStart=-/sbin/agetty --autologin root#g' /mnt/vm$VMID/usr/lib/systemd/system/getty\@.service
+sed -i -r 's#(BOOTPROTO=")'.*'#\1none"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(UUID=")'.*'#\1'`uuidgen`'"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(IPADDR=")'.*'#\1'$IPADDR'"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(GATEWAY=")'.*'#\1'$GATEWAY'"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
+mkdir /mnt/vm$VMID/root/.ssh
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
+CENTOS6_CONFIGURATION=$(cat << 'EOL'
+sed -i 's#SELINUX=enforcing#SELINUX=disabled#g' /mnt/vm$VMID/etc/selinux/config
+usermod -R /mnt/vm$VMID -p `mkpasswd -m sha-512 $ROOTPASSWORD` root
+sed -i -r 's#(HOSTNAME=)'.*'#\1'$VMNAME'#g' /mnt/vm$VMID/etc/sysconfig/network
+sed -i -r 's#(BOOTPROTO=)'.*'#\1none#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(UUID=)'.*'#\1'`uuidgen`'#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(HWADDR=)'.*'#\1'`grep net0 /etc/pve/qemu-server/${VMID}.conf | egrep -o "([0-9A-Z]{2}\:){5}[0-9A-Z]{2}"`'#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(IPADDR=)'.*'#\1'$IPADDR'#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -r 's#(GATEWAY=)'.*'#\1'$GATEWAY'#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-eth0
+truncate -s 0 /mnt/vm$VMID/etc/udev/rules.d/70-persistent-net.rules
+echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
+mkdir /mnt/vm$VMID/root/.ssh
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
+UBUNTU16_CONFIGURATION=$(cat << 'EOL'
+usermod -R /mnt/vm$VMID -p `mkpasswd -m sha-512 $ROOTPASSWORD` root
+echo "$VMNAME" > /mnt/vm$VMID/etc/hostname
+sed -i -r 's#(.*address\ )'.*'#\1'$IPADDR'#g' /mnt/vm$VMID/etc/network/interfaces
+sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm$VMID/etc/network/interfaces
+sed -i -r 's#(.*network\ )'.*'#\1'$NTWRK'#g' /mnt/vm$VMID/etc/network/interfaces
+sed -i -r 's#(.*broadcast\ )'.*'#\1'$BRDCST'#g' /mnt/vm$VMID/etc/network/interfaces
+echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
+mkdir /mnt/vm$VMID/root/.ssh
+#echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCmAxfajC66GkpMxE7XCRElV6dh4OM7B0o2tM6R/Yc+XEPUD+JokzsPy6Xg+Zt73mBQAJLTGX643YJ56nkaNxsHDJf1UNy1JFFSRQFzwaEtWV7qjpzpEVwxoEDfCmdD2G6Wvnz4SaVaCRfVAYjlJchRf5omEq4jQLAQnVdLE+0Unz7dNZIuT7v+7Df5W/zX6s8tfpL/O2lKSxGl9Un+BIJsGAYqPqOa/4EwxSdYG5J4WfwNzq0bNS1OwAuDi3yoTVXeBj2lMlE4SjDXkPdhT50gY0CT9rLp2Rcm0JmtwLAwz56Rp2aBSVzGX13jsNYwLgB4mJ/HqMn0ZlauECIIWRuj support@firecloud.ltd' >> /mnt/vm$VMID/root/.ssh/authorized_keys
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
+UBUNTU18_CONFIGURATION=$(cat << 'EOL'
+usermod -R /mnt/vm$VMID -p `mkpasswd -m sha-512 $ROOTPASSWORD` root
+echo "$VMNAME" > /mnt/vm$VMID/etc/hostname
+sed -ri "s#\-\ [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]+#- ${IPADDR}${CIDR}#g" /mnt/vm$VMID/etc/netplan/50-cloud-init.yaml
+sed -i "s#gateway4:.*#gateway4: $GATEWAY#g" /mnt/vm$VMID/etc/netplan/50-cloud-init.yaml
+grep -q "routes:" /mnt/vm$VMID/etc/netplan/50-cloud-init.yaml || sed -i '/version:/d' /mnt/vm$VMID/etc/netplan/50-cloud-init.yaml
+grep -q "routes:" /mnt/vm$VMID/etc/netplan/50-cloud-init.yaml || cat >> /mnt/vm$VMID/etc/netplan/50-cloud-init.yaml << EONETPLAN
+            routes:
+            - to: $GATEWAY/32
+              via: 0.0.0.0
+              scope: link
+    version: 2
+EONETPLAN
+mkdir /mnt/vm$VMID/root/.ssh
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
+DEBIAN9_CONFIGURATION=$(cat << 'EOL'
+usermod -R /mnt/vm$VMID -p `mkpasswd -m sha-512 $ROOTPASSWORD` root
+echo "$VMNAME" > /mnt/vm$VMID/etc/hostname
+sed -i -r 's#(.*address\ )'.*'#\1'$IPADDR$CIDR'#g' /mnt/vm$VMID/etc/network/interfaces
+sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm$VMID/etc/network/interfaces
+#sed -i -r 's#(.*network\ )'.*'#\1'$NTWRK'#g' /mnt/vm$VMID/etc/network/interfaces
+#sed -i -r 's#(.*broadcast\ )'.*'#\1'$BRDCST'#g' /mnt/vm$VMID/etc/network/interfaces
+sed -i '/195.43.95.109/d' /mnt/vm$VMID/etc/hosts
+echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
+mkdir /mnt/vm$VMID/root/.ssh
+#echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCmAxfajC66GkpMxE7XCRElV6dh4OM7B0o2tM6R/Yc+XEPUD+JokzsPy6Xg+Zt73mBQAJLTGX643YJ56nkaNxsHDJf1UNy1JFFSRQFzwaEtWV7qjpzpEVwxoEDfCmdD2G6Wvnz4SaVaCRfVAYjlJch$
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
+FEDORA28_CONFIGURATION=$(cat << 'EOL'
+ROOTHASH=`mkpasswd -m sha-512 $ROOTPASSWORD`
+sed -i 's#SELINUX=enforcing#SELINUX=disabled#g' /mnt/vm$VMID/etc/selinux/config
+sed -i "s#^root:.*#root:${ROOTHASH}::0:99999:7:::#g" /mnt/vm$VMID/etc/shadow
+echo "$VMNAME" > /mnt/vm$VMID/etc/hostname
+sed -i -r "s#(BOOTPROTO=).*#\1none#g" /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+sed -i -r "s#(UUID=).*#\1\"`uuidgen`\"#g" /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+sed -i -r "s#(IPADDR=).*#\1$IPADDR#g" /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+sed -i -r "s#(GATEWAY=).*#\1$GATEWAY#g" /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
+mkdir /mnt/vm$VMID/root/.ssh
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
+FREEBSD11_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+echo
+mkdir /root/.ssh
+cat > /root/.ssh/authorized_keys << EOKEYS
+${SSH_KEYS}
+EOKEYS
+chmod -R 600 /root/.ssh/*
+chmod 700 /root/.ssh
+sed -i '' "s#hostname=.*#hostname=\"${VMNAME}\"#g" /etc/rc.conf
+sed -i '' "s#ifconfig_vtnet0=.*#ifconfig_vtnet0=\"inet ${IPADDR} netmask ${NTMASK}\"#g" /etc/rc.conf
+sed -i '' "s#defaultrouter=.*#defaultrouter=\"${GATEWAY}\"#g" /etc/rc.conf
+sed -i '' "s@#PermitRootLogin no@PermitRootLogin yes@g" /etc/ssh/sshd_config
+echo $ROOTPASSWORD | pw mod user root -h 0
+gpart resize -i 1 /dev/da0
+gpart commit da0s1
+gpart resize -i 1 /dev/da0s1
+echo yes | growfs /dev/da0s1a
+poweroff
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+FREEBSD11_ZFS_CONFIGURATION=$(cat << 'EOL'
+ROOTHASH=`mkpasswd -m sha-512 $ROOTPASSWORD`
+sed -i "s#^root:.*#root:${ROOTHASH}:0:0::0:0:Charlie \&:/root:/bin/csh#g" /mnt/vm$VMID/etc/master.passwd
+sed -i "s#hostname=.*#hostname=\"${VMNAME}\"#" /mnt/vm$VMID/etc/rc.conf
+sed -i "s#ifconfig_vtnet0=.*#ifconfig_vtnet0=\"inet ${IPADDR} netmask ${NTMASK}\"#" /mnt/vm$VMID/etc/rc.conf
+sed -i "s#defaultrouter=.*#defaultrouter=\"${GATEWAY}\"#" /mnt/vm$VMID/etc/rc.conf
+#echo '@reboot root gpart resize -i 1 /dev/da0 && gpart commit da0s1 && gpart resize -i 4 /dev/da0s1 && zpool online -e zroot /dev/da0s1d && rm -f /etc/cron.d/resize_zfs' > /mnt/vm${VMID}/etc/cron.d/resize_zfs
+echo '@reboot root pwd_mkdb /etc/master.passwd && rm -f /etc/cron.d/master.passwd' > /mnt/vm${VMID}/etc/cron.d/master.passwd
+#chmod 644 /mnt/vm${VMID}/etc/cron.d/resize_zfs
+chmod 644 /mnt/vm${VMID}/etc/cron.d/master.passwd
+EOL
+)
+
+ADD_KEYS=$(cat << 'EOL'
+mkdir /mnt/vm$VMID/root/.ssh
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+echo "$SSH_KEYS" >> /mnt/vm$VMID/root/.ssh/authorized_keys
+EOL
+)
+
+UMOUNT_ZFS_CHECK_START_FREEBSD=$(cat << 'EOL'
+zpool export ${ZFSVMPOOL}
+rm -f /dev/mapper/${filepath#/*/*}p6
+echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
+qm start $VMID
+EOL
+)
+
+UMOUNT_ZFS_CHECK_START_UFS=$(cat << 'EOL'
+umount /mnt/vm$VMID
+#kpartx -d ${filepath}
+echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
+qm start $VMID
+EOL
+)
+
+UMOUNT_ZFS_CHECK_START=$(cat << 'EOL'
+umount /mnt/vm$VMID
+echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
+e2fsck -f ${filepath}p2
+resize2fs ${filepath}p2
+qm start $VMID
+EOL
+)
+
+UMOUNT_LVM_CHECK_START=$(cat << 'EOL'
+umount /mnt/vm$VMID
+echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
+kpartx -a ${filepath}
+sleep 5s
+kpartx -d ${filepath}
+losetup --offset $(($END_SECOND_PARTITION * $UNIT)) /dev/loop$VMID $filepath
+e2fsck -f /dev/loop$VMID
+resize2fs /dev/loop$VMID
+losetup -d /dev/loop$VMID
+qm start $VMID
+EOL
+)
+
+UMOUNT_QCOW2_CHECK_START=$(cat << 'EOL'
+umount /mnt/vm$VMID
+echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
+e2fsck -f /dev/nbd0p2
+resize2fs /dev/nbd0p2
+qemu-nbd -d /dev/nbd0
+qm start $VMID
+EOL
+)
