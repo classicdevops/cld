@@ -14,6 +14,7 @@ def cmd_webcheck(message):
           zbxothers = str(zbxargs.group(2)).replace('None', '')
         except:
           pass
+        print('/var/cld/modules/zabbixcontrol/bin/cld-zbxwebcheck '+str(zbxhost)+' '+str(zbxothers))
         cmdoutput = bash('/var/cld/modules/zabbixcontrol/bin/cld-zbxwebcheck '+str(zbxhost)+' '+str(zbxothers))
         bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
      else:
