@@ -78,5 +78,5 @@ EOL
 
 RESULT=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .)
 (
-echo "$RESULT" | grep -q result && echo Web checker for $ARG1 configured successfully || echo "$RESULT" | grep "data" | cut -d : -f 2-
+echo "$RESULT" | grep -q result && echo Web checker for $ARG1 configured successfully || echo "$RESULT" | grep "data" | cut -d : -f 2- | cut -d ' ' -f 2-
 ) | awk '{print "`"$0"`"}'
