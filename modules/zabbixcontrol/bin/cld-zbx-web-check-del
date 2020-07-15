@@ -1,0 +1,72 @@
+#!/bin/bash
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--pattern=\|^\-pattern=' && PATTERN="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--url\|^\-url' && URL="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+IP=127.0.0.1
+HOST_NAME="check $ARG1"
+HOST_DNS="$ARG1"
+# CONSTANT VARIABLES
+ERROR='0'
+
+source /var/cld/creds/creds_module_zabbixcontrol
+
+# Authenticate with Zabbix API
+authenticate() {
+echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
+  \"jsonrpc\": \"2.0\",
+  \"method\": \"user.login\",
+  \"params\": {
+    \"user\": \"${ZABBIX_USER}\",
+    \"password\": \"${ZABBIX_PASS}\"
+  },
+  \"auth\": null,
+  \"id\": 0
+}" "$API" | cut -d ':' -f 3 | cut -d ',' -f 1) | tr -d '"'
+}
+
+AUTH_TOKEN=$(authenticate)
+
+JSON_ID_REQUEST=$(cat << EOL | jq .
+{
+    "jsonrpc": "2.0",
+    "method": "host.get",
+    "params": {
+        "filter": {
+            "host": [
+                "${HOST_NAME}"
+            ]
+        }
+    },
+        "auth": "${AUTH_TOKEN}",
+        "id": 1
+}
+EOL
+)
+
+HOST_ID=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq -r '.result[].hostid')
+
+AUTH_TOKEN=$(authenticate)
+
+JSON_REQUEST=$(cat << EOL | jq .
+{
+    "jsonrpc": "2.0",
+    "method": "host.delete",
+    "params": [
+        "${HOST_ID}"
+    ],
+        "auth": "${AUTH_TOKEN}",
+        "id": 1
+}
+EOL
+)
+
+RESULT=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .)
+
+(
+echo "$RESULT" | grep -q result && echo Web checker for $ARG1 deleted successfully || echo "$RESULT" | grep "data" | cut -d : -f 2- | cut -d ' ' -f 2- | tr -d '"''\\'
+) | awk '{print "`"$0"`"}'
