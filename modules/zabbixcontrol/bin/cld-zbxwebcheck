@@ -16,7 +16,7 @@ HOST_DNS="$ARG1"
 # CONSTANT VARIABLES
 ERROR='0'
 
-source /var/cld/creds/creds_module_zbxwebcheck
+source /var/cld/creds/creds_module_zabbixcontrol
 
 # Authenticate with Zabbix API
 authenticate() {
