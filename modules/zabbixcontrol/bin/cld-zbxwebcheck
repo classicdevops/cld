@@ -76,4 +76,7 @@ done)
 EOL
 )
 
-curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .
+RESULT=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .)
+(
+echo $RESULT | grep result && echo Web checker for $ARG1 configured successfully || echo "$RESULT"
+) | awk '{print "`"$0"`"}'
