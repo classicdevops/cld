@@ -1,5 +1,5 @@
 def allowzbxgroups():
-  return set(bash("grep ALLOW_DNS_GROUP_IDS /var/cld/creds/creds_security_system | cut -d = -f 2").strip().split(','))
+  return set(bash("grep ALLOW_ZBX_GROUP_IDS /var/cld/creds/creds_security_system | cut -d = -f 2").strip().split(','))
 
 @bot.message_handler(commands=["webcheckadd"])
 def cmd_webcheckadd(message):
