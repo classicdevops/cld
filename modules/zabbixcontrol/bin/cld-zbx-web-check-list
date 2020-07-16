@@ -31,4 +31,4 @@ EOL
 )
 
 # curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed 's#\]\[#\n#g' | tr -d '['']''"'',' | awk '{print "`"$2" "$3" "$4"`"}'
-curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed -e 's#check ##g' -e 's#\]\[#\n\n\n#g' | tr ',' '\n' | tr -d '"''['']' | grep -A2 -B2 "$1" | tr '\n' '^' | sed 's#\^\^\^#^^#g' | tr '^' '\n' | awk '{print "`"$1"`"}' 
+curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed -e 's#check ##g' -e 's#\]\[#\n\n\n#g' | tr ',' '\n' | tr -d '"''['']' | grep -A2 -B2 "$1" | grep -v '^--' | tr '\n' '^' | sed 's#\^\^\^#^^#g' | tr '^' '\n' | awk '{print "`"$1"`"}' 
