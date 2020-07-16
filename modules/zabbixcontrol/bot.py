@@ -51,7 +51,7 @@ def cmd_webchecklist(message):
    if valid_id in allowzbxgroups() or valid_id2 in allowusers():
       zbxargs = ''
       try:
-        zbxargs = re.search('\/webchecklist\s([A-Za-z0-9._-]+)', message.text).group(1)
+        zbxargs = re.search('\/webchecklist\s([A-Za-z0-9:\/@#$%._-]+)', message.text).group(1)
       except:
         pass
       print('/var/cld/modules/zabbixcontrol/bin/cld-zbx-web-check-list '+str(zbxargs))
