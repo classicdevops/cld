@@ -2,7 +2,7 @@
 fqdntrue()
 {
 echo "Domain entered : $CHECKVAR"
-DOMAIN_IP=$(ping $CHECKVAR | head -1 | cut -d '(' -f 2 | cut -d ')' -f 1)
+DOMAIN_IP=$(ping $CHECKVAR 2>/dev/null | head -1 | cut -d '(' -f 2 | cut -d ')' -f 1)
 DOMAIN=$CHECKVAR
 reverse $DOMAIN_IP "IP not valid or domain could not be resolved."
 }
