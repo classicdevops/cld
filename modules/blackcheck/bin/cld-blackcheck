@@ -2,9 +2,9 @@
 fqdntrue()
 {
 echo "Domain entered : $CHECKVAR"
-# DOMAIN_IP=$(ping $CHECKVAR | head -1 | cut -d '(' -f 2 | cut -d ')' -f 1)
-# reverse $DOMAIN_IP "IP not valid or domain could not be resolved."
-REVERSE=$CHECKVAR
+DOMAIN_IP=$(ping $CHECKVAR | head -1 | cut -d '(' -f 2 | cut -d ')' -f 1)
+DOMAIN=$CHECKVAR
+reverse $DOMAIN_IP "IP not valid or domain could not be resolved."
 }
 
 fqdnfalse()
@@ -25,6 +25,7 @@ CHECKVAR=$1
 FQDN=$(echo $CHECKVAR | grep -P '(?=^.{5,254}$)(^(?:(?!\d+\.)[a-za-z0-9_\-]{1,63}\.?)+(?:[a-za-z]{2,})$)')
 [ "$FQDN" ] && fqdntrue || fqdnfalse
 blacklistchecker $CHECKVAR
+[ "$FQDN" ] && blacklistdomainchecker $CHECKVAR
 }
 
 blacklistchecker() {
@@ -38,6 +39,23 @@ then
 [[ "$LISTED" =~ .*timed\ out.* ]] && echo "${REVERSE}.${bl}. timed out" || echo "${REVERSE}.${bl}. blacklisted (${LISTED})"
 else
 echo "${REVERSE}.${bl}. not listed"
+fi
+) &
+done
+wait
+}
+
+blacklistdomainchecker() {
+REVERSE_DNS=$(dig +short -x $1)
+echo $1 name ${REVERSE_DNS:----}
+for bl in ${BLACKLISTS} ; do
+(
+LISTED="$(dig +short -t a ${DOMAIN}.${bl}.)"
+if [ "$LISTED" ]
+then
+[[ "$LISTED" =~ .*timed\ out.* ]] && echo "${DOMAIN}.${bl}. timed out" || echo "${DOMAIN}.${bl}. blacklisted (${LISTED})"
+else
+echo "${DOMAIN}.${bl}. not listed"
 fi
 ) &
 done
