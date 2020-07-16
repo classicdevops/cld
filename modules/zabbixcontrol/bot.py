@@ -54,7 +54,7 @@ def cmd_webchecklist(message):
         zbxargs = re.search('([A-Za-z0-9._-]+)', message.text)
       except:
         pass
-      cmdoutput = bash('/var/cld/modules/zabbixcontrol/bin/cld-zbx-web-check-list '+str(zbxargs))
+      cmdoutput = bash('/var/cld/modules/zabbixcontrol/bin/cld-zbx-web-check-list')
       bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
    else:
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
