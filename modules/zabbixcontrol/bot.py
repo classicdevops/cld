@@ -43,3 +43,19 @@ def cmd_webcheckdel(message):
    else:
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
       bot.send_message(message.chat.id, myid_answer)
+
+@bot.message_handler(commands=["webchecklist"])
+def cmd_webchecklist(message):
+   valid_id = str(message.chat.id)
+   valid_id2 = str(message.from_user.id)
+   if valid_id in allowzbxgroups() or valid_id2 in allowusers():
+      zbxargs = ''
+      try:
+        zbxargs = re.search('([A-Za-z0-9._-]+)', message.text)
+      except:
+        pass
+      cmdoutput = bash('/var/cld/modules/zabbixcontrol/bin/cld-zbx-web-check-list '+str(zbxargs))
+      bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
+   else:
+      myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
+      bot.send_message(message.chat.id, myid_answer)

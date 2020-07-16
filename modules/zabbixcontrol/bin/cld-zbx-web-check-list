@@ -1,0 +1,34 @@
+#!/bin/bash
+source /var/cld/creds/creds_module_zabbixcontrol
+
+# Authenticate with Zabbix API
+authenticate() {
+echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
+  \"jsonrpc\": \"2.0\",
+  \"method\": \"user.login\",
+  \"params\": {
+    \"user\": \"${ZABBIX_USER}\",
+    \"password\": \"${ZABBIX_PASS}\"
+  },
+  \"auth\": null,
+  \"id\": 0
+}" "$API" | cut -d ':' -f 3 | cut -d ',' -f 1) | tr -d '"'
+}
+
+AUTH_TOKEN=$(authenticate)
+
+JSON_ID_REQUEST=$(cat << EOL | jq .
+{
+    "jsonrpc": "2.0",
+    "method": "host.get",
+    "params": {
+        "filter": {
+        }
+    },
+        "auth": "${AUTH_TOKEN}",
+        "id": 1
+}
+EOL
+)
+
+curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed 's#\]\[#\n#g' | tr -d '['']''"'',' | awk '{print "`"$2" "$3" "$4"`"}'
