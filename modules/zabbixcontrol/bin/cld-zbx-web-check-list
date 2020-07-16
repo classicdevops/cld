@@ -31,4 +31,4 @@ EOL
 )
 
 # curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed 's#\]\[#\n#g' | tr -d '['']''"'',' | awk '{print "`"$2" "$3" "$4"`"}'
-curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed 's#\]\[#\n\n#g' | tr ',' '\n' | tr -d '"''['']' | awk '{print "`"$0"`"}'
+curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed 's#\]\[#\n\n#g' | tr ',' '\n' | tr -d '"''['']' | awk '{print "`"$1"`"}'
