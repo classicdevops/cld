@@ -7,7 +7,7 @@ def cmd_webcheckadd(message):
    valid_id2 = str(message.from_user.id)
    if valid_id in allowzbxgroups() or valid_id2 in allowusers():
      if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[A-Za-z0-9.*:@\/?&= -]+)?', message.text):
-        zbxargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[A-Za-z0-9.*:@\/?&= -]+)?', message.text)
+        zbxargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[А-яA-Za-z0-9.*:@\/?&= -]+)?', message.text)
         zbxhost = zbxargs.group(1)
         zbxothers = ''
         try:
