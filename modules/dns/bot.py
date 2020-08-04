@@ -84,12 +84,12 @@ def cmd_getwhois(message):
    valid_id = str(message.chat.id)
    valid_id2 = str(message.from_user.id)
    if valid_id in allowdnsgroups() or valid_id2 in allowusers():
-     if re.findall(r'([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|all)', message.text):
+     if re.findall(r'([A-z0-9.-]+\.[A-z]+)', message.text):
         domainargs = re.search('([A-z0-9.-]+\.[A-z]+)', message.text)
         cmdoutput = bash('/var/cld/modules/dns/bin/cld-getwhois '+str(domainargs.group(1)))
         bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
      else:
-        bot.send_message(message.chat.id, text="DNS zone or is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
+        bot.send_message(message.chat.id, text="DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
    else:
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
       bot.send_message(message.chat.id, myid_answer)
