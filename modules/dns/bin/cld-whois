@@ -1,0 +1,10 @@
+#!/bin/bash
+source /var/cld/modules/dns/bin/include/dnsfuncs
+DNS_ZONE=${1,,}
+MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
+CONTENT=$(echo $2 | cut -d _ -f 1)
+
+echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
+|| echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
+
+wget -qO- "http://api.whois.vu/?q=${MAIN_ZONE}&clean" | jq . | sed -e 's#\\n#\n#g' -e 's#\\r##g' | awk '{print "`"$0"`"}'
