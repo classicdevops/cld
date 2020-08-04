@@ -86,7 +86,7 @@ def cmd_getwhois(message):
    if valid_id in allowdnsgroups() or valid_id2 in allowusers():
      if re.findall(r'([A-z0-9.-]+\.[A-z]+)', message.text):
         domainargs = re.search('([A-z0-9.-]+\.[A-z]+)', message.text)
-        cmdoutput = bash('/var/cld/modules/dns/bin/cld-getwhois '+str(domainargs.group(1)))
+        cmdoutput = bash('/var/cld/modules/dns/bin/cld-whois '+str(domainargs.group(1)))
         bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
      else:
         bot.send_message(message.chat.id, text="DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
