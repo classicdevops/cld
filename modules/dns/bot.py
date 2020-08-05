@@ -79,17 +79,21 @@ def cmd_getip(message):
       bot.send_message(message.chat.id, myid_answer)
 
 
-@bot.message_handler(commands=["getwhois"])
-def cmd_getwhois(message):
-   valid_id = str(message.chat.id)
-   valid_id2 = str(message.from_user.id)
-   if valid_id in allowdnsgroups() or valid_id2 in allowusers():
-     if re.findall(r'([A-z0-9.-]+\.[A-z]+)', message.text):
-        domainargs = re.search('([A-z0-9.-]+\.[A-z]+)', message.text)
-        cmdoutput = bash('/var/cld/modules/dns/bin/cld-whois '+str(domainargs.group(1)))
-        bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
-     else:
-        bot.send_message(message.chat.id, text="DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
-   else:
-      myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
-      bot.send_message(message.chat.id, myid_answer)
+@bot.message_handler(commands=["whois"])
+def cmd_whois(message):
+  if re.findall(r'([A-z0-9.-]+\.[A-z]+)', message.text):
+    domainargs = re.search('([A-z0-9.-]+\.[A-z]+)', message.text)
+    cmdoutput = bash('/var/cld/modules/dns/bin/cld-whois '+str(domainargs.group(1)))
+    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
+  else:
+    bot.send_message(message.chat.id, text="DNS zone is not defined, please use format:\n`/whois example.com`", parse_mode='Markdown')
+
+
+@bot.message_handler(commands=["geo"])
+def cmd_geo(message):
+  if re.findall(r'([A-z0-9.-]+\.[0-9A-z]+)', message.text):
+    domainargs = re.search('([A-z0-9.-]+\.[A-z]+)', message.text)
+    cmdoutput = bash('/var/cld/modules/dns/bin/cld-geo '+str(domainargs.group(1)))
+    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
+  else:
+    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
