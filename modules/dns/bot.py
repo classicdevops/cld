@@ -88,7 +88,6 @@ def cmd_whois(message):
   else:
     bot.send_message(message.chat.id, text="DNS zone is not defined, please use format:\n`/whois example.com`", parse_mode='Markdown')
 
-
 @bot.message_handler(commands=["geo"])
 def cmd_geo(message):
   if re.findall(r'([A-z0-9.-]+\.[0-9A-z]+)', message.text):
@@ -97,7 +96,6 @@ def cmd_geo(message):
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
     bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
-
 
 @bot.message_handler(commands=["nslookup"])
 def cmd_nslookup(message):
