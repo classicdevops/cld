@@ -99,7 +99,7 @@ def cmd_geo(message):
     bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
 
 
-@bot.message_handler(commands=["geo"])
+@bot.message_handler(commands=["nslookup"])
 def cmd_nslookup(message):
   if re.findall(r'([A-z0-9.-]+\.[0-9A-z]+)', message.text):
     domainargs = re.search('([A-z0-9.-]+\.[A-z0-9]+)', message.text)
