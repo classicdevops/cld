@@ -10,7 +10,7 @@ EOHOSTSACCESS
 
 truncate -s 0 /etc/hosts.deny
 ALLOWED_IPS_LINES=\$(grep sshd /etc/hosts.allow | wc -l)
-[ "\$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny
+[ "\$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny || truncate -s 0 /etc/hosts.deny
 
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
 53-55 2-3 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
@@ -61,7 +61,7 @@ echo \$LOCAL_NETS | grep "^\$" && LOCAL_NETS=\$(cat << 'EOPORTS'
 EOPORTS
 )
 
-source <(
+[ "\$ALLOWED_IPS_LINES" -ge "3" ] && source <(
 iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | iptables-restore
 for LOCAL_NET in \$LOCAL_NETS
