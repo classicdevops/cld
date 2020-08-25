@@ -17,5 +17,5 @@ A_RECORD_LIST=$(grep "$ORIGIN_IP" -R /var/cld/modules/dns/data/cf/${CURR_DATE}/ 
 
 for A_RECORD in $(A_RECORD_LIST)
 do
-echo cld-setdns A ${A_RECORD}  ${ORIGIN_IP}_${TARGET_IP}
+echo cld-setdns A ${A_RECORD} ${ORIGIN_IP}_${TARGET_IP} ${CFPROXY}
 done
