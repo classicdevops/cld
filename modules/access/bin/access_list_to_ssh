@@ -32,6 +32,8 @@ ALLOWED_IPS=\$(cat << EOIPS
 EOIPS
 )
 
+ALLOWED_IPS_LINES=\$(echo "\$ALLOWED_IPS" | wc -l)
+
 #Should be MORE than 1 ports
 ALLOWED_PORTS=\$(cat << 'EOPORTS'
 $(cat /var/cld/creds/protected_ports 2>/dev/null)
