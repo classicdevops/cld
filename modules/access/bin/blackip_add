@@ -8,5 +8,5 @@ source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
-cf-firewall-rules-ip-ban-add $1 $2_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip \`${1}\` successfully banned by \*cloudflare\* for account \`${CFACC}\`"
+cf-firewall-rules-ip-ban-add $1 $2_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip \`${1}\` successfully banned by *cloudflare* for account \`${CFACC}\`"
 done
