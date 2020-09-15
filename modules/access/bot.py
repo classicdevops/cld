@@ -50,3 +50,19 @@ def cmd_blackip(message):
    else:
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
       bot.send_message(message.chat.id, myid_answer)
+
+
+@bot.message_handler(commands=["unbanip"])
+def cmd_unbanip(message):
+   valid_id = str(message.from_user.id)
+   if valid_id in allowusers():
+     if re.findall(r'([\d]+\.[\d]+\.[\d]+\.[\d]+)\s(.+)', message.text):
+        unbanipargs = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text)
+        unban_ip = unbanipargs.group(1)
+        cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/blackip_del '+str(unban_ip), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown')
+     else:
+        bot.send_message(message.chat.id, text="ip address or comment is not defined, please use format:\n`/unbanip 1.1.1.1`", parse_mode='Markdown')
+   else:
+      myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
+      bot.send_message(message.chat.id, myid_answer)
