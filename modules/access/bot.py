@@ -69,3 +69,15 @@ def cmd_unbanip(message):
    else:
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
       bot.send_message(message.chat.id, myid_answer)
+
+
+@bot.message_handler(commands=["banlist"])
+def cmd_banlist(message):
+   valid_id = str(message.chat.id)
+   valid_id2 = str(message.from_user.id)
+   if valid_id in allowgroups() or valid_id2 in allowusers():
+      cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/blackip_list', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown')
+   else:
+      myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
+      bot.send_message(message.chat.id, myid_answer)
