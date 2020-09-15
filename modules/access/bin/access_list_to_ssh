@@ -76,7 +76,7 @@ EOPORTS
 
 [ "\$ALLOWED_IPS_LINES" -ge "3" ] && source <(
 iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | iptables-restore
+iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "\${BLACK_IPS}" | iptables-restore
 for LOCAL_NET in \$LOCAL_NETS
 do
 echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
