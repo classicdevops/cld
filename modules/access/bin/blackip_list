@@ -1,14 +1,2 @@
 #!/bin/bash
-mkdir -p /var/cld/modules/access/data/ &>/dev/null
-echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || echo "ip address is incorrect please fix it and try again"
-echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || exit 1
-grep -q "${1}" /var/cld/modules/access/data/blackips && (sed -i '/'${1}'/d' /var/cld/modules/access/data/blackips && echo "ip \`${1}\` successfully deleted from black list") || echo "ip \`${1}\` not in black list"
-
-UNBAN_IP=$1
-source /var/cld/modules/dns/bin/include/dnsfuncs
-for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
-do
-cf-dns-api-creds
-RULE_ID=$(cf-firewall-rules-ip-ban-get | jq ".result[] | select(.mode == \"block\" and .configuration.value == \"${UNBAN_IP}\")" | jq -r .id)
-cf-firewall-rules-ip-ban-del ${RULE_ID} | grep -q '"success": true' && echo "ip \`${1}\` successfully unbanned by *cloudflare* for account \`${CFACC}\`"
-done
+cat /var/cld/modules/access/data/blackips | tr '_' ' ' | awk '{print "`"$0"`"}'
