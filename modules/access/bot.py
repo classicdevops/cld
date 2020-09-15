@@ -35,9 +35,9 @@ def cmd_enableip(message):
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
       bot.send_message(message.chat.id, myid_answer)
 
-# blackip
-@bot.message_handler(commands=["blackip"])
-def cmd_blackip(message):
+# banip
+@bot.message_handler(commands=["banip"])
+def cmd_banip(message):
    valid_id = str(message.chat.id)
    valid_id2 = str(message.from_user.id)
    if valid_id in allowgroups() or valid_id2 in allowusers():
