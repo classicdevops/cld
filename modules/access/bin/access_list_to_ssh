@@ -12,6 +12,12 @@ truncate -s 0 /etc/hosts.deny
 ALLOWED_IPS_LINES=\$(grep sshd /etc/hosts.allow | wc -l)
 [ "\$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny || truncate -s 0 /etc/hosts.deny
 
+cat > /etc/hosts.deny << 'EOHOSTSBLACK'
+`(
+grep -vh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
+)`
+EOHOSTSBLACK
+
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
 53-55 2-3 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
 EOCRON
@@ -29,6 +35,11 @@ cat > /root/sbin/iptables_access << 'EOIPTABLES'
 #!/bin/bash
 ALLOWED_IPS=\$(cat << EOIPS
 \$(cat /etc/hosts.allow | awk '{print \$2}'  | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+EOIPS
+)
+
+BLACK_IPS=\$(cat << EOIPS
+\$(cat /etc/hosts.deny | awk '{print \$2}'  | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 EOIPS
 )
 
@@ -79,6 +90,12 @@ done
 cat << EOL
 iptables -A INPUT -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
 EOL
+for BLACK_IP in \$BLACK_IPS
+do
+cat << EOL
+iptables -I INPUT -s \${BLACK_IP}/32 -j DROP
+EOL
+done
 )
 
 EOIPTABLES

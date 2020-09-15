@@ -33,3 +33,20 @@ def cmd_enableip(message):
    else:
       myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
       bot.send_message(message.chat.id, myid_answer)
+
+# blackip
+@bot.message_handler(commands=["blackip"])
+def cmd_blackip(message):
+   valid_id = str(message.from_user.id)
+   if valid_id in allowusers():
+     if re.findall(r'([\d]+\.[\d]+\.[\d]+\.[\d]+)\s(.+)', message.text):
+        blackipargs = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)\s+(.+)', message.text)
+        black_ip = blackipargs.group(1)
+        black_cmnt = blackipargs.group(2)
+        cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/blackip_add '+str(black_ip)+' '+str(black_cmnt), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown')
+     else:
+        bot.send_message(message.chat.id, text="ip address or comment is not defined, please use format:\n`/blackip 1.1.1.1 BlackReason`", parse_mode='Markdown')
+   else:
+      myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
+      bot.send_message(message.chat.id, myid_answer)
