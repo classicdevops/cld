@@ -20,8 +20,9 @@ def cmd_myip(message):
 # enableip
 @bot.message_handler(commands=["enableip"])
 def cmd_enableip(message):
-   valid_id = str(message.from_user.id)
-   if valid_id in allowusers():
+   valid_id = str(message.chat.id)
+   valid_id2 = str(message.from_user.id)
+   if valid_id in allowgroups() or valid_id2 in allowusers():
      if re.findall(r'([\d]+\.[\d]+\.[\d]+\.[\d]+)\s(.+)', message.text):
         enableipargs = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)\s+(.+)', message.text)
         enable_ip = enableipargs.group(1)
@@ -37,8 +38,9 @@ def cmd_enableip(message):
 # blackip
 @bot.message_handler(commands=["blackip"])
 def cmd_blackip(message):
-   valid_id = str(message.from_user.id)
-   if valid_id in allowusers():
+   valid_id = str(message.chat.id)
+   valid_id2 = str(message.from_user.id)
+   if valid_id in allowgroups() or valid_id2 in allowusers():
      if re.findall(r'([\d]+\.[\d]+\.[\d]+\.[\d]+)\s(.+)', message.text):
         blackipargs = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)\s+(.+)', message.text)
         black_ip = blackipargs.group(1)
@@ -54,8 +56,9 @@ def cmd_blackip(message):
 
 @bot.message_handler(commands=["unbanip"])
 def cmd_unbanip(message):
-   valid_id = str(message.from_user.id)
-   if valid_id in allowusers():
+   valid_id = str(message.chat.id)
+   valid_id2 = str(message.from_user.id)
+   if valid_id in allowgroups() or valid_id2 in allowusers():
      if re.findall(r'([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text):
         unbanipargs = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text)
         unban_ip = unbanipargs.group(1)
