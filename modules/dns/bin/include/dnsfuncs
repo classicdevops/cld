@@ -106,7 +106,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/accounts/${CF_ACC_ID}/firewal
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
      -H "Content-Type: application/json" \
-     --data '{"mode":"block","configuration":{"target":"ip","value":"$1"},"notes":"$2"}' | jq .
+     --data '{"mode":"block","configuration":{"target":"ip","value":"'$1'"},"notes":"'$2'"}' | jq .
 }
 
 echoexit1()
