@@ -43,6 +43,8 @@ BLACK_IPS=\$(cat << EOIPS
 EOIPS
 )
 
+[ "\$BLACK_IPS" ] || BLACK_IPS=123.234.345.456
+
 ALLOWED_IPS_LINES=\$(echo "\$ALLOWED_IPS" | wc -l)
 
 #Should be MORE than 1 ports
