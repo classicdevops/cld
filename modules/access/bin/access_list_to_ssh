@@ -12,7 +12,7 @@ truncate -s 0 /etc/hosts.deny
 ALLOWED_IPS_LINES=\$(grep sshd /etc/hosts.allow | wc -l)
 [ "\$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny || truncate -s 0 /etc/hosts.deny
 
-cat > /etc/hosts.deny << 'EOHOSTSBLACK'
+cat >> /etc/hosts.deny << 'EOHOSTSBLACK'
 `(
 grep -vh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 )`
