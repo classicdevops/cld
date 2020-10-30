@@ -24,7 +24,7 @@ def cmd_setdns(message):
    valid_id = str(message.chat.id)
    valid_id2 = str(message.from_user.id)
    if valid_id in allowdnsgroups() or valid_id2 in allowusers():
-     if re.findall(r'([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_-]+|[A-Za-z0-9.*=@/_-]+)', message.text):
+     if re.findall(r'([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*@/_ -]+|[A-Za-z0-9.*=@/_ -]+)', message.text):
         dnsargs = re.search('([a-zA-Z]+)\s+([a-z0-9.*-]+\.[a-z0-9.-]+)\s+([A-Za-z0-9.*=@/_-]+)(\s+[A-Za-z0-9.*=@/_-]+)?', message.text)
         dnstype = dnsargs.group(1)
         dnszone = dnsargs.group(2)
