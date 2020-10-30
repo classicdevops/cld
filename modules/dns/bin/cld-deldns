@@ -26,7 +26,7 @@ done
 (
 [ "$CF_ZONE_ID" ] || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
-CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\")")
+CF_RECORD_RESULT=$(cf-dns-records-get $CF_ZONE_ID | jq ".result[] | select(.type == \"$TYPE\" and .name == \"$DNS_ZONE\" and .content == \"$CONTENT\")")
 CF_RECORD_ID=$(echo "${CF_RECORD_RESULT}" |  jq -r .id)
 CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 
