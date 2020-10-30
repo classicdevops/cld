@@ -22,6 +22,6 @@ done
 [ "$CF_ZONE_ID" ] || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
 [ "$CONTENT" == "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content,.proxied]|@tsv"
-[ "$CONTENT" != "" -a "$CONTENT" != "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content]|@tsv"
-[ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content]|@tsv"
+[ "$CONTENT" != "" -a "$CONTENT" != "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content,.proxied]|@tsv"
+[ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content,.proxied]|@tsv"
 ) | awk '{print "`"$0"`"}'
