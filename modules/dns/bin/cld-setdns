@@ -56,7 +56,7 @@ CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 [ "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" -a "$FORCE" == "" ] && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
 [ "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" != "" -a "$FORCE" == "" ] && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
 
-[ "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" ] && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT
+[ "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" -a "$FORCE" == "" ] && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT
 To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}"
 
 [ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" ] && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
