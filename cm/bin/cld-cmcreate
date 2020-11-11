@@ -92,7 +92,7 @@ read VMMEMORY
 echo
 done
 fi
-VMMEMORY=$(expr ${VMMEMORY} * 1024)
+VMMEMORY=$(expr ${VMMEMORY} \* 1024)
 
 if [ "$DISK" == "" ]
 then
