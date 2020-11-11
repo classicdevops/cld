@@ -42,6 +42,11 @@
 /noVNC/sockets/
 /xtermjs/sockets/
 
+#cloudmaker module
+/cm/data/
+/cm/tmp/
+/cm/LOCK
+
 #sessid file with validating rules
 /docker/*/etc/nginx/conf.d/sessid
 

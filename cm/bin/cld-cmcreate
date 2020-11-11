@@ -1,9 +1,12 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
 source /var/cld/cm/bin/include/bot
+source /var/cld/cm/bin/include/create_funcs
 echo  "`date` - ${@:0}" >> /var/log/cld/cm/cmd_create.log
 touch /var/cld/cm/LOCK
 CMLOCK=$(cat /var/cld/cm/LOCK)
-if grep -q "1" /var/cld/cm/LOCK ; then echo "${@:0}" >> /var/cld/cm/queue_create ; exit 0 ; else echo 1 > /var/cld/cm/LOCK ; fi
+if grep -q "1" /var/cld/cm/LOCK ; then echo "${@:0}" >> /var/cld/cm/data/queue_create ; exit 0 ; else echo 1 > /var/cld/cm/LOCK ; fi
 
 ROOTPASSWORD=""
 
@@ -26,71 +29,174 @@ echo $OPTS | grep -q '\-\-storagetype=' && STORAGE_TYPE=$(echo $OPTS | cut -d '=
 echo $OPTS | grep -q '\-\-dc=' && DC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-autologin=' && AUTO_LOGIN=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-privatenet=' && PRIVATENET=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-hyper=' && HYPER=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 done
 
-if [ "$OS" = "" ] ; then echo "OS not defined, please use format cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$VMNAME" = "" ] ; then echo "VMNAME not defined, please use format -- cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$VMCPU" = "" ] ; then echo "VMCPU not defined, please use format -- cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$VMMEMORY" = "" ] ; then echo "VMMEMORY not defined, please use format -- cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$DISK" = "" ] ; then echo "DISK not defined, please use format -- cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$IPADDR" = "" ] ; then echo "IPADDR not defined, please use format -- cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$GATEWAY" = "" ] ; then echo "GATEWAY not defined, please use format -- cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
-elif [ "$VMID" = "" ] ; then VMID=$(expr `cat /var/cld/cm/dc/last_vmid` + 1)
+[ "$HPR_PREFIX" == "" ] && HPR_PREFIX=HPR
+
+[ "$HYPERVISOR" != "" ] && HYPERVISOR=$(CLOUDS_USER_ALLOWED | grep -i "^$HPR_PREFIX" | grep "$HYPER" | head -1)
+
+if [ "$HYPERVISOR" == "" ]
+then
+echo Please choose HYPERVISOR
+select VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HPR_PREFIX")
+do
+HYPERVISOR=$VM
+break
+done
 fi
-if [ "$ROOTPASSWORD" = "" ] ; then ROOTPASSWORD=$(date +%s | sha256sum | base64 | head -c 32 ; echo -n) ; fi
+
+if [ "$OS" == "" ]
+then
+while ! [[ "$OS" =~  [A-Za-z0-9]+ ]]
+do
+echo "Please enter the OS template using only 'A-Z 0-9' symbols
+Example: CENTOS7, DEBIAN9, UBUNTU18 etc"
+read OS
+done
+
+if [ "$VMNAME" == "" ]
+then
+while ! [[ "$VMNAME" =~  [A-Za-z0-9.-]+ ]]
+do
+echo "Please enter the VIRTUAL MACHINE NAME using only 'A-Z 0-9 - .' symbols
+Example: example.com"
+read VMNAME
+done
+
+if [ "$VMCPU" == "" ]
+then
+while ! [[ "$VMCPU" =~  [0-9]+ ]]
+do
+echo "Please enter the CPU CORES using only '0-9' symbols
+Example: 2"
+read VMCPU
+done
+
+if [ "$VMMEMORY" == "" ]
+then
+while ! [[ "$VMMEMORY" =~  [0-9]+ ]]
+do
+echo "Please enter the RAM GB using only '0-9' symbols
+Example: 2"
+read VMMEMORY
+done
+
+if [ "$DISK" == "" ]
+then
+while ! [[ "$DISK" =~  [0-9]+ ]]
+do
+echo "Please enter the DISK SPACE GB using only '0-9' symbols
+Example: 20"
+read DISK
+done
+
+if [ "$IPADDR" == "" ]
+then
+while ! [[ "$IPADDR" =~  [0-9.]+ ]]
+do
+echo "Please enter the MAIN IP ADDRESS using only '0-9 .' symbols
+Example: 1.2.3.4"
+read IPADDR
+done
+
+if [ "$GATEWAY" == "" ]
+then
+while ! [[ "$GATEWAY" =~  [0-9.]+ ]]
+do
+echo "Please enter the GATEWAY ADDRESS using only '0-9 .' symbols
+Example: 1.2.3.1"
+read GATEWAY
+done
+
 if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
+
+if [ "$STORAGE" == "" ]
+then
+while ! [[ "$STORAGE" =~  [a-z 0-9]+ ]]
+do
+echo "Please enter the PVE STORAGE NAME using only 'a-z 0-9' symbols
+Example: zfs01"
+read STORAGE
+done
+
+echo "$STORAGE" | grep -q zfs && export STORAGE_TYPE=zfs
+echo "$STORAGE" | grep -q lvm && export STORAGE_TYPE=lvm
+echo "$STORAGE" | grep -q qcow && export STORAGE_TYPE=qcow2
+
+if [ "$STORAGE_TYPE" == "" ]
+then
+while ! [[ "$STORAGE_TYPE" =~  [a-z 0-9]+ ]]
+do
+echo "Please enter the PVE STORAGE TYPE using only 'a-z 0-9' symbols
+Example: zfs lwm qcow2"
+read STORAGE_TYPE
+done
+
+
+if [ "$VMID" = "" ]
+then
+echo VMID is not defined - detecting - please wait
+VMID=$(expr `get-last-vmid` + 1)
+echo VMID is $VMID
+fi
+
+if [ "$ROOTPASSWORD" = "" ] ; then ROOTPASSWORD=$(date +%s | sha256sum | base64 | head -c 32 ; echo -n) ; fi
+
 if [ "$DC" = "" ] ; then DC='*' ; fi
 
-echo $KEYS | egrep -q "[0-9]+" && SSH_KEYS=$(IFS=' ' ; for sshkeys in `echo $KEYS | sed 's#:# #g'` ; do MYARROW=$(some get keys method by id) ; echo $MYARROW | jq -r '.key' ; done)
+SSH_KEYS=$(cat /root/.ssh/id_rsa.pub)
 
-REQ_CPU=$(echo "$VMCPU*1" | bc | cut -d '.' -f 1) ;
-REQ_MEMORY=$(echo "$VMMEMORY*1/1024" | bc | cut -d '.' -f 1)
-REQ_DISK=$(echo "$DISK*0.6" | bc | cut -d '.' -f 1)
+# REQ_CPU=$(echo "$VMCPU*1" | bc | cut -d '.' -f 1) ;
+# REQ_MEMORY=$(echo "$VMMEMORY*1/1024" | bc | cut -d '.' -f 1)
+# REQ_DISK=$(echo "$DISK*0.6" | bc | cut -d '.' -f 1)
 
-### HYPERVISOR SELECTOR RATING ALGORITM START
-rm -f /var/cld/cm/tmp/select_hyper_list ; rm -f /var/cld/cm/tmp/choice_hyper_list
-touch /var/cld/cm/tmp/select_hyper_list ; touch /var/cld/cm/tmp/choice_hyper_list
-for HPR_RES in $(cat /var/cld/cm/dc/${DC}/res_hyper_list | grep -vf /var/cld/cm/dc/${DC}/hyper_list_ignore)
- do
- HPR_CPU=$(echo "$HPR_RES" | cut -d '_' -f 2)
- HPR_MEMORY=$(echo "$HPR_RES" | cut -d '_' -f 3)
- HPR_DISK=$(echo "$HPR_RES" | cut -d '_' -f 4)
- if [[ "$REQ_CPU" -lt "$HPR_CPU" && "$REQ_MEMORY" -lt "$HPR_MEMORY" && "$REQ_DISK" -lt "$HPR_DISK" ]]; then echo "$HPR_RES" >> /var/cld/cm/tmp/select_hyper_list ; fi
-done
+# ### HYPERVISOR SELECTOR RATING ALGORITM START
+# rm -f /var/cld/cm/tmp/select_hyper_list ; rm -f /var/cld/cm/tmp/choice_hyper_list
+# touch /var/cld/cm/tmp/select_hyper_list ; touch /var/cld/cm/tmp/choice_hyper_list
+# for HPR_RES in $(cat /var/cld/cm/dc/${DC}/res_hyper_list | grep -vf /var/cld/cm/dc/${DC}/hyper_list_ignore)
+#  do
+#  HPR_CPU=$(echo "$HPR_RES" | cut -d '_' -f 2)
+#  HPR_MEMORY=$(echo "$HPR_RES" | cut -d '_' -f 3)
+#  HPR_DISK=$(echo "$HPR_RES" | cut -d '_' -f 4)
+#  if [[ "$REQ_CPU" -lt "$HPR_CPU" && "$REQ_MEMORY" -lt "$HPR_MEMORY" && "$REQ_DISK" -lt "$HPR_DISK" ]]; then echo "$HPR_RES" >> /var/cld/cm/tmp/select_hyper_list ; fi
+# done
 
-for HPR_RES in $(cat /var/cld/cm/tmp/select_hyper_list)
-do
- HPR_CPU=$(echo "$HPR_RES" | cut -d '_' -f 2)
- HPR_MEMORY=$(echo "$HPR_RES" | cut -d '_' -f 3)
- HPR_DISK=$(echo "$HPR_RES" | cut -d '_' -f 4)
- MORE_REQ_CPU=$(expr $HPR_CPU - $REQ_CPU)
- MORE_REQ_MEMORY=$(expr $HPR_MEMORY - $REQ_MEMORY)
- MORE_REQ_DISK=$(expr $HPR_DISK - $REQ_DISK)
- RATE_REQ_CPU=$(echo "$MORE_REQ_CPU*1" | bc | cut -d '.' -f 1)
- RATE_SCORE=$(expr $RATE_REQ_CPU + $MORE_REQ_MEMORY)
- HPR_SCORE=$(echo "$HPR_RES" | awk '{print $1}')
- if [[ "$MORE_REQ_CPU" -gt 1 && "$MORE_REQ_MEMORY" -gt 3 && "$MORE_REQ_DISK" -gt 5 ]]; then echo "$RATE_SCORE $HPR_SCORE"  >> /var/cld/cm/tmp/choice_hyper_list ; fi
-done
-### HYPERVISOR SELECTOR RATING ALGORITM END
-if [ "$DC" = "*" ] ; then DC=`grep -l $(awk '{print $2}' /var/cld/cm/tmp/choice_hyper_list | cut -d _ -f 1) /var/cld/cm/dc/*/hyper_list | awk -F '/' '{print $5}'` ; fi
+# for HPR_RES in $(cat /var/cld/cm/tmp/select_hyper_list)
+# do
+#  HPR_CPU=$(echo "$HPR_RES" | cut -d '_' -f 2)
+#  HPR_MEMORY=$(echo "$HPR_RES" | cut -d '_' -f 3)
+#  HPR_DISK=$(echo "$HPR_RES" | cut -d '_' -f 4)
+#  MORE_REQ_CPU=$(expr $HPR_CPU - $REQ_CPU)
+#  MORE_REQ_MEMORY=$(expr $HPR_MEMORY - $REQ_MEMORY)
+#  MORE_REQ_DISK=$(expr $HPR_DISK - $REQ_DISK)
+#  RATE_REQ_CPU=$(echo "$MORE_REQ_CPU*1" | bc | cut -d '.' -f 1)
+#  RATE_SCORE=$(expr $RATE_REQ_CPU + $MORE_REQ_MEMORY)
+#  HPR_SCORE=$(echo "$HPR_RES" | awk '{print $1}')
+#  if [[ "$MORE_REQ_CPU" -gt 1 && "$MORE_REQ_MEMORY" -gt 3 && "$MORE_REQ_DISK" -gt 5 ]]; then echo "$RATE_SCORE $HPR_SCORE"  >> /var/cld/cm/tmp/choice_hyper_list ; fi
+# done
+# ### HYPERVISOR SELECTOR RATING ALGORITM END
+# if [ "$DC" = "*" ] ; then DC=`grep -l $(awk '{print $2}' /var/cld/cm/tmp/choice_hyper_list | cut -d _ -f 1) /var/cld/cm/dc/*/hyper_list | awk -F '/' '{print $5}'` ; fi
 
 #DETECT VARIABLES
-HPR=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 1)
+HPR_NAME=$(echo ${HYPERVISOR} | cut -d '_' -f 1)
+HPR=$(echo ${HYPERVISOR} | cut -d '_' -f 2)
 if [ "$HPR" = "" ] ; then
  echo "No suitable hypervisor is detected, cluster expansion may be required, or the hypervisor resource requirements may be adjusted in this script" ; exit 1
 fi
-HPR_PORT=$(grep $HPR /var/cld/cm/dc/${DC}/hyper_list | cut -d '_' -f 2)
-HPR_DC=$(grep -l $HPR /var/cld/cm/dc/${DC}/hyper_list | cut -d '/' -f 5)
-echo $STORAGE | grep -q "^$" && STORAGE=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 2)
-echo $STORAGE_TYPE | grep -q "^$" && STORAGE_TYPE=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 1)
+HPR_PORT=$(echo ${HYPERVISOR} | cut -d '_' -f 3)
+HPR_USER=$(echo ${HYPERVISOR} | cut -d '_' -f 4)
+HPR_DC=$(echo ${HPR_NAME} | cut -d '-' -f 2)
+# echo $STORAGE | grep -q "^$" && STORAGE=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 2)
+# echo $STORAGE_TYPE | grep -q "^$" && STORAGE_TYPE=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 1)
 
-qmlist=`cat /var/cld/cm/dc/${DC}/vmid_hyper_list | cut -d '_' -f 1`
+# qmlist=`cat /var/cld/cm/dc/${DC}/vmid_hyper_list | cut -d '_' -f 1`
 NTWRK=$(echo $GATEWAY | sed -r "s#([0-9]+\.[0-9]+\.[0-9]+).*#\1.`echo $GATEWAY | cut -d '.' -f 4 | xargs -I ^ expr ^ - 1`#g")
 BRDCST=$(echo $GATEWAY | sed -r "s#([0-9]+\.[0-9]+\.[0-9]+).*#\1.255#g")
 CIDR=$(whatmask $IPADDR/$NTMASK | grep 'CIDR' | awk '{ print $4  }')
 
-DC_PROVIDER=$(grep -ls $DC /var/cld/cm/dc/* | cut -d / -f 5)
+DC_PROVIDER=$HPR_DC
 
 # source /var/cld/cm/bin/include/dc_functions
 # source /var/cld/cm/bin/include/dc_vars
@@ -109,8 +215,8 @@ DC_PROVIDER=$(grep -ls $DC /var/cld/cm/dc/* | cut -d / -f 5)
 # fi
 
 source /var/cld/cm/bin/include/create_vars
-# source /var/cld/cm/bin/include/autologin_vars
-# source /var/cld/cm/bin/include/privatenet_vars
+source /var/cld/cm/bin/include/autologin_vars
+source /var/cld/cm/bin/include/privatenet_vars
 source /var/cld/cm/bin/include/create_logic
 
 ### DEBUG MODE
@@ -128,44 +234,44 @@ EOL
 echo $DEBUG | grep -q YES && truncate -s 0 /var/cld/cm/LOCK
 echo $DEBUG | grep -q YES && exit 1
 
-echo "${VMID}" > /var/cld/cm/dc/last_vmid
+echo "${VMID}" > /var/cld/cm/data/last_vmid
 
 LOG_FILE=/var/log/cm/${VMID}_create.log
 
 
-echo "vmid=$VMID&cpu=$VMCPU&ram=$VMMEMORY&disk=$DISK&received=1&keys=$SSH_KEYS&dc=$DC&os=$OS&name=$VMNAME&ip=$IPADDR&gate=$GATEWAY&netmask=$NTMASK&password=$ROOTPASSWORD&storage=$STORAGE&storage_type=$STORAGE_TYPE&mac=$MACADDR" > /var/cld/cm/data/vms_info
+echo "{\"vmid\":\"$VMID\",\"cpu\":\"$VMCPU\",\"ram\":\"$VMMEMORY\",\"disk\":\"$DISK\",\"received\":\"1\",\"keys\":\"$SSH_KEYS\",\"dc\":\"$DC\",\"os\":\"$OS\",\"name\":\"$VMNAME\",\"ip\":\"$IPADDR\",\"gate\":\"$GATEWAY\",\"netmask\":\"$NTMASK\",\"password\":\"$ROOTPASSWORD\",\"storage\":\"$STORAGE\",\"storage_type\":\"$STORAGE_TYPE\",\"mac\":\"$MACADDR\"}" | jq . >> /var/cld/cm/data/vms_info
 
 
-echo "${VMID}_${HPR}_${HPR_PORT}" >> /var/cld/cm/dc/${HPR_DC}/vmid_hyper_list
+echo "${VMID}_${HPR}_${HPR_PORT}" >> /var/cld/cm/data/vmid_hyper_list
 
 cat >> ${LOG_FILE} << EOLOG
 $CMD_CREATE_SET
 EOLOG
 
 (
-ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" clouds@$HPR "sudo bash -s" << EOL
+ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" ${HPR_USER}@$HPR "sudo bash -s" << EOL
 $CMD_CREATE_SET
 exit
 EOL
 ) 2>&1 >> ${LOG_FILE}
 
 echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/cld/ext_srv_list
-if echo `ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" clouds@$HPR "sudo qm list | grep $VMID"` | grep --quiet "running"
-then echo "OK" >> ${LOG_FILE} ; template-user-data ; send_tg Cloud \`${VMID}\` *created*'\n'Log file: \`${LOG_FILE}\`
+if echo `ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" ${HPR_USER}@$HPR "sudo qm list | grep $VMID"` | grep --quiet "running"
+then echo "OK" >> ${LOG_FILE} ; send_tg Cloud \`${VMID}\` *created*'\n'Log file: \`${LOG_FILE}\`
 else echo "FAIL" >> ${LOG_FILE} ; send_tg Cloud \`${VMID}\` *Error* while creating'\n'Log file: \`${LOG_FILE}\`
 fi
 
 #Get VMMAC after create
-VMMAC=`ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" clouds@$HPR "sudo grep net0 /etc/pve/qemu-server/${VMID}.conf | egrep -o \"([0-9A-Z]{2}\:){5}[0-9A-Z]{2}\""`
+VMMAC=`ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" ${HPR_USER}@$HPR "sudo grep net0 /etc/pve/qemu-server/${VMID}.conf | egrep -o \"([0-9A-Z]{2}\:){5}[0-9A-Z]{2}\""`
 
 
 truncate -s 0 /var/cld/cm/LOCK
 
-if echo "`stat /var/cld/cm/queue_create | awk 'NR==2 {print $2}'`" | grep -q "^0$"
+if echo "`stat /var/cld/cm/data/data/queue_create | awk 'NR==2 {print $2}'`" | grep -q "^0$"
 then
  exit 0
 else
-CMD_CREATE="`head -1 /var/cld/cm/queue_create`"
-sed -i '1d' /var/cld/cm/queue_create
+CMD_CREATE="`head -1 /var/cld/cm/data/data/queue_create`"
+sed -i '1d' /var/cld/cm/data/data/queue_create
 echo ${CMD_CREATE} | bash
 fi

@@ -1,0 +1,29 @@
+PRIVATE_NET_FILTER_SET=$(cat << 'EOL'
+private-net-filter-add()
+{
+mkdir /etc/pve/firewall -p &>/dev/null
+cat >> /etc/pve/firewall/${VMID}.fw << EOIP
+[IPSET ipfilter-net1] # only allow specified IPs on net1
+${PRIVATENET}
+EOIP
+qm set $VMID --net1 virtio,bridge=vmbr1,firewall=1
+}
+
+private-net-filter-change()
+{
+PRIVATE_NET_LINE=$(($(grep -n "IPSET ipfilter-net1" /etc/pve/firewall/${VMID}.fw | cut -d : -f 1)+1))
+sed -i ${PRIVATE_NET_LINE}'s#.*#'${PRIVATENET}'#g' /etc/pve/firewall/${VMID}.fw
+qm set $VMID --net1 virtio,bridge=vmbr1,firewall=1
+}
+
+grep -q 'ipfilter-net1' /etc/pve/firewall/${VMID}.fw && private-net-filter-change || private-net-filter-add
+EOL
+)
+
+PRIVATE_NET_FILTER_DELETE=$(cat << 'EOL'
+PRIVATE_NET_LINE=$(grep -n "IPSET ipfilter-net1" /etc/pve/firewall/${VMID}.fw | cut -d : -f 1)
+sed -i ${PRIVATE_NET_LINE}',$d' /etc/pve/firewall/${VMID}.fw
+qm set $VMID --delete net1
+EOL
+)
+

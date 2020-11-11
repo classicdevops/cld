@@ -1,3 +1,32 @@
+OS_SETS=$(cat << 'EOL'
+CENTOS7_50001
+UBUNTU16_50002
+DEBIAN9_50003
+FEDORA28_50004
+FREEBSD11_50006
+CENTOS6_50007
+UBUNTU18_50008
+CENTOS8_50009
+EOL
+)
+
+KVM_CREATE=$(cat << 'EOL'
+templatecreate()
+{
+TEMPLATE_ID=$1
+STORAGE=$2
+[ "$TEMPLATE_ID" ] || return 1
+qm list | awk '{print $1}' | grep "^${TEMPLATE_ID}$" && return 0
+mkdir /tmp/cmtemplates/ -p &>/dev/null
+cd /tmp/cmtemplates/ && wget cmtemplates.classicdeploy.com/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz
+[ -f /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz ] && qmrestore /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz ${TEMPLATE_ID} --storage ${STORAGE} --force
+rm -f /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz &>/dev/null
+}
+qm list | awk 'NR>1 {print $1}' | grep -q "^${TEMPLATE_ID}$" || templatecreate ${TEMPLATE_ID} ${STORAGE}
+qm clone ${TEMPLATE_ID} $VMID --full --storage $STORAGE
+EOL
+)
+
 CENTOS7_CREATE=$(cat << 'EOL'
 qm clone 50001 $VMID --full --storage $STORAGE
 EOL

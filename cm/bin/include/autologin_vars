@@ -1,0 +1,142 @@
+CENTOS6_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#exec /sbin/.*getty.*#exec /sbin/mingetty --autologin root $TTY#g' /mnt/vm$VMID/etc/init/tty.conf
+sed -i -r 's#exec /sbin/.*getty.*#exec /sbin/mingetty /dev/ttyS0 --autologin root#g' /mnt/vm$VMID/etc/init/serial.conf
+EOL
+)
+
+CENTOS6_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r 's#exec /sbin/.*getty.*#exec /sbin/mingetty $TTY#g' /mnt/vm$VMID/etc/init/tty.conf
+sed -i -r 's#exec /sbin/.*getty.*#exec /sbin/mingetty /dev/ttyS0#g' /mnt/vm$VMID/etc/init/serial.conf
+EOL
+)
+
+CENTOS7_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/usr/lib/systemd/system/getty@.service
+EOL
+)
+
+CENTOS7_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\u' --noclear %I $TERM#g" /mnt/vm$VMID/usr/lib/systemd/system/getty@.service
+EOL
+)
+
+UBUNTU16_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/lib/systemd/system/getty@.service
+EOL
+)
+
+UBUNTU16_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\u' --noclear %I $TERM#g" /mnt/vm$VMID/lib/systemd/system/getty@.service
+EOL
+)
+
+UBUNTU18_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/lib/systemd/system/getty@.service
+EOL
+)
+
+UBUNTU18_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\u' --noclear %I $TERM#g" /mnt/vm$VMID/lib/systemd/system/getty@.service
+EOL
+)
+
+DEBIAN9_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/lib/systemd/system/getty@.service
+EOL
+)
+
+DEBIAN9_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\u' --noclear %I $TERM#g" /mnt/vm$VMID/lib/systemd/system/getty@.service
+EOL
+)
+
+FEDORA28_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/usr/lib/systemd/system/getty@.service
+EOL
+)
+
+FEDORA28_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\u' --noclear %I $TERM#g" /mnt/vm$VMID/usr/lib/systemd/system/getty@.service
+EOL
+)
+
+FREEBSD11_AUTOLOGIN_ON=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+echo
+sed -i ''  -r 's#ttyv0.*#ttyv0   "/usr/libexec/getty autologin"           xterm   onifexists secure#g' /etc/ttys
+sed -i ''  -r 's#ttyu0.*#ttyu0   "/usr/libexec/getty autologin"           vt100   on secure#g' /etc/ttys
+reboot
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+FREEBSD11_AUTOLOGIN_OFF=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+echo
+sed -i ''  -r 's#ttyv0.*#ttyv0   "/usr/libexec/getty Pc"           xterm   onifexists secure#g' /etc/ttys
+sed -i ''  -r 's#ttyu0.*#ttyu0   "/usr/libexec/getty std.9600"           vt100   on secure#g' /etc/ttys
+reboot
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+DETECT_MOUNT_ZFS_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | cut -d ' ' -f 2`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/zvol/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+mkdir -p /mnt/vm$VMID
+mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm$VMID
+EOL
+)
+
+UMOUNT_ZFS_STORAGE=$(cat << 'EOL'
+umount /mnt/vm$VMID
+EOL
+)
+
+DETECT_MOUNT_LVM_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | cut -d ' ' -f 2`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep part2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+mkdir -p /mnt/vm$VMID
+mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm$VMID
+EOL
+)
+
+UMOUNT_LVM_STORAGE=$(cat << 'EOL'
+umount /mnt/vm$VMID
+EOL
+)
+
+DETECT_MOUNT_QCOW_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep path | cut -d ' ' -f 2`
+path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=$path1/images/$path2
+qemu-nbd -c /dev/nbd0 $filepath
+mkdir /mnt/vm$VMID
+mount /dev/nbd0p2 /mnt/vm$VMID
+EOL
+)
+
+UMOUNT_QCOW_STORAGE=$(cat << 'EOL'
+umount /mnt/vm$VMID
+qemu-nbd -d /dev/nbd0
+EOL
+)

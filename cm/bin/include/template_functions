@@ -1,0 +1,5 @@
+template-user-data()
+{
+source /var/cm/bin/include/template_vars
+[ "$TEMPLATE" != '' ] && ${TEMPLATE}-send-user-data
+}
