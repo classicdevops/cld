@@ -1,0 +1,233 @@
+C7WP_CREATE=$(cat << 'EOL'
+qm clone 50101 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7WP_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+echo "UPDATE wordpress.wp_users SET user_pass= MD5('"${ROOTPASSWORD}"') WHERE user_login='Admin';" | mysql
+echo "UPDATE wordpress.wp_users SET user_email= '"admin@${VMNAME}"' WHERE user_login='Admin';" | mysql
+echo "UPDATE wordpress.wp_options SET option_value = '"http://${IPADDR}"' WHERE option_name = 'home' OR option_name = 'siteurl';" | mysql
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7WP-send-user-data()
+{
+echo "id: ${VMID}
+wordpress admin panel: http://${IPADDR}/wp-admin
+user: admin
+password: ${ROOTPASSWORD}"
+}
+
+C7SNT_CREATE=$(cat << 'EOL'
+qm clone 50102 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7SNT_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+service supervisord stop
+sleep 10s
+sudo -u postgres psql -c "ALTER USER sentry PASSWORD '${ROOTPASSWORD}';"
+sed -i 's/182LNZUjTGM2PeJHVjmHx/${ROOTPASSWORD}/g' /home/sentry/.sentry/sentry.conf.py
+SECRETKEY="\$(/home/sentry/sentry_app/bin/sentry config generate-secret-key)"
+sleep 2s
+sed -ri 's/system.secret-key:.*/system.secret-key: '\${SECRETKEY}'/g' /home/sentry/.sentry/config.yml
+sleep 10s
+sudo -u sentry /home/sentry/sentry_app/bin/sentry shell << EOSNT
+from sentry.models import User
+user = User.objects.get(id: 1)
+user.set_password("${ROOTPASSWORD}")
+user.save()
+EOSNT
+sleep 20s
+service supervisord restart
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7SNT-send-user-data()
+{
+echo "id: ${VMID}
+Sentry admin panel: http://${IPADDR}:9000
+user: root@snt.classicdeploy
+password: ${ROOTPASSWORD}"
+}
+
+C7MNCRFT_CREATE=$(cat << 'EOL'
+qm clone 50103 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7MNCRFT_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+service minecraft stop
+sed -i 's/strong-password/${ROOTPASSWORD}/g' /opt/minecraft/server/server.properties
+sed -i 's/strong-password/${ROOTPASSWORD}/g' /etc/systemd/system/minecraft.service
+MAXMEM="\$(awk 'NR==1 {printf("%.0f",\$2/1024/100*80)}' /proc/meminfo)"
+INITMEM="\$(awk 'NR==1 {printf("%.0f",\$2/1024/100*50)}' /proc/meminfo)"
+sed -i 's/1024/'\${MAXMEM}'/g' /etc/systemd/system/minecraft.service
+sed -i 's/512/'\${INITMEM}'/g' /etc/systemd/system/minecraft.service
+sed -i 's/strong-password/${ROOTPASSWORD}/g' /opt/minecraft/tools/backup.sh
+systemctl daemon-reload
+sleep 5s
+service minecraft start
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7MNCRFT-send-user-data()
+{
+echo "id: ${VMID}
+minecraft server ip: ${IPADDR}:25575 
+mcrcon password: ${ROOTPASSWORD}"
+}
+
+
+C7GTLB_CREATE=$(cat << 'EOL'
+qm clone 50104 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7GTLB_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+sed -i 's/54.37.196.181/${IPADDR}/g' /etc/gitlab/gitlab.rb
+sleep 2s
+gitlab-ctl reconfigure
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7GTLB-send-user-data()
+{
+echo "id: ${VMID}
+gitlab server ip: http://${IPADDR}"
+}
+
+C7YII2_CREATE=$(cat << 'EOL'
+qm clone 50105 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7YII2_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+service supervisord restart
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7YII2-send-user-data()
+{
+echo "id: ${VMID}
+yii2 server ip: http://${IPADDR}"
+}
+
+C7WBMN_CREATE=$(cat << 'EOL'
+qm clone 50106 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7WBMN_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+yum remove webmin -y
+sleep 5s
+yum install webmin -y
+sleep 5s
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7WBMN-send-user-data()
+{
+echo "id: ${VMID}
+webmin panel ip: https://${IPADDR}:10000: user:root: password:${ROOTPASSWORD}"
+}
+
+U18JTSMT_CREATE=$(cat << 'EOL'
+qm clone 50107 $VMID --full --storage $STORAGE
+EOL
+)
+
+U18JTSMT_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+U18JTSMT-send-user-data()
+{
+echo "id: ${VMID}
+jitsimeet panel url: https://${IPADDR} "
+}
+
+C7CWP_CREATE=$(cat << 'EOL'
+qm clone 50108 $VMID --full --storage $STORAGE
+EOL
+)
+
+C7CWP_CONFIGURATION=$(cat << 'EOL'
+mkdir -p /var/lib/vz/images/${VMID}/ &>/dev/null
+mkdir /mnt/init${VMID}/ -p &>/dev/null
+cat > /mnt/init${VMID}/init << EOINIT
+sleep 30s
+cd /usr/local/src
+sleep 2s
+wget http://centos-webpanel.com/cwp-el7-latest
+sleep 5s
+sh cwp-el7-latest
+sleep 5s
+EOINIT
+rm -f /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw &>/dev/null
+genisoimage -o /var/lib/vz/images/${VMID}/vm-${VMID}-cloudscript.raw /mnt/init${VMID}/
+echo "ide2: local:${VMID}/vm-${VMID}-cloudscript.raw,media=cdrom" >> /etc/pve/qemu-server/${VMID}.conf
+EOL
+)
+
+C7CWP-send-user-data()
+{
+echo "id: ${VMID}
+CWP panel url: https://${IPADDR}:2031 user:root password:${ROOTPASSWORD}"
+}
