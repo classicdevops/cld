@@ -58,6 +58,7 @@ Example: CENTOS7, DEBIAN9, UBUNTU18 etc"
 read OS
 echo
 done
+fi
 
 if [ "$VMNAME" == "" ]
 then
@@ -68,6 +69,7 @@ Example: example.com"
 read VMNAME
 echo
 done
+fi
 
 if [ "$VMCPU" == "" ]
 then
@@ -78,6 +80,7 @@ Example: 2"
 read VMCPU
 echo
 done
+fi
 
 if [ "$VMMEMORY" == "" ]
 then
@@ -88,6 +91,7 @@ Example: 2"
 read VMMEMORY
 echo
 done
+fi
 
 if [ "$DISK" == "" ]
 then
@@ -98,6 +102,7 @@ Example: 20"
 read DISK
 echo
 done
+fi
 
 if [ "$IPADDR" == "" ]
 then
@@ -108,6 +113,7 @@ Example: 1.2.3.4"
 read IPADDR
 echo
 done
+fi
 
 if [ "$GATEWAY" == "" ]
 then
@@ -118,6 +124,7 @@ Example: 1.2.3.1"
 read GATEWAY
 echo
 done
+fi
 
 if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
 
@@ -130,6 +137,7 @@ Example: zfs01"
 read STORAGE
 echo
 done
+fi
 
 echo "$STORAGE" | grep -q zfs && export STORAGE_TYPE=zfs
 echo "$STORAGE" | grep -q lvm && export STORAGE_TYPE=lvm
@@ -144,6 +152,7 @@ Example: zfs lwm qcow2"
 read STORAGE_TYPE
 echo
 done
+fi
 
 if [ "$VMID" = "" ]
 then
