@@ -158,11 +158,10 @@ if [ "$VMID" = "" ]
 then
 echo VMID is not defined - detecting - please wait
 VMID=$(expr `get-last-vmid` + 1)
+[ "$VMID" -lt "100" ] && VMID=10001
 echo VMID is $VMID
 echo
 fi
-
-[ "$VMID" -lt "100" ] && VMID=10001
 
 if [ "$ROOTPASSWORD" = "" ] ; then ROOTPASSWORD=$(date +%s | sha256sum | base64 | head -c 32 ; echo -n) ; fi
 
@@ -272,7 +271,7 @@ ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" ${HPR_US
 $CMD_CREATE_SET
 exit
 EOL
-) 2>&1 >> ${LOG_FILE}
+) 2>&1 | tee -a ${LOG_FILE}
 
 echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/cld/ext_srv_list
 if echo `ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" ${HPR_USER}@$HPR "sudo qm list | grep $VMID"` | grep --quiet "running"
