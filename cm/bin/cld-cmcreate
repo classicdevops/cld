@@ -137,7 +137,7 @@ echo "$STORAGE" | grep -q qcow && export STORAGE_TYPE=qcow2
 
 if [ "$STORAGE_TYPE" == "" ]
 then
-while ! [[ "$STORAGE_TYPE" =~  [a-z 0-9]+ ]]
+while ! [[ "$STORAGE_TYPE" =~  [a-z0-9]+ ]]
 do
 echo "Please enter the PVE STORAGE TYPE using only 'a-z 0-9' symbols
 Example: zfs lwm qcow2"
