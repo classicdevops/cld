@@ -3,6 +3,7 @@ source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 source /var/cld/cm/bin/include/bot
 source /var/cld/cm/bin/include/create_funcs
+mkdir -p /var/log/cld/cm/ &>/dev/null
 echo  "`date` - ${@:0}" >> /var/log/cld/cm/cmd_create.log
 touch /var/cld/cm/LOCK
 CMLOCK=$(cat /var/cld/cm/LOCK)
