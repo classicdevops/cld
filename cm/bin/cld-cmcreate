@@ -123,7 +123,7 @@ if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
 
 if [ "$STORAGE" == "" ]
 then
-while ! [[ "$STORAGE" =~  [a-z 0-9]+ ]]
+while ! [[ "$STORAGE" =~  [a-z0-9]+ ]]
 do
 echo "Please enter the PVE STORAGE NAME using only 'a-z 0-9' symbols
 Example: zfs01"
