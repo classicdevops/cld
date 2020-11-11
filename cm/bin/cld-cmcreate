@@ -255,7 +255,7 @@ echo $DEBUG | grep -q YES && exit 1
 
 echo "${VMID}" > /var/cld/cm/data/last_vmid
 
-LOG_FILE=/var/log/cm/${VMID}_create.log
+LOG_FILE=/var/log/cld/cm/${VMID}_create.log
 
 echo "{\"vmid\":\"$VMID\",\"cpu\":\"$VMCPU\",\"ram\":\"$VMMEMORY\",\"disk\":\"$DISK\",\"received\":\"1\",\"keys\":\"$SSH_KEYS\",\"dc\":\"$DC\",\"os\":\"$OS\",\"name\":\"$VMNAME\",\"ip\":\"$IPADDR\",\"gate\":\"$GATEWAY\",\"netmask\":\"$NTMASK\",\"password\":\"$ROOTPASSWORD\",\"storage\":\"$STORAGE\",\"storage_type\":\"$STORAGE_TYPE\",\"mac\":\"$MACADDR\"}" >> /var/cld/cm/data/vms_info
 
