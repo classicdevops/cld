@@ -239,7 +239,7 @@ echo "${VMID}" > /var/cld/cm/data/last_vmid
 LOG_FILE=/var/log/cm/${VMID}_create.log
 
 
-echo "{\"vmid\":\"$VMID\",\"cpu\":\"$VMCPU\",\"ram\":\"$VMMEMORY\",\"disk\":\"$DISK\",\"received\":\"1\",\"keys\":\"$SSH_KEYS\",\"dc\":\"$DC\",\"os\":\"$OS\",\"name\":\"$VMNAME\",\"ip\":\"$IPADDR\",\"gate\":\"$GATEWAY\",\"netmask\":\"$NTMASK\",\"password\":\"$ROOTPASSWORD\",\"storage\":\"$STORAGE\",\"storage_type\":\"$STORAGE_TYPE\",\"mac\":\"$MACADDR\"}" | jq . >> /var/cld/cm/data/vms_info
+echo "{\"vmid\":\"$VMID\",\"cpu\":\"$VMCPU\",\"ram\":\"$VMMEMORY\",\"disk\":\"$DISK\",\"received\":\"1\",\"keys\":\"$SSH_KEYS\",\"dc\":\"$DC\",\"os\":\"$OS\",\"name\":\"$VMNAME\",\"ip\":\"$IPADDR\",\"gate\":\"$GATEWAY\",\"netmask\":\"$NTMASK\",\"password\":\"$ROOTPASSWORD\",\"storage\":\"$STORAGE\",\"storage_type\":\"$STORAGE_TYPE\",\"mac\":\"$MACADDR\"}" >> /var/cld/cm/data/vms_info
 
 
 echo "${VMID}_${HPR}_${HPR_PORT}" >> /var/cld/cm/data/vmid_hyper_list
@@ -263,7 +263,6 @@ fi
 
 #Get VMMAC after create
 VMMAC=`ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" ${HPR_USER}@$HPR "sudo grep net0 /etc/pve/qemu-server/${VMID}.conf | egrep -o \"([0-9A-Z]{2}\:){5}[0-9A-Z]{2}\""`
-
 
 truncate -s 0 /var/cld/cm/LOCK
 
