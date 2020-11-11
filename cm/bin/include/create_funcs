@@ -8,7 +8,7 @@ do
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-timeout 10 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | grep running | awk 'NR>1 {print $1}' | grep -v '^500' >> /var/cld/cm/tmp/last_vmid
+timeout 20 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | grep running | awk 'NR>1 {print $1}' | grep -v '^500' >> /var/cld/cm/tmp/last_vmid
 )
 done
 wait
