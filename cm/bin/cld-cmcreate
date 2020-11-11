@@ -89,10 +89,10 @@ do
 echo "Please enter the RAM GB using only '0-9' symbols
 Example: 2"
 read VMMEMORY
+VMMEMORY=$(expr ${VMMEMORY} \* 1024)
 echo
 done
 fi
-VMMEMORY=$(expr ${VMMEMORY} \* 1024)
 
 if [ "$DISK" == "" ]
 then
