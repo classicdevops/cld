@@ -92,6 +92,7 @@ path2=`grep "scsi0:" /etc/pve/qemu-server/$VMID.conf | cut -d ',' -f 1 | cut -d 
 filepath=`readlink -e /dev/zvol/${path1}/${path2}`
 END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
 UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+sleep 5s
 if echo "$filepath" | grep --quiet "zd"; then echo -e "d\n2\nn\np\n2\n\n\n\nw\n" | fdisk $filepath; else echo "FILEPATH IS EMPTY"; fi
 mkdir -p /mnt/vm$VMID
 mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm$VMID
