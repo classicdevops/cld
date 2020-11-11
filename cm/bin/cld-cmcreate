@@ -92,6 +92,7 @@ read VMMEMORY
 echo
 done
 fi
+VMMEMORY=$(expr ${VMMEMORY} * 1024)
 
 if [ "$DISK" == "" ]
 then
@@ -284,11 +285,11 @@ VMMAC=`ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" ${HPR_USER}@$HPR "sudo 
 
 truncate -s 0 /var/cld/cm/LOCK
 
-if echo "`stat /var/cld/cm/data/data/queue_create | awk 'NR==2 {print $2}'`" | grep -q "^0$"
+if echo "`stat /var/cld/cm/data/queue_create | awk 'NR==2 {print $2}'`" | grep -q "^0$"
 then
  exit 0
 else
-CMD_CREATE="`head -1 /var/cld/cm/data/data/queue_create`"
-sed -i '1d' /var/cld/cm/data/data/queue_create
+CMD_CREATE="`head -1 /var/cld/cm/data/queue_create`"
+sed -i '1d' /var/cld/cm/data/queue_create
 echo ${CMD_CREATE} | bash
 fi
