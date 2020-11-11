@@ -162,6 +162,8 @@ echo VMID is $VMID
 echo
 fi
 
+[ "$VMID" -lt "100" ] && VMID=10001
+
 if [ "$ROOTPASSWORD" = "" ] ; then ROOTPASSWORD=$(date +%s | sha256sum | base64 | head -c 32 ; echo -n) ; fi
 
 if [ "$DC" = "" ] ; then DC='*' ; fi
