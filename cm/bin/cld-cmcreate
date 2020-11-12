@@ -82,7 +82,7 @@ fi
 
 if [ "$VMNAME" == "" ]
 then
-while ! [[ "$VMNAME" =~  ^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$ ]]
+while ! [[ "$VMNAME" =~  ^(?!:\/\/)(?=.{1,255}$)((.{1,63}\.){1,127}(?![0-9]*$)[a-z0-9-]+\.?)$ ]]
 do
 echo "Please enter the VIRTUAL MACHINE NAME using only 'a-z 0-9 - .' symbols
 Example: example.com"
