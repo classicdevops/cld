@@ -3,6 +3,7 @@ source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 source /var/cld/cm/bin/include/bot
 source /var/cld/cm/bin/include/create_funcs
+source /var/cld/cm/bin/include/create_vars
 mkdir -p /var/log/cld/cm /var/cld/cm/data &>/dev/null
 echo  "`date` - ${@:0}" >> /var/log/cld/cm/cmd_create.log
 touch /var/cld/cm/LOCK
@@ -51,12 +52,11 @@ fi
 
 if [ "$OS" == "" ]
 then
-while ! [[ "$OS" =~  [A-Za-z0-9]+ ]]
+select OS in $(echo "$OS_SETS" | cut -d _ -f 1)
 do
-echo "Please enter the OS template using only 'A-Z 0-9' symbols
-Example: CENTOS7, DEBIAN9, UBUNTU18 etc"
-read OS
+OS=$OS
 echo
+break
 done
 fi
 
@@ -128,6 +128,16 @@ done
 fi
 
 if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
+
+if [ "$STORAGE" == "" ]
+then
+select STORAGE in $(get-storage-pools)
+do
+STORAGE=$STORAGE
+echo
+break
+done
+fi
 
 if [ "$STORAGE" == "" ]
 then
@@ -235,15 +245,14 @@ DC_PROVIDER=$HPR_DC
 #  DC_OS_CONFIGURATION=""
 # fi
 
-source /var/cld/cm/bin/include/create_vars
 source /var/cld/cm/bin/include/autologin_vars
 source /var/cld/cm/bin/include/privatenet_vars
 source /var/cld/cm/bin/include/create_logic
 
 ### DEBUG MODE
 DEBUG_CMD=$(cat << EOL
-$HPR
-$HPR_DC
+Hypervisor: $HYPERVISOR
+Datacenter: $HPR_DC
 $CMD_CREATE_SET
 EOL
 )
@@ -254,6 +263,23 @@ EOL
 )
 echo $DEBUG | grep -q YES && truncate -s 0 /var/cld/cm/LOCK
 echo $DEBUG | grep -q YES && exit 1
+
+echo $DEBUG | grep -q YES || $(cat << EOL
+Hypervisor: $HYPERVISOR
+Datacenter: $HPR_DC
+$CONSTANTS
+EOL
+)
+
+echo
+echo "Approve settings?"
+echo -n "y/n: " && read ANSWER ; if [ "$ANSWER" = "y" ]
+then
+echo
+else
+truncate -s 0 /var/cld/cm/LOCK
+exit 1
+fi
 
 echo "${VMID}" > /var/cld/cm/data/last_vmid
 

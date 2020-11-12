@@ -14,3 +14,12 @@ done
 wait
 sort -nu /var/cld/cm/tmp/last_vmid | tail -1
 }
+
+get-storage-pools ()
+{
+SRV=`echo $HYPERVISOR | cut -d "_" -f 2`
+PRT=`echo $HYPERVISOR | cut -d "_" -f 3`
+USR=`echo $HYPERVISOR | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep 'pool:' /etc/pve/storage.cfg" 2>/dev/null  | awk '{print $2}'
+done
+}
