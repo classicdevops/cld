@@ -93,7 +93,7 @@ fi
 
 if [ "$VMCPU" == "" ]
 then
-while ! [[ "$VMCPU" =~  ^[0-9]+$ ]]
+while ! [[ "$VMCPU" =~  ^[1-9][0-9]+?$ ]]
 do
 echo "Please enter the CPU CORES using only '0-9' symbols
 Example: 2"
