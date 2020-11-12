@@ -135,7 +135,6 @@ then
 echo "Please enter the MAC ADDRESS or press ENTER to skip"
 echo -n '#? '; read MACADDR
 echo
-done
 fi
 
 if [ "$GATEWAY" == "" ]
