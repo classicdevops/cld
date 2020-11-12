@@ -132,9 +132,13 @@ fi
 
 if [ "$MACADDR" == "" ]
 then
-echo "Please enter the MAC ADDRESS or press ENTER to skip"
+while ! [[ "$MACADDR" =~  ^[0-9:]+$ ]]
+do
+echo "Please enter the MAC ADDRESS using only '0-9 .' or press ENTER to SKIP"
 echo -n '#? '; read MACADDR
 echo
+[ "$MACADDR" == "" ] && break
+done
 fi
 
 if [ "$GATEWAY" == "" ]
