@@ -8,7 +8,18 @@ mkdir -p /var/log/cld/cm /var/cld/cm/data &>/dev/null
 echo  "`date` - ${@:0}" >> /var/log/cld/cm/cmd_create.log
 touch /var/cld/cm/LOCK
 CMLOCK=$(cat /var/cld/cm/LOCK)
-if grep -q "1" /var/cld/cm/LOCK ; then echo "${@:0}" >> /var/cld/cm/data/queue_create ; exit 0 ; else echo 1 > /var/cld/cm/LOCK ; fi
+if grep -q "1" /var/cld/cm/LOCK ; then echo "${@:0}" >> /var/cld/cm/data/queue_create
+echo LOCK detected, do you want FORCE UNLOCK ?
+select LOCK in yes no
+do
+if [ "$LOCK" == yes ]
+echo
+else
+exit 0
+fi
+break
+done
+else echo 1 > /var/cld/cm/LOCK ; fi
 
 ROOTPASSWORD=""
 
