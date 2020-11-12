@@ -68,7 +68,7 @@ while ! [[ "$VMNAME" =~  [A-Za-z0-9.-]+ ]]
 do
 echo "Please enter the VIRTUAL MACHINE NAME using only 'A-Z 0-9 - .' symbols
 Example: example.com"
-echo -n '?# '; read VMNAME
+echo -n '#? '; read VMNAME
 echo
 done
 fi
@@ -79,7 +79,7 @@ while ! [[ "$VMCPU" =~  [0-9]+ ]]
 do
 echo "Please enter the CPU CORES using only '0-9' symbols
 Example: 2"
-echo -n '?# '; read VMCPU
+echo -n '#? '; read VMCPU
 echo
 done
 fi
@@ -90,7 +90,7 @@ while ! [[ "$VMMEMORY" =~  [0-9]+ ]]
 do
 echo "Please enter the RAM GB using only '0-9' symbols
 Example: 2"
-echo -n '?# '; read VMMEMORY
+echo -n '#? '; read VMMEMORY
 VMMEMORY=$(expr ${VMMEMORY} \* 1024)
 echo
 done
@@ -102,7 +102,7 @@ while ! [[ "$DISK" =~  [0-9]+ ]]
 do
 echo "Please enter the DISK SPACE GB using only '0-9' symbols
 Example: 20"
-echo -n '?# '; read DISK
+echo -n '#? '; read DISK
 echo
 done
 fi
@@ -113,7 +113,7 @@ while ! [[ "$IPADDR" =~  [0-9.]+ ]]
 do
 echo "Please enter the MAIN IP ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.4"
-echo -n '?# '; read IPADDR
+echo -n '#? '; read IPADDR
 echo
 done
 fi
@@ -121,7 +121,7 @@ fi
 if [ "$MACADDR" == "" ]
 then
 echo "Please enter the MAC ADDRESS or press ENTER to skip
-echo -n '?# '; read MACADDR
+echo -n '#? '; read MACADDR
 echo
 done
 fi
@@ -132,7 +132,7 @@ while ! [[ "$GATEWAY" =~  [0-9.]+ ]]
 do
 echo "Please enter the GATEWAY ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.1"
-echo -n '?# '; read GATEWAY
+echo -n '#? '; read GATEWAY
 echo
 done
 fi
@@ -156,7 +156,7 @@ while ! [[ "$STORAGE" =~  [a-z0-9]+ ]]
 do
 echo "Please enter the PVE STORAGE NAME using only 'a-z 0-9' symbols
 Example: zfs01"
-echo -n '?# '; read STORAGE
+echo -n '#? '; read STORAGE
 echo
 done
 fi
@@ -171,7 +171,7 @@ while ! [[ "$STORAGE_TYPE" =~  [a-z0-9]+ ]]
 do
 echo "Please enter the PVE STORAGE TYPE using only 'a-z 0-9' symbols
 Example: zfs lwm qcow2"
-echo -n '?# '; read STORAGE_TYPE
+echo -n '#? '; read STORAGE_TYPE
 echo
 done
 fi
