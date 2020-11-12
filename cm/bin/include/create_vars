@@ -251,7 +251,6 @@ sed -i -r 's#(.*broadcast\ )'.*'#\1'$BRDCST'#g' /mnt/vm$VMID/etc/network/interfa
 echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
 echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
 mkdir /mnt/vm$VMID/root/.ssh
-#echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCmAxfajC66GkpMxE7XCRElV6dh4OM7B0o2tM6R/Yc+XEPUD+JokzsPy6Xg+Zt73mBQAJLTGX643YJ56nkaNxsHDJf1UNy1JFFSRQFzwaEtWV7qjpzpEVwxoEDfCmdD2G6Wvnz4SaVaCRfVAYjlJchRf5omEq4jQLAQnVdLE+0Unz7dNZIuT7v+7Df5W/zX6s8tfpL/O2lKSxGl9Un+BIJsGAYqPqOa/4EwxSdYG5J4WfwNzq0bNS1OwAuDi3yoTVXeBj2lMlE4SjDXkPdhT50gY0CT9rLp2Rcm0JmtwLAwz56Rp2aBSVzGX13jsNYwLgB4mJ/HqMn0ZlauECIIWRuj support@firecloud.ltd' >> /mnt/vm$VMID/root/.ssh/authorized_keys
 touch /mnt/vm$VMID/root/.ssh/authorized_keys
 chmod -R 600 /mnt/vm$VMID/root/.ssh
 EOL
@@ -287,7 +286,6 @@ sed -i '/195.43.95.109/d' /mnt/vm$VMID/etc/hosts
 echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
 echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
 mkdir /mnt/vm$VMID/root/.ssh
-#echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCmAxfajC66GkpMxE7XCRElV6dh4OM7B0o2tM6R/Yc+XEPUD+JokzsPy6Xg+Zt73mBQAJLTGX643YJ56nkaNxsHDJf1UNy1JFFSRQFzwaEtWV7qjpzpEVwxoEDfCmdD2G6Wvnz4SaVaCRfVAYjlJch$
 touch /mnt/vm$VMID/root/.ssh/authorized_keys
 chmod -R 600 /mnt/vm$VMID/root/.ssh
 EOL

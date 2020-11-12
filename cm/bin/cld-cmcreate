@@ -76,9 +76,9 @@ fi
 
 if [ "$VMNAME" == "" ]
 then
-while ! [[ "$VMNAME" =~  ^[A-Za-z0-9.-]+$ ]]
+while ! [[ "$VMNAME" =~  ^[a-z0-9.-]+$ ]]
 do
-echo "Please enter the VIRTUAL MACHINE NAME using only 'A-Z 0-9 - .' symbols
+echo "Please enter the VIRTUAL MACHINE NAME using only 'a-z 0-9 - .' symbols
 Example: example.com"
 echo -n '#? '; read VMNAME
 echo
