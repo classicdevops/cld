@@ -13,6 +13,7 @@ echo LOCK detected, do you want FORCE UNLOCK ?
 select LOCK in yes no
 do
 if [ "$LOCK" == yes ]
+then
 echo
 else
 exit 0
