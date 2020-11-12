@@ -21,6 +21,7 @@ echo $OPTS | grep -q '\-\-cpu=' && VMCPU=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-ram=' && VMMEMORY=$(expr `echo $OPTS | cut -d '=' -f 2` \* 1024)
 echo $OPTS | grep -q '\-\-disk=' && DISK=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-ip=' && IPADDR=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-mac=' && MACADDR=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-gate=' && GATEWAY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-netmask=' && NTMASK=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-id=' && VMID=$(echo $OPTS | cut -d '=' -f 2)
@@ -113,6 +114,14 @@ do
 echo "Please enter the MAIN IP ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.4"
 echo -n '?#'; read IPADDR
+echo
+done
+fi
+
+if [ "$MACADDR" == "" ]
+then
+echo "Please enter the MAC ADDRESS or press ENTER to skip
+echo -n '?#'; read MACADDR
 echo
 done
 fi

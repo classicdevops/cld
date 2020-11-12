@@ -67,7 +67,7 @@ CONFIGURE_KVM=$(cat << 'EOL'
 qm set $VMID --name $VMNAME --cores $VMCPU --memory $VMMEMORY --onboot yes
 #if echo $IPADDR | grep --quiet "172.1" ; then sed -i 's#vmbr0#vmbr1#g' /etc/pve/qemu-server/$VMID.conf ; fi
 qm resize $VMID scsi0 ${DISK}G
-qm set $VMID --net0 virtio,bridge=vmbr0,firewall=1
+qm set $VMID --net0 virtio$([ "$MACADDR" ] && echo "=$MACADDR"),bridge=vmbr0,firewall=1
 EOL
 )
 
