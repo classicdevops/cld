@@ -203,6 +203,26 @@ chmod -R 600 /mnt/vm$VMID/root/.ssh
 EOL
 )
 
+CENTOS8_CONFIGURATION=$(cat << 'EOL'
+ROOTHASH=`mkpasswd -m sha-512 $ROOTPASSWORD`
+sed -i 's#SELINUX=enforcing#SELINUX=disabled#g' /mnt/vm$VMID/etc/selinux/config
+sed -i "s#^root:.*#root:${ROOTHASH}::0:99999:7:::#g" /mnt/vm$VMID/etc/shadow
+echo "$VMNAME" > /mnt/vm$VMID/etc/hostname
+#echo '@reboot root stty -F /dev/ttyS0 speed 9600 ; systemctl restart getty@ttyS0 ; systemctl enable getty@ttyS0 ; rm -f /etc/cron.d/getty' > /mnt/vm$VMID/etc/cron.d/getty
+#sed -i 's#quiet"#quiet console=ttyS0"#g' /mnt/vm$VMID/etc/sysconfig/grub
+#sed -i 's#ExecStart=-/sbin/agetty#ExecStart=-/sbin/agetty --autologin root#g' /mnt/vm$VMID/usr/lib/systemd/system/getty\@.service
+sed -i -r 's#(BOOTPROTO=")'.*'#\1none"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+sed -i -r 's#(UUID=")'.*'#\1'`uuidgen`'"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+sed -i -r 's#(IPADDR=")'.*'#\1'$IPADDR'"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+sed -i -r 's#(GATEWAY=")'.*'#\1'$GATEWAY'"#g' /mnt/vm$VMID/etc/sysconfig/network-scripts/ifcfg-ens18
+echo "nameserver 8.8.8.8" > /mnt/vm$VMID/etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /mnt/vm$VMID/etc/resolv.conf
+mkdir /mnt/vm$VMID/root/.ssh
+touch /mnt/vm$VMID/root/.ssh/authorized_keys
+chmod -R 600 /mnt/vm$VMID/root/.ssh
+EOL
+)
+
 CENTOS6_CONFIGURATION=$(cat << 'EOL'
 sed -i 's#SELINUX=enforcing#SELINUX=disabled#g' /mnt/vm$VMID/etc/selinux/config
 usermod -R /mnt/vm$VMID -p `mkpasswd -m sha-512 $ROOTPASSWORD` root

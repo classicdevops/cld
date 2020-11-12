@@ -20,6 +20,16 @@ sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\
 EOL
 )
 
+CENTOS8_AUTOLOGIN_ON=$(cat << 'EOL'
+sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/usr/lib/systemd/system/getty@.service
+EOL
+)
+
+CENTOS8_AUTOLOGIN_OFF=$(cat << 'EOL'
+sed -i -r "s#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty -o '-p -- \\\\\\\u' --noclear %I $TERM#g" /mnt/vm$VMID/usr/lib/systemd/system/getty@.service
+EOL
+)
+
 UBUNTU16_AUTOLOGIN_ON=$(cat << 'EOL'
 sed -i -r 's#ExecStart=-/sbin/agetty.*#ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM#g' /mnt/vm$VMID/lib/systemd/system/getty@.service
 EOL
