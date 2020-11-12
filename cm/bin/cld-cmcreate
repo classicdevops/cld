@@ -76,7 +76,7 @@ fi
 
 if [ "$VMNAME" == "" ]
 then
-while ! [[ "$VMNAME" =~  [A-Za-z0-9.-]+ ]]
+while ! [[ "$VMNAME" =~  ^[A-Za-z0-9.-]+$ ]]
 do
 echo "Please enter the VIRTUAL MACHINE NAME using only 'A-Z 0-9 - .' symbols
 Example: example.com"
@@ -87,7 +87,7 @@ fi
 
 if [ "$VMCPU" == "" ]
 then
-while ! [[ "$VMCPU" =~  [0-9]+ ]]
+while ! [[ "$VMCPU" =~  ^[0-9]+$ ]]
 do
 echo "Please enter the CPU CORES using only '0-9' symbols
 Example: 2"
@@ -98,7 +98,7 @@ fi
 
 if [ "$VMMEMORY" == "" ]
 then
-while ! [[ "$VMMEMORY" =~  [0-9]+ ]]
+while ! [[ "$VMMEMORY" =~  ^[0-9]+$ ]]
 do
 echo "Please enter the RAM GB using only '0-9' symbols
 Example: 2"
@@ -110,7 +110,7 @@ fi
 
 if [ "$DISK" == "" ]
 then
-while ! [[ "$DISK" =~  [0-9]+ ]]
+while ! [[ "$DISK" =~  ^[0-9]+$ ]]
 do
 echo "Please enter the DISK SPACE GB using only '0-9' symbols
 Example: 20"
@@ -121,7 +121,7 @@ fi
 
 if [ "$IPADDR" == "" ]
 then
-while ! [[ "$IPADDR" =~  [0-9.]+ ]]
+while ! [[ "$IPADDR" =~  ^[0-9.]+$ ]]
 do
 echo "Please enter the MAIN IP ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.4"
