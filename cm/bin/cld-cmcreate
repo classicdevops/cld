@@ -52,6 +52,7 @@ fi
 
 if [ "$OS" == "" ]
 then
+echo Please choose OS
 select OS in $(echo "$OS_SETS" | cut -d _ -f 1)
 do
 OS=$OS
@@ -66,7 +67,7 @@ while ! [[ "$VMNAME" =~  [A-Za-z0-9.-]+ ]]
 do
 echo "Please enter the VIRTUAL MACHINE NAME using only 'A-Z 0-9 - .' symbols
 Example: example.com"
-read VMNAME
+echo -n '?#'; read VMNAME
 echo
 done
 fi
@@ -77,7 +78,7 @@ while ! [[ "$VMCPU" =~  [0-9]+ ]]
 do
 echo "Please enter the CPU CORES using only '0-9' symbols
 Example: 2"
-read VMCPU
+echo -n '?#'; read VMCPU
 echo
 done
 fi
@@ -88,7 +89,7 @@ while ! [[ "$VMMEMORY" =~  [0-9]+ ]]
 do
 echo "Please enter the RAM GB using only '0-9' symbols
 Example: 2"
-read VMMEMORY
+echo -n '?#'; read VMMEMORY
 VMMEMORY=$(expr ${VMMEMORY} \* 1024)
 echo
 done
@@ -100,7 +101,7 @@ while ! [[ "$DISK" =~  [0-9]+ ]]
 do
 echo "Please enter the DISK SPACE GB using only '0-9' symbols
 Example: 20"
-read DISK
+echo -n '?#'; read DISK
 echo
 done
 fi
@@ -111,7 +112,7 @@ while ! [[ "$IPADDR" =~  [0-9.]+ ]]
 do
 echo "Please enter the MAIN IP ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.4"
-read IPADDR
+echo -n '?#'; read IPADDR
 echo
 done
 fi
@@ -122,7 +123,7 @@ while ! [[ "$GATEWAY" =~  [0-9.]+ ]]
 do
 echo "Please enter the GATEWAY ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.1"
-read GATEWAY
+echo -n '?#'; read GATEWAY
 echo
 done
 fi
@@ -131,7 +132,7 @@ if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
 
 if [ "$STORAGE" == "" ]
 then
-echo "Please enter the PVE STORAGE"
+echo "Please choose PVE STORAGE"
 select STORAGE in $(get-storage-pools)
 do
 STORAGE=$STORAGE
@@ -146,7 +147,7 @@ while ! [[ "$STORAGE" =~  [a-z0-9]+ ]]
 do
 echo "Please enter the PVE STORAGE NAME using only 'a-z 0-9' symbols
 Example: zfs01"
-read STORAGE
+echo -n '?#'; read STORAGE
 echo
 done
 fi
@@ -161,7 +162,7 @@ while ! [[ "$STORAGE_TYPE" =~  [a-z0-9]+ ]]
 do
 echo "Please enter the PVE STORAGE TYPE using only 'a-z 0-9' symbols
 Example: zfs lwm qcow2"
-read STORAGE_TYPE
+echo -n '?#'; read STORAGE_TYPE
 echo
 done
 fi
@@ -267,8 +268,8 @@ echo $DEBUG | grep -q YES && exit 1
 
 echo $DEBUG | grep -q YES || (
 cat << EOL
-echo "Hypervisor: $HYPERVISOR"
-echo "Datacenter: $HPR_DC"
+Hypervisor: $HYPERVISOR
+Datacenter: $HPR_DC
 $CONSTANTS
 EOL
 )
