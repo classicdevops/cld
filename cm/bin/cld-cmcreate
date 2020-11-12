@@ -93,7 +93,7 @@ fi
 
 if [ "$VMCPU" == "" ]
 then
-while ! [[ "$VMCPU" =~  ^[1-9][0-9]+?$ ]]
+while ! [[ "$VMCPU" =~  ^([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])$ ]]
 do
 echo "Please enter the CPU CORES using only '0-9' symbols
 Example: 2"
@@ -104,7 +104,7 @@ fi
 
 if [ "$VMMEMORY" == "" ]
 then
-while ! [[ "$VMMEMORY" =~  ^[1-9][0-9]+?$ ]]
+while ! [[ "$VMMEMORY" =~  ^([1-9]|[1-8][0-9]|9[0-9]|[1-4][0-9]{2}|50[0-9]|51[0-2])$ ]]
 do
 echo "Please enter the RAM GB using only '0-9' symbols
 Example: 2"
@@ -116,7 +116,7 @@ fi
 
 if [ "$DISK" == "" ]
 then
-while ! [[ "$DISK" =~  ^[1-9][0-9]+$ ]]
+while ! [[ "$DISK" =~  ^([1-8][0-9]|9[0-9]|[1-8][0-9]{2}|900)$ ]]
 do
 echo "Please enter the DISK SPACE GB using only '0-9' symbols
 Example: 20"
@@ -138,7 +138,7 @@ fi
 
 if [ "$MACADDR" == "" ]
 then
-while ! [[ "$MACADDR" =~  ^[0-9a-z:]+$ ]]
+while ! [[ "$MACADDR" =~  ^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$ ]]
 do
 echo "Please enter the MAC ADDRESS using only '0-9 a-z :' or press ENTER to SKIP"
 echo -n '#? '; read MACADDR
