@@ -131,6 +131,7 @@ if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
 
 if [ "$STORAGE" == "" ]
 then
+echo "Please enter the PVE STORAGE"
 select STORAGE in $(get-storage-pools)
 do
 STORAGE=$STORAGE
