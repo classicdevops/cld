@@ -104,7 +104,7 @@ fi
 
 if [ "$VMMEMORY" == "" ]
 then
-while ! [[ "$VMMEMORY" =~  ^[0-9]+$ ]]
+while ! [[ "$VMMEMORY" =~  ^[1-9][0-9]+?$ ]]
 do
 echo "Please enter the RAM GB using only '0-9' symbols
 Example: 2"
@@ -116,7 +116,7 @@ fi
 
 if [ "$DISK" == "" ]
 then
-while ! [[ "$DISK" =~  ^[0-9]+$ ]]
+while ! [[ "$DISK" =~  ^[1-9][0-9]+$ ]]
 do
 echo "Please enter the DISK SPACE GB using only '0-9' symbols
 Example: 20"
@@ -127,7 +127,7 @@ fi
 
 if [ "$IPADDR" == "" ]
 then
-while ! [[ "$IPADDR" =~  ^[0-9.]+$ ]]
+while ! [[ "$IPADDR" =~  ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]]
 do
 echo "Please enter the MAIN IP ADDRESS using only '0-9 .' symbols
 Example: 1.2.3.4"
