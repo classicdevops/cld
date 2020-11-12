@@ -265,9 +265,10 @@ EOL
 echo $DEBUG | grep -q YES && truncate -s 0 /var/cld/cm/LOCK
 echo $DEBUG | grep -q YES && exit 1
 
-echo $DEBUG | grep -q YES || $(cat << EOL
-Hypervisor: $HYPERVISOR
-Datacenter: $HPR_DC
+echo $DEBUG | grep -q YES || (
+cat << EOL
+echo "Hypervisor: $HYPERVISOR"
+echo "Datacenter: $HPR_DC"
 $CONSTANTS
 EOL
 )
