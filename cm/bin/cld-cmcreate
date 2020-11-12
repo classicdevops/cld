@@ -281,6 +281,7 @@ truncate -s 0 /var/cld/cm/LOCK
 exit 1
 fi
 
+
 echo "${VMID}" > /var/cld/cm/data/last_vmid
 
 LOG_FILE=/var/log/cld/cm/${VMID}_create.log
