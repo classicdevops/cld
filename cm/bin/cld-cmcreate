@@ -334,7 +334,7 @@ exit
 EOL
 ) 2>&1 | tee -a ${LOG_FILE}
 
-echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/cld/ext_srv_list
+echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/cld/ext_srv
 if echo `ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" ${HPR_USER}@$HPR "sudo qm list | grep $VMID"` | grep --quiet "running"
 then echo "OK" >> ${LOG_FILE} ; send_tg Cloud \`${VMID}\` *created*'\n'Log file: \`${LOG_FILE}\`
 else echo "FAIL" >> ${LOG_FILE} ; send_tg Cloud \`${VMID}\` *Error* while creating'\n'Log file: \`${LOG_FILE}\`
