@@ -91,7 +91,7 @@ def cmd_whois(message):
 @bot.message_handler(commands=["geo"])
 def cmd_geo(message):
   if re.findall(r'([A-z0-9.-]+\.[0-9A-z]+)', message.text):
-    domainargs = re.search('([A-z0-9.-]+\.[A-z0-9]+)', message.text)
+    domainargs = re.search('([a-z0-9.:-]+)', message.text)
     cmdoutput = bash('/var/cld/modules/dns/bin/cld-geo '+str(domainargs.group(1)))
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
