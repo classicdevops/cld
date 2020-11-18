@@ -90,12 +90,12 @@ def cmd_whois(message):
 
 @bot.message_handler(commands=["geo"])
 def cmd_geo(message):
-  if re.findall(r'([A-z0-9.-]+\.[0-9A-z]+)', message.text):
+  if re.findall(r'([a-z0-9.:-]+)', message.text):
     domainargs = re.search('([a-z0-9.:-]+)', message.text)
     cmdoutput = bash('/var/cld/modules/dns/bin/cld-geo '+str(domainargs.group(1)))
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
-    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
+    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/geo 1.2.3.4`", parse_mode='Markdown')
 
 @bot.message_handler(commands=["nslookup"])
 def cmd_nslookup(message):
@@ -104,7 +104,7 @@ def cmd_nslookup(message):
     cmdoutput = bash('''/usr/bin/nslookup '''+str(domainargs.group(1)+''' 8.8.8.8 | grep -v 'Non-authoritative' | awk '{print "`"$0"`"}' '''))
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
-    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
+    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/nslookup example.com`", parse_mode='Markdown')
 
 @bot.message_handler(commands=["ping"])
 def cmd_ping(message):
