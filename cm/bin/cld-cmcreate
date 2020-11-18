@@ -67,7 +67,10 @@ done
 fi
 
 HPR_NAME=$(echo ${HYPERVISOR} | cut -d '_' -f 1)
-HPR_DC=$(echo ${HPR_NAME} | cut -d '-' -f 2)
+HPR_HOST=$(echo ${HYPERVISOR} | cut -d '_' -f 2)
+HPR_DC=$(cld-geo ${HPR_HOST} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
+[ "$HPR_DC" ] || HPR_DC=$(echo ${HPR_NAME} | cut -d '-' -f 2)
+
 
 if [ "$OS" == "" ]
 then
@@ -152,7 +155,14 @@ fi
 
 if [ "$GATEWAY" == "" -a "$HPR_DC" == "ovh" ]
 then
+echo GATEWAY is not defined - detecting - please wait
 GATEWAY=$(get-ovh-gateway)
+elif [ "$GATEWAY" == "" -a "$HPR_DC" == "hetzner" ]
+then
+GATEWAY=$HPR_HOST
+elif [ "$GATEWAY" == "" -a "$HPR_DC" == "online" ]
+then
+GATEWAY=62.210.0.2
 fi
 
 if [ "$GATEWAY" == "" ]
