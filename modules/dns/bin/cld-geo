@@ -2,7 +2,7 @@
 source /var/cld/modules/dns/bin/include/dnsfuncs
 DNS_ZONE=${1,,}
 
-echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+(\.|\:)[a-z0-9.-]+$" \
+echo $DNS_ZONE | egrep -q "^[a-z0-9.:-]+$" \
 || echoexit1 "incorrect ip or domain - only ip or full domain names allowed: example.com or 1.2.3.4"
 
 wget -qO- http://ip-api.com/json/${DNS_ZONE} | jq . | sed -e 's#\\n#\n#g' -e 's#\\r##g' | grep -v "%" | awk '{print "`"$0"`"}'
