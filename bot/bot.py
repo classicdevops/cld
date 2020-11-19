@@ -69,7 +69,7 @@ for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
   cldmodule=bash('echo '+botfile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
   cldm[cldmodule]=cldmodule
   print(cldmodule)
-  exec(open(botfile).read().replace('cldmodule', 'cldm'+cldmodule))
+  exec(open(botfile).read().replace('cldmodule', 'cldm['+cldmodule+']'))
 
 if __name__ == '__main__':
      bot.polling(none_stop=True)
