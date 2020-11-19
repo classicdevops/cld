@@ -104,7 +104,7 @@ def cmd_nslookup(message):
     cmdoutput = bash('''/usr/bin/nslookup '''+str(domainargs.group(1)+''' 8.8.8.8 | grep -v 'Non-authoritative' | awk '{print "`"$0"`"}' '''))
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
-    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
+    bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/nslookup example.com`", parse_mode='Markdown')
 
 @bot.message_handler(commands=["ping"])
 def cmd_ping(message):
@@ -114,3 +114,7 @@ def cmd_ping(message):
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
     bot.send_message(message.chat.id, text="IP or DNS zone is not defined, please use format:\n`/getwhois example.com`", parse_mode='Markdown')
+
+@bot.message_handler(commands=["getmodule"])
+def cmd_getmodule(message):
+  bot.send_message(message.chat.id, cldmodule, parse_mode='Markdown')
