@@ -117,5 +117,5 @@ def cmd_ping(message):
 
 @bot.message_handler(commands=["getmodule"])
 def cmd_getmodule(message):
-  checkmoduleperms(message.chat.id, message.from_user.id, message.from_user.username)
+  checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username)
   bot.send_message(message.chat.id, cldmodule, parse_mode='Markdown')
