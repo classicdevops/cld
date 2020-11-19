@@ -72,8 +72,10 @@ def allowmodulegroups(moduleperm):
   return set(bash('grep "'+moduleperm+'\|ALL" /var/cld/creds/tgbot_passwd | cut -d : -f 2 | grep "^-" | head -c -1 | tr "\n" ","').strip().split(','))
 
 def checkmoduleperms(moduleperm, chat_id, user_id, user_name):
+  chat_id=str(chat_id)
+  user_id=str(user_id)
   if chat_id not in allowmodulegroups(moduleperm) and user_id not in allowmoduleusers(moduleperm):
-    bot.send_message(chat_id, str("user id is "+str(user_id)+", access denied for "+user_name))
+    bot.send_message(chat_id, str("user id is "+user_id+", access denied for "+user_name))
     sys.exit(1)
 
 cldm={}
