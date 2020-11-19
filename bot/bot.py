@@ -64,6 +64,12 @@ def cmd_getid(message):
       pass
     bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
+def allowmoduleusers(moduleperm):
+  return set(bash('grep "'+moduleperm+'\|ALL" /var/cld/creds/tgbot_passwd | cut -d : -f 2 | grep -v "^-" | head -c -1 | tr "\n" ","').strip().split(','))
+
+def allowmodulegroups(moduleperm):
+  return set(bash('grep "'+moduleperm+'\|ALL" /var/cld/creds/tgbot_passwd | cut -d : -f 2 | grep "^-" | head -c -1 | tr "\n" ","').strip().split(','))
+  
 cldm={}
 for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
   cldmodule=bash('echo '+botfile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
