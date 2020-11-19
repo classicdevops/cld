@@ -117,4 +117,4 @@ def cmd_ping(message):
 
 @bot.message_handler(commands=["getmodule"])
 def cmd_getmodule(message):
-  bot.send_message(message.chat.id, cldm[cldmodule], parse_mode='Markdown')
+  bot.send_message(message.chat.id, cldmodule, parse_mode='Markdown')
