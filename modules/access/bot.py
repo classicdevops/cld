@@ -2,20 +2,15 @@
 # myip
 @bot.message_handler(commands=["myip"])
 def cmd_myip(message):
-   valid_id = str(message.chat.id)
-   valid_id2 = str(message.from_user.id)
-   if valid_id in allowgroups() or valid_id2 in allowusers():
-     if re.findall(r'[\d]+\.[\d]+\.[\d]+\.[\d]+', message.text):
-        myip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text).group(1)
-        cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/myip_add '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown')
-     else:
-        myip = 'TOKEN'
-        cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/myip_add '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown', disable_web_page_preview='true')
-   else:
-      myid_answer = "user id is %s, access denied for %s" % (message.from_user.id, message.from_user.username)
-      bot.send_message(message.chat.id, myid_answer)
+  checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username)
+  if re.findall(r'[\d]+\.[\d]+\.[\d]+\.[\d]+', message.text):
+    myip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text).group(1)
+    cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/myip_add '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown')
+  else:
+    myip = 'TOKEN'
+    cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/myip_add '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    bot.send_message(message.chat.id, cmdoutput.communicate(), parse_mode='Markdown', disable_web_page_preview='true')
 
 # enableip
 @bot.message_handler(commands=["enableip"])
