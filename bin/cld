@@ -6,7 +6,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--verbose' && VERBOSE=" -v"
+echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
 done
 
 #cat /var/cld/bin/include/cldfuncs
