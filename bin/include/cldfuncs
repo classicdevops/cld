@@ -48,8 +48,8 @@ echo $USR | grep -q root && sshfs -p $PRT ${PWDOPT} -o allow_other,UserKnownHost
 }
 
 EXTERNAL_TERMINAL() {
-[ "$USR" == "root" ] && sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV  | tee -a $CLD_LOG
-[ "$USR" == "root" ] || sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i" | tee -a $CLD_LOG
+[ "$USR" == "root" ] && sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV  | tee -a $CLD_LOG
+[ "$USR" == "root" ] || sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i" | tee -a $CLD_LOG
 }
 
 [ "$TIMEOUT" ] && TIMEOUT=3600
