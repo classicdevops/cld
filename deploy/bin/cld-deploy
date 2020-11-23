@@ -332,7 +332,6 @@ EOINSTANCELIST
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
-        [ -f "/var/cld/deploy/actions/${ACTION_NAME}/test_script" ] || TEST=0
         done
     fi
 fi
@@ -481,7 +480,7 @@ if [ "$TEST" == "1" ]
         else
             echo TEST_STATUS=1 > /var/cld/deploy/actions/${ACTION_NAME}/test_log/status	
             echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"
-            for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v  "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)")
+            for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v "$(grep -l "^0$" /var/cld/deploy/actions/${ACTION_NAME}/test_log/* | cut -d / -f 8)" || ls /var/cld/deploy/actions/${ACTION_NAME}/test_log/)
             do
             echo "$(du /var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
             done
