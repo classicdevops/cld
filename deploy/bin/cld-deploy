@@ -332,6 +332,7 @@ EOINSTANCELIST
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
+        [ -f "/var/cld/deploy/actions/${ACTION_NAME}/test_script" ] || TEST=0
         done
     fi
 fi
