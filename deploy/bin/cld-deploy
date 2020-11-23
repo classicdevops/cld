@@ -148,7 +148,6 @@ cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${ACTION_NAME}
 [ "$BACKUP_LIST" ] && echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${ACTION_NAME}/backup_list
 
 [ "$RETRY" ] || RETRY=1
-#[ "$DEPLOY_TEST_SCRIPT" ] || TEST=0
 [ "$TIMEOUT" ] || TIMEOUT=600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
 [ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
@@ -299,15 +298,42 @@ fi
 
 if [ "$TEST" == 1 -a "$RUN" != "1" ]
 then
-echo Test script is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
-echo
-select DEPLOY_TEST_SELECT in continue edit
-do
-[ "$DEPLOY_TEST_SELECT" == "continue" ] && echo -n ""
-[ "$DEPLOY_TEST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
-[ "$DEPLOY_TEST_SELECT" == "continue" -o "$DEPLOY_TEST_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
-[ "$DEPLOY_TEST_SELECT" == "continue" -o "$DEPLOY_TEST_SELECT" == "edit" ] && break
-done
+    if [ -f /var/cld/deploy/actions/${ACTION_NAME}/test_script -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/test_script 2>/dev/null | wc -l)" != "0" ]
+        then
+        echo Test script is: "$(echo;cat /var/cld/deploy/actions/${ACTION_NAME}/test_script)"
+        echo
+        select TEST_SCRIPT_SELECT in continue edit
+        do
+        [ "$TEST_SCRIPT_SELECT" == "continue" ] && echo -n ""
+        [ "$TEST_SCRIPT_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
+        [ "$TEST_SCRIPT_SELECT" == "continue" -o "$TEST_SCRIPT_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
+        [ "$TEST_SCRIPT_SELECT" == "continue" -o "$TEST_SCRIPT_SELECT" == "edit" ] && break
+        done
+        else
+           echo Test script file is EMPTY
+    select TEST_SCRIPT_SELECT in edit
+    do
+        if [ "$TEST_SCRIPT_SELECT" == "edit" ] 
+        then
+        cat > /var/cld/deploy/actions/${ACTION_NAME}/test_script << 'EOINSTANCELIST'
+##############################################
+# Test script                                #
+# example usage:                             #
+#                                            #
+# grep -qs pattern /file && echo 0 || echo 1 #
+#                                            #
+# 0 - output if success                      #
+# 1 - output if fail                         #
+# Delete this text before writing            #  
+# Or it will put in deploy log               #
+##############################################
+EOINSTANCELIST
+        nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
+        echo -e "\e[48;5;6m          \e[K\e[00m"
+        break
+        fi
+        done
+    fi
 fi
 
 CLOUDS="$(cat /var/cld/deploy/actions/${ACTION_NAME}/clouds)"
