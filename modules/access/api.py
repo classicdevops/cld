@@ -19,3 +19,14 @@ def myip():
     return resp
   else:
     return 403
+
+@app.route('/banip')
+def banip():
+  if remoteaddr() in accesslist:
+    black_ip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', request.args['ip']).group(1)
+    black_cmnt = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', request.args['comment']).group(1)
+    cmdoutput = bash('/var/cld/modules/access/bin/blackip_add '+str(black_ip)+' '+str(black_cmnt))
+    resp = Response(cmdoutput, status=200, mimetype='application/json')
+    return resp
+  else:
+    return 403
