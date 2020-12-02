@@ -10,6 +10,11 @@ try:
 except:
   pass
 
+try:
+  tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
+except:
+  pass
+
 @app.route('/myip')
 def myip():
   if 'token' in request.args:
@@ -22,7 +27,7 @@ def myip():
 
 @app.route('/banip')
 def banip():
-  if remoteaddr() in accesslist:
+  if remoteaddr() in accesslist and request.args['token'] in tokenlist:
     black_ip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', request.args['ip']).group(1)
     black_cmnt = re.search('([A-z0-9]+)', request.args['comment']).group(1)
     cmdoutput = bash('/var/cld/modules/access/bin/blackip_add '+str(black_ip)+' '+str(black_cmnt))
