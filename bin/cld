@@ -13,7 +13,7 @@ done
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 #mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 echo "Please select instance to enter"
-select VM in $(CLOUDS_USER_ALLOWED | grep -i "$ARG1" | grep -i "$ARG3" | grep -i "$ARG3")
+select VM in $(CLOUDS_USER_ALLOWED | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
   if [ "$VM" = "" ] ; then
