@@ -25,6 +25,7 @@ CLD_ACTION_LOG=/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${VM}
 }
 
 EXTERNAL_VARS() {
+[ "$GROUP" ] || export GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
 VMN=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
