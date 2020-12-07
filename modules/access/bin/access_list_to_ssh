@@ -106,10 +106,6 @@ ps axfu | grep -v grep | grep -q "/root/sbin/iptables_access" || /root/sbin/ipta
 EOACCESSLIST
 )
 
-cat << EOL | bash
-$DEPLOY_ACCESS_LIST
-EOL
-
 EXT=`cat /var/cld/access/groups/default/clouds | grep -v "^$\|^#"`
     for VM in $EXT
      do
@@ -124,3 +120,6 @@ EOSSH
 echo
      done
 
+cat << EOL | bash
+$DEPLOY_ACCESS_LIST
+EOL
