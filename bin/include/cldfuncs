@@ -1,4 +1,5 @@
 #!/bin/bash
+[ "$SUDO_USER" ] || SUDO_USER=admin
 VM_LIST() {
 (
 for GROUP in $(ls /var/cld/access/groups/)
@@ -25,7 +26,6 @@ CLD_ACTION_LOG=/var/cld/deploy/actions/${ACTION_NAME}/deploy_log/${VM}
 }
 
 EXTERNAL_VARS() {
-[ "$GROUP" ] || export GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
 VMN=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
@@ -138,6 +138,30 @@ echoexit1()
 {
 echo "${@:1}"
 exit 1
+}
+
+INSTANCE_GROUP_FUNCS()
+{
+[ "$GROUP" ] || export GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
+if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
+if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
+then
+source <(for GROUPFUNC in funcvars functerm funcmount funcumount 
+    do
+      echo "${GROUP}_${GROUPFUNC}(){"
+      cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+      echo '}'
+    done)
+  CLD_VARS=${GROUP}_funcvars
+  CLD_MOUNT=${GROUP}_funcmount
+  CLD_TERMINAL=${GROUP}_functerm
+  CLD_UMOUNT=${GROUP}_funcumount
+else
+  CLD_VARS=EXTERNAL_VARS
+  CLD_MOUNT=EXTERNAL_MOUNT
+  CLD_TERMINAL=EXTERNAL_TERMINAL
+  CLD_UMOUNT=EXTERNAL_UMOUNT
+fi
 }
 
 CUSTOM_FUNCS_ACTIVATE(){

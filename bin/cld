@@ -9,42 +9,21 @@ do
 echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
 done
 
-#cat /var/cld/bin/include/cldfuncs
-[ "$SUDO_USER" = "" ] && SUDO_USER=admin
-#mknod -m 777 /dev/fuse c 10 229 2>&1 >/dev/null
 echo "Please select instance to enter"
 select VM in $(CLOUDS_USER_ALLOWED | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
-  if [ "$VM" = "" ] ; then
-   echo "you choosed incorrect instance, please try again and type numbers only"
-  else
-    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
-    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
-    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
-    then
-    source <(for GROUPFUNC in funcvars functerm funcmount funcumount 
-        do
-          echo "${GROUP}_${GROUPFUNC}(){"
-          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
-          echo '}'
-        done)
-      CLD_VARS=${GROUP}_funcvars
-      CLD_MOUNT=${GROUP}_funcmount
-      CLD_TERMINAL=${GROUP}_functerm
-      CLD_UMOUNT=${GROUP}_funcumount
-    else
-      CLD_VARS=EXTERNAL_VARS
-      CLD_MOUNT=EXTERNAL_MOUNT
-      CLD_TERMINAL=EXTERNAL_TERMINAL
-      CLD_UMOUNT=EXTERNAL_UMOUNT
-    fi
+  if [ "$VM" ]
+  then
+    INSTANCE_GROUP_FUNCS
     echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
     $CLD_MOUNT &>/dev/null &
     $CLD_TERMINAL
     $CLD_UMOUNT &>/dev/null &
+  else
+    echo "you choosed incorrect instance, please try again and type numbers only"
   fi
   break
 done
