@@ -7,10 +7,11 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 done
 
 echo "Please select instance to enter"
-select VM in $(CLOUDS_USER_ALLOWED | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
   if [ "$VM" ]
