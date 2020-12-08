@@ -53,13 +53,13 @@ EXTERNAL_TERMINAL() {
 [ "$USR" == "root" ] || sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i" | tee -a $CLD_LOG
 }
 
-[ "$TIMEOUT" ] || export TIMEOUT=3600
+[ "$TIMEOUT" ] || export TIMEOUT=300
 EXTERNAL_DEPLOY() {
 [ "$USR" == "root" ] && timeout ${TIMEOUT} sshpass -p "$PWD" ssh $1 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1
 [ "$USR" == "root" ] || timeout ${TIMEOUT} sshpass -p "$PWD" ssh $1 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo bash -s" 2>&1
 }
 
-[ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=3600
+[ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=300
 EXTERNAL_DEPLOY_NOTTY() {
 [ "$USR" == "root" ] && timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1
 [ "$USR" == "root" ] || timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" 2>&1
@@ -146,7 +146,7 @@ INSTANCE_GROUP_FUNCS()
 if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
 if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
 then
-source <(for GROUPFUNC in funcvars functerm funcmount funcumount 
+source <(for GROUPFUNC in funcvars functerm funcmount funcumount funcdeploy funcdeploynotty
     do
       echo "${GROUP}_${GROUPFUNC}(){"
       cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
@@ -156,11 +156,15 @@ source <(for GROUPFUNC in funcvars functerm funcmount funcumount
   CLD_MOUNT=${GROUP}_funcmount
   CLD_TERMINAL=${GROUP}_functerm
   CLD_UMOUNT=${GROUP}_funcumount
+  CLD_DEPLOY=${GROUP}_funcdeploy
+  CLD_DEPLOY_NOTTY=${GROUP}_funcdeploynotty
 else
   CLD_VARS=EXTERNAL_VARS
   CLD_MOUNT=EXTERNAL_MOUNT
   CLD_TERMINAL=EXTERNAL_TERMINAL
   CLD_UMOUNT=EXTERNAL_UMOUNT
+  CLD_DEPLOY=EXTERNAL_DEPLOY
+  CLD_DEPLOY_NOTTY=EXTERNAL_DEPLOY_NOTTY
 fi
 }
 
