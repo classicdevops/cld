@@ -36,4 +36,5 @@ cf-underattack-set $DOMAIN under_attack
 elif [ "${CURRENT_RPS}" -lt "${LIMIT_RPS}" -a "${CURRENT_MODE}" = "under_attack" ]
 then
 cf-underattack-set $DOMAIN medium
+fi
 done
