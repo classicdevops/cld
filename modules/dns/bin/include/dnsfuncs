@@ -128,7 +128,7 @@ curl -X DELETE "https://api.cloudflare.com/client/v4/accounts/${CF_ACC_ID}/firew
 cf-underattack-get()
 {
 DOMAIN=$1
-CF_ZONE_ID=cf-dns-get-zone-id $DOMAIN
+CF_ZONE_ID=$(cf-dns-get-zone-id $DOMAIN)
 curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/settings/security_level" \
  -H "X-Auth-Email: ${CFACC}" \
  -H "X-Auth-Key: ${CFKEY}" \
@@ -139,7 +139,7 @@ cf-underrattack-set()
 {
 DOMAIN=$1
 MODE=$2
-CF_ZONE_ID=cf-dns-get-zone-id $DOMAIN
+CF_ZONE_ID=$(cf-dns-get-zone-id $DOMAIN)
 curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/CF_ZONE_ID/settings/security_level" \
  -H "X-Auth-Email: ${CFACC}" \
  -H "X-Auth-Key: ${CFKEY}" \
