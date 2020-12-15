@@ -32,9 +32,9 @@ CURRENT_MODE=$(cf-underattack-get ${DOMAIN})
 echo $CURRENT_RPS
 if [ "${CURRENT_RPS}" -gt "${LIMIT_RPS}" -a "${CURRENT_MODE}" != "under_attack" ]
 then
-cf-underattack-set $DOMAIN under_attack
+cf-underattack-set $DOMAIN under_attack 1>&2
 elif [ "${CURRENT_RPS}" -lt "${LIMIT_RPS}" -a "${CURRENT_MODE}" = "under_attack" ]
 then
-cf-underattack-set $DOMAIN medium
+cf-underattack-set $DOMAIN medium 1>&2
 fi
 done
