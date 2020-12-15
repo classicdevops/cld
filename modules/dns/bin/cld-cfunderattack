@@ -18,8 +18,8 @@ VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$VMPATTERN" | tail 
 
 INSTANCE_GROUP_FUNCS
 
-CLD_VARS
-CURRENT_RPS=$(CLD_DEPLOY_NOTTY << EOSSH
+$CLD_VARS
+CURRENT_RPS=$($CLD_DEPLOY_NOTTY << EOSSH
 timeout 1s tail -n 0 -f ${ACCESS_LOG} | grep "ACCESS_LOG_PATTERN" > /tmp/cldrps ; cat /tmp/cldrps | wc -l
 EOSSH
 )
