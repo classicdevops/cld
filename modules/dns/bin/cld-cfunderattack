@@ -9,7 +9,7 @@ echo $OPTS | grep -q  '^\--instance=' && VMPATTERN="$(echo $OPTS | cut -d '=' -f
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--rps=' && LIMIT_RPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--accesslog=' && ACCESS_LOG="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--pattern=' && ACCESS_LOG_PATTERN="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--logpattern=' && ACCESS_LOG_PATTERN="$(echo $OPTS | cut -d '=' -f 2)"
 done
 
 [ "$ACCESS_LOG" ] || export ACCESS_LOG=/var/log/nginx-main-access.log
