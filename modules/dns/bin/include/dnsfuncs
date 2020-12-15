@@ -25,9 +25,7 @@ cf-dns-get-zone-id()
 curl -s -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
-     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | grep "\ $1\ " | awk '{print $4}'
-
-     
+     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | grep "\ $1\ " | awk '{print $4}' 
 }
 
 cf-dns-get-zone()
@@ -125,6 +123,28 @@ curl -X DELETE "https://api.cloudflare.com/client/v4/accounts/${CF_ACC_ID}/firew
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
      -H "Content-Type: application/json" | jq .
+}
+
+cf-underattack-get()
+{
+DOMAIN=$1
+CF_ZONE_ID=cf-dns-get-zone-id $DOMAIN
+curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/settings/security_level" \
+ -H "X-Auth-Email: ${CFACC}" \
+ -H "X-Auth-Key: ${CFKEY}" \
+ -H "Content-Type: application/json" | jq .
+}
+
+cf-underrattack-set()
+{
+DOMAIN=$1
+MODE=$2
+CF_ZONE_ID=cf-dns-get-zone-id $DOMAIN
+curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/CF_ZONE_ID/settings/security_level" \
+ -H "X-Auth-Email: ${CFACC}" \
+ -H "X-Auth-Key: ${CFKEY}" \
+  -H "Content-Type: application/json" \
+  --data "{'value':'${MODE}'}"
 }
 
 echoexit1()
