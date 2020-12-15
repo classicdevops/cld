@@ -140,7 +140,7 @@ cf-underattack-set()
 DOMAIN=$1
 MODE=$2
 CF_ZONE_ID=$(cf-dns-get-zone-id $DOMAIN)
-curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/CF_ZONE_ID/settings/security_level" \
+curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/settings/security_level" \
  -H "X-Auth-Email: ${CFACC}" \
  -H "X-Auth-Key: ${CFKEY}" \
   -H "Content-Type: application/json" \
