@@ -8,7 +8,10 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--list=' && LIST=1
 done
+
+if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" ; exit 0 ; fi
 
 echo "Please select instance to enter"
 select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
