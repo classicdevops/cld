@@ -1,0 +1,37 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/dns/bin/include/dnsfuncs
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--domain=' && DOMAIN="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--instance=' && VMPATTERN="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--rps=' && LIMIT_RPS="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--accesslog=' && ACCESS_LOG="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--pattern=' && ACCESS_LOG_PATTERN="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+[ "$ACCESS_LOG" ] || export ACCESS_LOG=/var/log/nginx-main-access.log
+
+INSTANCE_GROUP_FUNCS
+VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$VMPATTERN" | tail -1)
+CLD_VARS
+CURRENT_RPS=$(CLD_DEPLOY_NOTTY << EOSSH
+timeout 1s tail -n 0 -f ${ACCESS_LOG} | grep "ACCESS_LOG_PATTERN" > /tmp/cldrps ; cat /tmp/cldrps | wc -l
+EOSSH
+)
+
+for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list)
+do
+cf-dns-api-creds
+
+CURRENT_MODE=$(cf-underattack-get ${DOMAIN})
+echo $CURRENT_RPS
+if [ "${CURRENT_RPS}" -gt "${LIMIT_RPS}" -a "${CURRENT_MODE}" != "under_attack" ]
+then
+cf-underattack-set $DOMAIN under_attack
+elif [ "${CURRENT_RPS}" -lt "${LIMIT_RPS}" -a "${CURRENT_MODE}" = "under_attack" ]
+then
+cf-underattack-set $DOMAIN medium
+done
