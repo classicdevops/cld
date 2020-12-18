@@ -2,7 +2,8 @@
 # myip
 @bot.message_handler(commands=["myip"])
 def cmd_myip(message):
-  exec(checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username))
+  if checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username) != "granted":
+    return
   if re.findall(r'[\d]+\.[\d]+\.[\d]+\.[\d]+', message.text):
     myip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text).group(1)
     cmdoutput = subprocess.Popen('/var/cld/modules/access/bin/myip_add '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
