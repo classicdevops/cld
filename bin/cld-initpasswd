@@ -45,7 +45,7 @@ then
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
     echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-elif echo ${USER_UTILITES} | grep "cld"
+elif echo ${USER_UTILITES} | grep -q "cld"
 then
     echo 0 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
