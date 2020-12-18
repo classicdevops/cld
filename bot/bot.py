@@ -81,7 +81,7 @@ def checkmoduleperms(moduleperm, chat_id, user_id, user_name):
     return user_name
   else:
     bot.send_message(chat_id_str, str("user id is "+user_id_str+", access denied for "+user_name))
-    exit()
+    return "denied"
 
 cldm={}
 for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
