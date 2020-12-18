@@ -39,7 +39,8 @@ EOIPS
 )
 
 BLACK_IPS=\$(cat << EOIPS
-\$(cat /etc/hosts.deny | awk '{print \$2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+\$(cat /etc/hosts.deny 
+| awk '{print \$2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 EOIPS
 )
 

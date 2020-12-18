@@ -15,8 +15,49 @@ def bash(cmd):
 
 app = Flask(__name__)
 
+def allowmoduleusers(moduleperm):
+  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
+
+def allowutilityusers(utilityperm):
+  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+utilityperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
+
+def checkmoduleperms(moduleperm, token):
+  token=re.match("[A-z0-9_.-]+", token)[0]
+  moduleperm=str(moduleperm)
+  user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
+  if token in allowmoduleusers(moduleperm):
+    return user
+  else:
+    return str("access denied")
+    sys.exit(1)
+
+def checkutilityperms(cldutility, token):
+  token=re.match("[A-z0-9_.-]+", token)[0]
+  cldutility=str(cldutility)
+  user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
+  if token in allowutilityusers(cldutility):
+    return user
+  else:
+    return str("access denied")
+    sys.exit(1)
+
+def checkutilitypermswhiteip(cldutility, token, remoteaddr):
+  token=re.match("[A-z0-9_.-]+", token)[0]
+  cldutility=str(cldutility)
+  user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
+  if token in allowutilityusers(cldutility) or remoteaddr in accesslist:
+    return user
+  else:
+    return str("access denied")
+    sys.exit(1)
+
+
+cldm={}
 for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
-  exec(open(apifile).read())
+  cldmodule=bash('echo '+apifile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
+  cldm[cldmodule]=cldmodule
+  print(cldmodule)
+  exec(open(apifile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
 @app.route('/test')
 def index():
@@ -24,4 +65,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=50025)
-

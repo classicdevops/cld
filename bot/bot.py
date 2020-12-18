@@ -25,7 +25,7 @@ def allowgroups():
 # Generate password
 @bot.message_handler(commands=["passwd"])
 def cmd_passwd(message):
-    chars = 'abcdefjhigkmnopqrstuvwxyzABCDEFJHGKLMNOPQRSTUVWXYZ1234567890'
+    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     password = ''
     for c in range(21):
        password += random.choice(chars)
@@ -69,15 +69,17 @@ def cmd_getid(message):
     bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
 def allowmoduleusers(moduleperm):
-  return set(bash('grep "'+moduleperm+'\|ALL" /var/cld/creds/tgbot_passwd | cut -d : -f 2 | grep -v "^-" | head -c -1 | tr "\n" ","').strip().split(','))
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
 
 def allowmodulegroups(moduleperm):
-  return set(bash('grep "'+moduleperm+'\|ALL" /var/cld/creds/tgbot_passwd | cut -d : -f 2 | grep "^-" | head -c -1 | tr "\n" ","').strip().split(','))
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
 
 def checkmoduleperms(moduleperm, chat_id, user_id, user_name):
   chat_id_str=str(chat_id)
   user_id_str=str(user_id)
-  if chat_id_str not in allowmodulegroups(moduleperm) and user_id_str not in allowmoduleusers(moduleperm):
+  if chat_id_str in allowmodulegroups(moduleperm) or user_id_str in allowmoduleusers(moduleperm):
+    return user_name
+  else:
     bot.send_message(chat_id_str, str("user id is "+user_id_str+", access denied for "+user_name))
     sys.exit(1)
 
