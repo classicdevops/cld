@@ -38,7 +38,7 @@ then
     echo 1 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
     CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
-    for CLD_UTIL in "${CLD_UTILS}"
+    for CLD_UTIL in ${CLD_UTILS}
     do 
         CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
         echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
