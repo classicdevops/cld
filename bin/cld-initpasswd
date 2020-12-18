@@ -9,54 +9,55 @@ USER_UTILITES=$(cut -d : -f 5 <<< $USER_SET)
 
 if grep -q "$USER_NAME" /etc/passwd
 then
-	echo PAM user $USER_NAME found
+    echo PAM user $USER_NAME found
 else
-	echo PAM user $USER_NAME not found - creating
-	USER_PASSWORD=$(echo $(< /dev/urandom tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}))
-	useradd ${USER_NAME} --shell /bin/bash
-	echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME} &>/dev/null
-	mkdir /home/${USER_NAME} $>/dev/null
-	chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
-	echo
-	echo user created:
-	echo user: ${USER_NAME}
-	echo password: ${USER_PASSWORD}
+    echo PAM user $USER_NAME not found - creating
+    USER_PASSWORD=$(echo $(< /dev/urandom tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}))
+    useradd ${USER_NAME} --shell /bin/bash
+    echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME} &>/dev/null
+    mkdir /home/${USER_NAME} $>/dev/null
+    chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
+    echo
+    echo user created:
+    echo user: ${USER_NAME}
+    echo password: ${USER_PASSWORD}
 fi
 if [ -d /var/cld/access/users/${USER_NAME} ]
 then
-	echo user directory for $USER_NAME found
+    echo user directory for $USER_NAME found
 else
-	echo user directory for $USER_NAME not found - creating
-	mkdir -p /var/cld/access/users/${USER_NAME}
-	touch /var/cld/access/users/${USER_NAME}/clouds
-	touch /var/cld/access/users/${USER_NAME}/groups
+    echo user directory for $USER_NAME not found - creating
+    mkdir -p /var/cld/access/users/${USER_NAME}
+    touch /var/cld/access/users/${USER_NAME}/clouds
+    touch /var/cld/access/users/${USER_NAME}/groups
 fi
 if echo ${USER_UTILITES} | grep "ALL"
 then
-	echo 1 > /var/cld/access/users/${USER_NAME}/role
-	sed -i '/cld/d' /home/${USER_NAME}/.bashrc
-	CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
-	for CLD_UTIL in "${CLD_UTILS}"
-	do 
-		CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
-		echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
-	done
-	echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo 1 > /var/cld/access/users/${USER_NAME}/role
+    sed -i '/cld/d' /home/${USER_NAME}/.bashrc
+    CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
+    for CLD_UTIL in "${CLD_UTILS}"
+    do 
+        CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
+        echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
+    done
+    echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 elif echo ${USER_UTILITES} | grep "cld"
-	echo 0 > /var/cld/access/users/${USER_NAME}/role
-	sed -i '/cld/d' /home/${USER_NAME}/.bashrc
-	CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
-	for CLD_UTIL in "${CLD_UTILS}"
-	do 
-		CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
-		echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
-	done
-	sed -i '/'${USER_NAME}'/d' /etc/sudoers
-	echo "${USER_NAME} ALL=(ALL) NOPASSWD: $(for i in $CLD_UTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node /var/cld/wetty/index.js" >> /etc/sudoers
+then
+    echo 0 > /var/cld/access/users/${USER_NAME}/role
+    sed -i '/cld/d' /home/${USER_NAME}/.bashrc
+    CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
+    for CLD_UTIL in "${CLD_UTILS}"
+    do 
+        CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
+        echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
+    done
+    sed -i '/'${USER_NAME}'/d' /etc/sudoers
+    echo "${USER_NAME} ALL=(ALL) NOPASSWD: $(for i in $CLD_UTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node /var/cld/wetty/index.js *" >> /etc/sudoers
 fi
 if ! [ "${USER_TOKEN}" ]
 then
-	USER_TOKEN=$(echo $(< /dev/urandom tr -dc ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 | head -c${1:-25}))
+    USER_TOKEN=$(echo $(< /dev/urandom tr -dc ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 | head -c${1:-25}))
     sed -i -r 's#'${USER_NAME}':(.*?)::(.*?):(.*?)#'${USER_NAME}':\1:'${USER_TOKEN}':\2:\3#g' /var/cld/creds/passwd
 fi
 done
