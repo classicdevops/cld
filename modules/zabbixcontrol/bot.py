@@ -1,9 +1,7 @@
-def allowzbxgroups():
-  return set(bash("grep ALLOW_ZBX_GROUP_IDS /var/cld/creds/creds_security_system | cut -d = -f 2").strip().split(','))
-
 @bot.message_handler(commands=["webcheckadd"])
 def cmd_webcheckadd(message):
-  checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username)
+  if checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username) != "granted":
+    return
   if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[A-Za-z0-9.*:@\/?&= -]+)?', message.text):
     zbxargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[А-яA-Za-z0-9.*:@\/?&= -]+)?', message.text)
     zbxhost = zbxargs.group(1)
@@ -20,7 +18,8 @@ def cmd_webcheckadd(message):
 
 @bot.message_handler(commands=["webcheckdel"])
 def cmd_webcheckdel(message):
-  checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username)
+  if checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username) != "granted":
+    return
   if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[A-Za-z0-9.*:@\/?&= -]+)?', message.text):
     zbxargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+?[A-Za-z0-9.*:@\/?&= -]+)?', message.text)
     zbxhost = zbxargs.group(1)
@@ -36,7 +35,8 @@ def cmd_webcheckdel(message):
 
 @bot.message_handler(commands=["webchecklist"])
 def cmd_webchecklist(message):
-  checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username)
+  if checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username) != "granted":
+    return
   zbxargs = ''
   try:
     zbxargs = re.search('\/webchecklist\s([A-Za-z0-9:/@#._-]+)', message.text).group(1)
