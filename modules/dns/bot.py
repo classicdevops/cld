@@ -1,9 +1,7 @@
-def allowdnsgroups():
-  return set(bash("grep ALLOW_DNS_GROUP_IDS /var/cld/creds/creds_security_system | cut -d = -f 2").strip().split(','))
-
 @bot.message_handler(commands=["getdns"])
 def cmd_getdns(message):
-  checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username)
+  if checkmoduleperms(cldmodule, message.chat.id, message.from_user.id, message.from_user.username) != "granted":
+    return
   if re.findall(r'([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*=@-]+)?', message.text):
     dnsargs = re.search('([a-z0-9.*-]+\.[a-z0-9.-]+)(\s+[A-Za-z0-9.*=@-]+)?', message.text)
     dnszone = dnsargs.group(1)
