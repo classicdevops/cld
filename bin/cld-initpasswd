@@ -56,7 +56,7 @@ then
         echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD: $(for i in $CLD_UTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node /var/cld/wetty/index.js *" >> /etc/sudoers
+    echo "${USER_NAME} ALL=(ALL) NOPASSWD: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
 fi
 if ! [ "${USER_TOKEN}" ]
 then
