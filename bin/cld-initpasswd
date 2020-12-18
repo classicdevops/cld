@@ -33,7 +33,7 @@ else
     echo
     echo
 fi
-if echo ${USER_UTILITES} | grep "ALL"
+if echo ${USER_UTILITES} | grep -q "ALL"
 then
     echo 1 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
