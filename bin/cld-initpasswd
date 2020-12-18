@@ -30,6 +30,8 @@ else
     mkdir -p /var/cld/access/users/${USER_NAME}
     touch /var/cld/access/users/${USER_NAME}/clouds
     touch /var/cld/access/users/${USER_NAME}/groups
+    echo
+    echo
 fi
 if echo ${USER_UTILITES} | grep "ALL"
 then
