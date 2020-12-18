@@ -15,8 +15,8 @@ else
     USER_PASSWORD=$(echo $(< /dev/urandom tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}))
     useradd ${USER_NAME} --shell /bin/bash
     echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME} &>/dev/null
-    mkdir /home/${USER_NAME} $>/dev/null
-    chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
+    mkdir /home/${USER_NAME} &>/dev/null
+    chow -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
     echo
     echo user created:
     echo user: ${USER_NAME}
