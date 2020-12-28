@@ -1,5 +1,6 @@
 #!/bin/bash
 source /var/cld/creds/creds_module_zabbixcontrol
+init-load-constants ZABBIX_USER ZABBIX_PASS ZABBIX_SERVER API HOSTGROUPID TEMPLATEIDS
 
 # Authenticate with Zabbix API
 authenticate() {
