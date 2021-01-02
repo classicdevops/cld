@@ -193,10 +193,11 @@ CREDSFILE=$(egrep ".*|.*|.*" <<< ${CONSTANT_SET} | cut -d '|' -f 3)
 source <(grep "${CONSTANT}=" ${CREDSFILE})
 if ! [ "${!CONSTANT}" ]
 then
-  while ! [[ "$VALUE" =~  ^[A-Za-z0-9/:.@%_\ -]+$ ]]
+  while ! [[ "$VALUE" =~  ^[A-Za-z0-9/:.@%_,\ -]+$ ]]
 do
 echo -e "Please enter the VALUE for ${CONSTANT} constant using [A-Za-z0-9/:._ -] - symbols\nEXAMPLE: ${EXAMPLE}"
-echp -n "# " ; read VALUE
+echo -n "#: " ; read VALUE
+echo
 done
 sed -i '/'${CONSTANT}'/d' ${CREDSFILE}
 echo "${CONSTANT}=\"${VALUE}\"" >> ${CREDSFILE}
