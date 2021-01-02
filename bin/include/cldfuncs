@@ -196,11 +196,12 @@ then
   while ! [[ "$VALUE" =~  ^[A-Za-z0-9/:.@%_\ -]+$ ]]
 do
 echo -e "Please enter the VALUE for ${CONSTANT} constant using [A-Za-z0-9/:._ -] - symbols\nEXAMPLE: ${EXAMPLE}"
-read VALUE
+echp -n "# " ; read VALUE
 done
 sed -i '/'${CONSTANT}'/d' ${CREDSFILE}
 echo "${CONSTANT}=\"${VALUE}\"" >> ${CREDSFILE}
 source <(echo "${CONSTANT}=\"${VALUE}\"")
+unset VALUE
 fi
 done
 }
