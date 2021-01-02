@@ -189,16 +189,17 @@ do
 CONSTANT=$(cut -d '|' -f 1 <<< ${CONSTANT_SET})
 EXAMPLE=$(grep '|' <<< ${CONSTANT_SET} | cut -d '|' -f 2)
 CREDSFILE=$(egrep ".*|.*|.*" <<< ${CONSTANT_SET} | cut -d '|' -f 3)
-source <(grep "${CONSTANT}=" /var/cld/creds/creds)
+[ "$CREDSFILE" ] || export CREDSFILE=/var/cld/creds/creds
+source <(grep "${CONSTANT}=" ${CREDSFILE})
 if ! [ "${!CONSTANT}" ]
 then
-  while ! [[ "$VALUE" =~  [A-Za-z0-9/:.@%_ -]+ ]]
+  while ! [[ "$VALUE" =~  ^[A-Za-z0-9/:.@%_\ -]+$ ]]
 do
 echo -e "Please enter the VALUE for ${CONSTANT} constant using [A-Za-z0-9/:._ -] - symbols\nEXAMPLE: ${EXAMPLE}"
 read VALUE
 done
-sed -i '/'${CONSTANT}'/d' /var/cld/creds/creds
-echo "${CONSTANT}=\"${VALUE}\"" >> /var/cld/creds/creds
+sed -i '/'${CONSTANT}'/d' ${CREDSFILE}
+echo "${CONSTANT}=\"${VALUE}\"" >> ${CREDSFILE}
 source <(echo "${CONSTANT}=\"${VALUE}\"")
 fi
 done
