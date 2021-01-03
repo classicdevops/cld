@@ -16,12 +16,6 @@ def arg(arg, message):
 
 bot = telebot.TeleBot(bash("grep ACCESS_BOT_TOKEN /var/cld/creds/creds_security_system | cut -d = -f 2").strip())
 
-def allowusers():
-  return set(bash("grep ALLOW_USER_IDS /var/cld/creds/creds_security_system | cut -d = -f 2").strip().split(','))
-
-def allowgroups():
-  return set(bash("grep ALLOW_GROUP_IDS /var/cld/creds/creds_security_system | cut -d = -f 2").strip().split(','))
-
 # Generate password
 @bot.message_handler(commands=["passwd"])
 def cmd_passwd(message):

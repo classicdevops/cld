@@ -125,7 +125,7 @@ echo $OPTS | grep -q  '^\--testtimeout=' && TEST_TIMEOUT=$(echo $OPTS | cut -d '
 echo $OPTS | grep -q  '^\--backuptimeout=' && BACKUP_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2-)
+echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2- | tr ',' ' ')
 echo $OPTS | grep -q  '^\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--backuplist=' && BACKUP_LIST="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
 echo $OPTS | grep -q  '^\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
@@ -325,7 +325,7 @@ then
 # 0 - output if success                      #
 # 1 - output if fail                         #
 # Delete this text before writing            #  
-# Or it will put in deploy log               #
+# Or it will put in test log                 #
 ##############################################
 EOINSTANCELIST
         nano /var/cld/deploy/actions/${ACTION_NAME}/test_script
