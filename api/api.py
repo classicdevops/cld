@@ -41,33 +41,26 @@ def allowutilityusers(utilityperm):
 def checkmoduleperms(moduleperm, token):
   token=re.match("[A-z0-9_.-]+", token)[0]
   moduleperm=str(moduleperm)
-  user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
   if token in allowmoduleusers(moduleperm):
-    return user
+    return "granted"
   else:
-    return str("access denied")
-    sys.exit(1)
+    return "denied"
 
 def checkutilityperms(cldutility, token):
   token=re.match("[A-z0-9_.-]+", token)[0]
   cldutility=str(cldutility)
-  user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
   if token in allowutilityusers(cldutility):
-    return user
+    return "granted"
   else:
-    return str("access denied")
-    sys.exit(1)
+    return "denied"
 
 def checkutilitypermswhiteip(cldutility, token, remoteaddr):
   token=re.match("[A-z0-9_.-]+", token)[0]
   cldutility=str(cldutility)
-  user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
   if token in allowutilityusers(cldutility) and remoteaddr in accesslist:
-    return user
+    return "granted"
   else:
-    return str("access denied")
-    sys.exit(1)
-
+    return "denied"
 
 cldm={}
 for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
@@ -84,8 +77,8 @@ CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
 cat << EOL
 @app.route('/${CLD_UTIL}')
 def cmd_${CLD_UTIL//-/_}():
-    user = checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr())
-    if user == "denied": return Response("403", status=403, mimetype='application/json')
+    if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": return
+    user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
     cmd_args = ''
     try:
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
