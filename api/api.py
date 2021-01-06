@@ -76,6 +76,30 @@ for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
   print(cldmodule)
   exec(open(apifile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
+exec(bash('''
+for CLD_FILE in $(find /var/cld/modules/*/bin/ -type f -name 'cld-*')
+do
+CLD_MODULE=$(cut -d / -f 5 <<< ${CLD_FILE})
+CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
+cat << EOL
+@app.route('/${CLD_UTIL}')
+def cmd_${CLD_UTIL}():
+    user = checkutilitypermswhiteip(${CLD_UTIL}, request.args['token'], remoteaddr())
+    if user == "denied": return Response("403", status=403, mimetype='application/json')
+    cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    bg = ''
+    try:
+      if str(int(request.args['bg'])) == '1': bg = ''' &>/dev/null &'''
+    except:
+      pass
+    cmdoutput = bash('${CLD_FILE} '+cmd_args+bg)
+    resp = Response(cmdoutput, status=200, mimetype='application/json')
+    return resp
+
+EOL
+done
+'''))
+
 @app.route('/test')
 def index():
   return remoteaddr()
