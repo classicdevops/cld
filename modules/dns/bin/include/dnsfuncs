@@ -6,8 +6,8 @@ then
   B=
 elif [ "$FROM" == "BOT" ]
 then
-  F='`'; EF='\`'
-  B='*'; EB='\*'
+  F='`'
+  B='*'
 fi
 cf-dns-api-creds()
 {
