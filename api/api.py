@@ -89,7 +89,7 @@ def cmd_${CLD_UTIL}():
     cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
     bg = ''
     try:
-      if str(int(request.args['bg'])) == '1': bg = ''' &>/dev/null &'''
+      if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
     except:
       pass
     cmdoutput = bash('${CLD_FILE} '+cmd_args+bg)
