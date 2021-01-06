@@ -4,7 +4,7 @@ def cmd_myip(message):
     return
   if re.findall(r'[\d]+\.[\d]+\.[\d]+\.[\d]+', message.text):
     myip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text).group(1)
-    cmdoutput = bash('/var/cld/modules/access/bin/myip '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip))
+    cmdoutput = bash('FROM=BOT /var/cld/modules/access/bin/myip '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip))
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
   else:
     myip = 'TOKEN'
