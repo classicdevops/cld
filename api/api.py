@@ -78,7 +78,7 @@ cat << EOL
 @app.route('/${CLD_UTIL}')
 def cmd_${CLD_UTIL//-/_}():
     if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": return
-    user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
+    user=bash('grep '+request.args['token']+' /var/cld/creds/passwd | cut -d : -f 1')
     cmd_args = ''
     try:
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
