@@ -6,8 +6,8 @@ then
   B=
 elif [ "$FROM" == "BOT" ]
 then
-  F='`'
-  B='*'
+  F='`'; EF='\`'
+  B='*'; EB='\*'
 fi
 VM_LIST() {
 (
