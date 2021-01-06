@@ -99,7 +99,7 @@ def cmd_${CLD_UTIL//-/_}(message):
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
     except:
         pass
-    cmdoutput = bash('${CLD_FILE} '+cmd_args)
+    cmdoutput = bash('FROM=BOT ${CLD_FILE} '+cmd_args)
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
 EOL
