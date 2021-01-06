@@ -2,8 +2,8 @@
 source /var/cld/creds/creds
 ACCESS_LIST=$(cat << EOACCESSLIST
 `(
-grep -vh "^$\|^#" /var/cld/bot/myips | awk -F"_" '{print "add list=access_list address="$1"/32 comment=\x22"$3"-"$4"\x22"}'
-grep -vh "^$\|^#"  /var/cld/bot/enabledips | awk -F"_" '{print "add list=access_list address="$1"/32 comment=\x22"$3"\x22"}' | grep -v "172.16.0.\|127.0.0.1"
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | awk -F"_" '{print "add list=access_list address="$1"/32 comment=\x22"$3"-"$4"\x22"}'
+grep -vh "^$\|^#"  /var/cld/modules/access/data/enabledips | awk -F"_" '{print "add list=access_list address="$1"/32 comment=\x22"$3"\x22"}' | grep -v "172.16.0.\|127.0.0.1"
 grep -vh "^$\|^#" /var/cld/access/groups/*/clouds | awk -F"_" '{print "add list=access_list address="$2"/32 comment=\x22"$1"\x22"}'
 ) | sort -t ' ' -k 3 | awk 'BEGIN{curr="";prev="";flag=0}; {prev=curr; curr=$3; if(prev!=curr){flag=1}; if(flag!=0 && prev==curr)flag++; if(flag==1)print $0}' | sed -e ':a;N;$!ba;s#\n# ; #g' #-e 's#"#\\\\\\\\\\\\"#g'`
 EOACCESSLIST
