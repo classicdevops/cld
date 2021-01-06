@@ -5,6 +5,7 @@ then
   FRMT=
   BOLD=
 elif [ "$FROM" == "BOT" ]
+then
   FRMT='`'
   BOLD='*'
 fi
