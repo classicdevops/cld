@@ -86,7 +86,11 @@ cat << EOL
 def cmd_${CLD_UTIL//-/_}():
     user = checkutilitypermswhiteip(${CLD_UTIL}, request.args['token'], remoteaddr())
     if user == "denied": return Response("403", status=403, mimetype='application/json')
-    cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    cmd_args = ''
+    try:
+        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    except:
+        pass
     bg = ''
     try:
       if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
