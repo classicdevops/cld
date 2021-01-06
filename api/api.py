@@ -15,6 +15,23 @@ def bash(cmd):
 
 app = Flask(__name__)
 
+def remoteaddr():
+  if request.headers.getlist("X-Forwarded-For"):
+    remote_addr = request.headers.getlist("X-Forwarded-For")[0]
+  else:
+    remote_addr = request.remote_addr
+  return remote_addr
+
+try:
+  accesslist = set(line.strip() for line in open('/var/cld/modules/access/data/api_accesslist'))
+except:
+  pass
+
+try:
+  tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
+except:
+  pass
+
 def allowmoduleusers(moduleperm):
   return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
 
