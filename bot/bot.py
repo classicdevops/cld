@@ -94,8 +94,11 @@ cat << EOL
 def cmd_${CLD_UTIL//-/_}(message):
     if checkmoduleperms("${CLD_MODULE}", message.chat.id, message.from_user.id, message.from_user.username) != "granted": return
     cmd_args=''
-    for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
-    cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
+    try:
+        for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
+        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
+    except:
+        pass
     cmdoutput = bash('${CLD_FILE} '+cmd_args)
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
