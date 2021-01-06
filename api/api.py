@@ -84,7 +84,7 @@ CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
 cat << EOL
 @app.route('/${CLD_UTIL}')
 def cmd_${CLD_UTIL//-/_}():
-    user = checkutilitypermswhiteip(${CLD_UTIL}, request.args['token'], remoteaddr())
+    user = checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr())
     if user == "denied": return Response("403", status=403, mimetype='application/json')
     cmd_args = ''
     try:
