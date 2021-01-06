@@ -1,13 +1,14 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || echo "ip address is incorrect please fix it and try again"
 echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || exit 1
-grep -q "${1}" /var/cld/modules/access/data/blackips && echo "ip \`${1}\` already is in black list" || (echo "${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/blackips && echo "ip \`${1}\` successfully added to black list with comment *${2}*")
+grep -q "${1}" /var/cld/modules/access/data/blackips && echo "ip ${F}${1}${F} already is in black list" || (echo "${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/blackips && echo "ip ${F}${1}${F} successfully added to black list with comment *${2}*")
 BLACK_IP=$1
 COMMENT=$2
 source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
-cf-firewall-rules-ip-ban-add ${BLACK_IP} ${COMMENT}_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip \`${BLACK_IP}\` successfully banned by *cloudflare* for account \`${CFACC}\`"
+cf-firewall-rules-ip-ban-add ${BLACK_IP} ${COMMENT}_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip ${F}${BLACK_IP}${F} successfully banned by *cloudflare* for account ${F}${CFACC}${F}"
 done

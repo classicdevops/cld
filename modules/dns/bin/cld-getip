@@ -17,4 +17,4 @@ CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "$CHECKIP" /var/cld/access/g
 echo
 echo DNS info:
 grep "$CHECKIP" -R /var/cld/modules/dns/data/cf/`TZ=Europe/Moscow date +%F`/ | cut -d : -f 2-
-) | awk '{print "`"$0"`"}'
+) | awk -v f="$F" -v b="$B" '{print f$0f}'

@@ -35,4 +35,4 @@ CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 [ "$CF_RECORD_ID" != "" ]  && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
 [ "$CF_RECORD_ID" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" ] && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully deleted"
 [ "$CF_RECORD_ID" != "" -a "$CF_RECORD_DELETE_RESULT" != "true" ] && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"
-) | awk '{print "`"$0"`"}'
+) | awk -v f="$F" -v b="$B" '{print f$0f}'

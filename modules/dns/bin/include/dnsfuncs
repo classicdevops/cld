@@ -2,12 +2,12 @@
 [ "$SUDO_USER" ] || SUDO_USER=admin
 if [ "$FROM" == "API" ] 
 then 
-  FRMT=
-  BOLD=
+  F=
+  B=
 elif [ "$FROM" == "BOT" ]
 then
-  FRMT='`'
-  BOLD='*'
+  F='`'
+  B='*'
 fi
 cf-dns-api-creds()
 {

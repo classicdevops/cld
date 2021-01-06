@@ -71,4 +71,4 @@ RESULT=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}"
 
 (
 echo "$RESULT" | grep -q result && echo Web checker for $ARG1 deleted successfully || echo "$RESULT" | grep "data" | cut -d : -f 2- | cut -d ' ' -f 2- | tr -d '"''\\'
-) | awk '{print "`"$0"`"}'
+) | awk -v f="$F" -v b="$B" '{print f$0f}'

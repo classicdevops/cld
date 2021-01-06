@@ -1,2 +1,3 @@
 #!/bin/bash
-cat /var/cld/modules/access/data/blackips | tr '_' ' ' | awk '{print "`"$0"`"}'
+source /var/cld/bin/include/cldfuncs
+cat /var/cld/modules/access/data/blackips | tr '_' ' ' | awk -v f="$F" -v b="$B" '{print f$0f}'
