@@ -206,3 +206,45 @@ unset VALUE
 fi
 done
 }
+
+init-string()
+{
+ARGS_NUM=$(echo "${@:1}" | tr ' ' '\n' | grep -v "^--" | wc -l)
+for ARG in $(seq 1 ${ARGS_NUM})
+do
+source <(echo ARG${ARG}=\"$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -${ARG} | tail -1)\")
+ARGS=$(cat << EOL
+${ARGS}
+ARG${ARG}
+EOL
+)
+done
+
+for OPTS in $(echo "${@:1}" | tr ' ' '\n' | grep '^\--')
+do
+echo $OPTS | grep -q  '^\--file=' && FILE="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--separator=' && DELIM="$(echo $OPTS | cut -d '=' -f 2)"
+done
+[ "$DELIM" ] || DELIM=_
+
+for CONSTANT_SET in ${ARGS}
+do
+CONSTANT_SET=${!CONSTANT_SET}
+CONSTANT=$(cut -d '|' -f 1 <<< ${CONSTANT_SET})
+EXAMPLE=$(cut -d '|' -f 2 <<< ${CONSTANT_SET})
+REGEX=$(cut -d '|' -f 3 <<< ${CONSTANT_SET})
+if ! [ "${!CONSTANT}" ]
+then
+  while ! egrep -q "^${REGEX}$" <<< "$VALUE"
+do
+echo -e "Please enter the VALUE for ${CONSTANT} variable using "${REGEX}" - symbols\nEXAMPLE: ${EXAMPLE}"
+echo -n "#: " ; read VALUE
+echo
+done
+source <(echo "CLOUD=\"${CLOUD}${VALUE}${DELIM}\"")
+unset VALUE
+fi
+done
+echo "${CLOUD::-1} writen fo file ${FILE}"
+echo "${CLOUD::-1}" >> ${FILE}
+}

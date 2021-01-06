@@ -1,20 +1,3 @@
-def remoteaddr():
-  if request.headers.getlist("X-Forwarded-For"):
-    remote_addr = request.headers.getlist("X-Forwarded-For")[0]
-  else:
-    remote_addr = request.remote_addr
-  return remote_addr
-
-try:
-  accesslist = set(line.strip() for line in open('/var/cld/modules/access/data/api_accesslist'))
-except:
-  pass
-
-try:
-  tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
-except:
-  pass
-
 @app.route('/myip')
 def myip():
   if 'token' in request.args:

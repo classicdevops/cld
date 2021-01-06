@@ -84,5 +84,24 @@ for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
   print(cldmodule)
   exec(open(botfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
+exec(bash('''
+for CLD_FILE in $(find /var/cld/modules/zabbixcontrol/bin/ -type f -name 'cld-*')
+do
+CLD_MODULE=$(cut -d / -f 5 <<< ${CLD_FILE})
+CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
+cat << EOL
+@bot.message_handler(commands=["${CLD_UTIL/cld-/}"])
+def cmd_${CLD_UTIL//-/_}(message):
+    if checkmoduleperms("${CLD_MODULE}", message.chat.id, message.from_user.id, message.from_user.username) != "granted": return
+    cmd_args=''
+    for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
+    cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
+    cmdoutput = bash('${CLD_FILE} '+cmd_args)
+    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
+
+EOL
+done
+'''))
+
 if __name__ == '__main__':
      bot.polling(none_stop=True)

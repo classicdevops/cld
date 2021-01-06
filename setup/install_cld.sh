@@ -299,6 +299,8 @@ sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 systemctl restart supervisor
 systemctl enable supervisor
 
+find /var/cld/ -f -name 'initset' | xargs
+
 echo "admin:::ALL:ALL" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd
 echo http://${HOSTIP}

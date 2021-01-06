@@ -45,7 +45,7 @@ def checkutilitypermswhiteip(cldutility, token, remoteaddr):
   token=re.match("[A-z0-9_.-]+", token)[0]
   cldutility=str(cldutility)
   user=bash('grep '+token+' /var/cld/creds/passwd | cut -d : -f 1')
-  if token in allowutilityusers(cldutility) or remoteaddr in accesslist:
+  if token in allowutilityusers(cldutility) and remoteaddr in accesslist:
     return user
   else:
     return str("access denied")
