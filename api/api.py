@@ -20,7 +20,7 @@ def remoteaddr():
     remote_addr = request.headers.getlist("X-Forwarded-For")[0]
   else:
     remote_addr = request.remote_addr
-  return remote_addr
+  return re.match("[A-z0-9.:]+", remote_addr)[0]
 
 def accesslist():
   return bash("awk '{print $2}' /etc/hosts.allow").split('\n')
@@ -30,43 +30,31 @@ try:
 except:
   pass
 
-def allowmoduleusers(moduleperm):
-  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
+def allowmoduleusers(cldmodule):
+  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
 
-def allowutilityusers(utilityperm):
-  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+utilityperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
+def allowutilityusers(cldutility):
+  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
 
-def checkmoduleperms(moduleperm, token):
+def checkperms(cldmodule, cldutility, token):
   token=re.match("[A-z0-9_.-]+", token)[0]
-  moduleperm=str(moduleperm)
-  if token in allowmoduleusers(moduleperm):
-    return "granted"
-  else:
-    return "denied"
-
-def checkutilityperms(cldutility, token):
-  token=re.match("[A-z0-9_.-]+", token)[0]
+  cldmodule=str(cldmodule)
   cldutility=str(cldutility)
-  if token in allowutilityusers(cldutility):
-    return "granted"
+  if token in allowmoduleusers(cldmodule) or token in allowutilityusers(cldutility):
+    return ["granted", token]
   else:
-    return "denied"
+    return ["denied", "DENIED"]
 
-def checkmodulepermswhiteip(moduleperm, token, remoteaddr):
+def checkpermswhiteip(cldmodule, cldutility, token, remoteaddr):
   token=re.match("[A-z0-9_.-]+", token)[0]
-  moduleperm=str(moduleperm)
-  if token in allowmoduleusers(moduleperm) and remoteaddr in accesslist():
-    return "granted"
-  else:
-    return "denied"
-
-def checkutilitypermswhiteip(cldutility, token, remoteaddr):
-  token=re.match("[A-z0-9_.-]+", token)[0]
+  cldmodule=str(cldmodule)
   cldutility=str(cldutility)
-  if token in allowutilityusers(cldutility) and remoteaddr in accesslist():
-    return "granted"
+  if token in allowmoduleusers(cldmodule) and remoteaddr in accesslist():
+    return ["granted", token]
+  elif token in allowutilityusers(cldutility) and remoteaddr in accesslist():
+    return ["granted", token]
   else:
-    return "denied"
+    return ["denied", "DENIED"]
 
 cldm={}
 for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
@@ -83,9 +71,10 @@ CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
 cat << EOL
 @app.route('/${CLD_UTIL}')
 def cmd_${CLD_UTIL//-/_}():
-    if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": 
+    checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", request.args['token'], remoteaddr()) 
+    if checkresult[0] != "granted":
       return Response("403", status=403, mimetype='application/json')
-    user = bash('grep '+request.args["token"]+' /var/cld/creds/passwd | cut -d : -f 1 | tr -d "\\n"')
+    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
     cmd_args = ''
     try:
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)

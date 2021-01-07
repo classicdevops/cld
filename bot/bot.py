@@ -73,7 +73,7 @@ def checkmoduleperms(cldmodule, chat_id, user_id, user_name):
     bot.send_message(chat_id_str, str("user id is "+user_id_str+", access denied for "+user_name))
     return "denied"
 
-def checkperms(cldutility, cldmodule, user_id, chat_id, user_name):
+def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
   if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
@@ -100,7 +100,7 @@ CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
 cat << EOL
 @bot.message_handler(commands=["${CLD_UTIL/cld-/}"])
 def cmd_${CLD_UTIL//-/_}(message):
-    checkresult = checkperms("${CLD_UTIL}", "${CLD_MODULE}", message.from_user.id, message.chat.id, message.from_user.username)
+    checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.from_user.id, message.chat.id, message.from_user.username)
     if checkresult[0] != "granted": return
     user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
     cmd_args=''
