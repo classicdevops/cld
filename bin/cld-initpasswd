@@ -7,6 +7,9 @@ USER_TOKEN=$(cut -d : -f 3 <<< $USER_SET)
 USER_MODULES=$(cut -d : -f 4 <<< $USER_SET)
 USER_UTILITES=$(cut -d : -f 5 <<< $USER_SET)
 
+[ "$USER_MODULES" ] || USER_MODULES=NONE
+[ "$USER_UTILITES" ] || USER_UTILITES=NONE
+
 if grep -q "$USER_NAME" /etc/passwd
 then
     echo PAM user $USER_NAME found
@@ -33,7 +36,7 @@ else
     echo
     echo
 fi
-if [ "$(grep -q "ALL" <<< "${USER_UTILITES}" && echo 0)" -o "$(grep -q "ALL" <<< "${USER_MODULES}" && echo 0)" ]
+if [ "${USER_UTILITES}" == "ALL" -o "${USER_MODULES}" == "ALL" ]
 then
     echo 1 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
@@ -45,7 +48,7 @@ then
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
     echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: ALL" >> /etc/sudoers
-elif [ "$(grep -q "cld" <<< "${USER_UTILITES}" && echo 0)" -o "$(egrep -q ".{1,}" <<< "${USER_MODULES}" && echo 0)" ]
+elif [ "$USER_MODULES" != "NONE" -o "$USER_UTILITES" != "NONE" ]
 then
     echo 0 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
@@ -54,11 +57,11 @@ $(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/b
 $(for CLD_MODULE in $(tr ',' '\n' <<< ${USER_MODULES})
 do
 if [ "$CLD_MODULE" == "cm" ]; then
-ls /var/cld/cm/bin/cld-* -pd
+ls /var/cld/cm/bin/* -pd  | grep -v include
 elif [ "$CLD_MODULE" == "deploy" ]; then
-ls /var/cld/deploy/bin/cld-* -pd
+ls /var/cld/deploy/bin/* -pd | grep -v include
 else
-ls /var/cld/modules/${CLD_MODULE}/bin/* -pd
+ls /var/cld/modules/${CLD_MODULE}/bin/* -pd 2>/dev/null | grep -v include
 fi
 done
 )
