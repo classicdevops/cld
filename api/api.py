@@ -22,10 +22,8 @@ def remoteaddr():
     remote_addr = request.remote_addr
   return remote_addr
 
-try:
-  accesslist = set(line.strip() for line in open('/var/cld/modules/access/data/api_accesslist'))
-except:
-  pass
+def accesslist():
+  return bash("awk '{print $2}' /etc/hosts.allow").split('\n')
 
 try:
   tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
@@ -54,10 +52,18 @@ def checkutilityperms(cldutility, token):
   else:
     return "denied"
 
+def checkmodulepermswhiteip(moduleperm, token, remoteaddr):
+  token=re.match("[A-z0-9_.-]+", token)[0]
+  moduleperm=str(moduleperm)
+  if token in allowmoduleusers(moduleperm) and remoteaddr in accesslist():
+    return "granted"
+  else:
+    return "denied"
+
 def checkutilitypermswhiteip(cldutility, token, remoteaddr):
   token=re.match("[A-z0-9_.-]+", token)[0]
   cldutility=str(cldutility)
-  if token in allowutilityusers(cldutility) and remoteaddr in accesslist:
+  if token in allowutilityusers(cldutility) and remoteaddr in accesslist():
     return "granted"
   else:
     return "denied"
@@ -77,7 +83,8 @@ CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
 cat << EOL
 @app.route('/${CLD_UTIL}')
 def cmd_${CLD_UTIL//-/_}():
-    if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": return
+    if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": 
+      return Response("403", status=403, mimetype='application/json')
     user=bash('grep '+request.args['token']+' /var/cld/creds/passwd | cut -d : -f 1')
     cmd_args = ''
     try:
