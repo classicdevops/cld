@@ -32,23 +32,12 @@ def cmd_wazzup(message):
     keyboard.add(callback_button)
     bot.send_message(message.chat.id, "wazzup?", reply_markup=keyboard)
 
-# System date of bot host with button
-@bot.message_handler(commands=["date"])
-def cmd_date(message):
-    keyboard = types.InlineKeyboardMarkup()
-    callback_button = types.InlineKeyboardButton(text="To know date", callback_data="date")
-    keyboard.add(callback_button)
-    bot.send_message(message.chat.id, "Do you want to know the date?", reply_markup=keyboard)
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     chat_id=call.message.chat.id
     message_id=call.message.message_id
     if call.message:
-        if call.data == "date":
-            cmdoutput = subprocess.Popen("date", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=cmdoutput.communicate())
-        elif call.data == "wazup":
+       if call.data == "wazup":
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="WAZZZUUUP!")
             bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
 

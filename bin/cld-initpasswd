@@ -44,7 +44,7 @@ then
         echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: ALL" >> /etc/sudoers
 elif echo ${USER_UTILITES} | grep -q "cld"
 then
     echo 0 > /var/cld/access/users/${USER_NAME}/role
@@ -56,7 +56,7 @@ then
         echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
+    echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
 fi
 if ! [ "${USER_TOKEN}" ]
 then
