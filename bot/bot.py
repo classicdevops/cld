@@ -28,7 +28,7 @@ def cmd_passwd(message):
 @bot.message_handler(commands=["wazzup"])
 def cmd_wazzup(message):
     keyboard = types.InlineKeyboardMarkup()
-    callback_button = types.InlineKeyboardButton(text="Вазааап!", callback_data="wazup")
+    callback_button = types.InlineKeyboardButton(text="WAZZZUUUP!", callback_data="wazup")
     keyboard.add(callback_button)
     bot.send_message(message.chat.id, "wazzup?", reply_markup=keyboard)
 
@@ -51,20 +51,39 @@ def cmd_getid(message):
       pass
     bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
-def allowmoduleusers(moduleperm):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
+def allowmoduleusers(cldmodule):
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | grep -v "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
 
-def allowmodulegroups(moduleperm):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+moduleperm+'''\|ALL" | cut -d : -f 1 | grep "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
+def allowmodulegroups(cldmodule):
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | grep "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
 
-def checkmoduleperms(moduleperm, chat_id, user_id, user_name):
+def allowmodule(cldmodule):
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+
+def allowutility(cldutility):
+  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+
+
+def checkmoduleperms(cldmodule, chat_id, user_id, user_name):
   chat_id_str=str(chat_id)
   user_id_str=str(user_id)
-  if chat_id_str in allowmodulegroups(moduleperm) or user_id_str in allowmoduleusers(moduleperm):
+  if chat_id_str in allowmodulegroups(cldmodule) or user_id_str in allowmoduleusers(cldmodule):
     return "granted"
   else:
     bot.send_message(chat_id_str, str("user id is "+user_id_str+", access denied for "+user_name))
     return "denied"
+
+def checkperms(cldutility, cldmodule, user_id, chat_id, user_name):
+  user_id_str=str(user_id)
+  chat_id_str=str(chat_id)
+  if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
+    return ["granted", user_id_str]
+  elif chat_id_str in allowmodule(cldmodule) or chat_id_str in allowutility(cldutility):
+    return ["granted", chat_id_str]
+  else:
+    bot.send_message(chat_id_str, str("user id is "+user_id_str+", access denied for "+user_name))
+    return ["denied", "DENIED"]
+
 
 cldm={}
 for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
@@ -81,14 +100,16 @@ CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
 cat << EOL
 @bot.message_handler(commands=["${CLD_UTIL/cld-/}"])
 def cmd_${CLD_UTIL//-/_}(message):
-    if checkmoduleperms("${CLD_MODULE}", message.chat.id, message.from_user.id, message.from_user.username) != "granted": return
+    checkresult = checkperms("${CLD_UTIL}", "${CLD_MODULE}", message.from_user.id, message.chat.id, message.from_user.username)
+    if checkresult[0] != "granted": return
+    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
     cmd_args=''
     try:
         for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
     except:
         pass
-    cmdoutput = bash('FROM=BOT ${CLD_FILE} '+cmd_args)
+    cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args)
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
 EOL

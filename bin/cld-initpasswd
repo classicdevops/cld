@@ -1,5 +1,5 @@
 #!/bin/bash
-for USER_SET in $(grep -v ":-" /var/cld/creds/passwd)
+for USER_SET in $(cat /var/cld/creds/passwd)
 do
 USER_NAME=$(cut -d : -f 1 <<< $USER_SET)
 USER_TGID=$(cut -d : -f 2 <<< $USER_SET)
@@ -33,7 +33,7 @@ else
     echo
     echo
 fi
-if echo ${USER_UTILITES} | grep -q "ALL"
+if [ "$(grep -q "ALL" <<< "${USER_UTILITES}" && echo 0)" -o "$(grep -q "ALL" <<< "${USER_MODULES}" && echo 0)" ]
 then
     echo 1 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
@@ -45,11 +45,25 @@ then
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
     echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: ALL" >> /etc/sudoers
-elif echo ${USER_UTILITES} | grep -q "cld"
+elif [ "$(grep -q "cld" <<< "${USER_UTILITES}" && echo 0)" -o "$(egrep -q ".{1,}" <<< "${USER_MODULES}" && echo 0)" ]
 then
     echo 0 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
-    CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
+    CLD_UTILS=$(cat << EOUTILS | sort -u
+$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
+$(for CLD_MODULE in $(tr ',' '\n' <<< ${USER_MODULES})
+do
+if [ "$CLD_MODULE" == "cm" ]; then
+ls /var/cld/cm/bin/cld-* -pd
+elif [ "$CLD_MODULE" == "deploy" ]; then
+ls /var/cld/deploy/bin/cld-* -pd
+else
+ls /var/cld/modules/${CLD_MODULE}/bin/* -pd
+fi
+done
+)
+EOUTILS
+)
     for CLD_UTIL in ${CLD_UTILS}
     do 
         CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
