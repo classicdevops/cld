@@ -85,7 +85,7 @@ cat << EOL
 def cmd_${CLD_UTIL//-/_}():
     if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": 
       return Response("403", status=403, mimetype='application/json')
-    user = bash('grep '+request.args["token"]+' /var/cld/creds/passwd | cut -d : -f 1').replace('\\\n', '')
+    user = bash('grep '+request.args["token"]+' /var/cld/creds/passwd | cut -d : -f 1').replace('\\n', '')
     cmd_args = ''
     try:
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
