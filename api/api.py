@@ -5,6 +5,7 @@ from flask import g
 from flask import Response
 import json
 import re
+import sys
 import subprocess
 import random
 import datetime
@@ -85,7 +86,7 @@ cat << EOL
 def cmd_${CLD_UTIL//-/_}():
     if checkutilitypermswhiteip("${CLD_UTIL}", request.args['token'], remoteaddr()) != "granted": 
       return Response("403", status=403, mimetype='application/json')
-    user = str(bash('grep '+request.args['token']+' /var/cld/creds/passwd | cut -d : -f 1')).replace('\n', '')
+    user = bash('grep '+request.args['token']+' /var/cld/creds/passwd | cut -d : -f 1')
     cmd_args = ''
     try:
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
@@ -96,7 +97,7 @@ def cmd_${CLD_UTIL//-/_}():
       if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
     except:
       pass
-    print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
+    print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, file=sys.stdout)
     cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
     resp = Response(cmdoutput, status=200, mimetype='application/json')
     return resp
