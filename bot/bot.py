@@ -58,10 +58,10 @@ def allowmodulegroups(cldmodule):
   return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | grep "^-" | head -c -1 | tr "\n" ","''').strip().split(','))
 
 def allowmodule(cldmodule):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
 
 def allowutility(cldutility):
-  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
 
 
 def checkmoduleperms(cldmodule, chat_id, user_id, user_name):
