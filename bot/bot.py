@@ -76,10 +76,10 @@ def checkmoduleperms(cldmodule, chat_id, user_id, user_name):
 def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
-  print("user_id_str: "+user_id_str)
-  print("chat_id_str: "+chat_id_str)
-  print("allowmodule: "+str(allowmodule(cldmodule)))
-  print("allowutility: "+str(allowutility(cldutility)))
+  print("user_id_str: "+user_id_str, flush=True)
+  print("chat_id_str: "+chat_id_str, flush=True)
+  print("allowmodule: "+str(allowmodule(cldmodule)), flush=True)
+  print("allowutility: "+str(allowutility(cldutility)), flush=True)
   if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
     return ["granted", user_id_str]
   elif chat_id_str in allowmodule(cldmodule) or chat_id_str in allowutility(cldutility):
