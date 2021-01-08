@@ -1,4 +1,5 @@
 #!/bin/bash
+egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
 for USER_SET in $(cat /var/cld/creds/passwd)
 do
 USER_NAME=$(cut -d : -f 1 <<< $USER_SET)
@@ -44,7 +45,7 @@ then
     for CLD_UTIL in ${CLD_UTILS}
     do 
         CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
-        echo "alias ${CLD_UTIL_NAME}='sudo ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
+        echo "alias ${CLD_UTIL_NAME}='sudo FROM=CLI ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
     done
     sed -i '/'${USER_NAME}'/d' /etc/sudoers
     echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: ALL" >> /etc/sudoers
