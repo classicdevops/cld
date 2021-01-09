@@ -1,0 +1,3 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10 TEMPLATEIDS\|10362,10364,10365

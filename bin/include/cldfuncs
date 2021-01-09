@@ -257,3 +257,44 @@ done
 echo "${CLOUD::-1} writen fo file ${FILE}"
 echo "${CLOUD::-1}" >> ${FILE}
 }
+
+cldhelp()
+{
+[ "$HELP_ONLY" ] || HELP_ONLY="CLI API BOT"
+[ "$HELP_DESC" ] && (echo Description:
+echo "${HELP_DESC}" | awk '{print "     "$0}'
+echo;echo)
+[ "$HELP_ARGS" ] && (echo Arguments:
+awk '{print "     "$0}' <<< "${HELP_ARGS}" | 
+awk '{print "     "$0}' <<< " -h --help                Print this information"
+echo;echo)
+[ "$HELP_EXAMPLES" ] && (
+echo Examples: 
+for METHOD in $HELP_ONLY
+do
+[ "${METHOD}" == "CLI" ] && echo CLI:
+[ "${METHOD}" == "BOT" ] && echo BOT:
+[ "${METHOD}" == "API" ] && echo API:
+(IFS=$'\n'
+for STRING in ${HELP_EXAMPLES}
+do
+if [ "${METHOD}" == "CLI" ]
+then
+awk '{print "     "$0}' <<< $STRING
+elif [ "${METHOD}" == "BOT" ]
+then
+awk '{print "     "$0}' <<< /${STRING//cld-/}
+elif [ "${METHOD}" == "API" ]
+then
+awk '{print "     "$0}' <<< \""https://cldapi.yourdomain.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
+fi
+done)
+done
+)
+exit 0
+}
+for OPTS in ${@:1}
+do
+echo "$OPTS"
+[[ "$OPTS" =~ ^(-h|--help)$ ]] && cldhelp
+done

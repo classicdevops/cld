@@ -1,0 +1,5 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+CFAPI=$(cat /var/cld/creds/creds_dns_cf_api_list)
+[ "$CFAPI" ] && init-string 'CFACC|mymail@atcloud.flare|[A-Za-z0-9@.-]+' 'CFKEY|y0urcf4pi70keny0urcf4pi70keny0urcf4pi|[a-z0-9]{37}' 'CF_ACC_ID|y0urcfaccidy0urcfaccidy0urcfacci
+|[a-z0-9]{32}' --file=/var/cld/creds/creds_dns_cf_api_list

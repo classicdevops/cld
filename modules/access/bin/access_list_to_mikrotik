@@ -1,5 +1,6 @@
 #!/bin/bash
 source /var/cld/creds/creds
+init-load-constants MIKROTIK_USER\|admin MIKROTIK_PASSWORD\|Y0uRM1kr071Kp455W0rD MIKROTIK_HOST\|1.2.3.4
 ACCESS_LIST=$(cat << EOACCESSLIST
 `(
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | awk -F"_" '{print "add list=access_list address="$1"/32 comment=\x22"$3"-"$4"\x22"}'
@@ -8,4 +9,4 @@ grep -vh "^$\|^#" /var/cld/access/groups/*/clouds | awk -F"_" '{print "add list=
 ) | sort -t ' ' -k 3 | awk 'BEGIN{curr="";prev="";flag=0}; {prev=curr; curr=$3; if(prev!=curr){flag=1}; if(flag!=0 && prev==curr)flag++; if(flag==1)print $0}' | sed -e ':a;N;$!ba;s#\n# ; #g' #-e 's#"#\\\\\\\\\\\\"#g'`
 EOACCESSLIST
 )
-sshpass -p "$DEFAULT_MIKROTIK_PASSWORD" ssh ${DEFAULT_MIKROTIK_USER}@${DEFAULT_MIKROTIK_HOST} "/ip firewall address-list remove [/ip firewall address-list find list=\"access_list\"] ; /ip firewall address-list ; add list=access_list address=172.16.0.0/24 comment=\"local network\" ; $ACCESS_LIST"
+sshpass -p "$MIKROTIK_PASSWORD" ssh ${MIKROTIK_USER}@${MIKROTIK_HOST} "/ip firewall address-list remove [/ip firewall address-list find list=\"access_list\"] ; /ip firewall address-list ; add list=access_list address=172.16.0.0/24 comment=\"local network\" ; $ACCESS_LIST"
