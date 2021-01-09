@@ -263,11 +263,11 @@ cldhelp()
 [ "$HELP_ONLY" ] || HELP_ONLY="CLI API BOT"
 [ "$HELP_DESC" ] && (echo Description:
 echo "${HELP_DESC}" | awk '{print "     "$0}'
-echo;echo)
+echo)
 [ "$HELP_ARGS" ] && (echo Arguments:
 awk '{print "     "$0}' <<< "${HELP_ARGS}" | 
 awk '{print "     "$0}' <<< " -h --help                Print this information"
-echo;echo)
+echo)
 [ "$HELP_EXAMPLES" ] && (
 echo Examples: 
 for METHOD in $HELP_ONLY
