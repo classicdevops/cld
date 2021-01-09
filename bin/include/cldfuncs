@@ -269,7 +269,7 @@ echo)
 awk '{print "     "$0}' <<< "-h --help                Print this information"
 echo)
 [ "$HELP_EXAMPLES" ] && (
-echo Examples: 
+echo Usage examples: 
 for METHOD in $HELP_ONLY
 do
 [ "${METHOD}" == "CLI" ] && echo CLI:
