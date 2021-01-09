@@ -1,4 +1,16 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Utility for initialization users according access matrix file /var/cld/creds/passwd
+Affect /etc/sudoers and ~/.bashrc file for each classic deploy user
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-initpasswd
+EOL
+)
+HELP_ONLY="CLI"
+source /var/cld/bin/include/cldfuncs
+
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
 for USER_SET in $(cat /var/cld/creds/passwd)
 do
