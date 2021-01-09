@@ -9,7 +9,7 @@ $2                       Second PATTERN filtering allowed instances
 $3                       Third PATTERN filtering allowed instances
 --list                   Show filtered instances and exit
 --groups=GROUP1,GROUP2   Filtering by instance groups
---debug                  Verbose output connection
+--debug                  Verbose output of connection
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
