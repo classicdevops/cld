@@ -295,6 +295,5 @@ exit 0
 }
 for OPTS in ${@:1}
 do
-echo "$OPTS"
 [[ "$OPTS" =~ ^(-h|--help)$ ]] && cldhelp
 done
