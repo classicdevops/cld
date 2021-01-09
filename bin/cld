@@ -9,7 +9,7 @@ $2                       Second PATTERN filtering allowed instances
 $3                       Third PATTERN filtering allowed instances
 --list                   Show filtered instances and exit
 --groups=GROUP1,GROUP2   Filtering by instance groups
---debug                  
+--debug                  Verbose output connection
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -20,7 +20,6 @@ cld prod 1.2. --list
 EOL
 )
 HELP_ONLY="CLI"
-
 
 source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
