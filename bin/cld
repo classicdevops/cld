@@ -15,7 +15,7 @@ EOL
 HELP_EXAMPLES=$(cat << 'EOL'
 cld
 cld prod 1.2.
-cld --groups=gcloud dev --debug
+cld --groups=gcloud prod --debug
 cld prod 1.2. --list
 EOL
 )
