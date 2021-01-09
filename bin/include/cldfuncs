@@ -264,8 +264,8 @@ cldhelp()
 [ "$HELP_DESC" ] && (echo Description:
 echo "${HELP_DESC}" | awk '{print "     "$0}'
 echo)
-[ "$HELP_ARGS" ] && (echo Arguments:
-awk '{print "     "$0}' <<< "${HELP_ARGS}"
+(echo Arguments:
+[ "$HELP_ARGS" ] && awk '{print "     "$0}' <<< "${HELP_ARGS}"
 awk '{print "     "$0}' <<< "-h --help                Print this information"
 echo)
 [ "$HELP_EXAMPLES" ] && (
