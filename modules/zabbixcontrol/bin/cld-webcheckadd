@@ -1,4 +1,19 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Quick create web monitoring instance at Zabbix
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       FQDN
+--pattern=Copyright      Key word on the page - blank - will check only by 200 status
+--url=https://li.nk/adr  URL address for check - default is /
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-webcheckadd example.com
+cld-webcheckadd example.com -url=https://example.com/some/page/addr -pattern=Copyright
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)

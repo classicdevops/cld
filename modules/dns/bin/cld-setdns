@@ -1,4 +1,27 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Set or replace DNS record at CloudFlare
+Domain will added to the default CloudFlare account if main zone of the record doesn't exist in any of connected api keys.
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       DNS record type
+$2                       DNS zone - FQDN
+$3                       DNS zone content
+--cfacc=youracc@at.cf    Email of your CloudFlare account - if you have several at /var/cld/creds/creds_dns_cf_api_list
+--proxy                  Set up CloudFlare proxyfying
+--force                  Use if you need several record for one DNS zone - using for DNS roundrobin
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-setdns a subdomain.example.com 1.2.3.4
+cld-setdns a subdomain.example.com 1.2.3.4 -proxy
+cld-setdns a subdomain.example.com 1.2.3.4 -force
+cld-setdns a subdomain.example.com 1.2.3.4_2.3.4.5
+cld-setdns a subdomain.example.com 1.2.3.4_2.3.4.5 -proxy -force
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)

@@ -260,6 +260,7 @@ echo "${CLOUD::-1}" >> ${FILE}
 
 cldhelp()
 {
+(
 [ "$HELP_ONLY" ] || HELP_ONLY="CLI API BOT"
 [ "$HELP_DESC" ] && (echo Description:
 echo "${HELP_DESC}" | awk '{print "     "$0}'
@@ -291,6 +292,7 @@ fi
 done)
 done
 )
+) | awk -v f="$F" -v b="$B" '{print f$0f}'
 exit 0
 }
 for OPTS in ${@:1}

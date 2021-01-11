@@ -1,4 +1,17 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Delete web monitoring instance at Zabbix
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       FQDN
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-webcheckdel example.com
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
 
 for OPTS in ${@:1}

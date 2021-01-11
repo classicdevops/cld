@@ -1,4 +1,19 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Delete DNS record from CloudFlare
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       DNS record type
+$2                       DNS zone - FQDN
+$3                       DNS zone content
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-deldns a subdomain.example.com 1.2.3.4
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 TYPE=${1^^}
 DNS_ZONE=${2,,}

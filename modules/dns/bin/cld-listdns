@@ -1,4 +1,13 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+List all domains at your CloudFlare accounts
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-listdns
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 DNS_ZONE=${1,,}
 MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)

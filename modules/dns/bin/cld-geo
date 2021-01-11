@@ -1,4 +1,19 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Return json of geo information for IP address or FQDN - using for ip-api.com service
+Note: it have limit of free requests
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       IP address or FQDN
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-geo 1.2.3.4
+cld-geo example.com
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 DNS_ZONE=${1,,}
 

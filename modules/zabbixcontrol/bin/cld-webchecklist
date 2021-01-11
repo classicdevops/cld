@@ -1,4 +1,20 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+List of your web monitoring instances at Zabbix filtering by pattern
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Some pattern - if exist will search the word by all your web monitoring instances - emplty will show everything
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-webchecklist
+cld-webchecklist example.com
+cld-webchecklist copyright
+cld-webchecklist /page/addr
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 source /var/cld/creds/creds_module_zabbixcontrol
 init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10 TEMPLATEIDS\|10362,10364,10365
 

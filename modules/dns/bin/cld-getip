@@ -1,4 +1,16 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Get information filtering by IP address - based on classic deploy instnce lists and DNS backup infromation
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       IP address
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-getip 1.2.3.4
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 CHECKIP=$(echo "$1" | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"\|"all")

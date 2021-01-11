@@ -1,4 +1,18 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Generate command list for massive change of all targeted DNS zones from source ip to new destination ip - checking based on CloudFlare DNS backup files - cf_dns_backup will run before generating commands
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Source IP address
+$2                       Destination IP address
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-changefront 1.2.3.4 2.3.4.5
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 

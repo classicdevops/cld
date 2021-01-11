@@ -1,4 +1,18 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Return json of whois information for FQDN - using for api.whois.vu service
+Note: it have limit of free requests
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       FQDN
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-whois example.com
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 DNS_ZONE=${1,,}
 MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
