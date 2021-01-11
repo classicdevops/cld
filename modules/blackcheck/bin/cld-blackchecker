@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/bin/bashHELP_DESC=$(cat << 'EOL'
+Utility to check all instances addresses if there is in spam lists
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-blackchecker
+EOL
+)
+
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)

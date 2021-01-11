@@ -1,4 +1,17 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Utility to add IP address to the black list
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       IP address
+$2                       Comment
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-banip 1.2.3.4 somereason
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || echo "ip address is incorrect please fix it and try again"

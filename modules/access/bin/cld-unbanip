@@ -1,4 +1,16 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Utility to remove IP address from black list
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       IP address
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-unbanip 1.2.3.4
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || echo "ip address is incorrect please fix it and try again"

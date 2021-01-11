@@ -1,4 +1,14 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Interactive utility to watch active classicdeploy user sessions in real time
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-sessions
+EOL
+)
+HELP_ONLY="CLI"
+source /var/cld/bin/include/cldfuncs
 echo
 echo Please choose one of active sessions below
 echo

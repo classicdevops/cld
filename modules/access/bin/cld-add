@@ -1,4 +1,19 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Utility to add new cld instance string
+Interactive without arguments
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Full cld string like instance-name_1.2.3.4_22_root
+$2                       Name of cld instance group to add - "default" is default
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-add instance-name_1.2.3.4_22_root
+cld-add instance-name_1.2.3.4_22_root groupname
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 CLOUD=$1
 GROUP=$2

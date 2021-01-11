@@ -1,4 +1,17 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Utility to check if IP address in spamlist
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       IP address
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-blackcheck 1.2.3.4
+EOL
+)
+source /var/cld/bin/include/cldfuncs
 fqdntrue()
 {
 echo "Domain entered : $CHECKVAR"
