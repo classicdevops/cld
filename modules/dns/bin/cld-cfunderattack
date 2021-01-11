@@ -10,7 +10,7 @@ HELP_ARGS=$(cat << 'EOL'
 --rps=100                           Limit of rps - higher will considering as attack
 --groups=group1,group2              Filtering by instance groups - field can be blank
 --accesslog=/var/log/access.log     Target access log - default is /var/log/nginx-main-access.log
---logpattern=someword_or_empty	    Defined pattern for count rps by it - field can be blank
+--logpattern=someword_or_empty      Defined pattern for count rps by it - field can be blank
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
