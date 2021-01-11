@@ -273,9 +273,9 @@ echo)
 echo Usage examples: 
 for METHOD in $HELP_ONLY
 do
-[ "${METHOD}" == "CLI" ] && echo CLI:
-[ "${METHOD}" == "BOT" ] && echo BOT:
-[ "${METHOD}" == "API" ] && echo API:
+[ "${METHOD}" == "CLI" ] && echo "  CLI:"
+[ "${METHOD}" == "BOT" ] && echo "  BOT:"
+[ "${METHOD}" == "API" ] && echo "  API:"
 (IFS=$'\n'
 for STRING in ${HELP_EXAMPLES}
 do
