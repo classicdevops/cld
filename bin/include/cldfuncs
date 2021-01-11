@@ -282,17 +282,15 @@ do
 if [ "${METHOD}" == "CLI" ]
 then
 awk '{print "     "$0}' <<< $STRING
-echo
 elif [ "${METHOD}" == "BOT" ]
 then
 awk '{print "     "$0}' <<< /${STRING//cld-/}
-echo
 elif [ "${METHOD}" == "API" ]
 then
 awk '{print "     "$0}' <<< \""https://cldapi.example.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
-echo
 fi
 done)
+echo
 done
 )
 ) | awk -v f="$F" -v b="$B" '{print f$0f}'
