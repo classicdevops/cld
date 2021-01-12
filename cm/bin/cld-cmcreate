@@ -26,8 +26,7 @@ EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-cmcreate #CLI
-cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cpu=2 --ram=2 --disk=20 --ip=1.2.3.4 --gate=1.2.3.1 
---id=10001 --storage=zfs01
+cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cpu=2 --ram=2 --disk=20 --ip=1.2.3.4 --gate=1.2.3.1 --id=10001 --storage=zfs01
 EOL
 )
 source /var/cld/bin/include/cldfuncs
