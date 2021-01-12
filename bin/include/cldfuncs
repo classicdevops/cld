@@ -279,15 +279,19 @@ do
 (IFS=$'\n'
 for STRING in ${HELP_EXAMPLES}
 do
+ONLYPATTERN=$(grep '#' <<< $STRING | cut -d '#' -f 2 | tr ',' '\n')
 if [ "${METHOD}" == "CLI" ]
 then
-awk '{print "     "$0}' <<< $STRING
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "CLI" && cut -d '#' -f 1 <<< $STRING | awk '{print "     "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< $STRING
 elif [ "${METHOD}" == "BOT" ]
 then
-awk '{print "     "$0}' <<< /${STRING//cld-/}
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "BOT" && cut -d '#' -f 1 <<< /${STRING//cld-/} | awk '{print "     "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< /${STRING//cld-/}
 elif [ "${METHOD}" == "API" ]
 then
-awk '{print "     "$0}' <<< \""https://cldapi.example.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "BOT" && cut -d '#' -f 1 <<< \""https://cldapi.example.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://cldapi.example.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
 fi
 done)
 echo

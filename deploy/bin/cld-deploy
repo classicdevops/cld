@@ -1,4 +1,38 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Main classic deploy CLI utility
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--run                              Start deploy in non-interactive mode - interactive mode all other cases
+--deploy=deployname                Name of deploy - required if non-interactive mode
+$1                                 First PATTERN filtering existing deploys - interactive mode
+$2                                 Second PATTERN filtering existing deploys - interactive mode
+$3                                 Third PATTERN filtering existing deploys - interactive mode
+--debug                            Verbose output of connection
+--clouds=srv_1.2.3.4               Instance pattern or list comma separated
+--groups=GROUP1,GROUP2             Filtering by instance groups
+--test=0                           Execute test script after deploy - 0 is disabled - 1 is enabled
+--retry=0                          Count of retry deploy attempts per instance if ssh connection not established
+--timeout=180                      Timeout of deploy script in seconds
+--testtimeout=180                  Timeout of test script in seconds
+--backuptimeout=180                Timeout for backup/custombackup script         
+--nextdeploy=deploy2               Using for deploy chains - blank field for single deploy
+--nextdeploywait=1                 Wait the end of current deploy before start next
+--nextdeployargs=--run,--test=1    Next deploy arguments comma separated
+--backup=0                         Backup files of filelist before deploy - 0 is disabled - 1 is enabled
+--backuplist=/etc/,/tmp/file       List of filed and directories for backup before deploy
+--custombackup=0                   Use custom backup script before deploy - 0 is disabled - 1 is enabled
+--async=1                          Synchronous or asynchronous mode of deploy - 0 is sync - 1 is async
+--debug=0                          Verbose mode of connect and additional predeploy scripts will put to the output
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-deploy #CLI
+cld-deploy deployname #CLI
+cld-deploy --run --deploy=deployname --backup=1 --backuplist=/etc/nginx/ --async=1 --clouds=frontend
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 source /var/cld/deploy/bin/include/deployfuncs
 unalias cp &>/dev/null
