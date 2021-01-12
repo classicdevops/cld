@@ -28,7 +28,7 @@ DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replac
 
 async_mode = None
 app = Flask(__name__, template_folder=template_dir)
-socket_ = SocketIO(app, async_mode=async_mode)
+socketio = SocketIO(app, async_mode=async_mode)
 app.config['UPLOAD_FOLDER'] = upload_dir
 #app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -43,6 +43,81 @@ def remoteaddr():
   else:
     remote_addr = request.remote_addr
   return remote_addr
+
+
+
+
+
+#socketio
+app.config["fd"] = None
+def set_winsize(fd, row, col, xpix=0, ypix=0):
+    winsize = struct.pack("HHHH", row, col, xpix, ypix)
+    fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
+
+
+def read_and_forward_pty_output():
+    max_read_bytes = 1024 * 20
+    while True:
+        socketio.sleep(0.01)
+        if app.config["fd"]:
+            timeout_sec = 0
+            (data_ready, _, _) = select.select([app.config["fd"]], [], [], timeout_sec)
+            if data_ready:
+                output = os.read(app.config["fd"], max_read_bytes).decode()
+                socketio.emit("pty-output", {"output": output}, namespace="/pty")
+
+
+@app.route("/socket")
+def socket():
+    return render_template("html/socket.html")
+
+
+@socketio.on("pty-input", namespace="/pty")
+def pty_input(data):
+    """write to the child pty. The pty sees this as if you are typing in a real
+    terminal.
+    """
+    if app.config["fd"]:
+        # print("writing to ptd: %s" % data["input"])
+        os.write(app.config["fd"], data["input"].encode())
+
+
+@socketio.on("resize", namespace="/pty")
+def resize(data):
+    if app.config["fd"]:
+        set_winsize(app.config["fd"], data["rows"], data["cols"])
+
+
+@socketio.on("connect", namespace="/pty")
+def connect():
+    """new client connected"""
+
+    if session['child_pid']:
+        # already started child process, don't start another
+        return
+
+    # create child process attached to a pty we can read from and write to
+    (child_pid, fd) = pty.fork()
+    if child_pid == 0:
+        # this is the child process fork.
+        # anything printed here will show up in the pty, including the output
+        # of this subprocess
+        subprocess.run("/bin/bash")
+    else:
+        # this is the parent process fork.
+        # store child fd and pid
+        app.config["fd"] = fd
+        session['child_pid'] = child_pid
+        set_winsize(fd, 50, 50)
+        cmd = "/bin/bash"
+        print("child pid is", child_pid)
+        print(
+            f"starting background task with command `{cmd}` to continously read "
+            "and forward pty output to client"
+        )
+        socketio.start_background_task(target=read_and_forward_pty_output)
+        print("task started")
+
 
 
 # def sessionparse(value):
@@ -674,4 +749,4 @@ def backendgitpull():
 if __name__ == '__main__':
 #    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
     #app.run(debug=True, host='0.0.0.0', port=8080)
-    socket_.run(app, debug=True, host='0.0.0.0', port=8080)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8080)
