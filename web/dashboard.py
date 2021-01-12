@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
+from flask_session import Session
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -27,7 +28,8 @@ DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replac
 app = Flask(__name__, template_folder=template_dir)
 app.config['UPLOAD_FOLDER'] = upload_dir
 app.secret_key = FLASKSECRETKEY
-
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
 #accesslist = set(line.strip() for line in open('../creds/accesslist'))
 
 #@app.before_request
