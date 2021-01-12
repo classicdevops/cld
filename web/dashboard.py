@@ -109,7 +109,6 @@ def connect():
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         app.config['fd'] = fd
-        app.config[socketid] = fd
         session['fd'] = fd
         print("fd session is", session['fd'], flush=True)
         print("fd pid is", fd, flush=True)
