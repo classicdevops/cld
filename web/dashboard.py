@@ -80,10 +80,10 @@ def read_and_forward_pty_output():
 def socket():
   if 'username' in session:
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
-    random = ''
+    socketid = ''
     for c in range(8):
-       random += random.choice(chars)
-    return render_template("html/socket.html", random=random)
+       socketid += random.choice(chars)
+    return render_template("html/socket.html", socketid=socketid)
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
