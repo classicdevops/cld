@@ -65,6 +65,8 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 
 
 def read_and_forward_pty_output():
+    socketid=request.args.get('sid')
+    print(socketid, flush=True)
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
@@ -97,7 +99,7 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-    socketid=request.args.get('sid')
+    socketid=request.args.get('socketid')
     print(socketid, flush=True)
 #    if session['child_pid']:
 #        return
@@ -107,8 +109,6 @@ def connect():
         session['fd'] = fd
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
-        sid=request.args.get('sid')
-        print(sid, flush=True)
         app.config['fd'] = fd
         session['fd'] = fd
         print("fd session is", session['fd'], flush=True)
