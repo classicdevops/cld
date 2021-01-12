@@ -100,7 +100,7 @@ def resize(data):
 @socketio.on("connect", namespace="/pty")
 def connect():
     """new client connected"""
-    session['child_pid'] = ''
+    #session['child_pid'] = ''
     if session['child_pid']:
         # already started child process, don't start another
         return
