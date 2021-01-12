@@ -99,13 +99,19 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
+    """new client connected"""
+    #session['child_pid'] = ''
+    if session['child_pid']:
+        # already started child process, don't start another
+        return
+    # create child process attached to a pty we can read from and write to
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         # this is the child process fork.
         # anything printed here will show up in the pty, including the output
         # of this subprocess
         session['child_pid'] = child_pid
-        subprocess.run("TERM=xterm /bin/bash", shell=True)
+        subprocess.run("TERM=xterm", "/bin/bash")
     else:
         # this is the parent process fork.
         # store child fd and pid
