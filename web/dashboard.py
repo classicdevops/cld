@@ -93,8 +93,9 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-#    if session['child_pid']:
-#        return
+    print(socketio.handshake.query['testvar'], flush=True)
+    if session['child_pid']:
+        return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         session['child_pid'] = child_pid
