@@ -95,6 +95,8 @@ def pty_input(data):
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
+    socketid=request.args.get('socketid')
+    print("resizeID: "+socketid, flush=True)
     if app.config['fd']:
         set_winsize(app.config['fd'], data["rows"], data["cols"])
 
