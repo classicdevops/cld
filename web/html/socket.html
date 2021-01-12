@@ -44,7 +44,7 @@
   term.on('key', (key, ev) => {
     console.log("pressed key", key)
     console.log("event", ev)
-    socket.emit("pty-input", {"input": key}, {query: 'socketid={{socketid}}'})
+    socket.emit("pty-input", {"input": key})
   });
 
   term.on('paste', (data, ev) => {
