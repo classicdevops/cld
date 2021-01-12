@@ -82,7 +82,7 @@ def socket():
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     random = ''
     for c in range(8):
-       password += random.choice(chars)
+       random += random.choice(chars)
     return render_template("html/socket.html", random=random)
 
 @socketio.on("pty-input", namespace="/pty")
