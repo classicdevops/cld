@@ -44,18 +44,12 @@
   // term.toggleFullScreen(true)
   term.fit()
     // No idea what this does
-term.winptyCompatInit();
-term.on('key', (key, ev) => {
-console.log("pressed key", key)
-console.log("event", ev)
-socket.emit("pty-input", {"input": key})
-});
-
-term.on('paste', function (data, ev) => {
-console.log("pasted data", data)
-console.log("event", ev)
-socket.emit("pty-input", {"input": data})
-});
+  term.winptyCompatInit();
+  term.on('key', (key, ev) => {
+    console.log("pressed key", key)
+    console.log("event", ev)
+    socket.emit("pty-input", {"input": key})
+  });
 
   const socket = io.connect('/pty');
   const status = document.getElementById("status")
