@@ -105,7 +105,7 @@ def connect():
     if session['child_pid']:
         # already started child process, don't start another
         return
-
+    
     # create child process attached to a pty we can read from and write to
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
