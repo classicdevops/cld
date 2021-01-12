@@ -93,8 +93,8 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-    if app.config['child_pid']:
-        return
+#    if app.config['child_pid']:
+#        return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         app.config['child_pid'] = child_pid
