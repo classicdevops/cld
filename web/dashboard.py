@@ -79,7 +79,11 @@ def read_and_forward_pty_output():
 @app.route("/socket")
 def socket():
   if 'username' in session:
-    return render_template("html/socket.html")
+    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
+    random = ''
+    for c in range(8):
+       password += random.choice(chars)
+    return render_template("html/socket.html", random=random)
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
