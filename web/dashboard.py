@@ -64,8 +64,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
 
-def read_and_forward_pty_output(socketid):
-    print(socketid)
+def read_and_forward_pty_output():
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
@@ -117,7 +116,7 @@ def connect():
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
-        socketio.start_background_task(target=read_and_forward_pty_output(socketid))
+        socketio.start_background_task(target=read_and_forward_pty_output())
         print("task started")
 
 
