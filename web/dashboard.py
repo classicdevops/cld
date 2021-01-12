@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
 from flask_session import Session
+from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -25,7 +26,9 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 #FLASKSECRETKEY = bash('grep FLASKSECRETKEY /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 
+async_mode = None
 app = Flask(__name__, template_folder=template_dir)
+socket_ = SocketIO(app, async_mode=async_mode)
 app.config['UPLOAD_FOLDER'] = upload_dir
 #app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -670,4 +673,5 @@ def backendgitpull():
 
 if __name__ == '__main__':
 #    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    #app.run(debug=True, host='0.0.0.0', port=8080)
+    socket_.run(app, debug=True, host='0.0.0.0', port=8080)
