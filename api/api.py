@@ -20,7 +20,7 @@ def remoteaddr():
     remote_addr = request.headers.getlist("X-Forwarded-For")[0]
   else:
     remote_addr = request.remote_addr
-  return re.match("[A-z0-9.:]+", remote_addr).string
+  return re.match("[A-z0-9.:]+", remote_addr)[0]
 
 def accesslist():
   return bash("awk '{print $2}' /etc/hosts.allow").split('\n')
