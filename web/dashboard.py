@@ -107,6 +107,8 @@ def connect():
         session['fd'] = fd
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
+        sid=request.args.get('sid')
+        print(sid, flush=True)
         app.config['fd'] = fd
         session['fd'] = fd
         print("fd session is", session['fd'], flush=True)
