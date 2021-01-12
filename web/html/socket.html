@@ -27,22 +27,20 @@
 
 <script>
   Terminal.applyAddon(fullscreen)
-  Terminal.applyAddon(fit)
+  //Terminal.applyAddon(fit)
   Terminal.applyAddon(webLinks)
   Terminal.applyAddon(search)
-  Terminal.applyAddon(attach);
-  Terminal.applyAddon(winptyCompat);
   const term = new Terminal({
         cursorBlink: true,
         macOptionIsMeta: true,
         scrollback: true,
     });
   term.open(document.getElementById('terminal'));
-  term.fit()
+  //term.fit()
   term.resize(15, 50)
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
-  term.fit()
+  //term.fit()
     // No idea what this does
   term.winptyCompatInit();
   term.on('key', (key, ev) => {
@@ -76,7 +74,7 @@
   })
 
   function fitToscreen(){
-    term.fit()
+    //term.fit()
     socket.emit("resize", {"cols": term.cols, "rows": term.rows})
   }
 
