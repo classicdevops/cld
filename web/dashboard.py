@@ -93,15 +93,15 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-#    if session['child_pid']:
+#    if app.config['child_pid']:
 #        return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        session['child_pid'] = child_pid
+        app.config['child_pid'] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         app.config["fd"] = fd
-        session['child_pid'] = child_pid
+        app.config['child_pid'] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "/bin/bash"
         print("child pid is", child_pid)
