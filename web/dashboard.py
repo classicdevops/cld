@@ -64,7 +64,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
 
-def read_and_forward_pty_output():
+def read_and_forward_pty_output(socketid):
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
