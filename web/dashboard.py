@@ -102,9 +102,9 @@ def connect():
   if 'username' in session:
     """new client connected"""
     #session['child_pid'] = ''
-    if session['child_pid']:
+    #if session['child_pid']:
         # already started child process, don't start another
-        return
+     #   return
     
     # create child process attached to a pty we can read from and write to
     (child_pid, fd) = pty.fork()
