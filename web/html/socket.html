@@ -7,7 +7,7 @@
     font-family: arial;
   }
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/xterm@3.6.0/dist/xterm.css" />
+  <link rel="stylesheet" href="https://unpkg.com/xterm@4.9.0/css/xterm.css" />
 </head>
 <body>
 
@@ -20,11 +20,13 @@
   built by <a href="https://grassfedcode.com">Chad Smith</a> <a href="https://github.com/cs01">GitHub</a>
 </p>
 <!-- xterm -->
-<script src="https://unpkg.com/xterm@3.6.0/dist/xterm.js"></script>
+<script src="https://unpkg.com/xterm@3.6.0/li/xterm.js"></script>
 <script src="https://unpkg.com/xterm@3.6.0/dist/addons/fit/fit.js"></script>
 <script src="https://unpkg.com/xterm@3.6.0/dist/addons/webLinks/webLinks.js"></script>
 <script src="https://unpkg.com/xterm@3.6.0/dist/addons/fullscreen/fullscreen.js"></script>
 <script src="https://unpkg.com/xterm@3.6.0/dist/addons/search/search.js"></script>
+<script src="https://unpkg.com/browse/xterm@3.6.0/dist/addons/attach/attach.js"></script>
+<script src="https://unpkg.com/browse/xterm@3.6.0/dist/addons/winptyCompat/winptyCompat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
 
 <script>
@@ -32,6 +34,8 @@
   Terminal.applyAddon(fit)
   Terminal.applyAddon(webLinks)
   Terminal.applyAddon(search)
+  Terminal.applyAddon(attach);
+  Terminal.applyAddon(winptyCompat);
   const term = new Terminal({
         cursorBlink: true,
         macOptionIsMeta: true,
