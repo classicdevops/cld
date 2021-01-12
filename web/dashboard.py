@@ -102,32 +102,32 @@ def connect():
   if 'username' in session:
     """new client connected"""
     #session['child_pid'] = ''
-#    if session['child_pid']:
-#        # already started child process, don't start another
-#        return
+    if session['child_pid']:
+        # already started child process, don't start another
+        return
 
     # create child process attached to a pty we can read from and write to
-        (child_pid, fd) = pty.fork()
- #   if child_pid == 0:
+    (child_pid, fd) = pty.fork()
+    if child_pid == 0:
         # this is the child process fork.
         # anything printed here will show up in the pty, including the output
         # of this subprocess
         session['child_pid'] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
- #   else:
+    else:
         # this is the parent process fork.
         # store child fd and pid
-#        app.config["fd"] = fd
-#        session['child_pid'] = child_pid
-#        set_winsize(fd, 50, 50)
-#        cmd = "/bin/bash"
-#        print("child pid is", child_pid)
-#        print(
-#            f"starting background task with command `{cmd}` to continously read "
-#            "and forward pty output to client"
-#        )
-#        socketio.start_background_task(target=read_and_forward_pty_output)
-#        print("task started")
+        app.config["fd"] = fd
+        session['child_pid'] = child_pid
+        set_winsize(fd, 50, 50)
+        cmd = "/bin/bash"
+        print("child pid is", child_pid)
+        print(
+            f"starting background task with command `{cmd}` to continously read "
+            "and forward pty output to client"
+        )
+        socketio.start_background_task(target=read_and_forward_pty_output)
+        print("task started")
 
 
 
