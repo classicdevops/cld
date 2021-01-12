@@ -51,6 +51,12 @@
     socket.emit("pty-input", {"input": key})
   });
 
+  term.on('paste', (data, ev) => {
+    console.log("pressed key", key)
+    console.log("event", ev)
+    socket.emit("pty-input", {"input": data})
+  });
+
   const socket = io.connect('/pty');
   const status = document.getElementById("status")
 
