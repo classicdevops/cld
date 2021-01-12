@@ -66,7 +66,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 
 def read_and_forward_pty_output(socketid):
     print("readwrIS: "+socketid, shell=True)
-    print("readwrFD: "+str(app.config[socketid]), shell=True)
+    #print("readwrFD: "+str(app.config[socketid]), shell=True)
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
