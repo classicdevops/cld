@@ -23,7 +23,7 @@ def remoteaddr():
   return re.match("[A-z0-9.:]+", remote_addr)[0]
 
 def accesslist():
-  return bash("awk '{print $2}' /etc/hosts.allow").split('\n')
+  return bash("cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq").split('\n')
 
 try:
   tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
