@@ -116,7 +116,7 @@ def connect():
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
-        socketio.start_background_task(read_and_forward_pty_output)
+        socketio.start_background_task(read_and_forward_pty_output, socketid)
         print("task started")
 
 
