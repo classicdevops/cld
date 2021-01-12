@@ -57,7 +57,6 @@ def remoteaddr():
 
 
 #socketio
-session["fd"] = None
 def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
@@ -78,6 +77,7 @@ def read_and_forward_pty_output():
 @app.route("/socket")
 def socket():
   if 'username' in session:
+    session["fd"] = None
     return render_template("html/socket.html")
 
 @socketio.on("pty-input", namespace="/pty")
