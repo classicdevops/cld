@@ -27,7 +27,7 @@
 
 <script>
   Terminal.applyAddon(fullscreen)
-  //Terminal.applyAddon(fit)
+  Terminal.applyAddon(fit)
   Terminal.applyAddon(webLinks)
   Terminal.applyAddon(search)
   const term = new Terminal({
@@ -36,13 +36,11 @@
         scrollback: true,
     });
   term.open(document.getElementById('terminal'));
-  //term.fit()
+  term.fit()
   term.resize(15, 50)
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
-  //term.fit()
-    // No idea what this does
-  term.winptyCompatInit();
+  term.fit()
   term.on('key', (key, ev) => {
     console.log("pressed key", key)
     console.log("event", ev)
@@ -74,7 +72,7 @@
   })
 
   function fitToscreen(){
-    //term.fit()
+    term.fit()
     socket.emit("resize", {"cols": term.cols, "rows": term.rows})
   }
 
