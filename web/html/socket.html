@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>pyxterm.js</title>
+  <title>Classic deploy web shell</title>
   <style>
   html {
     font-family: arial;
@@ -11,14 +11,10 @@
 </head>
 <body>
 
-<span style="font-size: 1.4em;">pyxterm.js</span>&nbsp;&nbsp;&nbsp;
+<span style="font-size: 1.4em;">Classic deploy web shell</span>&nbsp;&nbsp;&nbsp;
 <span style="font-size: small;">status: <span style="font-size: small;" id="status">connecting...</span></span>
 
 <div style="width: 100%; height: calc(100% - 50px);" id="terminal"></div>
-
-<p style="text-align: right; font-size: small;">
-  built by <a href="https://grassfedcode.com">Chad Smith</a> <a href="https://github.com/cs01">GitHub</a>
-</p>
 <!-- xterm -->
 <script src="https://unpkg.com/xterm@3.6.0/dist/xterm.js"></script>
 <script src="https://unpkg.com/xterm@3.6.0/dist/addons/fit/fit.js"></script>
@@ -40,7 +36,6 @@
         cursorBlink: true,
         macOptionIsMeta: true,
         scrollback: true,
-        clipBoard: true,
     });
   term.open(document.getElementById('terminal'));
   term.fit()
@@ -49,13 +44,18 @@
   // term.toggleFullScreen(true)
   term.fit()
     // No idea what this does
-  term.winptyCompatInit();
-  term.write("Welcome to pyxterm.js!\nhttps://github.com/cs01/pyxterm.js\n")
-  term.on('key', (key, ev) => {
-    console.log("pressed key", key)
-    console.log("event", ev)
-    socket.emit("pty-input", {"input": key})
-  });
+term.winptyCompatInit();
+term.on('key', (key, ev) => {
+console.log("pressed key", key)
+console.log("event", ev)
+socket.emit("pty-input", {"input": key})
+});
+
+term.on('paste', function (data, ev) => {
+console.log("pasted data", data)
+console.log("event", ev)
+socket.emit("pty-input", {"input": data})
+});
 
   const socket = io.connect('/pty');
   const status = document.getElementById("status")
