@@ -101,11 +101,11 @@ def connect():
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         app.config['fd'] = fd
-        print("fd pid is", fd)
+        print("fd pid is", fd, flush=True)
         session['child_pid'] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
-        print("child pid is", child_pid)
+        print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
         socketio.start_background_task(target=read_and_forward_pty_output)
         print("task started")
