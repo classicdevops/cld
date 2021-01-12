@@ -73,7 +73,7 @@
 
   function fitToscreen(){
     term.fit()
-    socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+    socket.emit("resize", {"cols": term.cols, "rows": term.rows, query: 'socketid={{socketid}}'})
   }
 
   function debounce(func, wait_ms) {
