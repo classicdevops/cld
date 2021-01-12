@@ -66,8 +66,8 @@ for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
 exec(bash('''
 for CLD_FILE in $(find /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -name 'cld-*')
 do
-CLD_MODULE=$(cut -d / -f 5 <<< ${CLD_FILE})
-CLD_UTIL=$(cut -d / -f 7 <<< ${CLD_FILE})
+CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
+CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
 cat << EOL
 @app.route('/${CLD_UTIL}')
 def cmd_${CLD_UTIL//-/_}():
