@@ -12,7 +12,7 @@
 <body style="background: black;">
 
 <span style="font-size: small;color: white;">classic deploy web shell</span>&nbsp;&nbsp;&nbsp;
-<span style="font-size: small;color: white;">status: <span style="font-size: small;" id="status">connecting...</span></span>
+<span style="font-size: small;color: white;">status: <span style="font-size: small;" id="status">| connecting... |</span></span>
 
 <div style="width: 100%; height: calc(100% - 50px);" id="terminal"></div>
 <!-- xterm -->
@@ -63,12 +63,12 @@
 
   socket.on("connect", () => {
     fitToscreen()
-    status.innerHTML = '<span style="background-color: lightgreen;">connected</span>'
+    status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
     }
   )
 
   socket.on("disconnect", () => {
-    status.innerHTML = '<span style="background-color: #ff8383;">disconnected</span>'
+    status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
   })
 
   function fitToscreen(){
