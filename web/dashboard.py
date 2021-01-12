@@ -22,12 +22,12 @@ logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-FLASKSECRETKEY = bash('grep FLASKSECRETKEY /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
+#FLASKSECRETKEY = bash('grep FLASKSECRETKEY /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 
 app = Flask(__name__, template_folder=template_dir)
 app.config['UPLOAD_FOLDER'] = upload_dir
-app.secret_key = FLASKSECRETKEY
+#app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 #accesslist = set(line.strip() for line in open('../creds/accesslist'))
