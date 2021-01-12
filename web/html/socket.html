@@ -50,7 +50,7 @@
   term.on('paste', (data, ev) => {
     console.log("pasted data", data)
     console.log("event", ev)
-    socket.emit("pty-input", {"input": data}, {query: '{{socketid}}'})
+    socket.emit("pty-input", {"input": data}, {query: 'socketid={{socketid}}'})
   });
 
   const socket = io.connect('/pty', {query: 'socketid={{socketid}}'});

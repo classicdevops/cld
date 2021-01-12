@@ -89,7 +89,7 @@ def socket():
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data,socketid):
 #    socketid=request.args.get('socketid')
-    print("ptyinputID: "+socketid, flush=True)
+    print("ptyinputID: "+socketid['socketid'], flush=True)
     if app.config['fd']:
         os.write(app.config['fd'], data["input"].encode())
 
