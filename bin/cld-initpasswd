@@ -72,7 +72,7 @@ do
 if [ "$CLD_MODULE" == "cld" ]; then
 ls /var/cld/bin/* -pd  | grep -v include
 elif [ "$CLD_MODULE" == "cm"  -o "$CLD_MODULE" == "deploy" ]; then
-ls /var/cld/${$CLD_MODULE}/bin/* -pd  | grep -v include
+ls /var/cld/${CLD_MODULE}/bin/* -pd  | grep -v include
 else
 ls /var/cld/modules/${CLD_MODULE}/bin/* -pd 2>/dev/null | grep -v include
 fi
