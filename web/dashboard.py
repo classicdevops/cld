@@ -88,6 +88,8 @@ def socket():
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
+    socketid=request.args.get('socketid')
+    print("ptyinput: "+socketid, flush=True)
     if app.config['fd']:
         os.write(app.config['fd'], data["input"].encode())
 
@@ -109,6 +111,7 @@ def connect():
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         app.config['fd'] = fd
+        app.config[socketid] = fd
         session['fd'] = fd
         print("fd session is", session['fd'], flush=True)
         print("fd pid is", fd, flush=True)
