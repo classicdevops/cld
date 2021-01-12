@@ -1,4 +1,35 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Main cloud manager KVM create utility - if some required arguments is not enough will activate interactive mode
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--os=CENTOS8                       Operational system - CENTOS6/7/8 DEBIAN9/10 UBUNTU16/18 FEDORA28 FREEBSD
+--template=sentry                  Template application name - blank if clean install is required                        
+--name=srv1.example.com            Name of new kvm instance
+--cpu=2                            Amount of CPU Cores
+--ram=2                            Amount of RAM in GB
+--disk=20                          Amount of Disk space in GB
+--ip=1.2.3.4                       IPv4 address
+--mac=00:00:06:00:00:00            MAC address - leave it blank to generate automatically
+--gate=1.2.3.1                     Gateway address for your IPv4 IP address
+--netmask=255.255.255.0            Netmask
+--id=10001						   Internal PVE KVM id should not be the same as any existing KVM for all you hypervisors
+--password=Y0uRpA5Sw0Rd            Password for root user of the KVM
+--storage=zfs01                    PVE storage on the target hypervisor
+--storagetype=zfs                  Storage type - zfs/lvm/qcow2
+--autologin=0                      Autologin to root user for serial consone - 0 is disabled - 1 is enabled
+--privatenet=172.16.0.0/24         Private net filter for private network KVM device
+--hyper=HPR-dc-1-n0000001          Hypervisor full cld string or pattern
+--debug                            Debug mode - if flag exist will list command and exit without execution
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-cmcreate #CLI
+cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cpu=2 --ram=2 --disk=20 --ip=1.2.3.4 --gate=1.2.3.1 
+--id=10001 --storage=zfs01
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 source /var/cld/cm/bin/include/bot
