@@ -99,6 +99,7 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
+  if 'username' in session:
     """new client connected"""
     #session['child_pid'] = ''
 #    if session['child_pid']:
