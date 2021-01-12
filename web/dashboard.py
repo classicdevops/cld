@@ -77,6 +77,7 @@ def read_and_forward_pty_output():
 
 @app.route("/socket")
 def socket():
+  if 'username' in session:
     return render_template("html/socket.html")
 
 
