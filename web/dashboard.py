@@ -88,8 +88,6 @@ def socket():
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
-#    socketid=request.args.get('socketid')
-#    print("ptyinput: "+socketid, flush=True)
     if app.config['fd']:
         os.write(app.config['fd'], data["input"].encode())
 
@@ -101,9 +99,7 @@ def resize(data):
 @socketio.on("connect", namespace="/pty")
 def connect():
     socketid=request.args.get('socketid')
-    sid=request.args.get('sid')
     print(socketid, flush=True)
-    print(sid, flush=True)
 #    if session['child_pid']:
 #        return
     (child_pid, fd) = pty.fork()
