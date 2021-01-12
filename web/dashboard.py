@@ -97,7 +97,7 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-    print(request.args.get('foo'), flush=True)
+    print(request.args.get('socketid'), flush=True)
 #    if session['child_pid']:
 #        return
     (child_pid, fd) = pty.fork()
