@@ -68,11 +68,11 @@ def read_and_forward_pty_output():
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
-        if app.config["fd"]:
+        if session['fd']:
             timeout_sec = 0
-            (data_ready, _, _) = select.select([app.config["fd"]], [], [], timeout_sec)
+            (data_ready, _, _) = select.select([session['fd']], [], [], timeout_sec)
             if data_ready:
-                output = os.read(app.config["fd"], max_read_bytes).decode()
+                output = os.read(session['fd'], max_read_bytes).decode()
                 socketio.emit("pty-output", {"output": output}, namespace="/pty")
 
 
@@ -83,25 +83,25 @@ def socket():
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
-    if app.config["fd"]:
-        os.write(app.config["fd"], data["input"].encode())
+    if session['fd']:
+        os.write(session['fd'], data["input"].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
-    if app.config["fd"]:
-        set_winsize(app.config["fd"], data["rows"], data["cols"])
+    if session['fd']:
+        set_winsize(session['fd'], data["rows"], data["cols"])
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-#    if app.config['child_pid']:
+#    if session['child_pid']:
 #        return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        app.config['child_pid'] = child_pid
+        session['child_pid'] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
-        app.config["fd"] = fd
-        app.config['child_pid'] = child_pid
+        session['fd'] = fd
+        session['child_pid'] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "/bin/bash"
         print("child pid is", child_pid)
