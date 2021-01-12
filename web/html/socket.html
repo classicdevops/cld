@@ -48,6 +48,8 @@
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
   term.fit()
+    // No idea what this does
+  term.winptyCompatInit();
   term.write("Welcome to pyxterm.js!\nhttps://github.com/cs01/pyxterm.js\n")
   term.on('key', (key, ev) => {
     console.log("pressed key", key)
