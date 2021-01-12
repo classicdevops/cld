@@ -52,7 +52,7 @@
   });
 
   term.on('paste', (data, ev) => {
-    console.log("pressed key", key)
+    console.log("pasted data", data)
     console.log("event", ev)
     socket.emit("pty-input", {"input": data})
   });
