@@ -65,7 +65,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 
 
 def read_and_forward_pty_output(socketid):
-    print("readrwID: "dir(socketid), flush=True)
+    print("readrwID: "+socketid, flush=True)
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
@@ -89,7 +89,7 @@ def socket():
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data,socketid):
 #    socketid=request.args.get('socketid')
-    print("ptyinputID: "+query['socketid'], flush=True)
+    print("ptyinputID: "+dir(socketid), flush=True)
     if app.config['fd']:
         os.write(app.config['fd'], data["input"].encode())
 
