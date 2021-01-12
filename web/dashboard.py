@@ -111,6 +111,7 @@ def connect():
         # this is the child process fork.
         # anything printed here will show up in the pty, including the output
         # of this subprocess
+        session['child_pid'] = child_pid
         subprocess.run("/bin/bash")
     else:
         # this is the parent process fork.
