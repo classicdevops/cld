@@ -97,7 +97,7 @@ def connect():
         return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        session['child_pid'] = child_pid
+        app.config['child_pid'] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=true)
     else:
         app.config["fd"] = fd
