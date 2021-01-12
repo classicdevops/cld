@@ -101,7 +101,7 @@ def resize(data):
 @socketio.on("connect", namespace="/pty")
 def connect():
     socketid=request.args.get('socketid')
-    socketid=request.args.get('sid')
+    sid=request.args.get('sid')
     print(socketid, flush=True)
     print(sid, flush=True)
 #    if session['child_pid']:
