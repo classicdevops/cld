@@ -101,7 +101,7 @@ def connect():
         subprocess.run("TERM=xterm /bin/bash", shell=true)
     else:
         app.config["fd"] = fd
-        session['child_pid'] = child_pid
+        app.config['child_pid'] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "/bin/bash"
         print("child pid is", child_pid)
