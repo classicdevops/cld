@@ -57,8 +57,8 @@ def remoteaddr():
 
 
 #socketio
-app.config["fd"] = None
-app.config["child_pid"] = None
+#app.config["fd"] = None
+#app.config["child_pid"] = None
 def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
