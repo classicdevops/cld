@@ -69,10 +69,10 @@ then
 $(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
 $(for CLD_MODULE in $(tr ',' '\n' <<< ${USER_MODULES})
 do
-if [ "$CLD_MODULE" == "cm" ]; then
-ls /var/cld/cm/bin/* -pd  | grep -v include
-elif [ "$CLD_MODULE" == "deploy" ]; then
-ls /var/cld/deploy/bin/* -pd | grep -v include
+if [ "$CLD_MODULE" == "cld" ]; then
+ls /var/cld/bin/* -pd  | grep -v include
+elif [ "$CLD_MODULE" == "cm"  -o "$CLD_MODULE" == "deploy"]; then
+ls /var/cld/${$CLD_MODULE}/bin/* -pd  | grep -v include
 else
 ls /var/cld/modules/${CLD_MODULE}/bin/* -pd 2>/dev/null | grep -v include
 fi
