@@ -95,13 +95,13 @@ def resize(data):
 def connect():
 #    if session['child_pid']:
 #        return
-    print("fd pid is", fd)
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         session['child_pid'] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         app.config['fd'] = fd
+        print("fd pid is", fd)
         session['child_pid'] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
