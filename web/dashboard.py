@@ -86,7 +86,7 @@ def login():
       username = session['username']
       return 'Logged in as ' + username + '<br>' + \
       "<b><a href = '/logout'>click here to log out</a></b>"
-  return render_template('html/login.html',) 
+  return render_template('html/login.html') 
 #   return '''
 #    <form action = "/login" method = "post">
 # <input type=text name="username"><br>
