@@ -124,9 +124,9 @@ def connect():
       testrun = exec('testrun = session["run'+socketid+'"]')
     except:
       pass
-    if testrun == "1":
-      exec("child_pid = session['child"+socketid+"']")
-      exec("fd = session['"+socketid+"']")
+    if "run"+socketid in session["shell"]:
+      child_pid = session["shell"]["child"+socketid]
+      fd = session["shell"][+socketid]
       return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
@@ -136,14 +136,14 @@ def connect():
         exec("session['"+socketid+"'] = fd")
         session["shell"][socketid] = fd
         print("fd pid is", fd, flush=True)
-        exec("session['child"+socketid+"'] = child_pid")
+        session["shell"]["child"+socketid] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
         socketio.start_background_task(read_and_forward_pty_output, socketid, session["shell"][socketid])
         print("task started")
-        exec('session["run'+socketid+'"] = "1"')
+        session["shell"]["run"+socketid] = "1"
 
 
 # def sessionparse(value):
