@@ -108,10 +108,7 @@ def connect():
     socketid=request.args.get('socketid')
     print(socketid, flush=True)
     testrun = ''
-    try:
       testrun = exec('testrun = session["run'+socketid+'"]')
-    except:
-      pass
     if testrun == "1":
       exec("child_pid = session['child"+socketid+"']")
       exec("fd = session['"+socketid+"']")
@@ -131,7 +128,6 @@ def connect():
         exec("socketio.start_background_task(read_and_forward_pty_output, socketid, session['"+socketid+"'])")
         print("task started")
         exec('session["run'+socketid+'"] = "1"')
-        print("sessrunIS: "+ str(exec('session["run'+socketid+'"]')))
 
 
 # def sessionparse(value):
