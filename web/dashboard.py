@@ -110,8 +110,8 @@ def resize(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     print("resizeID: "+socketid, flush=True)
-    exec('''if session["'''+socketid+'''"]:
-        set_winsize(session["'''+socketid+'''"], data["rows"], data["cols"])''')
+    if socketid in session:
+        exec('''set_winsize(session["'''+socketid+'''"], data["rows"], data["cols"])''')
 
 @socketio.on("connect", namespace="/pty")
 def connect():
