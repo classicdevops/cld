@@ -132,7 +132,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         session["shell"]["child"+socketid] = child_pid
-        subprocess.run("TERM=xterm sudo -u "+user+" "+shellcmd, shell=True)
+        subprocess.run("/usr/bin/sudo -u "+user+" "+shellcmd, shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
         session["shell"][socketid] = fd
