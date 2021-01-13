@@ -101,18 +101,17 @@ def read_and_forward_pty_output(socketid, sessfd):
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-    print("ptyinputID: "+socketid, flush=True)
+#    print("ptyinputID: "+socketid, flush=True)
     if socketid in session:
-#        exec('''os.write(session["'''+socketid+'''"], data["input'''+socketid+'''"].encode())''')
         os.write(session["shell"][socketid], data["input"+socketid].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-    print("resizeID: "+socketid, flush=True)
+#    print("resizeID: "+socketid, flush=True)
     if socketid in session:
-        exec('''set_winsize(session["'''+socketid+'''"], data["rows"], data["cols"])''')
+        set_winsize(session["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("connect", namespace="/pty")
 def connect():
@@ -120,28 +119,20 @@ def connect():
     socketid=request.args.get('socketid')
     if "shell" not in session:
       session["shell"] = {}
-    testrun = ''
-    try:
-      testrun = exec('testrun = session["run'+socketid+'"]')
-    except:
-      pass
     if "run"+socketid in session["shell"]:
       child_pid = session["shell"]["child"+socketid]
       fd = session["shell"][+socketid]
       return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        exec("session['child"+socketid+"'] = child_pid")
         session["shell"]["child"+socketid] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
         session["shell"][socketid] = fd
-        print("fd pid is", fd, flush=True)
         session["shell"]["child"+socketid] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
-        print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
         socketio.start_background_task(read_and_forward_pty_output, socketid, session["shell"][socketid])
         print("task started")
