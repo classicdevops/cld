@@ -86,7 +86,6 @@ def socket():
     return render_template("html/socket.html", socketid=socketid)
 
 def read_and_forward_pty_output(socketid, sessfd):
-    print("readrwID: "+socketid, flush=True)
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
