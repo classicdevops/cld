@@ -63,6 +63,14 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
+@app.route("/socket")
+def socket():
+  if 'username' in session:
+    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
+    socketid = ''
+    for c in range(8):
+       socketid += random.choice(chars)
+    return render_template("html/socket.html", socketid=socketid)
 
 def read_and_forward_pty_output(socketid, sessfd):
     print("readrwID: "+socketid, flush=True)
@@ -75,16 +83,6 @@ def read_and_forward_pty_output(socketid, sessfd):
             if data_ready:
                 output = os.read(sessfd, max_read_bytes).decode()
                 exec('socketio.emit("pty-output", {"output'+socketid+'": output}, namespace="/pty")')
-
-
-@app.route("/socket")
-def socket():
-  if 'username' in session:
-    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
-    socketid = ''
-    for c in range(8):
-       socketid += random.choice(chars)
-    return render_template("html/socket.html", socketid=socketid)
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
@@ -106,7 +104,6 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
-    print(socketid, flush=True)
     testrun = ''
     try:
       testrun = exec('testrun = session["run'+socketid+'"]')
