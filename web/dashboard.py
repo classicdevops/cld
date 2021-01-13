@@ -115,6 +115,7 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
+    print(socketid, shell=True)
     if "shell" not in session:
       session["shell"] = {}
     if "run"+socketid in session["shell"]:
