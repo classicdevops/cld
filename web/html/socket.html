@@ -44,13 +44,13 @@
   term.on('key', (key, ev) => {
     console.log("pressed key", key)
     console.log("event", ev)
-    socket.emit("pty-input", {"input": key, query: 'socketid={{socketid}}'})
+    socket.emit("pty-input", {"input{{socketid}}": key, query: 'socketid={{socketid}}'})
   });
 
   term.on('paste', (data, ev) => {
     console.log("pasted data", data)
     console.log("event", ev)
-    socket.emit("pty-input", {"input": data, query: 'socketid={{socketid}}'})
+    socket.emit("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
   });
 
   const socket = io.connect('/pty', {query: 'socketid={{socketid}}'});
@@ -58,7 +58,7 @@
 
   socket.on("pty-output", function(data){
     console.log("new output", data)
-    term.write(data.output)
+    term.write(data.output{{socketid}})
   })
 
   socket.on("connect", () => {

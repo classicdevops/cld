@@ -74,7 +74,7 @@ def read_and_forward_pty_output(socketid, sessfd):
             (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
             if data_ready:
                 output = os.read(sessfd, max_read_bytes).decode()
-                socketio.emit("pty-output", {"output": output}, namespace="/pty")
+                exec('socketio.emit("pty-output", {"output'+socketid+'": output}, namespace="/pty")')
 
 
 @app.route("/socket")
@@ -91,7 +91,7 @@ def pty_input(data):
     socketid=request.args.get('socketid')
     print("ptyinputID: "+socketid, flush=True)
     exec('''if session["'''+socketid+'''"]:
-        os.write(session["'''+socketid+'''"], data["input"].encode())''')
+        os.write(session["'''+socketid+'''"], data["input'''+socketid+'''"].encode())''')
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
