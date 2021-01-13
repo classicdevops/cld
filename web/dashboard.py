@@ -104,7 +104,7 @@ def resize(data):
 def connect():
     socketid=request.args.get('socketid')
     print(socketid, flush=True)
-    exec('''if session["run'''+socketid+'''"] = "1":
+    exec('''if session["run'''+socketid+'''"] == "1":
         return''')
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
