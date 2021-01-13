@@ -112,7 +112,9 @@ def connect():
       testrun = exec('testrun = session["run'+socketid+'"]')
     except:
       pass
-    if testrun:
+    if testrun == "1":
+      exec("child_pid = session['child"+socketid+"']")
+      exec("fd = session['"+socketid+"']")
       return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
