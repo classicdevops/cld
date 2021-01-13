@@ -117,6 +117,8 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
+    if "shell" not in session:
+      session["shell"] = {}
     testrun = ''
     try:
       testrun = exec('testrun = session["run'+socketid+'"]')
