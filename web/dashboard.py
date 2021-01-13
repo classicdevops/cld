@@ -133,9 +133,8 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         session["shell"]["child"+socketid] = child_pid
-        subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True)
+        subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, check=True)
     else:
-        exec("session['"+socketid+"'] = fd")
         session["shell"][socketid] = fd
         session["shell"]["child"+socketid] = child_pid
         set_winsize(fd, 50, 50)
