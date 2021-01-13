@@ -104,23 +104,23 @@ def resize(data):
 def connect():
     socketid=request.args.get('socketid')
     print(socketid, flush=True)
-#    if session['child_pid']:
-#        return
+    exec('''if session["run'''+socketid+'''"] = "1":
+        return''')
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        session['child_pid'] = child_pid
+        exec("session['child"+socketid+"'] = child_pid")
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
         print("fd pid is", fd, flush=True)
-        session['child_pid'] = child_pid
+        exec("session['child"+socketid+"'] = child_pid")
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
         exec("socketio.start_background_task(read_and_forward_pty_output, socketid, session['"+socketid+"'])")
         print("task started")
-
+        exec('''session["run'''+socketid+'''"] = "1"''')
 
 
 # def sessionparse(value):
