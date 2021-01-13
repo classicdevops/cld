@@ -33,7 +33,7 @@
   const term = new Terminal({
         cursorBlink: false,
         macOptionIsMeta: true,
-        scrollback: true,
+        scrollback: 9999999,
     });
   term.open(document.getElementById('terminal'));
   term.fit()
