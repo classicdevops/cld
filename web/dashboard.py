@@ -60,7 +60,7 @@ def remoteaddr():
 #app.config["fd"] = None
 #app.config["child_pid"] = None
 def set_winsize(fd, row, col, xpix=0, ypix=0):
-    winsize = struct.pack("HHHH", row, col, xpix, ypix)
+    winsize = struct.pack("HHHH", 150, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
 @app.route("/tool/<cldutility>")
