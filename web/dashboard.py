@@ -115,6 +115,13 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
+    cldutility=''
+    try: cldutility=request.args.get('cldutility')
+    except: pass
+    user = session["username"]
+    if cldutility == '': shellcmd = '/bin/bash'
+    else: shellcmd = bash("grep '\ cld=' /home/"+user+"/.bashrc | cut -d \' -f 2")
+    if shellcmd == "": return
     print(socketid, flush=True)
     if "shell" not in session:
       session["shell"] = {}
@@ -125,7 +132,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         session["shell"]["child"+socketid] = child_pid
-        subprocess.run("TERM=xterm /bin/bash", shell=True)
+        subprocess.run("TERM=xterm sudo -u "+user+" "+shellcmd, shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
         session["shell"][socketid] = fd
