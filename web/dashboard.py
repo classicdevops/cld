@@ -71,7 +71,7 @@ def read_and_forward_pty_output(socketid):
         socketio.sleep(0.01)
         if app.config['fd']:
             timeout_sec = 0
-            (data_ready, _, _) = exec(select.select([exec('''app.config['fd']''')], [], [], timeout_sec))
+            (data_ready, _, _) = select.select([exec('''app.config['fd']''')], [], [], timeout_sec)
             if data_ready:
                 output = os.read(app.config['fd'], max_read_bytes).decode()
                 socketio.emit("pty-output", {"output": output}, namespace="/pty")
