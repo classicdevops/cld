@@ -95,11 +95,12 @@ def socket():
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid)
 
-def read_and_forward_pty_output(socketid, sessfd):
+def read_and_forward_pty_output(socketid, sessfd, child_pid):
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
-        if check_pid(session["shell"]["child"+socketid]) != True:
+        if check_pid(child_pid) != True:
+            print("exit due child pid not exist", flush=True)
             return sys.exit(0)
         if sessfd:
             timeout_sec = 0
@@ -149,7 +150,7 @@ def connect():
         session["shell"][socketid] = fd
         session["shell"]["child"+socketid] = child_pid
         set_winsize(fd, 50, 50)
-        socketio.start_background_task(read_and_forward_pty_output, socketid, session["shell"][socketid])
+        socketio.start_background_task(read_and_forward_pty_output, socketid, fd, child_pid)
         session["shell"]["run"+socketid] = "1"
 
 
