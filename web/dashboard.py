@@ -125,7 +125,7 @@ def connect():
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
         exec("socketio.start_background_task(read_and_forward_pty_output, socketid, session['"+socketid+"'])")
         print("task started")
-        exec('''session["run'''+socketid+'''"] = "1"''')
+        exec('session["run'+socketid+'"] = "1"')
 
 
 # def sessionparse(value):
