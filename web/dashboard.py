@@ -36,7 +36,7 @@ DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replac
 
 #async_mode = None
 app = Flask(__name__, template_folder=template_dir)
-socketio = SocketIO(app,)
+socketio = SocketIO(app, cors_allowed_origins=dev-panel.classicdeploy.com)
 app.config['UPLOAD_FOLDER'] = upload_dir
 #app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
