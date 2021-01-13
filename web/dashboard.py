@@ -66,11 +66,15 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 @app.route("/tool/<cldutility>")
 def tool():
   if 'username' in session:
+    try:
+        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    except:
+        pass
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     socketid = ''
     for c in range(8):
        socketid += random.choice(chars)
-    return render_template("html/socket.html", socketid=socketid)
+    return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
 @app.route("/socket")
 def socket():
