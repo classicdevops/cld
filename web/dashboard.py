@@ -69,7 +69,7 @@ def read_and_forward_pty_output(socketid, sessfd):
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
-        if session['fd']:
+        if sessfd:
             timeout_sec = 0
             (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
             if data_ready:
