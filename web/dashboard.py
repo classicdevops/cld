@@ -108,7 +108,7 @@ def connect():
     socketid=request.args.get('socketid')
     print(socketid, flush=True)
     testrun = ''
-      testrun = exec('testrun = session["run'+socketid+'"]')
+    testrun = exec('testrun = session["run'+socketid+'"]')
     if testrun == "1":
       exec("child_pid = session['child"+socketid+"']")
       exec("fd = session['"+socketid+"']")
