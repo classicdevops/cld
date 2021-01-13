@@ -88,6 +88,7 @@ def socket():
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
+  if 'username' in session:
     socketid=request.args.get('socketid')
     print("ptyinputID: "+socketid, flush=True)
     exec('''if session["'''+socketid+'''"]:
@@ -95,6 +96,7 @@ def pty_input(data):
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
+  if 'username' in session:
     socketid=request.args.get('socketid')
     print("resizeID: "+socketid, flush=True)
     exec('''if session["'''+socketid+'''"]:
@@ -102,6 +104,7 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
+  if 'username' in session:
     socketid=request.args.get('socketid')
     print(socketid, flush=True)
     testrun = ''
