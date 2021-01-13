@@ -34,9 +34,9 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 #FLASKSECRETKEY = bash('grep FLASKSECRETKEY /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 
-async_mode = None
+#async_mode = None
 app = Flask(__name__, template_folder=template_dir)
-socketio = SocketIO(app, async_mode=async_mode)
+socketio = SocketIO(app,)
 app.config['UPLOAD_FOLDER'] = upload_dir
 #app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
