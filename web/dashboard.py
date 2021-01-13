@@ -90,8 +90,8 @@ def socket():
 def pty_input(data):
     socketid=request.args.get('socketid')
     print("ptyinputID: "+socketid, flush=True)
-    if session['fd']:
-        os.write(exec('''session['fd']'''), data["input"].encode())
+    exec('''if session['fd']:
+        os.write(session['fd'], data["input"].encode())''')
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
