@@ -121,7 +121,6 @@ def connect():
     user = session["username"]
     if cldutility == '': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2''')
-    if shellcmd == "": return print("Access denied: check request is correct and access rights for the user")
     print(socketid, flush=True)
     if "shell" not in session:
       session["shell"] = {}
@@ -132,6 +131,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         session["shell"]["child"+socketid] = child_pid
+        if shellcmd == "": return print("Access denied: check request is correct and access rights for the user", flush=True)
         subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
