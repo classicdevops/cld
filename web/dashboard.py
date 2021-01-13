@@ -104,6 +104,7 @@ def resize(data):
 def connect():
     socketid=request.args.get('socketid')
     print(socketid, flush=True)
+    testrun = ''
     try:
       exec('testrun = session["run'+socketid+'"]')
     except:
