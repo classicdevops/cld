@@ -95,11 +95,11 @@ def socket():
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid)
 
-def read_and_forward_pty_output(socketid, sessfd, child_pid):
+def read_and_forward_pty_output(socketid, sessfd, subprocpid):
     max_read_bytes = 1024 * 20
     while True:
       socketio.sleep(0.01)
-      if check_pid(child_pid) != True:
+      if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           return socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
       if sessfd:
@@ -145,13 +145,15 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
-      subproc = subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
+      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
+      subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "/var/cld/web/dashboard.py" | grep "/usr/bin/sudo -u '+user+'" | grep "'+shellcmd+'" | cut -d " " -f 1 | tail -1')
+      app.config["shell"]["subprocpid"+socketid] = subprocpid
     else:
       print("child_pid is: "+str(child_pid), flush=True)
       app.config["shell"][socketid] = fd
       app.config["shell"]["child"+socketid] = child_pid
       set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, child_pid)
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, app.config["shell"]["subprocpid"+socketid])
       app.config["shell"]["run"+socketid] = "1"
 
 
