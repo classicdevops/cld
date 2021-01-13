@@ -73,7 +73,7 @@ def tool(cldutility):
         pass
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     socketid = ''
-    for c in range(8):
+    for c in range(16):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
