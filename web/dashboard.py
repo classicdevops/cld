@@ -111,7 +111,7 @@ def resize(data):
     socketid=request.args.get('socketid')
     print("resizeID: "+socketid, flush=True)
     exec('''if session["'''+socketid+'''"]:
-        set_winsize(session["'''+socketid+'''"], 150, data["cols"])''')
+        set_winsize(session["'''+socketid+'''"], data["rows"], data["cols"])''')
 
 @socketio.on("connect", namespace="/pty")
 def connect():
@@ -134,7 +134,7 @@ def connect():
         exec("session['"+socketid+"'] = fd")
         print("fd pid is", fd, flush=True)
         exec("session['child"+socketid+"'] = child_pid")
-        set_winsize(fd, 150, 50)
+        set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
