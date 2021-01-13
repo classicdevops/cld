@@ -90,15 +90,15 @@ def socket():
 def pty_input(data):
     socketid=request.args.get('socketid')
     print("ptyinputID: "+socketid, flush=True)
-    exec('''if session['fd']:
-        os.write(session['fd'], data["input"].encode())''')
+    exec('''if session["'''+socketid+'''"]:
+        os.write(session["'''+socketid+'''"], data["input"].encode())''')
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
     socketid=request.args.get('socketid')
     print("resizeID: "+socketid, flush=True)
-    if session['fd']:
-        set_winsize(session['fd'], data["rows"], data["cols"])
+    exec('''if session["'''+socketid+'''"]:
+        set_winsize(ession["'''+socketid+'''"], data["rows"], data["cols"])''')
 
 @socketio.on("connect", namespace="/pty")
 def connect():
@@ -111,14 +111,14 @@ def connect():
         session['child_pid'] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
-        session['fd'] = fd
+        exec("session['"+socketid+"'] = fd")
         print("fd pid is", fd, flush=True)
         session['child_pid'] = child_pid
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
-        socketio.start_background_task(read_and_forward_pty_output, socketid, session['fd'])
+        exec("socketio.start_background_task(read_and_forward_pty_output, socketid, session["+socketid+"])")
         print("task started")
 
 
