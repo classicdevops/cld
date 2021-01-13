@@ -101,7 +101,7 @@ def read_and_forward_pty_output(socketid, sessfd, child_pid):
         socketio.sleep(0.01)
         if check_pid(child_pid) != True:
             print("exit due child pid not exist", flush=True)
-            return sys.exit(0)
+            return socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
         if sessfd:
             timeout_sec = 0
             (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
