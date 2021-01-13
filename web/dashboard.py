@@ -113,15 +113,15 @@ def read_and_forward_pty_output(socketid, sessfd, child_pid):
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-    if socketid in session["shell"]:
-        os.write(session["shell"][socketid], data["input"+socketid].encode())
+    if socketid in app.config["shell"]:
+        os.write(app.config["shell"][socketid], data["input"+socketid].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-    if socketid in session["shell"]:
-        set_winsize(session["shell"][socketid], data["rows"], data["cols"])
+    if socketid in app.config["shell"]:
+        set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("connect", namespace="/pty")
 def connect():
@@ -137,21 +137,21 @@ def connect():
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
     print(socketid, flush=True)
     if "shell" not in session:
-      session["shell"] = {}
-    if "run"+socketid in session["shell"]:
-      child_pid = session["shell"]["child"+socketid]
-      fd = session["shell"][+socketid]
+      app.config["shell"] = {}
+    if "run"+socketid in app.config["shell"]:
+      child_pid = app.config["shell"]["child"+socketid]
+      fd = app.config["shell"][+socketid]
       return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        session["shell"]["child"+socketid] = child_pid
+        app.config["shell"]["child"+socketid] = child_pid
         subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
     else:
-        session["shell"][socketid] = fd
-        session["shell"]["child"+socketid] = child_pid
+        app.config["shell"][socketid] = fd
+        app.config["shell"]["child"+socketid] = child_pid
         set_winsize(fd, 50, 50)
         socketio.start_background_task(read_and_forward_pty_output, socketid, fd, child_pid)
-        session["shell"]["run"+socketid] = "1"
+        app.config["shell"]["run"+socketid] = "1"
 
 
 # def sessionparse(value):
