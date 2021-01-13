@@ -101,14 +101,14 @@ def read_and_forward_pty_output(socketid, sessfd):
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-    if socketid in session:
+    if socketid in session["shell"]:
         os.write(session["shell"][socketid], data["input"+socketid].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-    if socketid in session:
+    if socketid in session["shell"]:
         set_winsize(session["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("connect", namespace="/pty")
