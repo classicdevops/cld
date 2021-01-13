@@ -63,6 +63,15 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
+@app.route("/tool/<cldutility>")
+def socket():
+  if 'username' in session:
+    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
+    socketid = ''
+    for c in range(8):
+       socketid += random.choice(chars)
+    return render_template("html/socket.html", socketid=socketid)
+
 @app.route("/socket")
 def socket():
   if 'username' in session:
@@ -82,7 +91,7 @@ def read_and_forward_pty_output(socketid, sessfd):
             (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
             if data_ready:
                 output = os.read(sessfd, max_read_bytes).decode()
-                exec('socketio.emit("pty-output", {"output'+socketid+'": output}, namespace="/pty")')
+                socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
