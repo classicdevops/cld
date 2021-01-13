@@ -132,13 +132,14 @@ def connect():
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
+        session["shell"][socketid] = fd
         print("fd pid is", fd, flush=True)
         exec("session['child"+socketid+"'] = child_pid")
         set_winsize(fd, 50, 50)
         cmd = "TERM=xterm /bin/bash"
         print("child pid is", child_pid, flush=True)
         print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
-        socketio.start_background_task(read_and_forward_pty_output, socketid, exec("session['"+socketid+"']"))
+        socketio.start_background_task(read_and_forward_pty_output, socketid, session["shell"][socketid])
         print("task started")
         exec('session["run'+socketid+'"] = "1"')
 
