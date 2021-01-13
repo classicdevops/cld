@@ -64,7 +64,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
 @app.route("/tool/<cldutility>")
-def socket():
+def tool():
   if 'username' in session:
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     socketid = ''
