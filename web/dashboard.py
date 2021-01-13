@@ -147,7 +147,7 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
     else:
-      print("child_pid is: "+child_pid)
+      print("child_pid is: "+str(child_pid))
       app.config["shell"][socketid] = fd
       app.config["shell"]["child"+socketid] = child_pid
       set_winsize(fd, 50, 50)
