@@ -27,6 +27,15 @@ import shlex
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
+def check_pid(pid):
+  try:
+    os.kill(pid, 0)
+  except OSError:
+    return False
+  else:
+    return True
+
+
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
@@ -90,6 +99,8 @@ def read_and_forward_pty_output(socketid, sessfd):
     max_read_bytes = 1024 * 20
     while True:
         socketio.sleep(0.01)
+        if check_pid(session["shell"]["child"+socketid]) != True:
+            return sys.exit(0)
         if sessfd:
             timeout_sec = 0
             (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
