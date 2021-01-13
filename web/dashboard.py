@@ -95,11 +95,11 @@ def socket():
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid)
 
-def read_and_forward_pty_output(socketid, sessfd, child_pid):
+def read_and_forward_pty_output(socketid, sessfd, subprocpid):
     max_read_bytes = 1024 * 20
     while True:
       socketio.sleep(0.01)
-      if check_pid(child_pid) != True:
+      if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           return socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
       if sessfd:
@@ -136,7 +136,7 @@ def connect():
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
     print(socketid, flush=True)
-    if "shell" not in session:
+    if "shell" not in app.config
       app.config["shell"] = {}
     if "run"+socketid in app.config["shell"]:
       child_pid = app.config["shell"]["child"+socketid]
@@ -145,13 +145,14 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
-      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
+      subproc = subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
+      app.config["shell"]["procpid"+socketid] = subproc.pid
     else:
       print("child_pid is: "+str(child_pid), flush=True)
       app.config["shell"][socketid] = fd
       app.config["shell"]["child"+socketid] = child_pid
       set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, child_pid)
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, app.config["shell"]["procpid"+socketid])
       app.config["shell"]["run"+socketid] = "1"
 
 
