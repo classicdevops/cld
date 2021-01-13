@@ -103,7 +103,8 @@ def pty_input(data):
     socketid=request.args.get('socketid')
     print("ptyinputID: "+socketid, flush=True)
     if socketid in session:
-        exec('''os.write(session["'''+socketid+'''"], data["input'''+socketid+'''"].encode())''')
+#        exec('''os.write(session["'''+socketid+'''"], data["input'''+socketid+'''"].encode())''')
+        os.write(session["shell"][socketid], data["input"+socketid].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
@@ -131,6 +132,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
         exec("session['child"+socketid+"'] = child_pid")
+        session["shell"]["child"+socketid] = child_pid
         subprocess.run("TERM=xterm /bin/bash", shell=True)
     else:
         exec("session['"+socketid+"'] = fd")
