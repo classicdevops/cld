@@ -120,7 +120,7 @@ def connect():
     except: pass
     user = session["username"]
     if cldutility == '': shellcmd = '/bin/bash'
-    else: shellcmd = bash("grep '\ cld=' /home/"+user+"/.bashrc | cut -d \' -f 2")
+    else: shellcmd = bash('''grep '\ cld=' /home/'''+user+'''/.bashrc | cut -d \' -f 2''')
     if shellcmd == "": return
     print(socketid, flush=True)
     if "shell" not in session:
