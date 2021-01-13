@@ -102,8 +102,8 @@ def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     print("ptyinputID: "+socketid, flush=True)
-    exec('''if session["'''+socketid+'''"]:
-        os.write(session["'''+socketid+'''"], data["input'''+socketid+'''"].encode())''')
+    if socketid in session:
+        exec('''os.write(session["'''+socketid+'''"], data["input'''+socketid+'''"].encode())''')
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
