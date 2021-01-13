@@ -98,30 +98,30 @@ def socket():
 def read_and_forward_pty_output(socketid, sessfd, child_pid):
     max_read_bytes = 1024 * 20
     while True:
-        socketio.sleep(0.01)
-        if check_pid(child_pid) != True:
-            print("exit due child pid not exist", flush=True)
-            return socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
-        if sessfd:
-            timeout_sec = 0
-            (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
-            if data_ready:
-                output = os.read(sessfd, max_read_bytes).decode()
-                socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
+      socketio.sleep(0.01)
+      if check_pid(child_pid) != True:
+          print("exit due child pid not exist", flush=True)
+          return socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
+      if sessfd:
+          timeout_sec = 0
+          (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
+          if data_ready:
+              output = os.read(sessfd, max_read_bytes).decode()
+              socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
-        os.write(app.config["shell"][socketid], data["input"+socketid].encode())
+      os.write(app.config["shell"][socketid], data["input"+socketid].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
-        set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
+      set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("connect", namespace="/pty")
 def connect():
@@ -144,14 +144,15 @@ def connect():
       return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-        app.config["shell"]["child"+socketid] = child_pid
-        subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
+      app.config["shell"]["child"+socketid] = child_pid
+      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
     else:
-        app.config["shell"][socketid] = fd
-        app.config["shell"]["child"+socketid] = child_pid
-        set_winsize(fd, 50, 50)
-        socketio.start_background_task(read_and_forward_pty_output, socketid, fd, child_pid)
-        app.config["shell"]["run"+socketid] = "1"
+      print("child_pid is: "+child_pid)
+      app.config["shell"][socketid] = fd
+      app.config["shell"]["child"+socketid] = child_pid
+      set_winsize(fd, 50, 50)
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, child_pid)
+      app.config["shell"]["run"+socketid] = "1"
 
 
 # def sessionparse(value):
