@@ -109,7 +109,7 @@ def connect():
     print(socketid, flush=True)
     testrun = ''
     try:
-      exec('testrun = session["run'+socketid+'"]')
+      testrun = exec('testrun = session["run'+socketid+'"]')
     except:
       pass
     if testrun:
