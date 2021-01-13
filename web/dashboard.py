@@ -136,8 +136,8 @@ def connect():
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
     print(socketid, flush=True)
-    if "shell" not in app.config
-      app.config["shell"] = {}
+    try: app.config["shell"]
+    except:  app.config["shell"] = {}
     if "run"+socketid in app.config["shell"]:
       child_pid = app.config["shell"]["child"+socketid]
       fd = app.config["shell"][+socketid]
@@ -146,7 +146,6 @@ def connect():
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
       subproc = subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
-      app.config["shell"]["procpid"+socketid] = subproc.pid
     else:
       print("child_pid is: "+str(child_pid), flush=True)
       app.config["shell"][socketid] = fd
