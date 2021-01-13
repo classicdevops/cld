@@ -101,7 +101,6 @@ def read_and_forward_pty_output(socketid, sessfd):
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-#    print("ptyinputID: "+socketid, flush=True)
     if socketid in session:
         os.write(session["shell"][socketid], data["input"+socketid].encode())
 
@@ -109,7 +108,6 @@ def pty_input(data):
 def resize(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
-#    print("resizeID: "+socketid, flush=True)
     if socketid in session:
         set_winsize(session["shell"][socketid], data["rows"], data["cols"])
 
@@ -132,10 +130,7 @@ def connect():
         session["shell"][socketid] = fd
         session["shell"]["child"+socketid] = child_pid
         set_winsize(fd, 50, 50)
-        cmd = "TERM=xterm /bin/bash"
-        print(f"starting background task with command `{cmd}` to continously read and forward pty output to client")
         socketio.start_background_task(read_and_forward_pty_output, socketid, session["shell"][socketid])
-        print("task started")
         session["shell"]["run"+socketid] = "1"
 
 
