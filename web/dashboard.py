@@ -112,9 +112,6 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
               socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
       else: 
           print("exit due child pid not exist", flush=True)
-          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
-          socketio.emit("disconnect"+socketid, namespace="/pty")
-          os.kill(child_pid, 9)
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
@@ -132,6 +129,7 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
+  if app.config["shell"]["child"+socketid]: return
   if 'username' in session:
     socketid=request.args.get('socketid')
     cldutility=''
