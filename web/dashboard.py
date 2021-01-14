@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 #import json
 import re
 import os
+import psutil
 import subprocess
 #import redis
 import datetime
@@ -99,15 +100,17 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid):
     max_read_bytes = 1024 * 20
     while True:
       socketio.sleep(0.01)
-#      if check_pid(subprocpid) != True:
-#          print("exit due child pid not exist", flush=True)
-#          return socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
-      if sessfd:
-          timeout_sec = 0
-          (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
-          if data_ready:
-              output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
+      if psutil.pid_exists(subprocpid):
+        if sessfd:
+            timeout_sec = 0
+            (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
+            if data_ready:
+                output = os.read(sessfd, max_read_bytes).decode()
+                socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
+      else:
+          print("exit due child pid not exist", flush=True)
+          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
+          sys.exit(0)
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
