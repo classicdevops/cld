@@ -113,8 +113,8 @@ document.body.addEventListener('mouseup', function(){
 }, false)
 
 
-document.body.addEventListener('right-mousedown', function(){
-    document.execCommand("paste") // copy user selected text to clipboard
+document.body.addEventListener('contextmenu', function(){
+    document.execCommand("paste")
 }, false)
 </script>
 
