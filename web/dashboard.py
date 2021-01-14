@@ -130,8 +130,10 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-  try: if app.config["shell"]["child"+socketid]: return
-  except: pass
+  try: 
+    if app.config["shell"]["child"+socketid]: return
+  except: 
+    pass
   if 'username' in session:
     socketid=request.args.get('socketid')
     cldutility=''
