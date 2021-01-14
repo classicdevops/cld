@@ -137,7 +137,7 @@ def connect():
     cmd_args = ''
     try: cmd_args = request.args.get('args')
     except: pass
-    print("args is: "+args, flush=True)
+    print("args is: "+cmd_args, flush=True)
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
@@ -149,9 +149,9 @@ def connect():
     print(socketid, flush=True)
     try: app.config["shell"]
     except:  app.config["shell"] = {}
-    try: 
+    try:
       app.config["shell"]["room"+socketid]
-    except: 
+    except:
       join_room("room"+socketid)
       room = "room"+socketid
     (child_pid, fd) = pty.fork()
