@@ -101,9 +101,9 @@ function copySelectionText(){
     return copysuccess
 }
 
-//document.body.addEventListener('mouseup', function(){
-//    var copysuccess = copySelectionText() // copy user selected text to clipboard
-//}, false)
+document.body.addEventListener('mouseup', function(){
+    var copysuccess = copySelectionText() // copy user selected text to clipboard
+}, false)
 
 document.body.addEventListener('mouseup', function(){
     var selected = getSelectionText() // call <a href="#getselectiontext">getSelectionText()</a> to see what was selected
@@ -111,19 +111,6 @@ document.body.addEventListener('mouseup', function(){
         var copysuccess = copySelectionText() // copy user selected text to clipboard
     }
 }, false)
-
-
-document.addEventListener("mouseup", function(evt) {
-    switch(evt.buttons) {
-      case 1: var copysuccess = copySelectionText()
-    }
-});
-
-document.addEventListener("dousedown", function(evt) {
-    switch(evt.buttons) {
-      case 2: document.execCommand("paste")
-    }
-});
 </script>
 
 </body>
