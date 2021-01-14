@@ -109,7 +109,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("pty-output", {"output"+socketid: output}, room="room"+socketid namespace="/pty")
+              socketio.emit("pty-output", {"output"+socketid: output}, room="room"+socketid, namespace="/pty")
       else: 
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
