@@ -147,13 +147,13 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
     else:
-      subprocpid = int(bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"'))
+      subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
       app.config["shell"]["subprocpid"+socketid] = subprocpid
       app.config["shell"][socketid] = fd
       app.config["shell"]["child"+socketid] = child_pid
       print("subprocpid is: "+str(subprocpid), flush=True)
       set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, subprocpid)
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid))
       app.config["shell"]["run"+socketid] = "1"
 
 
