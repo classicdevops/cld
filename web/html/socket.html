@@ -111,6 +111,11 @@ document.body.addEventListener('mouseup', function(){
         var copysuccess = copySelectionText() // copy user selected text to clipboard
     }
 }, false)
+
+
+document.body.addEventListener('right-mousedown', function(){
+    document.execCommand("paste") // copy user selected text to clipboard
+}, false)
 </script>
 
 </body>
