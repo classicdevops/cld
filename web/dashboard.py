@@ -147,11 +147,8 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
     else:
-      try: app.config["shell"]["subprocpid"+socketid]
-      except: 
-        subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "/var/cld/web/dashboard.py" | grep "/usr/bin/sudo -u '+user+'" | grep "'+shellcmd+'" | cut -d " " -f 1 | tail -1')
-        app.config["shell"]["subprocpid"+socketid] = subprocpid
-      print("child_pid is: "+str(child_pid), flush=True)
+      subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+child_pid+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
+      app.config["shell"]["subprocpid"+socketid] = subprocpid
       app.config["shell"][socketid] = fd
       app.config["shell"]["child"+socketid] = child_pid
       set_winsize(fd, 50, 50)
