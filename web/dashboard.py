@@ -134,6 +134,11 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
+    cmd_args = ''
+    try:
+        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)
+    except:
+        pass
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
@@ -153,7 +158,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
-      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
+      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       try: subprocpid
       except NameError: subprocpid = ''
