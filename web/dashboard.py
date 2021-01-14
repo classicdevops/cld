@@ -109,7 +109,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty")
+              socketio.emit("pty-output", {"output"+socketid: output}, room="room"+socketid namespace="/pty")
       else: 
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
@@ -134,6 +134,11 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
+    try: 
+      app.config["shell"]["room"+socketid]
+    except: 
+      join_room("room"+socketid)
+      app.config["shell"]["room"+socketid] = "room"+socketid
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
