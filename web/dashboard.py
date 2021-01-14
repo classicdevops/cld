@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
 from flask_session import Session
-from flask_socketio import SocketIO, join_room, leave_room, close_room, disconnect
+from flask_socketio import SocketIO, join_room, rooms
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -60,6 +60,10 @@ def remoteaddr():
     remote_addr = request.remote_addr
   return remote_addr
 
+
+
+
+
 #socketio
 #app.config["fd"] = None
 #app.config["child_pid"] = None
@@ -107,6 +111,9 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
               output = os.read(sessfd, max_read_bytes).decode()
               socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty", room=room)
       else: 
+          print("exit due child pid not exist", flush=True)
+          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+          socketio.emit("disconnect"+socketid, namespace="/pty", room=room)
           os.kill(child_pid, 9)
 
 @socketio.on("pty-input", namespace="/pty")
