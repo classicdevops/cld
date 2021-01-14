@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
 from flask_session import Session
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, rooms
 from werkzeug.utils import secure_filename
 #import json
 import re
