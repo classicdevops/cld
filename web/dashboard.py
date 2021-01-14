@@ -145,7 +145,7 @@ def connect():
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
-    else:
+    elif isinstance(child_pid, int):
       try: subprocpid
       except NameError: subprocpid = ''
       while subprocpid == '':
