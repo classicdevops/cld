@@ -135,7 +135,7 @@ def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
     cmd_args = ''
-    try: cmd_args = request.args.get('args')
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)
     except: pass
     print("args is: "+cmd_args, flush=True)
     cldutility=''
