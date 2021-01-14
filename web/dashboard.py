@@ -153,7 +153,7 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       print("subprocpid is: "+str(subprocpid), flush=True)
       set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, subprocpid, child_pid)
+      await socketio.start_background_task(read_and_forward_pty_output, socketid, fd, subprocpid, child_pid)
       app.config["shell"]["run"+socketid] = "1"
 
 
