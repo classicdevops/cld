@@ -67,7 +67,6 @@ def remoteaddr():
 #socketio
 #app.config["fd"] = None
 #app.config["child_pid"] = None
-app.config["shell"] = {}
 def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
@@ -141,6 +140,8 @@ def connect():
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
     print(socketid, flush=True)
+    try: app.config["shell"]
+    except:  app.config["shell"] = {}
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
@@ -156,6 +157,7 @@ def connect():
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid)
+      app.config["shell"]["run"+socketid] = "1"
 
 
 # def sessionparse(value):
