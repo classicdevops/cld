@@ -23,7 +23,6 @@ import struct
 import fcntl
 import shlex
 
-
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
@@ -34,7 +33,6 @@ def check_pid(pid):
     return False
   else:
     return True
-
 
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
@@ -59,10 +57,6 @@ def remoteaddr():
   else:
     remote_addr = request.remote_addr
   return remote_addr
-
-
-
-
 
 #socketio
 #app.config["fd"] = None
@@ -164,14 +158,12 @@ def connect():
       except NameError: subprocpid = ''
       while subprocpid == '':
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
-      print("subprocpid is: "+str(subprocpid), flush=True)
       app.config["shell"][socketid] = fd
       app.config["shell"]["child"+socketid] = child_pid
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       app.config["shell"]["run"+socketid] = "1"
-
 
 # def sessionparse(value):
 #   sessionid = re.fullmatch(r'[A-Za-z0-9]+', request.cookies.get('SESSIONID')).string
