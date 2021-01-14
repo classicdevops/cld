@@ -113,9 +113,17 @@ document.body.addEventListener('mouseup', function(){
 }, false)
 
 
-document.body.addEventListener('contextmenu', function(){
-    document.execCommand("paste")
-}, false)
+document.addEventListener("mouseup", function(evt) {
+    switch(evt.buttons) {
+      case 1: var copysuccess = copySelectionText()
+    }
+});
+
+document.addEventListener("dousedown", function(evt) {
+    switch(evt.buttons) {
+      case 2: document.execCommand("paste")
+    }
+});
 </script>
 
 </body>
