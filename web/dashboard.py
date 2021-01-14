@@ -96,7 +96,7 @@ def socket():
     return render_template("html/socket.html", socketid=socketid)
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
-    max_read_bytes = 1024 * 20
+    max_read_bytes = 1024 * 512
     while True:
       socketio.sleep(0.01)
       if check_pid(subprocpid) != True:
