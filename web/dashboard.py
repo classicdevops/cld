@@ -97,13 +97,15 @@ def socket():
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid):
     max_read_bytes = 1024 * 20
-    print(str(check_pid(subprocpid)), flush=True)
     while True:
       socketio.sleep(0.01)
-#      if check_pid(subprocpid) != True:
-#          print("exit due child pid not exist", flush=True)
-#          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
-#          sys.exit(0)
+      try:
+        if check_pid(subprocpid) != True:
+            print("exit due child pid not exist", flush=True)
+            socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
+            sys.exit(0)
+      except:
+        socketio.emit("pty-output", {"output"+socketid: "check failed"}, namespace="/pty")
       if sessfd:
           timeout_sec = 0
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
