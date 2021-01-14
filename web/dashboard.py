@@ -130,7 +130,9 @@ def resize(data):
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-  if app.config["shell"]["child"+socketid]: return
+  try:
+    if app.config["shell"]["child"+socketid]: return
+  except: pass
   if 'username' in session:
     socketid=request.args.get('socketid')
     cldutility=''
@@ -157,7 +159,6 @@ def connect():
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid)
-      app.config["shell"]["run"+socketid] = "1"
 
 
 # def sessionparse(value):
