@@ -137,7 +137,7 @@ def connect():
     cmd_args = ''
     try: cmd_args = request.args.get('args')
     except: pass
-    print("args is: "args)
+    print("args is: "+args, flush=True)
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
