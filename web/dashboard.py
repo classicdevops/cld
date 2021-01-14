@@ -146,7 +146,7 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd, shell=True, executable='/bin/bash')
     else:
-      while subprocpid = '':
+      while subprocpid == '':
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
       print("subprocpid is: "+str(subprocpid), flush=True)
       app.config["shell"][socketid] = fd
