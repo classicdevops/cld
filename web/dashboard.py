@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
 from flask_session import Session
-from flask_socketio import SocketIO, join_room, rooms
+from flask_socketio import SocketIO, join_room, leave_room, close_room, disconnect
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -101,7 +101,9 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
-          socketio.emit("disconnect"+socketid, namespace="/pty")
+          socketio.emit("disconnect"+socketid, namespace="/pty", room=room)
+          leave_room(room)
+          close_room(room)
           os.kill(child_pid, 9)
           return
       if sessfd:
@@ -109,7 +111,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("pty-output", {"output"+socketid: output}, room=room, namespace="/pty")
+              socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty", room=room)
       else: 
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
