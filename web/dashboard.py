@@ -105,7 +105,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
           os.kill(child_pid, 9)
           return
       if sessfd:
-          timeout_sec = 0
+          timeout_sec = 1
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
