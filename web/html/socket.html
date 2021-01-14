@@ -55,7 +55,7 @@
     socket.emit("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
   });
 
-  const socket = io.connect('/pty', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{args}}'}});
+  const socket = io.connect('/pty', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
   const status = document.getElementById("status")
 
   socket.on("pty-output", function(data){
