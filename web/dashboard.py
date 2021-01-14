@@ -31,9 +31,9 @@ def check_pid(pid):
   try:
     os.kill(pid, 0)
   except OSError:
-    return False
+    return 0
   else:
-    return True
+    return 1
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -100,7 +100,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid):
     while True:
       socketio.sleep(0.01)
       try:
-        if check_pid(subprocpid) != True:
+        if check_pid(subprocpid) != 1:
             print("exit due child pid not exist", flush=True)
             socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
             sys.exit(0)
