@@ -96,12 +96,13 @@ def socket():
     return render_template("html/socket.html", socketid=socketid)
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid):
-#    max_read_bytes = 1024 * 20
+    max_read_bytes = 1024 * 20
     while True:
       socketio.sleep(0.01)
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
+          sys.exit(0)
       if sessfd:
           timeout_sec = 0
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
@@ -153,7 +154,7 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       print("subprocpid is: "+str(subprocpid), flush=True)
       set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid))
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, subprocpid)
       app.config["shell"]["run"+socketid] = "1"
 
 
