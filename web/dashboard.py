@@ -140,8 +140,6 @@ def connect():
     try: app.config["shell"]
     except:  app.config["shell"] = {}
     if "run"+socketid in app.config["shell"]:
-      child_pid = app.config["shell"]["child"+socketid]
-      fd = app.config["shell"][+socketid]
       return
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
