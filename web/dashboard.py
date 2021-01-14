@@ -102,6 +102,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
+          socketio.emit("disconnect")
           sys.exit(0)
           os.kill(child_pid, 9)
           return
@@ -152,7 +153,7 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       print("subprocpid is: "+str(subprocpid), flush=True)
       set_winsize(fd, 50, 50)
-      await socketio.start_background_task(read_and_forward_pty_output, socketid, fd, subprocpid, child_pid)
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, subprocpid, child_pid)
       app.config["shell"]["run"+socketid] = "1"
 
 
