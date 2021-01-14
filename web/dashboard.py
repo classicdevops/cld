@@ -131,7 +131,7 @@ def connect():
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)
     except: pass
-    print("args is: "+cmd_args, flush=True)
+#    print("args is: "+cmd_args, flush=True)
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
@@ -140,7 +140,7 @@ def connect():
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
-    print(socketid, flush=True)
+#    print(socketid, flush=True)
     try: app.config["shell"]
     except:  app.config["shell"] = {}
     try:
@@ -151,7 +151,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
-      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
+#      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       try: subprocpid
