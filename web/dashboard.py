@@ -94,13 +94,13 @@ def socket():
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid)
 
-def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
+def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 512
     while True:
       socketio.sleep(0.1)
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
-          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
+          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
           socketio.emit("disconnect"+socketid, namespace="/pty")
           os.kill(child_pid, 9)
           return
@@ -109,11 +109,11 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("pty-output", {"output"+socketid: output}, room="room"+socketid, namespace="/pty")
+              socketio.emit("pty-output", {"output"+socketid: output}, room=room, namespace="/pty")
       else: 
           print("exit due child pid not exist", flush=True)
-          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
-          socketio.emit("disconnect"+socketid, namespace="/pty")
+          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+          socketio.emit("disconnect"+socketid, namespace="/pty", room=room)
           os.kill(child_pid, 9)
 
 @socketio.on("pty-input", namespace="/pty")
@@ -134,11 +134,6 @@ def resize(data):
 def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
-    try: 
-      app.config["shell"]["room"+socketid]
-    except: 
-      join_room("room"+socketid)
-      app.config["shell"]["room"+socketid] = "room"+socketid
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
@@ -150,6 +145,11 @@ def connect():
     print(socketid, flush=True)
     try: app.config["shell"]
     except:  app.config["shell"] = {}
+    try: 
+      app.config["shell"]["room"+socketid]
+    except: 
+      join_room("room"+socketid)
+      room = "room"+socketid
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
@@ -164,7 +164,7 @@ def connect():
       app.config["shell"]["child"+socketid] = child_pid
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid)
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       app.config["shell"]["run"+socketid] = "1"
 
 
