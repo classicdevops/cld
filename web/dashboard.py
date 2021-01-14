@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 #import json
 import re
 import os
-import psutil
+from psutil import pid_exists
 import subprocess
 #import redis
 import datetime
@@ -100,7 +100,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid):
     max_read_bytes = 1024 * 20
     while True:
       socketio.sleep(0.01)
-      if psutil.pid_exists(subprocpid):
+      if pid_exists(subprocpid):
         if sessfd:
             timeout_sec = 0
             (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
