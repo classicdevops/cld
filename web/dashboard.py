@@ -102,8 +102,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid):
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty")
-          socketio.emit("disconnect", namespace="/pty")
-          sys.exit(0)
+#          socketio.emit("disconnect", {socketid: "disconnect"}, namespace="/pty")
           os.kill(child_pid, 9)
           return
       if sessfd:
