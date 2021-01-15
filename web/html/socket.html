@@ -18,17 +18,13 @@
 
 <div style="width: 100%; height: calc(100% - 50px);" id="terminal"></div>
 <!-- xterm -->
-<script src="https://unpkg.com/xterm@3.6.0/dist/xterm.js"></script>
-<script src="https://unpkg.com/xterm@3.6.0/dist/addons/fit/fit.js"></script>
-<script src="https://unpkg.com/xterm@3.6.0/dist/addons/webLinks/webLinks.js"></script>
-<script src="https://unpkg.com/xterm@3.6.0/dist/addons/fullscreen/fullscreen.js"></script>
-<script src="https://unpkg.com/xterm@3.6.0/dist/addons/search/search.js"></script>
-<script src="https://unpkg.com/xterm@3.6.0/dist/addons/attach/attach.js"></script>
-<script src="https://unpkg.com/xterm@3.6.0/dist/addons/winptyCompat/winptyCompat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm@4.9.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.4.0/lib/xterm-addon-fit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.4.0/lib/xterm-addon-web-links.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-search@0.7.0/lib/xterm-addon-search.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
 
 <script>
-  Terminal.applyAddon(fullscreen)
   Terminal.applyAddon(fit)
   Terminal.applyAddon(webLinks)
   Terminal.applyAddon(search)

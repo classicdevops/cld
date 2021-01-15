@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, session, escape, url_for
+from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, escape, url_for, session
 from flask_session import Session
 from flask_socketio import SocketIO, join_room, rooms
 from werkzeug.utils import secure_filename
@@ -79,17 +79,8 @@ def tool(cldutility):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
-@app.route("/socket")
-def socket():
-  if 'username' in session:
-    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
-    socketid = ''
-    for c in range(8):
-       socketid += random.choice(chars)
-    return render_template("html/socket.html", socketid=socketid)
-
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
-    max_read_bytes = 1024 * 512
+    max_read_bytes = 1024 * 20
     while True:
       socketio.sleep(0.1)
       if check_pid(subprocpid) != True:
@@ -99,7 +90,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           os.kill(child_pid, 9)
           return
       if sessfd:
-          timeout_sec = 1
+          timeout_sec = 0
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
