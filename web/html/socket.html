@@ -102,6 +102,10 @@ function copySelectionText(){
 }
 
 document.body.addEventListener('mouseup', function(){
+    var copysuccess = copySelectionText() // copy user selected text to clipboard
+}, false)
+
+document.body.addEventListener('mouseup', function(){
     var selected = getSelectionText() // call <a href="#getselectiontext">getSelectionText()</a> to see what was selected
     if (selected.length > 0){ // if selected text length is greater than 0
         var copysuccess = copySelectionText() // copy user selected text to clipboard
