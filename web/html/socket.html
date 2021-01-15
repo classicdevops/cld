@@ -102,15 +102,31 @@ function copySelectionText(){
 }
 
 document.body.addEventListener('mouseup', function(){
-    var copysuccess = copySelectionText() // copy user selected text to clipboard
-}, false)
-
-document.body.addEventListener('mouseup', function(){
     var selected = getSelectionText() // call <a href="#getselectiontext">getSelectionText()</a> to see what was selected
     if (selected.length > 0){ // if selected text length is greater than 0
         var copysuccess = copySelectionText() // copy user selected text to clipboard
     }
 }, false)
+
+
+document.addEventListener("mouseup", function(evt) {
+    switch(evt.buttons) {
+      case 1: {    var selected = getSelectionText() // call <a href="#getselectiontext">getSelectionText()</a> to see what was selected
+    if (selected.length > 0){ // if selected text length is greater than 0
+        var copysuccess = copySelectionText() // copy user selected text to clipboard
+    }}
+    }
+});
+
+
+document.addEventListener("mousedown", function(evt) {
+    switch(evt.buttons) {
+      case 2: document.execCommand("copy")
+    }
+});
+
+
+
 </script>
 
 </body>
