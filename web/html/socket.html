@@ -68,7 +68,7 @@
   })
 
   function fitToscreen(){
-    term.fit()
+    fit.fit()
     socket.emit("resize", {"cols": term.cols, "rows": term.rows, query: 'socketid={{socketid}}'})
   }
 
