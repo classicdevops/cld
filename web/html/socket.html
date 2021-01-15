@@ -28,14 +28,9 @@
 //  Terminal.applyAddon(FitAddon.FitAddon())
 //  Terminal.applyAddon(webLinks)
 //  Terminal.applyAddon(search)
-  const term = new Terminal({
-        cursorBlink: false,
-        macOptionIsMeta: true,
-        scrollback: 20000,
-        
-    }),
-    fit = new FitAddon.FitAddon();
-  term.loadAddon(fit)
+  const term = new Terminal(),
+    fit = new FitAddon();
+  term.loadAddon(fit);
   term.open(document.getElementById('terminal'));
   term.fit()
   term.resize(15, 50)
