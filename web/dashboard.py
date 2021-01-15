@@ -108,6 +108,13 @@ def pty_input(data):
     if socketid in app.config["shell"]:
       os.write(app.config["shell"][socketid], data["input"+socketid].encode())
 
+@socketio.on("keepalive", namespace="/pty")
+def pty_input(data):
+  if 'username' in session:
+    socketid=request.args.get('socketid')
+    if socketid in app.config["shell"]:
+      os.write(app.config["shell"][socketid], data["input"+socketid].encode())
+
 @socketio.on("resize", namespace="/pty")
 def resize(data):
   if 'username' in session:
@@ -217,8 +224,7 @@ def logout():
 
 @app.route('/xactivate')
 def xactivate():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     sessid = str(request.cookies.get('session'))
     cloudid = str(request.args['cloudid'])
     bash('echo /var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username+' >> /var/log/cld/cmd.log')
@@ -228,8 +234,7 @@ def xactivate():
 
 @app.route('/factivate')
 def factivate():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     sessid = str(request.cookies.get('session'))
     cloudid = str(request.args['cloudid'])
     subprocess.Popen("while :; do ps ax | grep -v grep | grep 'cld\-xterm' | grep -q "+cloudid+" && break ; sleep 0.5s ; done", shell=True, stdout=subprocess.PIPE).communicate()
@@ -243,14 +248,12 @@ def factivate():
 
 @app.route('/panel/')
 def dashboard():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/index.html', username=username)
 
 @app.route('/terminal')
 def terminal():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     # ext_do_list_file = open("../creds/ext_do_list", "r")
     # ext_do_list = ext_do_list_file.readlines()
     # ext_do_list_file.close()
@@ -262,8 +265,7 @@ def terminal():
 
 @app.route('/admin')
 def admin():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     userlist = bash('echo -n $(ls /var/cld/access/users/ | cat)').split(' ')
     users = list()
     for user in userlist:
@@ -290,8 +292,7 @@ def admin():
 
 @app.route('/user')
 def user():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     name = [str(request.args['name'])]
     users = list()
     for user in name:
@@ -311,8 +312,7 @@ def user():
 
 @app.route('/group')
 def group():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     name = [str(request.args['name'])]
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
     groups = list()
@@ -497,16 +497,14 @@ def groupfuncs():
 
 @app.route('/cloudadd')
 def cloudadd():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     groups = bash('''source <(awk '{print "grep -q 0 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
     # return str(groups)
     return render_template('html/cloudadd.html', username=username, groups=groups)
 
 @app.route('/addcloud', methods=['GET','POST'])
 def addcloud():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     cloudname = request.form['cloudname']
     cloudip = request.form['cloudip']
     cloudport = request.form['cloudport']
@@ -525,14 +523,12 @@ def addcloud():
   
 @app.route('/settings')
 def settings():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/settings.html', username=username)
 
 @app.route('/devops')
 def devops():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     templatelist = bash('ls /var/cld/devops/templates/ | cat').split('\n')[:-1]
     templates = list()
     for template in templatelist:
@@ -578,20 +574,17 @@ def devops():
 
 @app.route('/devops/template')
 def devopstemplate():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/devops/template.html', username=username)
 
 @app.route('/devops/templateadd')
 def devopstemplateadd():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/devops/templateadd.html', username=username)
 
 @app.route('/devops/addtemplate', methods=['GET','POST'])
 def adddevopstemplate():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     templatename = request.form['templatename']
     description = request.form['description']
     cloudscript = request.form['cloudscript']
@@ -668,20 +661,17 @@ def adddevopstemplate():
 
 @app.route('/devops/deploy')
 def devopsdeploy():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/devops/deploy.html', username=username)
 
 @app.route('/devops/deployadd')
 def devopsdeployadd():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/devops/deployadd.html', username=username)
 
 @app.route('/devops/adddeploy', methods=['GET','POST'])
 def adddevopsdeploy():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     templatename = request.form['templatename']
     description = request.form['description']
     cloudscript = request.form['cloudscript']
@@ -758,14 +748,12 @@ def adddevopsdeploy():
 
 @app.route('/devops/action')
 def devopsaction():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/devops/action.html', username=username)
 
 @app.route('/devops/actionadd')
 def devopsactionadd():
-  if 'username' in session:
-    username = session['username']
+  if 'username' in session: username = session['username']
     return render_template('html/devops/actionadd.html', username=username)
 
 #Just easy direct pipeline for early dev version, will deleted in the future
@@ -778,7 +766,7 @@ def backendgitpull():
         bg = '''&>/dev/null &'''
     except:
       pass
-    cmd = bash('(cd /var/cld/ && git reset --hard && git pull origin master && supervisorctl restart cldpanel) ' + bg)
+    cmd = bash('(cd /var/cld/ && git reset --hard && git pull origin master) ' + bg)
     resp = Response(cmd, status=200, mimetype='text/plain')
     return resp
 
