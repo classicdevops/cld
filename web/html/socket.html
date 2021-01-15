@@ -25,14 +25,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
 
 <script>
-  Terminal.applyAddon(FitAddon.FitAddon())
-  Terminal.applyAddon(webLinks)
-  Terminal.applyAddon(search)
+//  Terminal.applyAddon(FitAddon.FitAddon())
+//  Terminal.applyAddon(webLinks)
+//  Terminal.applyAddon(search)
   const term = new Terminal({
         cursorBlink: false,
         macOptionIsMeta: true,
         scrollback: 20000,
+        fit = new FitAddon.FitAddon();
     });
+  term.loadAddon(fit)
   term.open(document.getElementById('terminal'));
   term.fit()
   term.resize(15, 50)
