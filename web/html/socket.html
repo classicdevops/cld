@@ -91,18 +91,8 @@
   const wait_ms = 50;
   window.onresize = debounce(fitToscreen, wait_ms)
 
-function copySelectionText(){
-    var copysuccess // var to check whether execCommand successfully executed
-    try{
-        copysuccess = document.execCommand("copy") // run command to copy selected text to clipboard
-    } catch(e){
-        copysuccess = false
-    }
-    return copysuccess
-}
-
 document.body.addEventListener('mouseup', function(){
-    var copysuccess = copySelectionText() // copy user selected text to clipboard
+    var pasted = document.execCommand("paste")
 }, false)
 
 </script>
