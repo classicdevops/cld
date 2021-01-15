@@ -36,13 +36,13 @@
   term.resize(15, 50)
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
-  term.onData((key, ev) => {
+  term.onKey((key, ev) => {
     console.log("pressed key", key)
     console.log("event", ev)
     socket.send("pty-input", {"input{{socketid}}": key, query: 'socketid={{socketid}}'})
   });
 
-  term.onData('paste', (data, ev) => {
+  term.onPaste('paste', (data, ev) => {
     console.log("pasted data", data)
     console.log("event", ev)
     socket.send("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
