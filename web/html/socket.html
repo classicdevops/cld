@@ -106,7 +106,7 @@ function copySelectionText(){
 //}, false)
 
 
-document.body.addEventListener("mouseup", function(evt) {
+document.addEventListener("mouseup", function(evt) {
     switch(evt.buttons) {
       case 1: var copysuccess = copySelectionText()
       case 2: document.execCommand("paste")
