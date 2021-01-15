@@ -29,7 +29,7 @@
 //  Terminal.applyAddon(webLinks)
 //  Terminal.applyAddon(search)
   const term = new Terminal(),
-    fit = new FitAddon();
+    fit = new FitAddon.FitAddon();
   term.loadAddon(fit);
   term.open(document.getElementById('terminal'));
   term.fit()
