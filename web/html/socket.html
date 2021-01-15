@@ -39,13 +39,13 @@
   term.onData('key', (key, ev) => {
     console.log("pressed key", key)
     console.log("event", ev)
-    socket.emit("pty-input", {"input{{socketid}}": key, query: 'socketid={{socketid}}'})
+    socket.send("pty-input", {"input{{socketid}}": key, query: 'socketid={{socketid}}'})
   });
 
   term.onData('paste', (data, ev) => {
     console.log("pasted data", data)
     console.log("event", ev)
-    socket.emit("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
+    socket.send("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
   });
 
   const socket = io.connect('/pty', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
@@ -58,7 +58,7 @@
 
   socket.on("connect", () => {
     fitToscreen()
-    socket.emit('room', '{{"room"+socketid}}');
+    socket.send('room', '{{"room"+socketid}}');
     status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
     }
   )
@@ -69,7 +69,7 @@
 
   function fitToscreen(){
     fit.fit()
-    socket.emit("resize", {"cols": term.cols, "rows": term.rows, query: 'socketid={{socketid}}'})
+    socket.send("resize", {"cols": term.cols, "rows": term.rows, query: 'socketid={{socketid}}'})
   }
 
   function debounce(func, wait_ms) {
