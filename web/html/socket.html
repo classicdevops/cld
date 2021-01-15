@@ -25,7 +25,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
 
 <script>
-  Terminal.applyAddon(fitAddon)
+  import { FitAddon } from 'xterm-addon-fit';
+  Terminal.applyAddon(xterm-addon-fit)
   Terminal.applyAddon(WebLinksAddon)
   Terminal.applyAddon(searchAddon)
   const term = new Terminal({
