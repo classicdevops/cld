@@ -67,7 +67,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 
 @app.route("/tool/<cldutility>")
 def tool(cldutility):
-  if 'username' in session:
+#  if 'username' in session:
     cmd_args = ''
     try:
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
@@ -81,7 +81,7 @@ def tool(cldutility):
 
 @app.route("/socket")
 def socket():
-  if 'username' in session:
+#  if 'username' in session:
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     socketid = ''
     for c in range(8):
@@ -112,21 +112,21 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
 
 @socketio.on("pty-input", namespace="/pty")
 def pty_input(data):
-  if 'username' in session:
+#  if 'username' in session:
     socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
       os.write(app.config["shell"][socketid], data["input"+socketid].encode())
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
-  if 'username' in session:
+#  if 'username' in session:
     socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
       set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("connect", namespace="/pty")
 def connect():
-  if 'username' in session:
+#  if 'username' in session:
     socketid=request.args.get('socketid')
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)
@@ -135,7 +135,8 @@ def connect():
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
-    user = session["username"]
+    user = "admin"
+#    user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
