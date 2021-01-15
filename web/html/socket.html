@@ -9,7 +9,7 @@
 ::-webkit-scrollbar-thumb {background: #747473;}
 ::-webkit-scrollbar-thumb:hover {background: #555;}
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/xterm@3.6.0/dist/xterm.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.9.0/css/xterm.css" />
 </head>
 <body style="background: black;">
 
@@ -25,9 +25,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
 
 <script>
-  Terminal.applyAddon(xterm-addon-fit)
-  Terminal.applyAddon(WebLinksAddon)
-  Terminal.applyAddon(searchAddon)
+  Terminal.applyAddon(fit)
+  Terminal.applyAddon(webLinks)
+  Terminal.applyAddon(search)
   const term = new Terminal({
         cursorBlink: false,
         macOptionIsMeta: true,
