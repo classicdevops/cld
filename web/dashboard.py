@@ -90,11 +90,10 @@ def pty_input(data):
 def keepalive_shell_sessions():
     while True:
         time.sleep(10)
-        try:
             print("keepalive_shell_sessions started", flush=True)
             print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
             socketid_list = list(app.config["shell"]["clildpid"].keys())
-            print("socketid_list id: "+str(socketid_list), flush=True)
+            print("socketid_list: "+str(socketid_list), flush=True)
             for socketid in socket_list:
                 current_timestamp = int(time.time())
                 socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
@@ -111,8 +110,6 @@ def keepalive_shell_sessions():
                     del app.config["shell"]["run"+socketid]
                     del app.config["shell"]["childpid"][socketid]
                     del app.config["shell"]["subprocpid"+socketid]
-        except:
-            pass
 
 socketio.start_background_task(target=keepalive_shell_sessions)
 
