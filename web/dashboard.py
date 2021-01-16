@@ -93,26 +93,29 @@ def pty_input(data):
 def keepalive_shell_sessions():
     while True:
         time.sleep(10)
-        print("keepalive_shell_sessions started", flush=True)
-        print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
-        socketid_list = list(app.config["shell"]["clildpid"].keys())
-        print("socketid_list: "+str(socketid_list), flush=True)
-        for socketid in socket_list:
-            current_timestamp = int(time.time())
-            socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
-            print
-            if current_timestamp > socket_timestamp:
-                print("started terminating task for socket "+socketid, flush=True)
-                socket_child_pid = app.config["shell"]["childpid"][socketid]
-                room = "room"+socketid
-                print("exit due "+socketid+" not conencted", flush=True)
-                socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
-                socketio.emit("disconnect", namespace="/pty", room=room)
-                os.kill(socket_child_pid, 9)
-                del app.config["shell"][socketid]
-                del app.config["shell"]["run"+socketid]
-                del app.config["shell"]["childpid"][socketid]
-                del app.config["shell"]["subprocpid"+socketid]
+        try:
+          print("keepalive_shell_sessions started", flush=True)
+          print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
+          socketid_list = list(app.config["shell"]["clildpid"].keys())
+          print("socketid_list: "+str(socketid_list), flush=True)
+          for socketid in socket_list:
+              current_timestamp = int(time.time())
+              socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
+              print
+              if current_timestamp > socket_timestamp:
+                  print("started terminating task for socket "+socketid, flush=True)
+                  socket_child_pid = app.config["shell"]["childpid"][socketid]
+                  room = "room"+socketid
+                  print("exit due "+socketid+" not conencted", flush=True)
+                  socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+                  socketio.emit("disconnect", namespace="/pty", room=room)
+                  os.kill(socket_child_pid, 9)
+                  del app.config["shell"][socketid]
+                  del app.config["shell"]["run"+socketid]
+                  del app.config["shell"]["childpid"][socketid]
+                  del app.config["shell"]["subprocpid"+socketid]
+        except:
+          pass
 
 threading.Thread(target=keepalive_shell_sessions).start()
 
