@@ -840,7 +840,7 @@ def backendgitpull():
         bg = '''&>/dev/null &'''
     except:
       pass
-    cmd = bash('(cd /var/cld/ && git reset --hard && git pull origin master) ' + bg)
+    cmd = bash('(cd /var/cld/ && git reset --hard && git pull origin master ; supervisorctl stop cldpanel ; sleep 1s ; supervisorctl start cldpanel) &>/dev/null & disown' + bg)
     resp = Response(cmd, status=200, mimetype='text/plain')
     return resp
 
