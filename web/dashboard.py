@@ -65,9 +65,9 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
-@app.route("/tool/<cldutility>, defaults={'args': None}")
+@app.route("/tool/<cldutility>")
 @app.route("/tool/<cldutility>/<args>")
-def tool(cldutility, args):
+def tool(cldutility, args=None):
   if 'username' in session:
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
     except: cmd_args = ''
