@@ -63,12 +63,6 @@
     }
   )
 
-  socket.on("disconnect{{socketid}}", () => {
-    socket.off()
-    socket.destroy();
-    status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
-  })
-
   socket.on('disconnect', function(){
     socket.off()
     socket.destroy();
