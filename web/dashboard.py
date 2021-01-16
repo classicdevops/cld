@@ -118,8 +118,8 @@ def keepalive_shell_session(socketid, child_pid, room):
         print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
         current_timestamp = int(time.time())
         socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
-        print("current_timestamp is: "+str(current_timestamp))
-        print("socket_timestamp is: "+str(socket_timestamp))
+        print("current_timestamp is: "+str(current_timestamp), flush=True)
+        print("socket_timestamp is: "+str(socket_timestamp), flush=True)
         print
         if current_timestamp > socket_timestamp:
             print("started terminating task for socket "+socketid, flush=True)
