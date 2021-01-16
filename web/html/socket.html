@@ -32,9 +32,6 @@
         cursorBlink: false,
         macOptionIsMeta: true,
         scrollback: 20000,
-        reconnect: false,
-        reconnectAttempts: 1,
-
         }),
     fit = new FitAddon.FitAddon();
   term.loadAddon(fit);
@@ -51,8 +48,9 @@
   });
 
   const socket = io.connect('/pty', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
+  socket.io._reconnectionAttempts = 1
   const status = document.getElementById("status")
-
+  
   socket.on("pty-output", function(data){
     console.log("new output", data)
     term.write(data.output{{socketid}})
