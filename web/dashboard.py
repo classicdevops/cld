@@ -114,6 +114,8 @@ def keepalive_shell_sessions():
                 del app.config["shell"]["childpid"][socketid]
                 del app.config["shell"]["subprocpid"+socketid]
 
+threading.Thread(keepalive_shell_sessions).start()
+
 def keepalive_shell_session(socketid, child_pid, room):
     while True:
         print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
