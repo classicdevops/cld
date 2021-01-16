@@ -210,7 +210,7 @@ def connect():
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
-      socketio.start_background_task(keepalive_shell_session, socketid, child_pid, room)
+#      socketio.start_background_task(keepalive_shell_session, socketid, child_pid, room)
       app.config["shell"]["run"+socketid] = "1"
 
 # def sessionparse(value):
