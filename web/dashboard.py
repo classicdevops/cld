@@ -164,8 +164,6 @@ def connect():
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
 #    print(socketid, flush=True)
-    try: app.config["shell"]
-    except:  app.config["shell"] = {}
     try:
       app.config["shell"]["room"+socketid]
     except:
