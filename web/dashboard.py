@@ -104,7 +104,7 @@ def keepalive_shell_sessions():
                     del app.config["shell"]["run"+socketid]
                     del app.config["shell"]["clildpid"][socketid]
                     del app.config["shell"]["subprocpid"+socketid]
-         except:
+        except:
             pass
 
 socketio.start_background_task(keepalive_shell_sessions)
