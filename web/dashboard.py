@@ -91,11 +91,15 @@ def keepalive_shell_sessions():
     while True:
         time.sleep(10)
         try:
+            print("keepalive_shell_sessions started", flush=True)
             socketid_list = {k for d in app.config["shell"]["clildpid"] for k in d}
+            print("socketid_list id: "+str(socketid_list), flush=True)
             for socketid in socket_list:
                 current_timestamp = int(time.time())
                 socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
-                if current_timestamp > socket_timestamp:
+                print
+                if current_timestamp > socket_timestamp or:
+                    print("started terminating task for socket "+socketid, flush=True)
                     socket_child_pid = app.config["shell"]["clildpid"][socketid]
                     room = "room"+socketid
                     print("exit due "+socketid+" not conencted", flush=True)
@@ -109,7 +113,7 @@ def keepalive_shell_sessions():
         except:
             pass
 
-socketio.start_background_task(keepalive_shell_sessions)
+socketio.start_background_task(target=keepalive_shell_sessions)
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
