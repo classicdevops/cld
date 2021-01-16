@@ -67,7 +67,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 
 @app.route("/tool/<cldutility>")
 @app.route("/tool/<cldutility>/<args>")
-def tool(cldutility):
+def tool(cldutility, args):
   if 'username' in session:
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
     except: cmd_args = ''
