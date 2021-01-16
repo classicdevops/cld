@@ -60,6 +60,7 @@
     fitToscreen()
     socket.emit('room', '{{"room"+socketid}}');
     status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
+    keepalive();
     }
   )
 
@@ -100,6 +101,16 @@ document.body.addEventListener('mouseup', function(){
     var copysuccess = copySelectionText() // copy user selected text to clipboard
 }, false)
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function keepalive() {
+  while (true) {
+    await sleep(5000);
+    socket.emit("pty-keepalive", {"keepalive{{socketid}}": "ping", query: 'socketid={{socketid}}'})
+  }
+}
 </script>
 
 </body>

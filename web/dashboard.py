@@ -79,6 +79,36 @@ def tool(cldutility, args=None):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
+@socketio.on("pty-keepalive", namespace="/pty")
+def pty_input(data):
+  if 'username' in session:
+    socketid=request.args.get('socketid')
+    app.config["shell"]["keepalive"][socketid] = int(time.time())
+
+def keepalive_shell_sessions():
+    while True:
+        time.sleep(10)
+        try:
+            socketid_list = {k for d in app.config["shell"]["clildpid"] for k in d}
+            for socketid in socket_list:
+                current_timestamp = int(time.time())
+                socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
+                if current_timestamp > socket_timestamp:
+                    socket_child_pid = app.config["shell"]["clildpid"][socketid]
+                    room = "room"+socketid
+                    print("exit due "+socketid+" not conencted", flush=True)
+                    socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+                    socketio.emit("disconnect", namespace="/pty", room=room)
+                    os.kill(socket_child_pid, 9)
+                    del app.config["shell"][socketid]
+                    del app.config["shell"]["run"+socketid]
+                    del app.config["shell"]["clildpid"][socketid]
+                    del app.config["shell"]["subprocpid"+socketid]
+         except:
+            pass
+
+socketio.start_background_task(keepalive_shell_sessions)
+
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
     while True:
@@ -141,7 +171,9 @@ def connect():
       room = "room"+socketid
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-      app.config["shell"]["child"+socketid] = child_pid
+      try: app.config["shell"]["clildpid"]
+      except:  app.config["shell"]["clildpid"] = {}
+      app.config["shell"]["clildpid"][socketid] = child_pid
 #      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
@@ -150,7 +182,7 @@ def connect():
       while subprocpid == '':
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
       app.config["shell"][socketid] = fd
-      app.config["shell"]["child"+socketid] = child_pid
+      app.config["shell"]["clildpid"][socketid] = child_pid
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
