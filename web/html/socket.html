@@ -63,7 +63,8 @@
   )
 
   socket.on("disconnect{{socketid}}", () => {
-    socket.destroy()
+    socket.off()
+    socket.destroy();
     status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
   })
 
