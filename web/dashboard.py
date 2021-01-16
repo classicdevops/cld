@@ -120,8 +120,8 @@ def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
     cmd_args = ''
-    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" && sleep 5s"
-    except: cmd_args = " && sleep 5s"
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
+    except: cmd_args = " ; sleep 5s"
 #    print("args is: "+cmd_args, flush=True)
     cldutility=''
     try: cldutility=request.args.get('cldutility')
