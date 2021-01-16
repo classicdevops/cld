@@ -128,7 +128,7 @@ def connect():
     except: pass
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
-    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
+    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')+" && sleep 5s"
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
 #    print(socketid, flush=True)
