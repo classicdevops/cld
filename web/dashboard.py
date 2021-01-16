@@ -120,15 +120,15 @@ def connect():
   if 'username' in session:
     socketid=request.args.get('socketid')
     cmd_args = ''
-    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)
-    except: pass
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" && sleep 5s"
+    except: cmd_args = " && sleep 5s"
 #    print("args is: "+cmd_args, flush=True)
     cldutility=''
     try: cldutility=request.args.get('cldutility')
     except: pass
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
-    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')+" && sleep 5s"
+    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
       return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
 #    print(socketid, flush=True)
