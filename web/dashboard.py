@@ -171,18 +171,17 @@ def connect():
       room = "room"+socketid
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-      try: app.config["shell"]["clildpid"]
-      except:  app.config["shell"]["clildpid"] = {}
-      app.config["shell"]["clildpid"][socketid] = child_pid
 #      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
+      try: app.config["shell"]["clildpid"]
+      except:  app.config["shell"]["clildpid"] = {}
+      app.config["shell"]["clildpid"][socketid] = child_pid
       try: subprocpid
       except NameError: subprocpid = ''
       while subprocpid == '':
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
       app.config["shell"][socketid] = fd
-      app.config["shell"]["clildpid"][socketid] = child_pid
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
