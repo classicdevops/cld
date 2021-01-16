@@ -22,6 +22,7 @@ import termios
 import struct
 import fcntl
 import shlex
+import threading
 
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
@@ -111,7 +112,30 @@ def keepalive_shell_sessions():
                 del app.config["shell"]["childpid"][socketid]
                 del app.config["shell"]["subprocpid"+socketid]
 
-socketio.start_background_task(target=keepalive_shell_sessions)
+def keepalive_shell_session(socketid, child_pid, room):
+    while True:
+        time.sleep(10)
+        print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
+        print('app.config["shell"]["childpid"][socketid] is: '+str(app.config["shell"]["childpid"][socketid]))
+        socketid_list = list(app.config["shell"]["clildpid"].keys())
+        current_timestamp = int(time.time())
+        socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
+        print("current_timestamp is: "+str(current_timestamp))
+        print("socket_timestamp is: "+str(socket_timestamp))
+        print
+        if current_timestamp > socket_timestamp:
+            print("started terminating task for socket "+socketid, flush=True)
+            room = "room"+socketid
+            print("exit due "+socketid+" not conencted", flush=True)
+            socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+            socketio.emit("disconnect", namespace="/pty", room=room)
+            try:
+              del app.config["shell"][socketid]
+              del app.config["shell"]["run"+socketid]
+              del app.config["shell"]["subprocpid"+socketid]
+            except:
+              pass
+            os.kill(child_pid, 9)
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
@@ -185,6 +209,7 @@ def connect():
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
+      socketio.start_background_task(keepalive_shell_session, socketid, child_pid, room)
       app.config["shell"]["run"+socketid] = "1"
 
 # def sessionparse(value):
