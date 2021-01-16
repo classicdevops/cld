@@ -28,7 +28,11 @@
 //  Terminal.applyAddon(FitAddon.FitAddon())
 //  Terminal.applyAddon(webLinks)
 //  Terminal.applyAddon(search)
-  const term = new Terminal(),
+  const term = new Terminal(
+        cursorBlink: false,
+        macOptionIsMeta: true,
+        scrollback: 20000,
+        ),
     fit = new FitAddon.FitAddon();
   term.loadAddon(fit);
   term.open(document.getElementById('terminal'));
@@ -37,6 +41,8 @@
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
   term.onKey(function (key, ev) {
+    console.log("pressed key", key)
+    console.log("event", ev)
     socket.send("pty-input", {"input{{socketid}}": key, query: 'socketid={{socketid}}'})
   });
 
