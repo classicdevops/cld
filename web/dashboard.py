@@ -86,6 +86,7 @@ def tool(cldutility, args=None):
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
+    print("received keepalive data from: "+socketid, flush=True)
     app.config["shell"]["keepalive"][socketid] = int(time.time())
 
 def keepalive_shell_sessions():
@@ -117,8 +118,8 @@ def keepalive_shell_session(socketid, child_pid, room):
         time.sleep(10)
         print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
         current_timestamp = int(time.time())
-        socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
         print("current_timestamp is: "+str(current_timestamp), flush=True)
+        socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
         print("socket_timestamp is: "+str(socket_timestamp), flush=True)
         print
         if current_timestamp > socket_timestamp:
