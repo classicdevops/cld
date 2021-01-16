@@ -60,7 +60,7 @@ def remoteaddr():
 
 #socketio
 app.config["shell"] = {}
-app.config["shell"]["clildpid"] = {}
+app.config["shell"]["childpid"] = {}
 app.config["shell"]["keepalive"] = {}
 
 def set_winsize(fd, row, col, xpix=0, ypix=0):
@@ -92,8 +92,8 @@ def keepalive_shell_sessions():
         time.sleep(10)
         try:
             print("keepalive_shell_sessions started", flush=True)
-            print('app.config["shell"]["clildpid"] is: '+app.config["shell"]["clildpid"])
-            socketid_list = {k for d in app.config["shell"]["clildpid"] for k in d}
+            print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
+            socketid_list = {k for d in app.config["shell"]["childpid"] for k in d}
             print("socketid_list id: "+str(socketid_list), flush=True)
             for socketid in socket_list:
                 current_timestamp = int(time.time())
@@ -101,7 +101,7 @@ def keepalive_shell_sessions():
                 print
                 if current_timestamp > socket_timestamp:
                     print("started terminating task for socket "+socketid, flush=True)
-                    socket_child_pid = app.config["shell"]["clildpid"][socketid]
+                    socket_child_pid = app.config["shell"]["childpid"][socketid]
                     room = "room"+socketid
                     print("exit due "+socketid+" not conencted", flush=True)
                     socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
@@ -109,7 +109,7 @@ def keepalive_shell_sessions():
                     os.kill(socket_child_pid, 9)
                     del app.config["shell"][socketid]
                     del app.config["shell"]["run"+socketid]
-                    del app.config["shell"]["clildpid"][socketid]
+                    del app.config["shell"]["childpid"][socketid]
                     del app.config["shell"]["subprocpid"+socketid]
         except:
             pass
@@ -179,7 +179,7 @@ def connect():
 #      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
-      app.config["shell"]["clildpid"][socketid] = child_pid
+      app.config["shell"]["childpid"][socketid] = child_pid
       try: subprocpid
       except NameError: subprocpid = ''
       while subprocpid == '':
