@@ -142,7 +142,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       app.config["shell"]["child"+socketid] = child_pid
-      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
+#      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       try: subprocpid
