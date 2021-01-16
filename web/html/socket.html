@@ -46,7 +46,7 @@
     socket.emit("pty-input", {"input{{socketid}}": ev.key, query: 'socketid={{socketid}}'})
   });
 
-  term.onData(function (data, ev) {
+  term.onPaste(function (data, ev) {
     console.log("pasted data", data)
     console.log("event", ev)
     socket.emit("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
