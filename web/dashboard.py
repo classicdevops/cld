@@ -116,8 +116,9 @@ def keepalive_shell_sessions():
 
 def keepalive_shell_session(socketid, child_pid, room):
     while True:
-        time.sleep(10)
         print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
+        app.config["shell"]["keepalive"][socketid] = int(time.time())
+        time.sleep(10)
         current_timestamp = int(time.time())
         print("current_timestamp is: "+str(current_timestamp), flush=True)
         socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
