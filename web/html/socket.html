@@ -47,7 +47,7 @@
   });
 
   term.onData(function (ev) {
-    console.log("pasted data", data)
+    console.log("pasted data", ev)
     console.log("event", ev.domEvent)
     socket.emit("pty-input", {"input{{socketid}}": ev.data, query: 'socketid={{socketid}}'})
   });
