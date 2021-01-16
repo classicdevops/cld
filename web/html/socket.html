@@ -40,10 +40,6 @@
   term.resize(15, 50)
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
-      term.prompt = function () {
-      term.write('\r\n' + '$: ');
-    };
-    term.prompt();
   term.onKey(function (ev) {
     console.log("pressed key", ev.key),
     console.log("event", ev.domEvent),
