@@ -92,6 +92,7 @@ def keepalive_shell_sessions():
         time.sleep(10)
         try:
             print("keepalive_shell_sessions started", flush=True)
+            print('app.config["shell"]["clildpid"] is: '+app.config["shell"]["clildpid"])
             socketid_list = {k for d in app.config["shell"]["clildpid"] for k in d}
             print("socketid_list id: "+str(socketid_list), flush=True)
             for socketid in socket_list:
