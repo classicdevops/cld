@@ -59,8 +59,10 @@ def remoteaddr():
   return remote_addr
 
 #socketio
-#app.config["fd"] = None
-#app.config["child_pid"] = None
+app.config["shell"] = {}
+app.config["shell"]["clildpid"] = {}
+app.config["shell"]["keepalive"] = {}
+
 def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
@@ -174,8 +176,6 @@ def connect():
 #      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
-      try: app.config["shell"]["clildpid"]
-      except:  app.config["shell"]["clildpid"] = {}
       app.config["shell"]["clildpid"][socketid] = child_pid
       try: subprocpid
       except NameError: subprocpid = ''
