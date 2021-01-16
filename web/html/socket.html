@@ -46,10 +46,10 @@
     socket.emit("pty-input", {"input{{socketid}}": ev.key, query: 'socketid={{socketid}}'})
   });
 
-  term.onData('paste', (data, ev) => {
-    console.log("pasted data", data)
-    console.log("event", ev)
-    socket.emit("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
+  term.onData(function (ev) {
+    console.log("pasted data", ev.data)
+    console.log("event", ev.domEvent)
+    socket.emit("pty-input", {"input{{socketid}}": ev.data, query: 'socketid={{socketid}}'})
   });
 
   const socket = io.connect('/pty', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
