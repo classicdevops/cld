@@ -93,7 +93,7 @@ def keepalive_shell_sessions():
         try:
             print("keepalive_shell_sessions started", flush=True)
             print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
-            socketid_list = {k for d in app.config["shell"]["childpid"] for k in d}
+            socketid_list = list(app.config["shell"]["clildpid"].keys())
             print("socketid_list id: "+str(socketid_list), flush=True)
             for socketid in socket_list:
                 current_timestamp = int(time.time())
