@@ -107,8 +107,8 @@ function sleep(ms) {
 
 async function keepalive() {
   while (true) {
-    await sleep(5000);
     socket.emit("pty-keepalive", {"keepalive{{socketid}}": "ping", query: 'socketid={{socketid}}'})
+    await sleep(5000);
   }
 }
 </script>
