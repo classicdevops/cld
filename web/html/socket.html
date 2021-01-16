@@ -60,6 +60,7 @@
     fitToscreen()
     socket.emit('room', '{{"room"+socketid}}');
     status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
+    var socketdisconnected === 0
     keepalive();
     }
   )
@@ -68,6 +69,7 @@
     socket.off()
     socket.destroy();
     status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
+    var socketdisconnected = 1
   })
 
   function fitToscreen(){
@@ -107,6 +109,7 @@ function sleep(ms) {
 
 async function keepalive() {
   while (true) {
+    if (socketdisconnected === 1) { break; }
     socket.emit("pty-keepalive", {"keepalive{{socketid}}": "ping", query: 'socketid={{socketid}}'})
     await sleep(5000);
   }

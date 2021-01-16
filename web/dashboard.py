@@ -91,10 +91,10 @@ def pty_input(data):
     print('app.config["shell"]["keepalive"][socketid]+60 is: '+str(app.config["shell"]["keepalive"][socketid]+60))
 
 def keepalive_shell_sessions():
+    print("keepalive_shell_sessions started", flush=True)
     while True:
         time.sleep(10)
         try:
-          print("keepalive_shell_sessions started", flush=True)
           print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
           socketid_list = list(app.config["shell"]["clildpid"].keys())
           print("socketid_list: "+str(socketid_list), flush=True)
