@@ -229,7 +229,7 @@ def connect():
     except: pass
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
-    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | cut -d ' ' -f 3 | tr -d "\n" ''')
+    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
       return socketio.emit("output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
 #    print(socketid, flush=True)
@@ -240,7 +240,7 @@ def connect():
       room = "room"+socketid
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-#      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
+      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
