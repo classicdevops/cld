@@ -41,9 +41,8 @@
   console.log(`size: ${term.cols} columns, ${term.rows} rows`)
   // term.toggleFullScreen(true)
 
-  term.onData(function (data, ev) {
+  term.onData(function (data) {
     console.log("data", data)
-    console.log("event", ev)
     socket.emit("pty-input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
   });
   var socketstatus = 1
