@@ -265,6 +265,10 @@ def connect():
 
 #@app.after_request
 
+@app.route('/test')
+def index():
+  return remoteaddr()
+
 @app.route('/css/<path:path>')
 def send_css(path):
     return send_from_directory('css', path)
