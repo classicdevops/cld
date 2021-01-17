@@ -46,7 +46,7 @@
     socket.emit("input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
   });
   var socketstatus = 1
-  const socket = io.connect('/pty', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
+  const socket = io.connect('/cld', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
   socket.io._reconnection = false
   const status = document.getElementById("status")
   
