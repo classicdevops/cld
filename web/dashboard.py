@@ -88,7 +88,6 @@ def pty_input(data):
     socketid=request.args.get('socketid')
     print("received keepalive data from: "+socketid, flush=True)
     app.config["shell"]["keepalive"][socketid] = int(time.time())
-    print('app.config["shell"]["keepalive"][socketid]+60 is: '+str(app.config["shell"]["keepalive"][socketid]+60))
 
 def keepalive_shell_sessions():
     print("keepalive_shell_sessions started", flush=True)
