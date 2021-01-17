@@ -64,7 +64,7 @@ def checkpermswhiteip(cldmodule, cldutility, user, remoteaddr):
   user=re.match("[A-z0-9_.-]+", user)[0]
   cldmodule=str(cldmodule)
   cldutility=str(cldutility)
-  if cldutility == 'bash' and remoteaddr in accesslist() and user in bash(awk -F ":" '{print $1' /var/cld/creds/passwd).strip().split(','):
+  if cldutility == 'bash' and remoteaddr in accesslist() and user in bash("awk -F ':' '{print $1' /var/cld/creds/passwd").strip().split(','):
     return ["granted", user]
   elif user in allowmoduleusers(cldmodule) and remoteaddr in accesslist():
     return ["granted", user]
