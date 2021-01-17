@@ -102,7 +102,8 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
-    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
+    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n"''')
+    print('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n"'''. flush=True)
     cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr()) 
     if checkresult[0] != "granted":
