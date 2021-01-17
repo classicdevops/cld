@@ -116,31 +116,34 @@ def keepalive_shell_sessions():
         except:
           pass
 
-threading.Thread(target=keepalive_shell_sessions).start()
+#threading.Thread(target=keepalive_shell_sessions).start()
 
 def keepalive_shell_session(socketid, child_pid, room):
     while True:
         print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
         app.config["shell"]["keepalive"][socketid] = int(time.time())
         time.sleep(10)
-        current_timestamp = int(time.time())
-        print("current_timestamp is: "+str(current_timestamp), flush=True)
-        socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
-        print("socket_timestamp is: "+str(socket_timestamp), flush=True)
-        print
-        if current_timestamp > socket_timestamp:
-            print("started terminating task for socket "+socketid, flush=True)
-            room = "room"+socketid
-            print("exit due "+socketid+" not conencted", flush=True)
-            socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
-            socketio.emit("disconnect", namespace="/pty", room=room)
-            try:
-              del app.config["shell"][socketid]
-              del app.config["shell"]["run"+socketid]
-              del app.config["shell"]["subprocpid"+socketid]
-            except:
-              pass
-            os.kill(child_pid, 9)
+        try:
+          current_timestamp = int(time.time())
+          print("current_timestamp is: "+str(current_timestamp), flush=True)
+          socket_timestamp = app.config["shell"]["keepalive"][socketid]+60
+          print("socket_timestamp is: "+str(socket_timestamp), flush=True)
+          print
+          if current_timestamp > socket_timestamp:
+              print("started terminating task for socket "+socketid, flush=True)
+              room = "room"+socketid
+              print("exit due "+socketid+" not conencted", flush=True)
+              socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+              socketio.emit("disconnect", namespace="/pty", room=room)
+              try:
+                del app.config["shell"][socketid]
+                del app.config["shell"]["run"+socketid]
+                del app.config["shell"]["subprocpid"+socketid]
+              except:
+                pass
+              os.kill(child_pid, 9)
+        except:
+          pass
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
@@ -214,7 +217,7 @@ def connect():
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
-#      socketio.start_background_task(keepalive_shell_session, socketid, child_pid, room)
+      socketio.start_background_task(keepalive_shell_session, socketid, child_pid, room)
       app.config["shell"]["run"+socketid] = "1"
 
 # def sessionparse(value):
