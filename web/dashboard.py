@@ -102,8 +102,8 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
-    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n"''')
-    print('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n"''', flush=True)
+    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "\n,'"''')
+    print('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "\n,'"''', flush=True)
     cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr()) 
     if checkresult[0] != "granted":
@@ -227,7 +227,7 @@ def connect():
     except: pass
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
-    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
+    else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | cut -d ' ' -f 3 | tr -d "\n" ''')
     if shellcmd == "": 
       return socketio.emit("output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
 #    print(socketid, flush=True)
