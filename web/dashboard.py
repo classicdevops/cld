@@ -222,6 +222,7 @@ def resize(data):
 def connect():
   if 'username' in session:
     user = session['username']
+    cldutility=request.args.get('cldutility')
     if cldutility != 'bash':
       cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 3 | tr -d "'"''').replace('\n', '')
     else:
@@ -237,16 +238,11 @@ def connect():
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
     except: cmd_args = " ; sleep 5s"
-#    print("args is: "+cmd_args, flush=True)
-    cldutility=''
-    try: cldutility=request.args.get('cldutility')
-    except: pass
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
       return socketio.emit("output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
-#    print(socketid, flush=True)
     try:
       app.config["shell"]["room"+socketid]
     except:
