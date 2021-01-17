@@ -266,7 +266,7 @@ def connect():
 #@app.after_request
 
 @app.route('/test')
-def index():
+def testip():
   return remoteaddr()
 
 @app.route('/css/<path:path>')
