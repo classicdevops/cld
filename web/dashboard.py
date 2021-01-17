@@ -103,11 +103,11 @@ def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
     cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
-    print('cldfile is: '+cldfile, flush=True)
+    print('cldfile is: '+str(cldfile), flush=True)
     cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
-    print('cldmodule is: '+cldmodule, flush=True)
+    print('cldmodule is: '+str(cldmodule), flush=True)
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr()) 
-    print('checkresult is: '+checkresult, flush=True)
+    print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted":
       return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
