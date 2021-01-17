@@ -155,6 +155,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
           os.kill(child_pid, 9)
+          return
 
 @socketio.on("input", namespace="/cld")
 def pty_input(data):
