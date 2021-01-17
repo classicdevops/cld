@@ -82,13 +82,6 @@ def tool(cldutility, args=None):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
-@socketio.on("pty-keepalive", namespace="/pty")
-def pty_input(data):
-  if 'username' in session:
-    socketid=request.args.get('socketid')
-    print("received keepalive data from: "+socketid, flush=True)
-    app.config["shell"]["keepalive"][socketid] = int(time.time())+60
-
 def keepalive_shell_sessions():
     print("keepalive_shell_sessions started", flush=True)
     while True:
@@ -106,16 +99,14 @@ def keepalive_shell_sessions():
                   socket_child_pid = app.config["shell"]["childpid"][socketid]
                   room = "room"+socketid
                   print("exit due "+socketid+" not conencted", flush=True)
-                  socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+                  socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
                   socketio.emit("disconnect", namespace="/pty", room=room)
                   os.kill(socket_child_pid, 9)
                   del app.config["shell"][socketid]
-                  del app.config["shell"]["run"+socketid]
                   del app.config["shell"]["childpid"][socketid]
                   del app.config["shell"]["subprocpid"+socketid]
         except:
           pass
-
 #threading.Thread(target=keepalive_shell_sessions).start()
 
 def keepalive_shell_session(socketid, child_pid, room):
@@ -125,19 +116,16 @@ def keepalive_shell_session(socketid, child_pid, room):
         time.sleep(10)
         try:
           current_timestamp = int(time.time())
-          print("current_timestamp is: "+str(current_timestamp), flush=True)
           socket_timestamp = app.config["shell"]["keepalive"][socketid]
-          print("socket_timestamp is: "+str(socket_timestamp), flush=True)
           print
           if current_timestamp > socket_timestamp:
               print("started terminating task for socket "+socketid, flush=True)
               room = "room"+socketid
               print("exit due "+socketid+" not conencted", flush=True)
-              socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+              socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
               socketio.emit("disconnect", namespace="/pty", room=room)
               try:
                 del app.config["shell"][socketid]
-                del app.config["shell"]["run"+socketid]
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
@@ -149,10 +137,10 @@ def keepalive_shell_session(socketid, child_pid, room):
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
     while True:
-      time.sleep(0.01)
+      socketio.sleep(0.01)
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
-          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+          socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
           socketio.emit("disconnect", namespace="/pty", room=room)
           os.kill(child_pid, 9)
           return
@@ -161,19 +149,26 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("pty-output", {"output"+socketid: output}, namespace="/pty", room=room)
+              socketio.emit("output", {"output"+socketid: output}, namespace="/pty", room=room)
       else: 
           print("exit due child pid not exist", flush=True)
-          socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
+          socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
           socketio.emit("disconnect", namespace="/pty", room=room)
           os.kill(child_pid, 9)
 
-@socketio.on("pty-input", namespace="/pty")
+@socketio.on("input", namespace="/pty")
 def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
       os.write(app.config["shell"][socketid], data["input"+socketid].encode())
+
+@socketio.on("keepalive", namespace="/pty")
+def pty_input(data):
+  if 'username' in session:
+    socketid=request.args.get('socketid')
+    print("received keepalive data from: "+socketid, flush=True)
+    app.config["shell"]["keepalive"][socketid] = int(time.time())+300
 
 @socketio.on("resize", namespace="/pty")
 def resize(data):
@@ -197,7 +192,7 @@ def connect():
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
-      return socketio.emit("pty-output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
+      return socketio.emit("output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/pty")
 #    print(socketid, flush=True)
     try:
       app.config["shell"]["room"+socketid]
@@ -217,12 +212,8 @@ def connect():
       app.config["shell"][socketid] = fd
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
-      #socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
-      threading.Thread(target=read_and_forward_pty_output, args=(socketid, fd, int(subprocpid), child_pid, room)).start()
-      #socketio.start_background_task(keepalive_shell_session, socketid, child_pid, room)
-      app.config["shell"]["run"+socketid] = "1"
+      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room)).start()
-      #keepalive_shell_session(socketid, child_pid, room)
 
 # def sessionparse(value):
 #   sessionid = re.fullmatch(r'[A-Za-z0-9]+', request.cookies.get('SESSIONID')).string
