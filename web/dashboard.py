@@ -149,7 +149,7 @@ def keepalive_shell_session(socketid, child_pid, room):
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
     while True:
-      socketio.sleep(0.1)
+      socketio.sleep(0.01)
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("pty-output", {"output"+socketid: "Process exited"}, namespace="/pty", room=room)
