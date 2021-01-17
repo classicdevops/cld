@@ -119,7 +119,7 @@ def keepalive_shell_sessions():
 #threading.Thread(target=keepalive_shell_sessions).start()
 
 def keepalive_shell_session(socketid, child_pid, room):
-    app.config["shell"]["keepalive"][socketid] = int(time.time())
+    app.config["shell"]["keepalive"][socketid] = int(time.time())+60
     while True:
         print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
         time.sleep(10)
