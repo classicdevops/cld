@@ -35,6 +35,42 @@ def check_pid(pid):
   else:
     return True
 
+def remoteaddr():
+  if request.headers.getlist("X-Forwarded-For"):
+    remote_addr = request.headers.getlist("X-Forwarded-For")[0]
+  else:
+    remote_addr = request.remote_addr
+  return re.match("[A-z0-9.:]+", remote_addr)[0]
+
+def accesslist():
+  return bash("cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq").split('\n')
+
+def allowmoduleusers(cldmodule):
+  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+
+def allowutilityusers(cldutility):
+  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+
+def checkperms(cldmodule, cldutility, user):
+  user=re.match("[A-z0-9_.-]+", user)[0]
+  cldmodule=str(cldmodule)
+  cldutility=str(cldutility)
+  if user in allowmoduleusers(cldmodule) or user in allowutilityusers(cldutility):
+    return ["granted", user]
+  else:
+    return ["denied", "DENIED"]
+
+def checkpermswhiteip(cldmodule, cldutility, user, remoteaddr):
+  user=re.match("[A-z0-9_.-]+", user)[0]
+  cldmodule=str(cldmodule)
+  cldutility=str(cldutility)
+  if user in allowmoduleusers(cldmodule) and remoteaddr in accesslist():
+    return ["granted", user]
+  elif user in allowutilityusers(cldutility) and remoteaddr in accesslist():
+    return ["granted", user]
+  else:
+    return ["denied", "DENIED"]
+
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
@@ -52,13 +88,6 @@ Session(app)
 
 #@app.before_request
 
-def remoteaddr():
-  if request.headers.getlist("X-Forwarded-For"):
-    remote_addr = request.headers.getlist("X-Forwarded-For")[0]
-  else:
-    remote_addr = request.remote_addr
-  return remote_addr
-
 #socketio
 app.config["shell"] = {}
 app.config["shell"]["childpid"] = {}
@@ -72,6 +101,12 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 @app.route("/tool/<cldutility>/<args>")
 def tool(cldutility, args=None):
   if 'username' in session:
+    user = session['username']
+    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
+    cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr()) 
+    if checkresult[0] != "granted":
+      return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
     except: cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
@@ -137,7 +172,7 @@ def keepalive_shell_session(socketid, child_pid, room):
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
     while True:
-      socketio.sleep(0.01)
+      socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
