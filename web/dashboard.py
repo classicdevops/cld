@@ -102,7 +102,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
 def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
-    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
+    cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 3 | tr -d "'"''').replace('\n', '')
     print('cldfile is: '+str(cldfile), flush=True)
     if cldfile != '': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     else: return Response("403", status=403, mimetype='application/json')
