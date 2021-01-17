@@ -86,7 +86,6 @@ app.config['UPLOAD_FOLDER'] = upload_dir
 #app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
-#accesslist = set(line.strip() for line in open('../creds/accesslist'))
 
 #@app.before_request
 
@@ -105,7 +104,7 @@ def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
     if cldutility != 'bash':
-      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 3 | tr -d "'"''').replace('\n', '')
+      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
     else:
       cldfile = '/bin/bash'
     if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
@@ -147,7 +146,6 @@ def keepalive_shell_sessions():
                   del app.config["shell"]["subprocpid"+socketid]
         except:
           pass
-#threading.Thread(target=keepalive_shell_sessions).start()
 
 def keepalive_shell_session(socketid, child_pid, room):
     app.config["shell"]["keepalive"][socketid] = int(time.time())+60
@@ -224,7 +222,7 @@ def connect():
     user = session['username']
     cldutility=request.args.get('cldutility')
     if cldutility != 'bash':
-      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 3 | tr -d "'"''').replace('\n', '')
+      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
     else:
       cldfile = '/bin/bash'
     print('cldfile is: '+str(cldfile), flush=True)
@@ -263,14 +261,6 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room)).start()
-
-# def sessionparse(value):
-#   sessionid = re.fullmatch(r'[A-Za-z0-9]+', request.cookies.get('SESSIONID')).string
-#   phpsession = re.search(r'.*?username:\"([A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*).*?memberID:\"([0-9]+).*', re.sub('\|\w+\:\d+\:', ':', redis.Redis().get("PHPREDIS_SESSION:"+sessionid).decode(encoding='UTF-8')))
-#   if value == 'username':
-#     return phpsession.group(1)
-#   elif value == 'clientid':
-#     return phpsession.group(2)
 
 #@app.after_request
 
