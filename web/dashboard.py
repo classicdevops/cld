@@ -142,6 +142,7 @@ def keepalive_shell_session(socketid, child_pid, room):
               except:
                 pass
               os.kill(child_pid, 9)
+              return
         except:
           pass
 
