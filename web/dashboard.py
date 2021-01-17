@@ -108,12 +108,9 @@ def tool(cldutility, args=None):
       cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 3 | tr -d "'"''').replace('\n', '')
     else:
       cldfile = '/bin/bash'
-    print('cldfile is: '+str(cldfile), flush=True)
     if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     else: cldmodule = "bash"
-    print('cldmodule is: '+str(cldmodule), flush=True)
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
-    print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
     except: cmd_args = ''
@@ -224,6 +221,18 @@ def resize(data):
 @socketio.on("connect", namespace="/cld")
 def connect():
   if 'username' in session:
+    user = session['username']
+    if cldutility != 'bash':
+      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 3 | tr -d "'"''').replace('\n', '')
+    else:
+      cldfile = '/bin/bash'
+    print('cldfile is: '+str(cldfile), flush=True)
+    if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    else: cldmodule = "bash"
+    print('cldmodule is: '+str(cldmodule), flush=True)
+    checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
+    print('checkresult is: '+str(checkresult), flush=True)
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     socketid=request.args.get('socketid')
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
