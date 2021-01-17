@@ -21,7 +21,7 @@ $3                                 Third PATTERN filtering existing deploys - in
 --nextdeploywait=1                 Wait the end of current deploy before start next
 --nextdeployargs=--run,--test=1    Next deploy arguments comma separated
 --backup=0                         Backup files of filelist before deploy - 0 is disabled - 1 is enabled
---backuplist=/etc/,/tmp/file       List of filed and directories for backup before deploy
+--backuplist=/etc/,/tmp/file       List of files and directories for backup before deploy
 --custombackup=0                   Use custom backup script before deploy - 0 is disabled - 1 is enabled
 --async=1                          Synchronous or asynchronous mode of deploy - 0 is sync - 1 is async
 --debug=0                          Verbose mode of connect and additional predeploy scripts will put to the output
