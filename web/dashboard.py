@@ -106,7 +106,7 @@ def tool(cldutility, args=None):
     print('cldfile is: '+str(cldfile), flush=True)
     cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     print('cldmodule is: '+str(cldmodule), flush=True)
-    checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr()) 
+    checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted":
       return Response("403", status=403, mimetype='application/json')
@@ -240,7 +240,7 @@ def connect():
       room = "room"+socketid
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
-      print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
+      #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
