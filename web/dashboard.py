@@ -103,9 +103,11 @@ def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
     cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
-    print('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''', flush=True)
+    print('cldfile is: '+cldfile, flush=True)
     cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    print('cldmodule is: '+cldmodule, flush=True)
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr()) 
+    print('checkresult is: '+checkresult, flush=True)
     if checkresult[0] != "granted":
       return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
@@ -881,4 +883,4 @@ def backendgitpull():
 if __name__ == '__main__':
 #    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
     #app.run(debug=True, host='0.0.0.0', port=8080)
-    socketio.run(app, debug=False, host='0.0.0.0', port=8080)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8080)
