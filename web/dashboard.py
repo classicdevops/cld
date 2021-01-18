@@ -185,7 +185,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
               socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
     except:
       pass
-    time.sleep(1)
+    socketio.sleep(1)
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
