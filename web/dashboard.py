@@ -140,7 +140,7 @@ def keepalive_shell_sessions():
                   print("exit due "+socketid+" not conencted", flush=True)
                   socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
                   socketio.emit("disconnect", namespace="/cld", room=room)
-                  os.kill(socket_child_pid, 3)
+                  os.kill(socket_child_pid, 9)
                   del app.config["shell"][socketid]
                   del app.config["shell"]["childpid"][socketid]
                   del app.config["shell"]["subprocpid"+socketid]
@@ -167,8 +167,8 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
-              os.kill(subprocpid, 3)
-              os.kill(child_pid, 3)
+              os.kill(subprocpid, 9)
+              os.kill(child_pid, 9)
               return
         except:
           pass
@@ -181,8 +181,8 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
-          os.kill(subprocpid, 3)
-          os.kill(child_pid, 3)
+          os.kill(subprocpid, 9)
+          os.kill(child_pid, 9)
           return
       if sessfd:
           timeout_sec = 0
@@ -194,8 +194,8 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
-          os.kill(subprocpid, 3)
-          os.kill(child_pid, 3)
+          os.kill(subprocpid, 9)
+          os.kill(child_pid, 9)
           return
 
 @socketio.on("input", namespace="/cld")
