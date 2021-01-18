@@ -169,8 +169,9 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
                 pass
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
+                time.sleep(1)
               os.close(fd)
-              bash('kill -9 '+str(child_pid))
+              return bash('kill -9 '+str(child_pid))
         except:
           pass
 
