@@ -140,7 +140,7 @@ def keepalive_shell_sessions():
                   print("exit due "+socketid+" not conencted", flush=True)
                   socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
                   socketio.emit("disconnect", namespace="/cld", room=room)
-                  os.kill(socket_child_pid, 9)
+                  os.kill(socket_child_pid, 3)
                   del app.config["shell"][socketid]
                   del app.config["shell"]["childpid"][socketid]
                   del app.config["shell"]["subprocpid"+socketid]
@@ -167,7 +167,7 @@ def keepalive_shell_session(socketid, child_pid, room):
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
-              os.kill(child_pid, 9)
+              os.kill(child_pid, 3)
               return
         except:
           pass
@@ -180,7 +180,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
-          os.kill(child_pid, 9)
+          os.kill(child_pid, 3)
           return
       if sessfd:
           timeout_sec = 0
@@ -192,7 +192,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
-          os.kill(child_pid, 9)
+          os.kill(child_pid, 3)
           return
 
 @socketio.on("input", namespace="/cld")
@@ -261,7 +261,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room)).start()
-
+      return
 #@app.after_request
 
 @app.route('/test')
