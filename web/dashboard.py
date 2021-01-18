@@ -169,12 +169,23 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
                 pass
               if check_pid(subprocpid) == True:
                 os.kill(subprocpid, 9)
+                time.sleep(5)
               return
         except:
           pass
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
+    try:
+      if sessfd:
+          timeout_sec = 0
+          (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
+          if data_ready:
+              output = os.read(sessfd, max_read_bytes).decode()
+              socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
+      except:
+        pass
+    time.sleep(1)
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
@@ -260,6 +271,10 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid))).start()
+      while True:
+          time.sleep(1)
+          if check_pid(subprocpid) != True:
+            return
 
 #@app.after_request
 
