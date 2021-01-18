@@ -147,7 +147,7 @@ def keepalive_shell_sessions():
         except:
           pass
 
-def keepalive_shell_session(socketid, child_pid, room, subprocpid):
+def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
     print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
     while True:
@@ -168,8 +168,8 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
               except:
                 pass
               if check_pid(subprocpid) == True:
-                return bash('kill -9 '+str(subprocpid))
-              return
+                bash('kill -9 '+str(subprocpid))
+              return os.close(fd)
               
         except:
           pass
@@ -259,7 +259,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid))).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
