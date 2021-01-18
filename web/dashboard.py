@@ -170,22 +170,13 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
               if check_pid(subprocpid) == True:
                 os.kill(subprocpid, 9)
                 time.sleep(5)
+              os.kill(child_pid, 9)
               return
         except:
           pass
 
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
-    try:
-      if sessfd:
-          timeout_sec = 0
-          (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
-          if data_ready:
-              output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
-    except:
-      pass
-    socketio.sleep(1)
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
