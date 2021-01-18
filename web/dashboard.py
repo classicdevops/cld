@@ -148,7 +148,7 @@ def keepalive_shell_sessions():
           pass
 
 def keepalive_shell_session(socketid, child_pid, room, subprocpid):
-    app.config["shell"]["keepalive"][socketid] = int(time.time())+60
+    app.config["shell"]["keepalive"][socketid] = int(time.time())+15
     print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
     while True:
         time.sleep(10)
