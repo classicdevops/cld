@@ -261,9 +261,9 @@ def connect():
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid))).start()
     while True:
-      socketio.sleep(10)
       if check_pid(int(subprocpid)) != True:
         return
+      socketio.sleep(10)
 
 #@app.after_request
 
