@@ -170,8 +170,8 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
               if check_pid(subprocpid) == True:
                 os.kill(subprocpid, 9)
                 time.sleep(5)
-              os.kill(child_pid, 9)
-              return
+              return os.kill(child_pid, 9)
+              
         except:
           pass
 
