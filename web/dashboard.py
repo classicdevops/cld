@@ -168,6 +168,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
               except:
                 pass
               os.kill(subprocpid, 9)
+              time.sleep(5)
               os.kill(child_pid, 9)
               return
         except:
@@ -182,6 +183,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
           os.kill(subprocpid, 9)
+          time.sleep(5)
           os.kill(child_pid, 9)
           return
       if sessfd:
@@ -195,6 +197,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
           os.kill(subprocpid, 9)
+          time.sleep(5)
           os.kill(child_pid, 9)
           return
 
