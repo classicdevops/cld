@@ -273,7 +273,7 @@ def connect():
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid))).start()
       while True:
           time.sleep(1)
-          if check_pid(subprocpid) != True:
+          if check_pid(int(subprocpid)) != True:
             return
 
 #@app.after_request
