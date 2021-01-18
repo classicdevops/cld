@@ -56,9 +56,20 @@
 
 </style>
     <script>
-    function newtab(id, hostname) {
+    function idgen() {
+        var length = 8,
+            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            retVal = "";
+        for (var i = 0, n = charset.length; i < length; ++i) {
+            retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return retVal;
+    }
+
+    function newtab(util, hostname) {
+        var id = idgen();
         $('#hostTab').append('<li class="nav-item"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-tab\').outerHTML = \'\';document.getElementById(\'' + id + '\').outerHTML = \'\';">×</button><button class="refreshtab" type="button" onclick="document.getElementById(\'frame-' + id + '\').src += \'\';document.getElementById(\'fframe-' + id + '\').src += \'\';">⟳</button>' + hostname + '</a></li>');
-        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"><iframe id="frame-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/tool/' + id + '"></iframe><br><iframe id="fframe-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/"></div>');
+        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"><iframe id="frame-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/tool/' + util + '"></iframe><br><iframe id="fframe-' + id + '" width="800" height="600" style="visibility:visible;height: 40%; width: 100%; resize: both; border: 0px;" src="/"></div>');
     };
     </script>
     <script>
@@ -125,7 +136,7 @@
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newtab("bash", "terminal")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for srv in srv_list %}
-                        <li><a onclick='newtab("{{ srv.id }}", "{{ srv.fullname.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv.id }}-link" data-toggle="tab" href="#{{ srv.id }}">{{ srv.fullname }}</a></li>
+                        <li><a onclick='newtab("cldx/{{ srv.fullname }}", "{{ srv.fullname.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv.fullname }}-link" data-toggle="tab" href="#{{ srv.fullname }}">{{ srv.fullname }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
