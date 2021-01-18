@@ -168,7 +168,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
               except:
                 pass
               if check_pid(subprocpid) == True:
-                return bash('kill -9 '+subprocpid)
+                return bash('kill -9 '+str(subprocpid))
               return
               
         except:
@@ -189,11 +189,9 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
               socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
-      else: 
-          print("exit due child pid not exist", flush=True)
-          socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
-          socketio.emit("disconnect", namespace="/cld", room=room)
-          return
+      else:
+          return socketio.emit("disconnect", namespace="/cld", room=room)
+
 
 @socketio.on("input", namespace="/cld")
 def pty_input(data):
@@ -249,7 +247,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
-      return subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
+      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
       try: subprocpid
