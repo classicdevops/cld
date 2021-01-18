@@ -263,7 +263,7 @@ def connect():
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
-      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, subprocpid)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid))).start()
       return
 #@app.after_request
 
