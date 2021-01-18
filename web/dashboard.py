@@ -170,7 +170,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid):
               if check_pid(subprocpid) == True:
                 os.kill(subprocpid, 9)
                 time.sleep(5)
-              return os.kill(child_pid, 9)
+              return
               
         except:
           pass
@@ -251,6 +251,7 @@ def connect():
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
+      return
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
       try: subprocpid
@@ -262,7 +263,6 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid))).start()
-      return
 
 #@app.after_request
 
