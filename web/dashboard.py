@@ -210,7 +210,7 @@ def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     print("received keepalive data from: "+socketid, flush=True)
-    app.config["shell"]["keepalive"][socketid] = int(time.time())+300
+    app.config["shell"]["keepalive"][socketid] = int(time.time())+15
 
 @socketio.on("resize", namespace="/cld")
 def resize(data):
