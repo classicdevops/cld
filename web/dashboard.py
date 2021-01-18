@@ -183,8 +183,8 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
               socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
-      except:
-        pass
+    except:
+      pass
     time.sleep(1)
     while True:
       socketio.sleep(0.05)
