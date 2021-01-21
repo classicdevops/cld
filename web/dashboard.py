@@ -228,7 +228,7 @@ def disconnect():
     sid = request.sid
     leave_room("room"+socketid)
     close_room("room"+socketid)
-    disconnect(sid, '/cld')
+    disconnect(sid=sid, namespace='/cld')
 
 @socketio.on("connect", namespace="/cld")
 def connect():
