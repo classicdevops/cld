@@ -223,7 +223,7 @@ def resize(data):
       set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("disconnect", namespace="/cld")
-def disconnect():
+def socket_disconnect():
   if 'username' in session:
     socketid=request.sid
     sid = request.sid
