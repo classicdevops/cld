@@ -23,8 +23,6 @@ import struct
 import fcntl
 import shlex
 import threading
-import eventlet
-eventlet.monkey_patch()
 
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
@@ -83,7 +81,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 DOCKERHOST = bash('grep DOCKERHOST /var/cld/creds/creds | cut -d = -f 2').replace('\n', '')
 
 app = Flask(__name__, template_folder=template_dir)
-socketio = SocketIO(app, cors_allowed_origins='https://dev-panel.classicdeploy.com', async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins='https://dev-panel.classicdeploy.com')
 app.config['UPLOAD_FOLDER'] = upload_dir
 #app.secret_key = FLASKSECRETKEY
 app.config['SESSION_TYPE'] = 'filesystem'
