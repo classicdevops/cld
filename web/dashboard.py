@@ -253,7 +253,7 @@ def connect():
     join_room(socketid)
     room = socketid
     (child_pid, fd) = pty.fork()
-    print("fd after pty "+fd, flush=True)
+    print("fd after pty "+str(fd), flush=True)
     time.sleep(1)
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
