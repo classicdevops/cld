@@ -237,7 +237,9 @@ def connect():
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     socketid=request.sid
     sid=request.sid
-    if app.config["shell"][socketid]: return
+    try: app.config["shell"][socketid]
+    except: pass
+    else: return
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" "
     except: cmd_args = " "
