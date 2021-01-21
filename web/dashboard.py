@@ -167,7 +167,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
-              leave_room("room"+socketid, sid=sid, namespace='/cld')
+              #leave_room("room"+socketid, sid=sid, namespace='/cld')
               #except: print("leave room exception - sid: "+str(sid), flush=True)
               try: close_room("room"+socketid, '/cld')
               except: print("close_room room exception - sid :"+str(sid), flush=True)
