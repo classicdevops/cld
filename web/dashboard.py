@@ -252,10 +252,10 @@ def connect():
       return socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
     join_room(socketid)
     room = socketid
+    child_pid = None
     (child_pid, fd) = pty.fork()
-    print("fd after pty "+str(fd), flush=True)
-    time.sleep(1)
-    print("fd after sleep "+str(fd), flush=True)
+    while child_pid != 0:
+      time.sleep(0.1)
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
