@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, escape, url_for, session
 from flask_session import Session
-from flask_socketio import SocketIO, join_room, leave_room, close_room
+from flask_socketio import SocketIO, join_room, leave_room, close_room, disconnect
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -23,6 +23,7 @@ import struct
 import fcntl
 import shlex
 import threading
+import eventlet
 
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
@@ -149,7 +150,7 @@ def keepalive_shell_sessions():
 
 def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
-    print("keepalive_shell_session started for socketid: "+socketid, flush=True)
+    print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
     while True:
         time.sleep(10)
         try:
@@ -161,8 +162,6 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               print("exit due "+socketid+" not conencted", flush=True)
               socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room, sid=socketid)
               socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
-              socketio.close_room(room)
-              socketio.disconnect(namespace="/cld", sid=socketid)
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
@@ -238,7 +237,7 @@ def connect():
     socketid=request.sid
     sid=request.sid
     cmd_args = ''
-    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" "
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
     except: cmd_args = " ; sleep 5s"
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
@@ -262,7 +261,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      #threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
