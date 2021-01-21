@@ -138,7 +138,7 @@ def keepalive_shell_sessions():
                   socket_child_pid = app.config["shell"]["childpid"][socketid]
                   room = "room"+socketid
                   print("exit due "+socketid+" not conencted", flush=True)
-                  socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
+                  socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room)
                   socketio.emit("disconnect", namespace="/cld", room=room)
                   os.kill(socket_child_pid, 9)
                   del app.config["shell"][socketid]
@@ -157,6 +157,15 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
           socket_timestamp = app.config["shell"]["keepalive"][socketid]
           print
           if current_timestamp > socket_timestamp:
+              print("started terminating task for socket "+socketid, flush=True)
+              print("exit due "+socketid+" not conencted", flush=True)
+              socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room)
+              socketio.emit("disconnect", namespace="/cld", room=room)
+              try:
+                del app.config["shell"][socketid]
+                del app.config["shell"]["subprocpid"+socketid]
+              except:
+                pass
               try: leave_room(room="room"+socketid, sid=sid, namespace='/cld')
               except: print("leave room exception - sid: "+str(sid), flush=True)
               try: close_room("room"+socketid, '/cld')
@@ -165,16 +174,6 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
               except: print("disconnect exception - sid :"+str(sid), flush=True)
               try: os.close(fd)
               except: print("os.close exception", flush=True)
-              print("started terminating task for socket "+socketid, flush=True)
-              room = "room"+socketid
-              print("exit due "+socketid+" not conencted", flush=True)
-              socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
-              socketio.emit("disconnect", namespace="/cld", room=room)
-              try:
-                del app.config["shell"][socketid]
-                del app.config["shell"]["subprocpid"+socketid]
-              except:
-                pass
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
@@ -188,7 +187,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
           #print("exit due child pid not exist", flush=True)
-          socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
+          socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
           return
       if sessfd:
@@ -196,7 +195,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
+              socketio.emit("output", {"output": output}, namespace="/cld", room=room)
       else:
           return socketio.emit("disconnect", namespace="/cld", room=room)
 
@@ -204,28 +203,38 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
 @socketio.on("input", namespace="/cld")
 def pty_input(data):
   if 'username' in session:
-    socketid=request.args.get('socketid')
-    if socketid in app.config["shell"]:
-      os.write(app.config["shell"][socketid], data["input"+socketid].encode())
+    socketid=request.sid
+    os.write(socketid, data["input"].encode())
 
 @socketio.on("keepalive", namespace="/cld")
 def pty_input(data):
   if 'username' in session:
-    socketid=request.args.get('socketid')
+    socketid=request.sid
     print("received keepalive data from: "+socketid, flush=True)
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
 
 @socketio.on("resize", namespace="/cld")
 def resize(data):
   if 'username' in session:
-    socketid=request.args.get('socketid')
+    socketid=request.sid
     if socketid in app.config["shell"]:
-      set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
+      set_winsize(socketid, data["rows"], data["cols"])
+
+@socketio.on("disconnect", namespace="/cld")
+def resize(data):
+  if 'username' in session:
+    socketid=request.args.get('socketid')
+    sid = request.sid
+    leave_room(socketid)
+    close_room(socketid)
+    disconnect(sid, '/cld')
 
 @socketio.on("connect", namespace="/cld")
 def connect():
   if 'username' in session:
     user = session['username']
+    socketid=request.sid
+    sid=request.sid
     cldutility=request.args.get('cldutility')
     if cldutility != 'bash':
       cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
@@ -238,8 +247,6 @@ def connect():
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    socketid=request.args.get('socketid')
-    sid=request.sid
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
     except: cmd_args = " ; sleep 5s"
@@ -247,12 +254,9 @@ def connect():
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
-      return socketio.emit("output", {"output"+socketid: "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
-    try:
-      app.config["shell"]["room"+socketid]
-    except:
-      join_room("room"+socketid)
-      room = "room"+socketid
+      return socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
+    join_room(socketid)
+    room = socketid
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
@@ -268,7 +272,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd, sid)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
