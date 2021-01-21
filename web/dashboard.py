@@ -157,6 +157,14 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
           socket_timestamp = app.config["shell"]["keepalive"][socketid]
           print
           if current_timestamp > socket_timestamp:
+              try: leave_room(room="room"+socketid, sid=sid, namespace='/cld')
+              except: print("leave room exception - sid: "+str(sid), flush=True)
+              try: close_room("room"+socketid, '/cld')
+              except: print("close_room room exception - sid :"+str(sid), flush=True)
+              try: disconnect(sid, '/cld')
+              except: print("disconnect exception - sid :"+str(sid), flush=True)
+              try: os.close(fd)
+              except: print("os.close exception", flush=True)
               print("started terminating task for socket "+socketid, flush=True)
               room = "room"+socketid
               print("exit due "+socketid+" not conencted", flush=True)
@@ -167,14 +175,6 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
-              try: leave_room(room="room"+socketid, sid=sid, namespace='/cld')
-              except: print("leave room exception - sid: "+str(sid), flush=True)
-              try: close_room("room"+socketid, '/cld')
-              except: print("close_room room exception - sid :"+str(sid), flush=True)
-              try: disconnect(sid, '/cld')
-              except: print("disconnect exception - sid :"+str(sid), flush=True)
-              try: os.close(fd)
-              except: print("os.close exception", flush=True)
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
