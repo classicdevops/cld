@@ -238,7 +238,7 @@ def connect():
     socketid=request.sid
     sid=request.sid
     cmd_args = ''
-    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" "
     except: cmd_args = " ; sleep 5s"
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
