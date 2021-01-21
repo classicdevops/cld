@@ -161,7 +161,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               print("started terminating task for socket "+socketid, flush=True)
               print("exit due "+socketid+" not conencted", flush=True)
               socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room)
-              socketio.emit("disconnect", namespace="/cld", room=room)
+              #socketio.emit("disconnect", namespace="/cld", room=room)
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)

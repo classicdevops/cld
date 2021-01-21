@@ -58,6 +58,7 @@
 
   socket.on("connect", () => {
     fitToscreen()
+    socket.emit('room', socket.id);
     status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
     var socketstatus = 2
     keepalive();
@@ -110,7 +111,7 @@ function sleep(ms) {
 async function keepalive() {
   while (true) {
     if (socketstatus === 0) { break; }
-    socket.emit("keepalive", {"keepalive{{socketid}}": "ping"})
+    socket.emit("keepalive")
     await sleep(5000);
   }
 }
