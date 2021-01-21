@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, escape, url_for, session
 from flask_session import Session
-from flask_socketio import SocketIO, join_room, rooms
+from flask_socketio import SocketIO, join_room, , leave_room, close_room, disconnect
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -147,7 +147,7 @@ def keepalive_shell_sessions():
         except:
           pass
 
-def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
+def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
     print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
     while True:
@@ -170,8 +170,11 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
-              os.close(fd)
-              return bash('kill -9 '+str(child_pid))
+              leave_room("room"+socketid, sid=sid, namespace='/cld')
+              close_room("room"+socketid, namespace='/cld')
+              disconnect(sid=sid, namespace='/cld')
+              #os.close(fd)
+              return #bash('kill -9 '+str(child_pid))
         except:
           pass
 
@@ -232,6 +235,7 @@ def connect():
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     socketid=request.args.get('socketid')
+    sid=request.sid
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
     except: cmd_args = " ; sleep 5s"
@@ -260,7 +264,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd, sid)).start()
 
 #@app.after_request
 
