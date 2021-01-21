@@ -53,7 +53,7 @@
   
   socket.on("output", function(data){
     console.log("new output", data)
-    term.write(data.output{{socketid}})
+    term.write(data.output)
   })
 
   socket.on("connect", () => {

@@ -196,7 +196,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           (data_ready, _, _) = select.select([sessfd], [], [], timeout_sec)
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
-              socketio.emit("output", {"output"+socketid: output}, namespace="/cld", room=room)
+              socketio.emit("output", {"output": output}, namespace="/cld", room=room)
       else:
           return socketio.emit("disconnect", namespace="/cld", room=room)
 
