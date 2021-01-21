@@ -254,9 +254,7 @@ def connect():
     room = socketid
     child_pid = None
     (child_pid, fd) = pty.fork()
-    while fd != -1:
-      print(str(fd), flush=True)
-      time.sleep(0.1)
+    socketio.sleep(0.1)
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
