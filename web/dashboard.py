@@ -175,7 +175,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
               try: close_room("room"+socketid, '/cld')
               except: print("close_room room exception - sid :"+str(sid), flush=True)
               try: disconnect(sid, '/cld')
-              except: print("disconnect room exception - sid :"+str(sid), flush=True)
+              except: print("disconnect exception - sid :"+str(sid), flush=True)
               try: os.close(fd)
               except: print("os.close exception", flush=True)
               return #bash('kill -9 '+str(child_pid))
