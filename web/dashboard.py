@@ -209,14 +209,14 @@ def resize(data):
     if socketid in app.config["shell"]:
       set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
 
-@socketio.on("disconnect", namespace="/cld")
-def socket_disconnect():
-  if 'username' in session:
-    socketid=request.sid
-    sid = request.sid
-    leave_room(socketid)
-    close_room(socketid)
-    disconnect(sid)
+#@socketio.on("disconnect", namespace="/cld")
+#def socket_disconnect():
+#  if 'username' in session:
+#    socketid=request.sid
+#    sid = request.sid
+#    leave_room(socketid)
+#    close_room(socketid)
+#    disconnect(sid)
 
 @socketio.on("connect", namespace="/cld")
 def connect():
