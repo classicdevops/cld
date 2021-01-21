@@ -196,7 +196,7 @@ def pty_input(data):
       os.write(app.config["shell"][socketid], data["input"].encode())
 
 @socketio.on("keepalive", namespace="/cld")
-def pty_input(data):
+def pty_keepalive():
   if 'username' in session:
     socketid=request.sid
     print("received keepalive data from: "+socketid, flush=True)
