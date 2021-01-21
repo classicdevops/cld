@@ -170,10 +170,14 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
-              leave_room("room"+socketid, sid=sid, namespace='/cld')
-              close_room("room"+socketid, namespace='/cld')
-              disconnect(sid=sid, namespace='/cld')
-              #os.close(fd)
+              try: leave_room("room"+socketid, sid, '/cld')
+              except: print("leave room exception - sid :"+str(sid), flush=True)
+              try: close_room("room"+socketid, '/cld')
+              except: print("close_room room exception - sid :"+str(sid), flush=True)
+              try: disconnect(sid, '/cld')
+              except: print("disconnect room exception - sid :"+str(sid), flush=True)
+              try: os.close(fd)
+              except: print("os.close exception", flush=True)
               return #bash('kill -9 '+str(child_pid))
         except:
           pass
