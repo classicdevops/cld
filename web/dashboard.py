@@ -162,10 +162,12 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               print("exit due "+socketid+" not conencted", flush=True)
               socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room, sid=socketid)
               socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
+              socketio.close_room(room)
+              socketio.disconnect(namespace="/cld", sid=socketid)
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
-              return bash('kill -9 '+str(child_pid))
+              return #bash('kill -9 '+str(child_pid))
         except:
           pass
 
@@ -184,8 +186,8 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
               socketio.emit("output", {"output": output}, namespace="/cld", room=room, sid=socketid)
-      #else:
-      #    return socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
+      else:
+          return socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
 
 
 @socketio.on("input", namespace="/cld")
@@ -244,8 +246,8 @@ def connect():
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
       return socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
+    join_room(socketid)
     room = socketid
-    join_room(room)
     (child_pid, fd) = pty.fork()
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
@@ -261,7 +263,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      #threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
