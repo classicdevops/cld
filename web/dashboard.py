@@ -167,10 +167,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
-              if check_pid(subprocpid) == True:
-                bash('kill -9 '+str(subprocpid))
-                time.sleep(1)
-              try: leave_room("room"+socketid, sid=sid, namespace='/cld')
+              leave_room("room"+socketid, sid=sid, namespace='/cld')
               except: print("leave room exception - sid :"+str(sid), flush=True)
               try: close_room("room"+socketid, '/cld')
               except: print("close_room room exception - sid :"+str(sid), flush=True)
@@ -178,6 +175,9 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
               except: print("disconnect exception - sid :"+str(sid), flush=True)
               try: os.close(fd)
               except: print("os.close exception", flush=True)
+              if check_pid(subprocpid) == True:
+                bash('kill -9 '+str(subprocpid))
+                time.sleep(1)
               return #bash('kill -9 '+str(child_pid))
         except:
           pass
