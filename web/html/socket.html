@@ -58,7 +58,6 @@
 
   socket.on("connect", () => {
     fitToscreen()
-    socket.emit('room', '{{"room"+socketid}}');
     status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
     var socketstatus = 2
     keepalive();
