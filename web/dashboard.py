@@ -255,6 +255,7 @@ def connect():
     (child_pid, fd) = pty.fork()
     print("fd after pty "+str(fd), flush=True)
     time.sleep(1)
+    print("fd after sleep "+str(fd), flush=True)
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
