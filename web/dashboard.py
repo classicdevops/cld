@@ -170,7 +170,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
-              try: leave_room("room"+socketid, sid, '/cld')
+              try: leave_room("room"+socketid, sid=sid, namespace='/cld')
               except: print("leave room exception - sid :"+str(sid), flush=True)
               try: close_room("room"+socketid, '/cld')
               except: print("close_room room exception - sid :"+str(sid), flush=True)
@@ -187,7 +187,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
-          print("exit due child pid not exist", flush=True)
+          #print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
           return
