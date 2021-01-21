@@ -176,7 +176,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
       if check_pid(subprocpid) != True:
           print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room, sid=socketid)
-          socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
+          #socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
           return
       if sessfd:
           timeout_sec = 0
@@ -184,8 +184,8 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
           if data_ready:
               output = os.read(sessfd, max_read_bytes).decode()
               socketio.emit("output", {"output": output}, namespace="/cld", room=room, sid=socketid)
-      else:
-          return socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
+      #else:
+      #    return socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
 
 
 @socketio.on("input", namespace="/cld")
@@ -261,7 +261,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      #threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
