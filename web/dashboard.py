@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, escape, url_for, session
 from flask_session import Session
-from flask_socketio import SocketIO, join_room, leave_room, close_room, disconnect
+from flask_socketio import SocketIO, join_room, rooms
 from werkzeug.utils import secure_filename
 #import json
 import re
@@ -147,7 +147,7 @@ def keepalive_shell_sessions():
         except:
           pass
 
-def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
+def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
     print("keepalive_shell_sessions started for socketid: "+socketid, flush=True)
     while True:
@@ -167,18 +167,11 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd, sid):
                 del app.config["shell"]["subprocpid"+socketid]
               except:
                 pass
-              try: leave_room(room="room"+socketid, sid=sid, namespace='/cld')
-              except: print("leave room exception - sid: "+str(sid), flush=True)
-              try: close_room("room"+socketid, '/cld')
-              except: print("close_room room exception - sid :"+str(sid), flush=True)
-              try: disconnect(sid, '/cld')
-              except: print("disconnect exception - sid :"+str(sid), flush=True)
-              try: os.close(fd)
-              except: print("os.close exception", flush=True)
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
-              return #bash('kill -9 '+str(child_pid))
+              os.close(fd)
+              return bash('kill -9 '+str(child_pid))
         except:
           pass
 
@@ -187,7 +180,7 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
-          #print("exit due child pid not exist", flush=True)
+          print("exit due child pid not exist", flush=True)
           socketio.emit("output", {"output"+socketid: "Process exited"}, namespace="/cld", room=room)
           socketio.emit("disconnect", namespace="/cld", room=room)
           return
@@ -239,7 +232,6 @@ def connect():
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     socketid=request.args.get('socketid')
-    sid=request.sid
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
     except: cmd_args = " ; sleep 5s"
@@ -268,7 +260,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd, sid)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
@@ -895,4 +887,4 @@ def backendgitpull():
 if __name__ == '__main__':
 #    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
     #app.run(debug=True, host='0.0.0.0', port=8080)
-    socketio.run(app, debug=True, host='0.0.0.0', port=8080)
+    socketio.run(app, debug=False, host='0.0.0.0', port=8080)
