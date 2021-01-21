@@ -15,6 +15,7 @@ def arg(arg, message):
   return re.search('[A-z0-9.=-]+', message.text.split()[arg])[0]
 
 bot = telebot.TeleBot(bash("grep ACCESS_BOT_TOKEN /var/cld/creds/creds_security_system | cut -d = -f 2").strip())
+api_domain = bash("grep ACCESS_API_DOMAIN /var/cld/creds/creds_security_system | cut -d = -f 2").replace('\n', '')
 
 # Generate password
 @bot.message_handler(commands=["passwd"])
