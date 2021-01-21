@@ -160,13 +160,13 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               print("started terminating task for socket "+socketid, flush=True)
               print("exit due "+socketid+" not conencted", flush=True)
               socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room, sid=socketid)
-              socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
-              socketio.close_room(room)
-              socketio.disconnect(namespace="/cld", sid=socketid)
+              socketio.emit("disconnect", {"disconnect": socketid}, namespace="/cld", room=room, sid=socketid)
+              #socketio.close_room(room)
+              #socketio.disconnect(namespace="/cld", sid=socketid)
               if check_pid(subprocpid) == True:
                 bash('kill -9 '+str(subprocpid))
                 time.sleep(1)
-              return #bash('kill -9 '+str(child_pid))
+              return bash('kill -9 '+str(child_pid))
         except:
           pass
 
@@ -265,7 +265,7 @@ def connect():
       set_winsize(fd, 50, 50)
       socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
       print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      #threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
+      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
