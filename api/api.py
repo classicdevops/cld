@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
 from flask import abort, request
+import requests
 from flask import g
 from flask import Response
 import json
