@@ -254,17 +254,21 @@ def connect():
     room = socketid
     child_pid = None
     (child_pid, fd) = pty.fork()
-    time.sleep(0.1)
+    while fd < 1:
+     time.sleep(0.05)
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
-      print("fd after subprocess "+str(fd), flush=True)
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
       try: subprocpid
-      except NameError: subprocpid = ''
-      while subprocpid == '':
+      except NameError: 
+        subprocpid = ''
+        count = 0
+      while subprocpid == '' or count != 30:
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
+        count+=1
+        time.sleep(0.1)
       app.config["shell"][socketid] = fd
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
       set_winsize(fd, 50, 50)
