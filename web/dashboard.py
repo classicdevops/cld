@@ -204,28 +204,28 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
 @socketio.on("input", namespace="/cld")
 def pty_input(data):
   if 'username' in session:
-    socketid=request.args.sid
+    socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
       os.write(app.config["shell"][socketid], data["input"].encode())
 
 @socketio.on("keepalive", namespace="/cld")
 def pty_input(data):
   if 'username' in session:
-    socketid=request.args.sid
+    socketid=request.args.get('socketid')
     print("received keepalive data from: "+socketid, flush=True)
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
 
 @socketio.on("resize", namespace="/cld")
 def resize(data):
   if 'username' in session:
-    socketid=request.args.sid
+    socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
       set_winsize(app.config["shell"][socketid], data["rows"], data["cols"])
 
 @socketio.on("disconnect", namespace="/cld")
 def disconnect():
   if 'username' in session:
-    socketid=request.args.sid
+    socketid=request.args.get('socketid')
     sid = request.sid
     leave_room("room"+socketid)
     close_room("room"+socketid)
@@ -247,7 +247,7 @@ def connect():
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    socketid=request.args.sid
+    socketid=request.args.get('socketid')
     sid=request.sid
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" ; sleep 5s"
