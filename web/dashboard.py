@@ -216,7 +216,7 @@ def socket_disconnect():
     sid = request.sid
     leave_room(socketid)
     close_room(socketid)
-    disconnect()
+    disconnect(sid)
 
 @socketio.on("connect", namespace="/cld")
 def connect():
