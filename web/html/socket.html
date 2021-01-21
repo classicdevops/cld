@@ -68,7 +68,6 @@
     socket.off()
     socket.destroy();
     status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
-    socket.emit("disconnect", query: 'socketid={{socketid}}'})
     var socketstatus = 0
   })
 
