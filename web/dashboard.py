@@ -204,7 +204,8 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
 def pty_input(data):
   if 'username' in session:
     socketid=request.sid
-    os.write(socketid, data["input"].encode())
+    if socketid in app.config["shell"]:
+      os.write(socketid, data["input"].encode())
 
 @socketio.on("keepalive", namespace="/cld")
 def pty_input(data):
