@@ -206,7 +206,7 @@ def pty_input(data):
   if 'username' in session:
     socketid=request.args.get('socketid')
     if socketid in app.config["shell"]:
-      os.write(app.config["shell"][socketid], data["input"+socketid].encode())
+      os.write(app.config["shell"][socketid], data["input"].encode())
 
 @socketio.on("keepalive", namespace="/cld")
 def pty_input(data):

@@ -43,8 +43,9 @@
 
   term.onData(function (data) {
     console.log("data", data)
-    socket.emit("input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
+    socket.emit("input", {"input": data, query: 'socketid={{socketid}}'})
   });
+
   var socketstatus = 1
   const socket = io.connect('/cld', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
   socket.io._reconnection = false
