@@ -175,9 +175,9 @@ def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
-          print("exit due child pid not exist", flush=True)
+          print("exit due subprocpid not exist", flush=True)
           socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room, sid=socketid)
-          socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
+          socketio.emit("disconnect", namespace="/cld", sid=socketid)
           return
       if sessfd:
           timeout_sec = 0
