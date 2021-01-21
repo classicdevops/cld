@@ -43,22 +43,21 @@
 
   term.onData(function (data) {
     console.log("data", data)
-    socket.emit("input", {"input": data})
+    socket.emit("input", {"input{{socketid}}": data, query: 'socketid={{socketid}}'})
   });
-
   var socketstatus = 1
-  const socket = io.connect('/cld', {query: {'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
+  const socket = io.connect('/cld', {query: {'socketid': '{{socketid}}', 'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
   socket.io._reconnection = false
   const status = document.getElementById("status")
   
   socket.on("output", function(data){
     console.log("new output", data)
-    term.write(data.output)
+    term.write(data.output{{socketid}})
   })
 
   socket.on("connect", () => {
     fitToscreen()
-    socket.emit('room', socket.id);
+    socket.emit('room', '{{"room"+socketid}}');
     status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
     var socketstatus = 2
     keepalive();
@@ -69,13 +68,12 @@
     socket.off()
     socket.destroy();
     status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
-    //socket.emit("disconnect")
     var socketstatus = 0
   })
 
   function fitToscreen(){
     fit.fit()
-    socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+    socket.emit("resize", {"cols": term.cols, "rows": term.rows, query: 'socketid={{socketid}}'})
   }
 
   function debounce(func, wait_ms) {
@@ -111,7 +109,7 @@ function sleep(ms) {
 async function keepalive() {
   while (true) {
     if (socketstatus === 0) { break; }
-    socket.emit("keepalive")
+    socket.emit("keepalive", {"keepalive{{socketid}}": "ping", query: 'socketid={{socketid}}'})
     await sleep(5000);
   }
 }
