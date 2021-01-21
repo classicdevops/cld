@@ -264,7 +264,7 @@ def connect():
       except NameError: 
         subprocpid = ''
         count = 0
-      while subprocpid == '' or count != 30:
+      while subprocpid == '' and count != 30:
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
         count+=1
         time.sleep(0.1)
