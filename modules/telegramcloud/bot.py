@@ -11,4 +11,4 @@ def tcloud_get_file(message):
         pass
     answer = "downloadlink: https://"+api_domain+"/tcloud/"+message.document.file_id+"/"+message.document.file_name
 #    cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args)
-    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
+    bot.send_message(message.chat.id, answer, parse_mode='Markdown')
