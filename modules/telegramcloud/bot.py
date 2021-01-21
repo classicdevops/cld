@@ -1,4 +1,4 @@
-@bot.message_handler(commands=["upload"])
+@bot.message_handler(content_types=['document'])
 def tcloud_get_file(message):
     checkresult = checkperms(cldmodule, "tcloud_get_file", message.from_user.id, message.chat.id, message.from_user.username)
     if checkresult[0] != "granted": return
