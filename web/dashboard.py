@@ -256,7 +256,6 @@ def connect():
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
       subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
-      time.sleep(1)
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
       try: subprocpid
