@@ -239,7 +239,7 @@ def connect():
     sid=request.sid
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" "
-    except: cmd_args = " ; sleep 5s"
+    except: cmd_args = " "
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
