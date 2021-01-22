@@ -265,7 +265,7 @@ def connect():
         subprocpid = ''
         count = 0
       while subprocpid == '' and count != 30:
-        subprocpid = bash('ps axf -o pid,command | grep -v grep | sed "s/ //g" | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
+        subprocpid = bash('ps axf -o pid,command | grep -v grep | sed "s/^ //g" | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
         count+=1
         print('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"', flush=True)
         time.sleep(0.1)
