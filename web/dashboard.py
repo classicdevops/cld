@@ -267,6 +267,7 @@ def connect():
       while subprocpid == '' and count != 30:
         subprocpid = bash('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"')
         count+=1
+        print('ps axf -o pid,command | grep -v grep | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1 | tr -d "\n"', frush=True)
         time.sleep(0.1)
       app.config["shell"][socketid] = fd
       app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
