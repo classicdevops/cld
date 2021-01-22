@@ -74,7 +74,7 @@
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
        sleep(250).then(() => {
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 60%; width: 100%; resize: both; border: 0px;" src="/tool/' + util + '"></iframe>');
+        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/' + util + '"></iframe>');
         });
     };
     </script>
