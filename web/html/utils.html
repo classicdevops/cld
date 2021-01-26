@@ -75,6 +75,11 @@
     function appendcontent(id, util) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
+        $.ajax({type : 'GET', url: "/help/cld", dataType : 'text',
+            success: function (data) {
+            $('#'+id).append('<pre>'+data+'</pre>')
+            }
+        });
     }
     function openutil(id, util, args="") {
         sleep(250).then(() => {
