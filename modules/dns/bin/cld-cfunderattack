@@ -1,16 +1,16 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Utility to check if there is attack for site and enable "under_attack" mode at CloudFlare - output is rps amount
+Utility to check if there is attack for site and enable "under_attack" mode at CloudFlare - output is RPS amount
 Can be settet up for cron or to Zabbix as data item with system.run key or Classic Deploy API by URL
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 --domain=example.com                Domain name setted up in the web server config
 --instance=cloud1_1.2.3.4_22_root   CLD instance where this utility whill check access_log
---rps=100                           Limit of rps - higher will considering as attack
+--rps=100                           Limit of RPS - higher will considering as attack
 --groups=group1,group2              Filtering by instance groups - field can be blank
 --accesslog=/var/log/access.log     Target access log - default is /var/log/nginx-main-access.log
---logpattern=someword_or_empty      Defined pattern for count rps by it - field can be blank
+--logpattern=someword_or_empty      Defined pattern for count RPS by it - field can be blank
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
