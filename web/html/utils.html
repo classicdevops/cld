@@ -70,7 +70,7 @@
     }
     function newtab(util, hostname) {
         var id = idgen();
-        $('#hostTab').append('<li class="nav-item"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-tab\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="document.getElementById(\'frame-' + id + '\').src += \'\';document.getElementById(\'fframe-' + id + '\').src += \'\';">⟳</button>' + hostname + '</a></li>');
+        $('#hostTab').append('<li class="nav-item"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-tab\').outerHTML = \'\';document.getElementById(\'' + id + '\').outerHTML = \'\';">×</button><button class="refreshtab" type="button" onclick="document.getElementById(\'frame-' + id + '\').src += \'\';document.getElementById(\'fframe-' + id + '\').src += \'\';">⟳</button>' + hostname + '</a></li>');
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
        sleep(250).then(() => {
@@ -140,9 +140,9 @@
                 <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
-                        <li><a onclick='newtab("bash", "terminal")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
-                        {% for srv in srv_list %}
-                        <li><a onclick='newtab("cldx/{{ srv.fullname }}", "{{ srv.fullname.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv.fullname }}-link" data-toggle="tab" href="#{{ srv.fullname }}">{{ srv.fullname }}</a></li>
+                        <li><a onclick='newtab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
+                        {% for util in utils %}
+                        <li><a onclick='newtab("{{ util }}")' class="nav-link active" id="{{ util }}-link" data-toggle="tab" href="#{{ util }}">{{ util }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

@@ -375,6 +375,13 @@ def terminal():
       srv_list[n] = {k:v for k,v in zip(init_list,srv_list[n].split(' '))}
     return render_template('html/terminal.html', username=username, srv_list=srv_list)
 
+@app.route('/utils')
+def utilities():
+  if 'username' in session:
+    username = session['username']
+    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev| head -c -1''').split('\n')
+    return render_template('html/utils.html', username=username, utils=utils)
+
 @app.route('/admin')
 def admin():
   if 'username' in session:
