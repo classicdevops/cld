@@ -90,6 +90,29 @@ Session(app)
 
 #@app.before_request
 
+#help 
+exec(bash('''
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include)
+do
+CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
+CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
+cat << EOL
+@app.route('/help/${CLD_UTIL}')
+def help_${CLD_UTIL//-/_}():
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", user, remoteaddr()) 
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+    print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} --help', flush=True)
+    cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} --help')
+    resp = Response(cmdoutput, status=200, mimetype='application/json')
+    return resp
+
+EOL
+done
+'''))
+
 #socketio
 app.config["shell"] = {}
 app.config["shell"]["childpid"] = {}
