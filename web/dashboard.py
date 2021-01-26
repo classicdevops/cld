@@ -101,10 +101,8 @@ cat << EOL
 def help_${CLD_UTIL//-/_}():
   if 'username' in session:
     user = session['username']
-    print('user is: '+user, flush=True)
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", user, remoteaddr()) 
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
     print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} --help', flush=True)
     cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} --help')
     resp = Response(cmdoutput, status=200, mimetype='application/json')
