@@ -160,7 +160,7 @@ def keepalive_shell_sessions():
                   print("started terminating task for socket "+socketid, flush=True)
                   socket_child_pid = app.config["shell"]["childpid"][socketid]
                   room = socketid
-                  print("exit due "+socketid+" not conencted", flush=True)
+                  print("exit due "+socketid+" not connected", flush=True)
                   socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room)
                   socketio.emit("disconnect", namespace="/cld", room=room)
                   os.kill(socket_child_pid, 9)
