@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source /var/cld/bin/include/cldfuncs
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)

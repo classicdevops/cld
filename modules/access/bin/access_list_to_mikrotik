@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 source /var/cld/creds/creds
 init-load-constants MIKROTIK_USER\|admin MIKROTIK_PASSWORD\|Y0uRM1kr071Kp455W0rD MIKROTIK_HOST\|1.2.3.4
 ACCESS_LIST=$(cat << EOACCESSLIST

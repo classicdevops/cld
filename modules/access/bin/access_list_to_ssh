@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 DEPLOY_ACCESS_LIST=$(cat << EOACCESSLIST
 cat > /etc/hosts.allow << 'EOHOSTSACCESS'
 `(

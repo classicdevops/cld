@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 GROUP=$1
 mkdir -p /var/cld/access/groups/${GROUP}
 touch /var/cld/access/groups/${GROUP}/clouds

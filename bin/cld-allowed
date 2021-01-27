@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 USER=$1
 for GROUP in $(cat /var/cld/access/users/${USER}/groups 2>/dev/null)
 do

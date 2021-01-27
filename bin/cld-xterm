@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 CLOUDID=$1
 SESSID=$2
 CLDUSER=$3

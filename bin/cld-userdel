@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 NEWUSER=$1
 userdel ${NEWUSER}
 rm -f /home/${NEWUSER}/*
