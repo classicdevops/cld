@@ -73,7 +73,7 @@
         );
     }
     function appendform(id, util) {
-        $('#'+id).append('<form>        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug" onclick="openutil(\''+id+'\', \''+util+'\')">        </div>        <button type="button" class="btn btn-primary">Run</button>        </form>')
+        $('#'+id).append('<form>        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+util+'\')">Run</button>        </form>')
     }
     function appendcontent(id, util) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
