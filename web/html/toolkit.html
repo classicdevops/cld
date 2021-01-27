@@ -86,7 +86,7 @@
         });
     }
     function openutil(id, util) {
-        var args = document.getElementById(id='-arg').value;
+        var args = document.getElementById(id+'-arg').value;
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/'+args+'"></iframe>');
         };
     function newtab(util) {
