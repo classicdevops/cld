@@ -89,6 +89,10 @@
         var args = document.getElementById(id+'-arg').value;
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/'+args+'"></iframe>');
         };
+        sleep(250).then(() => {
+        document.getElementById('frame-'+id).contentDocument.getElementById("terminal").onfocus
+        });
+        
     function newtab(util) {
         var id = idgen();
         appendtab(id, util);
