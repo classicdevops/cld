@@ -37,13 +37,13 @@
 
 #ServerListUl li a {
     border: 1px solid #1e88e5;
-    margin-top: -1px; /* Prevent double borders */
+    margin: 0px;
     background-color: white;
-    padding: 4px;
+    padding: 0px;
+    padding-left: 4px;
     text-decoration: none;
-    color: black;
     display: block;
-    font-size: 10;
+    font-size: 14;
     color: lightslategray;
     border-right-width: 0;
     border-left-width: 0;
@@ -162,7 +162,7 @@
         <div class="container" style="width: 80%;">
             <div class="row row-offcanvas row-offcanvas-left">
                 <!-- sidebar -->
-                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 225px;">
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newtab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
