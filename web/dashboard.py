@@ -246,7 +246,8 @@ def resize(data):
 
 @socketio.on("connect", namespace="/cld")
 def connect():
-  if 'username' not in session: redirect('/login', code=302)
+   if 'username' not in session: return redirect('/login', code=302)
+   elif 'username' in session:
     user = session['username']
     cldutility=request.args.get('cldutility')
     if cldutility != 'bash':
