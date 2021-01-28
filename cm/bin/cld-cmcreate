@@ -351,7 +351,8 @@ Datacenter: $HPR_DC
 $CONSTANTS
 EOL
 )
-
+echo
+echo Equivalent non-interactive command: cld-cmcreate --hyper=${HYPERVISOR} --os=${OS} --name=${VMNAME} --cpu=${VMCPU} --ram=${VMMEMORY} --disk=${DISK} --ip=${IPADDR} --mac=${MACADDR} --gate=${GATEWAY} --storage=${STORAGE}
 echo
 echo "Approve settings?"
 echo -n "y/n: " && read ANSWER ; if [ "$ANSWER" = "y" ]
