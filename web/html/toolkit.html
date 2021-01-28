@@ -88,7 +88,7 @@
     function openutil(id, util) {
         var args = document.getElementById(id+'-arg').value;
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/'+args+'"></iframe>');
-        sleep(2000).then(() => {
+        sleep(5000).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
