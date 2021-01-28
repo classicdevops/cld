@@ -246,7 +246,7 @@ def resize(data):
 
 @socketio.on("connect", namespace="/cld")
 def connect():
-  if 'username' in session:
+  if 'username' not in session: redirect('/login', code=302)
     user = session['username']
     cldutility=request.args.get('cldutility')
     if cldutility != 'bash':
@@ -318,12 +318,13 @@ def send_js(path):
 
 @app.route('/')
 def index():
-   if 'username' in session:
-      username = session['username']
-      return 'Logged in as ' + username + '<br>' + \
-      "<b><a href = '/logout'>click here to log out</a></b>"
-   return "You are not logged in <br><a href = '/login'></b>" + \
-      "click here to log in</b></a>"
+   if 'username' not in session: return redirect('/login', code=302)
+   username = session['username']
+   return render_template('html/index.html', username=username)
+
+@app.route('/panel/')
+def dashboard():
+  return redirect('/', code=302)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -378,12 +379,6 @@ def factivate():
     # print('screen -dm timeout 30m python3 /var/cld/flaskfilemanager/cldapp/app.py --targetpath=/home/'+username+'/mnt/'+cloudname)
     #return redirect('http://'+DOCKERHOST+'/files/'+cloudid+'/fm/index.html', code=302)
     return redirect('http://'+DOCKERHOST+'/files/'+cloudid+'/files/filemanager', code=302)
-
-@app.route('/panel/')
-def dashboard():
-  if 'username' in session:
-    username = session['username']
-    return render_template('html/index.html', username=username)
 
 @app.route('/terminal')
 def terminal():
