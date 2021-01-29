@@ -142,7 +142,7 @@
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newtab("bash", "terminal")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for srv in srv_list %}
-                        <li><a onclick='newtab("cldx/{{ srv.fullname }}", "{{ srv.fullname.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv.fullname }}-link" data-toggle="tab" href="#{{ srv.fullname }}">{{ srv.fullname }}</a></li>
+                        <li><a onclick='newtab("cldx/{{ srv }}", "{{ srv.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv }}-link" data-toggle="tab" href="#{{ srv }}">{{ srv }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

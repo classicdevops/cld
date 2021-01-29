@@ -385,20 +385,14 @@ def factivate():
 def terminal():
   if 'username' in session:
     username = session['username']
-    # ext_do_list_file = open("../creds/ext_do_list", "r")
-    # ext_do_list = ext_do_list_file.readlines()
-    # ext_do_list_file.close()
-    init_list = ['id', 'fullname']
-    srv_list = bash('''/var/cld/bin/cld-allowed '''+username+''' | xargs -I {} awk "/{}/" /var/cld/creds/id_list''').split('\n')
-    for n, i in enumerate(srv_list):
-      srv_list[n] = {k:v for k,v in zip(init_list,srv_list[n].split(' '))}
+    srv_list = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list' | head -c -1).split('\n')
     return render_template('html/terminal.html', username=username, srv_list=srv_list)
 
 @app.route('/toolkit')
 def toolkit():
   if 'username' in session:
     username = session['username']
-    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev| head -c -1''').split('\n')
+    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev | head -c -1''').split('\n')
     return render_template('html/toolkit.html', username=username, utils=utils)
 
 @app.route('/admin')
