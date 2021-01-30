@@ -440,7 +440,7 @@ def user():
     for n, i in enumerate(users):
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
-    allowedclouds = bash('/var/cld/bin/cld-allowed '+request.args['name']).split('\n')[:-1]
+    allowedclouds = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld-disallowed '+request.args['name']).split('\n')[:-1]
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
@@ -462,7 +462,7 @@ def group():
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
     # allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
-    allowedclouds = bash("cut -d _ -f -4 /var/cld/access/groups/"+request.args['name']+"/clouds | tr -d '\001' | grep -vh '^$\|^#'").split('\n')
+    allowedclouds = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
     #[:-1]
     disallowedclouds = bash('/var/cld/bin/cld-disallowed-group '+request.args['name']).split('\n')[:-1]
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
