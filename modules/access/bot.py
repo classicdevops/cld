@@ -10,4 +10,5 @@ def cmd_myip(message):
   else:
     myip = 'TOKEN'
     cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT /var/cld/modules/access/bin/myip '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip))
-    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown', disable_web_page_preview='true')
+    last_message = bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown', disable_web_page_preview='true')
+    bot.send_message(message.chat.id, str(dir(last_message)), parse_mode='Markdown', disable_web_page_preview='true')
