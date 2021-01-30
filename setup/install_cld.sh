@@ -165,7 +165,7 @@ systemctl enable docker
 systemctl start docker
 
 yum install python3 python3-pip  -y
-pip3 install flask redis python-pam docker-compose Image flask_session
+pip3 install flask redis python-pam Image flask_session
 
 #install yarn nodejs
 bash -x <(wget -qO- https://rpm.nodesource.com/setup_10.x)

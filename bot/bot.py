@@ -33,14 +33,21 @@ def cmd_wazzup(message):
     keyboard.add(callback_button)
     bot.send_message(message.chat.id, "wazzup?", reply_markup=keyboard)
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_inline(call):
-    chat_id=call.message.chat.id
-    message_id=call.message.message_id
-    if call.message:
-       if call.data == "wazup":
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="WAZZZUUUP!")
-            bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
+@bot.callback_query_handler(lambda query: query.data == "wazup")
+def wazzup_callback(query):
+    chat_id=query.message.chat.id
+    message_id=query.message.message_id
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="WAZZZUUUP!")
+    bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
+
+# @bot.callback_query_handler(func=lambda call: True)
+# def callback_inline(call):
+#     chat_id=call.message.chat.id
+#     message_id=call.message.message_id
+#     if call.message:
+#        if call.data == "wazup":
+#             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="WAZZZUUUP!")
+#             bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
 
 # getid
 @bot.message_handler(commands=["getid"])
