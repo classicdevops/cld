@@ -1,5 +1,17 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
+HELP_DESC=$(cat << 'EOL'
+Delete instance group - recursive delete directory /var/cld/access/groups/${GROUP}
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Group name
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-groupdel awscloud
+EOL
+)
 GROUP=$1
 if [ ! -z "$GROUP" ] ; then
 rm -f /var/cld/access/groups/${GROUP}/*

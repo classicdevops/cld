@@ -461,9 +461,7 @@ def group():
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
-    # allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
     allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list | head -c -1').split('\n')
-    #[:-1]
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -v "$(/var/cld/bin/cld --groups='+request.args['name']+' --list)" | head -c -1').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
     groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/bin/include/defaultvars')

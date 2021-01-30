@@ -1,5 +1,17 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
+HELP_DESC=$(cat << 'EOL'
+Add instance group - create files in /var/cld/access/groups/${GROUP}/
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Group name
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-groupadd awscloud
+EOL
+)
 GROUP=$1
 mkdir -p /var/cld/access/groups/${GROUP}
 touch /var/cld/access/groups/${GROUP}/clouds
