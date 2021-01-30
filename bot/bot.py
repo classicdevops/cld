@@ -6,6 +6,7 @@ import requests
 import subprocess
 import re
 import sys
+import time
 types = telebot.types
 
 def bash(cmd):
