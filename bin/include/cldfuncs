@@ -261,6 +261,7 @@ echo "${CLOUD::-1}" >> ${FILE}
 cldhelp()
 {
 (
+source <(grep CLD_DOMAIN /var/cld/creds/creds)
 [ "$HELP_ONLY" ] || HELP_ONLY="CLI BOT API"
 [ "$HELP_DESC" ] && (echo Description:
 echo "${HELP_DESC}" | awk '{print "     "$0}'
@@ -290,8 +291,8 @@ then
 [ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< /${STRING//cld-/}
 elif [ "${METHOD}" == "API" ]
 then
-[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "BOT" && cut -d '#' -f 1 <<< \""https://cldapi.example.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
-[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://cldapi.example.com/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "BOT" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
 fi
 done)
 echo
