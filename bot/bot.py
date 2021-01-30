@@ -15,7 +15,7 @@ def bash(cmd):
 def arg(arg, message):
   return re.search('[A-z0-9.=-]+', message.text.split()[arg])[0]
 
-bot = telebot.TeleBot(bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
+bot = telebot.TeleBot(bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1'''))
 api_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''').replace('\n', '')
 
 # Generate password
