@@ -13,7 +13,6 @@ cld-initpasswd
 cld-initpasswd --user=jonhdoe
 EOL
 )
-HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 
 for OPTS in ${@:1}
