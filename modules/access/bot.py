@@ -14,7 +14,7 @@ def cmd_myip(message):
     keyboard = types.InlineKeyboardMarkup()
     url_button = types.InlineKeyboardButton(text="White list my ip", url=cmdoutput, callback_data="myip")
     keyboard.add(url_button)
-    bot.send_message(message.chat.id, 'test', reply_markup=keyboard)
+    bot.send_message(message.chat.id, '', reply_markup=keyboard)
 
 @bot.callback_query_handler(lambda query: query.data == "myip")
 def myip_callback(query):
