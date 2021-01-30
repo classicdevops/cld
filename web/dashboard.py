@@ -182,7 +182,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
           print
           if current_timestamp > socket_timestamp:
               print("started terminating task for socket "+socketid, flush=True)
-              print("exit due "+socketid+" not conencted", flush=True)
+              print("exit due "+socketid+" not connected", flush=True)
               socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room, sid=socketid)
               socketio.emit("disconnect", {"disconnect": socketid}, namespace="/cld", room=room, sid=socketid)
               try: socketio.close_room(room)
