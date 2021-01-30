@@ -1,29 +1,38 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Direct mount utility for mount filesystems of instance
+Remote filesystem mounting by sshfs in /home/${USER}/mnt/${CLD_INSTANCE} directory
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       First PATTERN filtering allowed instances and choose last one
+--groups=GROUP1,GROUP2   Filtering by instance groups
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cldxmount prod 1.2.3.4_instance_22_root
+cldxmount prod 1.2.3.4_instance_22_root --groups=gcloud
+EOL
+)
+HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
+
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-echo $1
-for VM in $(cat /var/cld/creds/id_list | awk '{print $2}' | grep "$1")
+select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
 do
   CLD_LOGS
-  if [ "$VM" = "" ] ; then
-   echo "you choosed incorrect VM, please try again and type numbers only"
-  else
-    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6)
-    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
-    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
-    then
-    source <(for GROUPFUNC in funcvars funcmount 
-        do
-          echo "${GROUP}_${GROUPFUNC}(){"
-          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
-          echo '}'
-        done)
-      CLD_VARS=${GROUP}_funcvars
-      CLD_MOUNT=${GROUP}_funcmount
-    else
-      CLD_VARS=EXTERNAL_VARS
-      CLD_MOUNT=EXTERNAL_MOUNT
-    fi
+  if [ "$VM" ]
+  then
+    INSTANCE_GROUP_FUNCS
     echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
@@ -31,4 +40,3 @@ do
   fi
   break
 done
-

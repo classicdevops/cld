@@ -1,30 +1,36 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Direct mount utility for mount filesystems of instance
+Intactive mount utility for mount filesystems of instance
 Remote filesystem mounting by sshfs in /home/${USER}/mnt/${CLD_INSTANCE} directory
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       First PATTERN filtering allowed instances and choose last one
+$1                       First PATTERN filtering allowed instances
+$2                       Second PATTERN filtering allowed instances
+$3                       Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2   Filtering by instance groups
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cldx prod 1.2.3.4_instance_22_root
-cldx prod 1.2.3.4_instance_22_root --groups=gcloud
+cldmount
+cldmount prod 1.2.
+cldmount prod 1.2.3.4_instance_22_root --groups=gcloud
 EOL
 )
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 done
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
+select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
 do
   CLD_LOGS
   if [ "$VM" ]

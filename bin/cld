@@ -10,15 +10,13 @@ $3                       Third PATTERN filtering allowed instances
 --list                   Show filtered instances and exit
 --groups=GROUP1,GROUP2   Filtering by instance groups
 --debug                  Verbose output of connection
---one                    Choose last one instance by filters - non interactive
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld
 cld prod 1.2.
-cld prod 1.2. --list
 cld --groups=gcloud prod --debug
-cld inctance-name_1.2.3.4_root_22 --one
+cld prod 1.2. --list
 EOL
 )
 HELP_ONLY="CLI"
@@ -32,32 +30,26 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--one' && CLD_LOOP=for
 echo $OPTS | grep -q  '^\--list' && LIST=1
 done
 
 if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" ; exit 0 ; fi
 
-[ "$CLD_LOOP" ] && CLD_TAIL='| tail -1' || CLD_LOOP=select
-
-source <(cat << EOCLD
 echo "Please select instance to enter"
-$CLD_LOOP VM in \$(CLOUDS_USER_ALLOWED --groups="\${CLD_GROUPS}" | grep -i "\$ARG1" | grep -i "\$ARG2" | grep -i "\$ARG3" $CLD_TAIL)
+select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
-  if [ "\$VM" ]
+  if [ "$VM" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "You had chosen \${GROUP} \$VM"
-    \$CLD_VARS
+    echo "You had chosen ${GROUP} $VM"
+    $CLD_VARS
     echo
-    \$CLD_MOUNT &>/dev/null &
-    \$CLD_TERMINAL
-    \$CLD_UMOUNT &>/dev/null &
+    $CLD_MOUNT &>/dev/null &
+    $CLD_TERMINAL
+    $CLD_UMOUNT &>/dev/null &
   else
     echo "you choosed incorrect instance, please try again and type numbers only"
   fi
   break
 done
-EOCLD
-)
