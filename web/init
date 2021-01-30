@@ -200,5 +200,5 @@ server  {
 	}
 }
 EOL
-touch /etc/nginx/accesslist
+touch /etc/nginx/accesslist /etc/nginx/deny.conf
 service nginx restart
