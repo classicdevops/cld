@@ -6,7 +6,7 @@ import requests
 import subprocess
 import re
 import sys
-import time
+from time import sleep
 types = telebot.types
 
 def bash(cmd):
