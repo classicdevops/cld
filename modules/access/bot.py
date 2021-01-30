@@ -15,3 +15,9 @@ def cmd_myip(message):
     url_button = types.InlineKeyboardButton(text="White list my ip", url=cmdoutput, callback_data="myip")
     keyboard.add(url_button)
     bot.send_message(message.chat.id, reply_markup=keyboard)
+
+@bot.callback_query_handler(lambda query: query.data == "myip")
+def myip_callback(query):
+    chat_id=query.message.chat.id
+    message_id=query.message.message_id
+    bot.edit_message_text(chat_id=query.message.chat.id, message_id=query.message.message_id, text="Link expired")
