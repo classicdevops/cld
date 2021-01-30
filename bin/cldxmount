@@ -27,7 +27,7 @@ echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 
 done
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
-select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
 do
   CLD_LOGS
   if [ "$VM" ]
