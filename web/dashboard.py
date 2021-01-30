@@ -440,8 +440,8 @@ def user():
     for n, i in enumerate(users):
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
-    allowedclouds = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld-disallowed '+request.args['name']).split('\n')[:-1]
+    allowedclouds = bash('sudo -u '+request.args['name']+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
+    disallowedclouds = bash('cld --list | grep -v "$(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list)" | head -c -1').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
 @app.route('/group')
@@ -462,9 +462,9 @@ def group():
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
     # allowedclouds = bash('cat /var/cld/access/groups/'+request.args["name"]+'/clouds').split('\n')[:-1]
-    allowedclouds = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
+    allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list | head -c -1').split('\n')
     #[:-1]
-    disallowedclouds = bash('/var/cld/bin/cld-disallowed-group '+request.args['name']).split('\n')[:-1]
+    disallowedclouds = bash('/var/cld/bin/cld --list | grep -v "$(/var/cld/bin/cld --groups='+request.args['name']+' --list)" | head -c -1').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
     groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/bin/include/defaultvars')
     groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/bin/include/defaultterm')
