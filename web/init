@@ -168,7 +168,6 @@ upstream cldapi {
 }
 server  {
     listen 80;
-    listen   *:443 ssl http2;
     include sslgen.conf;
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
