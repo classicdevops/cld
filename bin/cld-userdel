@@ -1,9 +1,22 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Delete user user - remove record of user at /var/cld/creds/passwd and all relevant directories
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       User name
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-userdel johndoe
+EOL
+)
 source /var/cld/bin/include/cldfuncs
-NEWUSER=$1
-userdel ${NEWUSER}
-rm -f /home/${NEWUSER}/*
-rmdir /home/${NEWUSER}
-rm -f /var/cld/access/users/${NEWUSER}/*
-rmdir /var/cld/access/users/${NEWUSER}
-sed -ir "/^${NEWUSER} ALL.*/d" /etc/sudoers
+CLDUSER=$1
+userdel ${CLDUSER}
+rm -f /home/${CLDUSER}/*
+rmdir /home/${CLDUSER}
+rm -f /var/cld/access/users/${CLDUSER}/*
+rmdir /var/cld/access/users/${CLDUSER}
+sed -ir "/^${CLDUSER} ALL.*/d" /etc/sudoers
+sed -i '/^'${CLDUSER}'/d' /var/cld/creds/passwd

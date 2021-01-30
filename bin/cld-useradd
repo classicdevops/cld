@@ -1,17 +1,35 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Add user - create record for user at /var/cld/creds/passwd and initilize
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       User name
+$2                       Password
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-useradd johndoe P45Sw0Rd
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 NEWUSER=$1
 NEWUSERPASSWORD=$2
 ALLOWEDUTILS="cld cldmount cldx cldxmount"
-useradd ${NEWUSER} --shell /bin/bash
-echo -e "${NEWUSERPASSWORD}\n${NEWUSERPASSWORD}\n" | passwd ${NEWUSER} &>/dev/null
-mkdir -p /var/cld/access/users/${NEWUSER}
-mkdir /home/${NEWUSER} $>/dev/null
-chown ${NEWUSER}:${NEWUSER} /home/${NEWUSER}
-touch /var/cld/access/users/${NEWUSER}/clouds
-touch /var/cld/access/users/${NEWUSER}/groups
-echo 0 > /var/cld/access/users/${NEWUSER}/role
-echo "${NEWUSER} ALL=(ALL) NOPASSWD: $(for i in $ALLOWEDUTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node" >> /etc/sudoers
-echo 'PATH="$PATH:/var/cld/bin"' >> /home/${NEWUSER}/.bashrc
+# useradd ${NEWUSER} --shell /bin/bash
+grep -q "^${NEWUSER}:" /var/cld/bin/passwd || echoexit1 User ${NEWUSER} already exist - exit
+echo "${NEWUSER}::::cld,cldmount,cldx,cldxmount" >> /var/cld/bin/passwd
+/var/cld/bin/cld-initpasswd --user=${NEWUSER} &>/dev/null
+# echo -e "${NEWUSERPASSWORD}\n${NEWUSERPASSWORD}\n" | passwd ${NEWUSER} &>/dev/null
+# mkdir -p /var/cld/access/users/${NEWUSER}
+# mkdir /home/${NEWUSER} $>/dev/null
+# chown ${NEWUSER}:${NEWUSER} /home/${NEWUSER}
+# touch /var/cld/access/users/${NEWUSER}/clouds
+# touch /var/cld/access/users/${NEWUSER}/groups
+# echo 0 > /var/cld/access/users/${NEWUSER}/role
+# echo "${NEWUSER} ALL=(ALL) NOPASSWD: $(for i in $ALLOWEDUTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node" >> /etc/sudoers
+# echo 'PATH="$PATH:/var/cld/bin"' >> /home/${NEWUSER}/.bashrc
 echo user: ${NEWUSER}
 echo password: ${NEWUSERPASSWORD}
+echo
+echo For additional permissions edit file /var/cld/creds/passwd
