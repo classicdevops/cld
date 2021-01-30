@@ -386,7 +386,7 @@ def factivate():
 def terminal():
   if 'username' in session:
     username = session['username']
-    srv_list = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list' | head -c -1).split('\n')
+    srv_list = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
     return render_template('html/terminal.html', username=username, srv_list=srv_list)
 
 @app.route('/toolkit')
