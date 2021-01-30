@@ -441,7 +441,7 @@ def user():
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     allowedclouds = bash('sudo -u '+request.args['name']+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
-    disallowedclouds = bash('cld --list | grep -v "$(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list)" | head -c -1').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list | grep -v "$(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list)" | head -c -1').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
 @app.route('/group')
