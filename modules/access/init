@@ -1,6 +1,6 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
-init-load-constants ACCESS_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB ACCESS_API_DOMAIN\|cldapi.yourdomain.com
+init-load-constants ACCESS_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
 
 echo "Are you using MIKROTIK ?" 
 select ANSWER in yes no

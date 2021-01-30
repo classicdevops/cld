@@ -152,7 +152,7 @@ http {
 }
 EOL
 
-cat > /etc/nginx/conf.d/cld.conf << 'EOL' | sed 's#DOMAIN#'$CLD_DOMAIN'#g'
+sed 's#DOMAIN#'$CLD_DOMAIN'#g' > /etc/nginx/conf.d/cld.conf << 'EOL'
 map $http_upgrade $connection_upgrade {
 default upgrade;
 '' close;
