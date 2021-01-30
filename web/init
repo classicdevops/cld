@@ -171,13 +171,13 @@ upstream cldapi {
 server  {
     listen 80;
     include sslgen.conf;
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
-    }
     access_log /var/log/nginx-main-access.log;
 	server_name DOMAIN;
 	
 	location / {
+    if ($real_scheme = http) {
+        return 301 https://$host$request_uri;
+    }
 	include accesslist;
     deny all;
 	proxy_pass      http://cldweb;
@@ -190,6 +190,9 @@ server  {
 	}
 	
 	location /api {
+    if ($real_scheme = http) {
+        return 301 https://$host$request_uri;
+    }
 	rewrite ^/api(.*)$ $1 break;
 	include /etc/nginx/deny.conf;
 	proxy_pass      http://cldapi;
