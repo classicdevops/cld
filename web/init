@@ -200,3 +200,5 @@ server  {
 	}
 }
 EOL
+touch /etc/nginx/accesslist
+service nginx restart
