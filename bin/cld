@@ -38,22 +38,22 @@ done
 
 if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" ; exit 0 ; fi
 
-[ "$CLD_LOOP" ] && CLD_TAIL="\'\| tail -1\'" || CLD_LOOP=select
+[ "$CLD_LOOP" ] && CLD_TAIL='| tail -1' || CLD_LOOP=select
 
-source <(sed -e 's#CLD_LOOP#'$CLD_LOOP'#g' -e "s#CLD_TAIL#"$CLD_TAIL"#g" << 'EOCLD'
+source <(cat << EOCLD
 echo "Please select instance to enter"
-CLD_LOOP VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" CLD_TAIL)
+$CLD_LOOP VM in \$(CLOUDS_USER_ALLOWED --groups="\${CLD_GROUPS}" | grep -i "\$ARG1" | grep -i "\$ARG2" | grep -i "\$ARG3" $CLD_TAIL)
 do
   CLD_LOGS
-  if [ "$VM" ]
+  if [ "\$VM" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "You had chosen ${GROUP} $VM"
-    $CLD_VARS
+    echo "You had chosen \${GROUP} \$VM"
+    \$CLD_VARS
     echo
-    $CLD_MOUNT &>/dev/null &
-    $CLD_TERMINAL
-    $CLD_UMOUNT &>/dev/null &
+    \$CLD_MOUNT &>/dev/null &
+    \$CLD_TERMINAL
+    \$CLD_UMOUNT &>/dev/null &
   else
     echo "you choosed incorrect instance, please try again and type numbers only"
   fi
