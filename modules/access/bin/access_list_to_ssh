@@ -59,6 +59,8 @@ echo \$ALLOWED_PORTS | grep "^\$" && ALLOWED_PORTS=\$(cat << 'EOPORTS'
 22
 5672
 8006
+8080
+8085
 8888
 9090
 10050
