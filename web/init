@@ -148,7 +148,7 @@ http {
 	real_ip_header X-Forwarded-For;
 	include /etc/nginx/conf.d/*.conf;
 }
-'EOL'
+EOL
 
 cat > /etc/nginx/conf.d/cld.conf << 'EOL' | sed 's#DOMAIN#'$CLD_DOMAIN'#g'
 map $http_upgrade $connection_upgrade {
