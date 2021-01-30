@@ -38,7 +38,7 @@ done
 
 if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" ; exit 0 ; fi
 
-[ "$CLD_LOOP" ] && CLD_TAIL="'\| tail -1'" || CLD_LOOP=select
+[ "$CLD_LOOP" ] && CLD_TAIL="\'\| tail -1\'" || CLD_LOOP=select
 
 source <(sed -e 's#CLD_LOOP#'$CLD_LOOP'#g' -e 's#CLD_TAIL#'$CLD_TAIL'#g' << 'EOCLD'
 echo "Please select instance to enter"
