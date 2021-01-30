@@ -1,9 +1,0 @@
-#!/bin/bash
-source /var/cld/bin/include/cldfuncs
-[ "$SUDO_USER" = "" ] && SUDO_USER=admin
-for VM in $(CLOUDS_USER_ALLOWED | awk '{print "echo $(echo "$1" | md5sum | head -c 8) "$1}' | bash | grep $1 | head -1 | awk '{print $2}')
-do
-  echo "/home/${SUDO_USER}/mnt/${VM}"
-break
-done
-
