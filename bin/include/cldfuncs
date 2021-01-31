@@ -155,10 +155,12 @@ INSTANCE_GROUP_FUNCS()
 if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
 if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
 then
-source <(for GROUPFUNC in funcvars functerm funcmount funcumount funcdeploy funcdeploynotty
+source <(for LOOP_FUNC in funcvars_VARS functerm_TERMINAL funcmount_MOUNT funcumount_UMOUNT funcdeploy_DEPLOY funcdeploynotty_DEPLOY_NOTTY
     do
+      GROUPFUNC=$(cut -d _ -f 1 <<< ${LOOP_FUNC})
+      NAMEFUNC=$(cut -d _ -f 2- <<< ${LOOP_FUNC})
       echo "${GROUP}_${GROUPFUNC}(){"
-      cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
+      [ -f /var/cld/access/groups/${GROUP}/${GROUPFUNC} ] && cat /var/cld/access/groups/${GROUP}/${GROUPFUNC} || declare -f EXTERNAL_${NAMEFUNC} | tail -n +3 | head -n -1
       echo '}'
     done)
   CLD_VARS=${GROUP}_funcvars
