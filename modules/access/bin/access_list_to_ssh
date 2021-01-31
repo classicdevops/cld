@@ -20,13 +20,13 @@ grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "ss
 EOHOSTSBLACK
 
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
-53-55 2-3 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
+53-55 14-15 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
 EOCRON
 chmod 644 /etc/cron.d/hosts_deny_drop
 
 cat > /etc/cron.d/iptables_access << 'EOCRON'
 MAILTO=""
-* * * * * root bash -lc "ps axfu | grep -v grep | grep -q /root/sbin/iptables_access || /root/sbin/iptables_access"
+* * * * * root bash -lc "ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/iptables_access) accesslist"
 EOCRON
 chmod 644 /etc/cron.d/iptables_access
 
@@ -104,7 +104,7 @@ done
 
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
-ps axfu | grep -v grep | grep -q "/root/sbin/iptables_access" || /root/sbin/iptables_access
+ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/iptables_access) accesslist
 EOACCESSLIST
 )
 
