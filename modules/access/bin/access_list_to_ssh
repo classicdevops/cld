@@ -91,7 +91,8 @@ iptables -A INPUT -s \${IP}/32 -p tcp -m tcp -m multiport --dports \$(echo \$ALL
 EOL
 done
 cat << EOL
-iptables -A INPUT -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
+iptables -A INPUT -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
+iptables -A INPUT -p udp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
 EOL
 for BLACK_IP in \$BLACK_IPS
 do
