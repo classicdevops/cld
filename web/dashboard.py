@@ -345,45 +345,11 @@ def login():
       return 'Logged in as ' + username + '<br>' + \
       "<b><a href = '/logout'>click here to log out</a></b>"
   return render_template('html/login.html') 
-#   return '''
-#    <form action = "/login" method = "post">
-# <input type=text name="username"><br>
-# <input type=text name="password"><br>
-# <input type=submit value="Login">
-#    </form>
-#    '''
 
 @app.route('/logout')
 def logout():
-   # remove the username from the session if it is there
    session.pop('username', None)
    return redirect(url_for('login'))
-
-@app.route('/xactivate')
-def xactivate():
-  if 'username' in session:
-    username = session['username']
-    sessid = str(request.cookies.get('session'))
-    cloudid = str(request.args['cloudid'])
-    bash('echo /var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username+' >> /var/log/cld/cmd.log')
-    test1 = subprocess.Popen('/var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username, shell=True, stdout=subprocess.PIPE).communicate()
-    print('/var/cld/bin/cld-xterm '+cloudid+' '+sessid+' '+username)
-    return redirect('http://'+DOCKERHOST+'/xterm/'+cloudid, code=302)
-
-@app.route('/factivate')
-def factivate():
-  if 'username' in session:
-    username = session['username']
-    sessid = str(request.cookies.get('session'))
-    cloudid = str(request.args['cloudid'])
-    subprocess.Popen("while :; do ps ax | grep -v grep | grep 'cld\-xterm' | grep -q "+cloudid+" && break ; sleep 0.5s ; done", shell=True, stdout=subprocess.PIPE).communicate()
-    subprocess.Popen("while :; do ps ax | grep -v grep | grep 'cld\-xterm' | grep -q "+cloudid+" || break ; sleep 0.5s ; done", shell=True, stdout=subprocess.PIPE).communicate()
-    targetport = bash('grep "'+sessid+'" /var/cld/docker/xtermnginx/etc/nginx/conf.d/sessid  | grep "'+cloudid+'" | tail -1 | egrep -o "XTERMPORT [0-9]{5}" | cut -d \  -f 2').replace('\n', '')
-    # print('sudo -u '+username+' sudo /var/cld/bin/cldxmount '+cloudname)
-    subprocess.Popen("while :; do wget --server-response --spider http://172.17.0.250:"+targetport+" 2>&1 | grep -q '200 OK' && break ; sleep 0.5s ; done", shell=True, stdout=subprocess.PIPE).communicate()
-    # print('screen -dm timeout 30m python3 /var/cld/flaskfilemanager/cldapp/app.py --targetpath=/home/'+username+'/mnt/'+cloudname)
-    #return redirect('http://'+DOCKERHOST+'/files/'+cloudid+'/fm/index.html', code=302)
-    return redirect('http://'+DOCKERHOST+'/files/'+cloudid+'/files/filemanager', code=302)
 
 @app.route('/terminal')
 def terminal():
@@ -534,10 +500,6 @@ def userclouds():
   if 'username' in session:
     user = request.args['name']
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
-    # return str(str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(','))
-    # print(dir(request.form))
-    # sys.stdout.flush()
-    # return str(clouds)
     if str(clouds) == "['([])']":
       bash('truncate -s 0 /var/cld/access/users/'+user+'/clouds')
     else:
@@ -551,7 +513,6 @@ def groupusers():
   if 'username' in session:
     group = request.args['name']
     users = ",".join(list(request.form.to_dict())).split(',')
-    # return str(",".join(groups).split(','))
     denyusers = [os.path.basename(name) for name in os.listdir("/var/cld/access/users/") if os.path.isdir('/var/cld/access/users/'+name) and name not in users]
     for user in users:
       if user != '':
@@ -566,10 +527,6 @@ def groupclouds():
   if 'username' in session:
     group = request.args['name']
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
-    # return str(str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(','))
-    # print(dir(request.form))
-    # sys.stdout.flush()
-    # return str(clouds)
     if str(clouds) == "['([])']":
       bash('truncate -s 0 /var/cld/access/groups/'+group+'/clouds')
     else:
@@ -637,7 +594,6 @@ def cloudadd():
   if 'username' in session:
     username = session['username']
     groups = bash('''source <(awk '{print "grep -q 0 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
-    # return str(groups)
     return render_template('html/cloudadd.html', username=username, groups=groups)
 
 @app.route('/addcloud', methods=['GET','POST'])
@@ -657,7 +613,6 @@ def addcloud():
       cloudpassword='_'+cloudpassword
     cloudgroup = request.form['cloudgroup']
     bash('echo "'+cloudname+'_'+cloudip+'_'+cloudport+'_'+clouduser+cloudpassword+'" >> /var/cld/access/groups/'+cloudgroup+'/clouds')
-    # return str(groups)
     return redirect('/admin', code=302)
   
 @app.route('/settings')
@@ -920,6 +875,4 @@ def backendgitpull():
     return resp
 
 if __name__ == '__main__':
-#    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=('/etc/ssl/certs/nginx-selfsigned.crt', '/etc/ssl/private/nginx-selfsigned.key'))
-    #app.run(debug=True, host='0.0.0.0', port=8080)
     socketio.run(app, host='127.0.0.1', port=8080)
