@@ -6,30 +6,35 @@ EOL
 HELP_ARGS=$(cat << 'EOL'
 $1                       User name
 $2                       Password
+--tools=cld,cldx         List of classicdeploy tools comma separated - cld,cldmount,cldx,cldxmount is default
+--modules=access,dns     List of classicdeploy modules comma separated - empty is default
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-useradd johndoe P45Sw0Rd
+cld-useradd johndoe P45Sw0Rd --tools=cld,cldx --modules=access,dns
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-NEWUSER=$1
-NEWUSERPASSWORD=$2
-ALLOWEDUTILS="cld cldmount cldx cldxmount"
-# useradd ${NEWUSER} --shell /bin/bash
-grep -q "^${NEWUSER}:" /var/cld/creds/passwd && echoexit1 User ${NEWUSER} already exist - exit
-echo "${NEWUSER}::::cld,cldmount,cldx,cldxmount" >> /var/cld/creds/passwd
-/var/cld/bin/cld-initpasswd --user=${NEWUSER} &>/dev/null
-# echo -e "${NEWUSERPASSWORD}\n${NEWUSERPASSWORD}\n" | passwd ${NEWUSER} &>/dev/null
-# mkdir -p /var/cld/access/users/${NEWUSER}
-# mkdir /home/${NEWUSER} $>/dev/null
-# chown ${NEWUSER}:${NEWUSER} /home/${NEWUSER}
-# touch /var/cld/access/users/${NEWUSER}/clouds
-# touch /var/cld/access/users/${NEWUSER}/groups
-# echo 0 > /var/cld/access/users/${NEWUSER}/role
-# echo "${NEWUSER} ALL=(ALL) NOPASSWD: $(for i in $ALLOWEDUTILS ; do echo -n "/var/cld/bin/$i, " ; done | sed -r 's/\,\ $//g'), /usr/bin/node" >> /etc/sudoers
-# echo 'PATH="$PATH:/var/cld/bin"' >> /home/${NEWUSER}/.bashrc
-echo user: ${NEWUSER}
-echo password: ${NEWUSERPASSWORD}
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--tools=' && CLD_TOOLS="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+CLD_USER=$ARG1
+CLD_USER_PASSWORD=$ARG2
+[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cldmount,cldx,cldxmount"
+# useradd ${CLD_USER} --shell /bin/bash
+grep -q "^${CLD_USER}:" /var/cld/creds/passwd && echoexit1 User ${CLD_USER} already exist - exit
+echo "${CLD_USER}:::${CLD_MODULES}:${CLD_TOOLS}" >> /var/cld/creds/passwd
+/var/cld/bin/cld-initpasswd --user=${CLD_USER} &>/dev/null
+echo user: ${CLD_USER}
+echo password: ${CLD_USER_PASSWORD}
 echo
 echo For additional permissions edit file /var/cld/creds/passwd
