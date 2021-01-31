@@ -91,7 +91,7 @@ CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
 cat << EOL
 @bot.message_handler(commands=["${CLD_UTIL/cld-/}"])
-def cmd_${CLD_UTIL//-/_}(message):
+def cmd_${CLD_UTIL//[.-]/_}(message):
     checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.from_user.id, message.chat.id, message.from_user.username)
     if checkresult[0] != "granted": return
     user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')

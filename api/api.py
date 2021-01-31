@@ -73,7 +73,7 @@ CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
 cat << EOL
 @app.route('/${CLD_UTIL/cld-/}')
-def cmd_${CLD_UTIL//-/_}():
+def cmd_${CLD_UTIL//[.-]/_}():
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", request.args['token'], remoteaddr()) 
     if checkresult[0] != "granted":
       return Response("403", status=403, mimetype='application/json')

@@ -98,7 +98,7 @@ CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
 cat << EOL
 @app.route('/help/${CLD_UTIL}')
-def help_${CLD_UTIL//-/_}():
+def help_${CLD_UTIL//[.-]/_}():
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", user, remoteaddr()) 
