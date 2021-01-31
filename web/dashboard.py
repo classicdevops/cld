@@ -3,16 +3,12 @@ from flask import Flask, abort, request, render_template, g, Response, send_from
 from flask_session import Session
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 from werkzeug.utils import secure_filename
-#import json
 import re
 import os
 import subprocess
-#import redis
 import datetime
-#import random
 import pam
 import time
-#from io import StringIO
 import logging
 import sys
 import random
