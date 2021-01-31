@@ -17,7 +17,7 @@ NEWUSER=$1
 NEWUSERPASSWORD=$2
 ALLOWEDUTILS="cld cldmount cldx cldxmount"
 # useradd ${NEWUSER} --shell /bin/bash
-grep -q "^${NEWUSER}:" /var/cld/creds/passwd || echoexit1 User ${NEWUSER} already exist - exit
+grep -q "^${NEWUSER}:" /var/cld/creds/passwd && echoexit1 User ${NEWUSER} already exist - exit
 echo "${NEWUSER}::::cld,cldmount,cldx,cldxmount" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd --user=${NEWUSER} &>/dev/null
 # echo -e "${NEWUSERPASSWORD}\n${NEWUSERPASSWORD}\n" | passwd ${NEWUSER} &>/dev/null
