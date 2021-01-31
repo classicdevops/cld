@@ -82,12 +82,12 @@ iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m 
 iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "\${BLACK_IPS}" | grep -v "/32 -j DROP" | iptables-restore
 for LOCAL_NET in \$LOCAL_NETS
 do
-echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
+echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
 done
 for IP in \$ALLOWED_IPS
 do
 cat << EOL
-iptables -A INPUT -s \${IP}/32 -p tcp -m tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT
+iptables -A INPUT -s \${IP}/32 -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT
 EOL
 done
 cat << EOL
