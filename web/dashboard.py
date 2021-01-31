@@ -418,7 +418,7 @@ def admin():
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
     groups = list()
     for group in grouplist:
-      grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual" | head -c -1')
+      grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual"')
       groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
       cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+group+'/clouds | wc -l | head -c -1')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
