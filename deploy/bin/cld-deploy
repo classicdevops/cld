@@ -395,7 +395,7 @@ EOACTIONVARS
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 
 [ "$FROM" = "API" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
-stty rows 50 columns 200 ; TERM=xterm
+stty rows 50 columns 200 ; TERM=xterm-mono
 PS1='\D{%d-%m-%Y %T} \u@\H \w > '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
