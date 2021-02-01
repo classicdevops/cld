@@ -172,35 +172,40 @@ server  {
     listen 80;
     include sslgen.conf;
     access_log /var/log/nginx-main-access.log;
-	server_name DOMAIN;
-	
+    server_name DOMAIN;
+
     add_header X-Content-Type-Options nosniff;
-	location / {
+    location / {
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
     }
-	include accesslist;
+    include accesslist;
     deny all;
-	proxy_pass      http://cldweb;
-	proxy_http_version 1.1;
-	proxy_set_header   Host   $host;
-	proxy_set_header   Upgrade $http_upgrade;
-	proxy_set_header   Connection $connection_upgrade;
-	proxy_set_header   X-Forwarded-For $remote_addr;
-	proxy_set_header   X-Forwarded-Proto $real_scheme;
-	}
-	location /api {
+    proxy_pass      http://cldweb;
+    proxy_redirect            off;
+    proxy_buffering           off;
+    proxy_request_buffering   off;
+    proxy_http_version        1.1;
+    proxy_set_header   Host   $host;
+    proxy_set_header   Upgrade $http_upgrade;
+    proxy_set_header   Connection $connection_upgrade;
+    proxy_set_header   X-Forwarded-For $remote_addr;
+    proxy_set_header   X-Forwarded-Proto $real_scheme;
+    }
+    location /api {
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
     }
-	rewrite ^/api(.*)$ $1 break;
-	include /etc/nginx/deny.conf;
-	proxy_pass      http://cldapi;
-    proxy_redirect     off;
-	proxy_set_header   Host   $host;
-	proxy_set_header   X-Forwarded-For $remote_addr;
-	proxy_set_header   X-Forwarded-Proto $real_scheme;
-	}
+    rewrite ^/api(.*)$ $1 break;
+    include /etc/nginx/deny.conf;
+    proxy_pass                http://cldapi;
+    proxy_redirect            off;
+    proxy_buffering           off;
+    proxy_request_buffering   off;
+    proxy_set_header   Host   $host;
+    proxy_set_header   X-Forwarded-For $remote_addr;
+    proxy_set_header   X-Forwarded-Proto $real_scheme;
+    }
 }
 EOL
 touch /etc/nginx/accesslist /etc/nginx/deny.conf
