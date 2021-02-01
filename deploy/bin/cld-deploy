@@ -49,7 +49,7 @@ done
 
 if [ "$FROM" = "API" ] 
 then
-TERM=xterm-mono
+TERM=vt220
 RUN=1
 fi 
 
