@@ -394,6 +394,13 @@ EOACTIONVARS
 )
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 
+[ "$FROM" = "API" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+stty rows 50 columns 200 ; TERM=xterm
+PS1='\D{%d-%m-%Y %T} \u@\H \w > '
+END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
+EOUTPUT
+)
+
 if [ "$RUN" != "1" ]
 then
     echo Deploy will affect $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -l) instances
