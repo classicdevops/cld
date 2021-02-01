@@ -18,7 +18,7 @@ def bash(cmd):
 def bashstream(cmd):
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   for line in process.stdout: 
-    yield ''.join(bash('''cat << 'EOHTML' | /usr/bin/aha -n'''+linesep+line.decode('utf8')+linesep+'''EOHTML'''))
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | /usr/bin/aha -n"+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
 
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
 
