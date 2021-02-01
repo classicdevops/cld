@@ -47,6 +47,12 @@ echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--run' && RUN=1
 done
 
+if [ "$FROM" = "API" ] 
+then
+TERM=xterm-mono
+RUN=1
+fi 
+
 if [ "$RUN" != "1" ]
 then
 START_ARRAY=("New deploy" "Existing deploy" "Existing template")
