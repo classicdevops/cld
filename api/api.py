@@ -15,11 +15,13 @@ from os import linesep
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
+htmlinterpreter = bash('echo -n $(which aha 2>/dev/null && echo --no-header || which cat)').strip()
+
 def bashstream(cmd):
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   yield ''.join("<pre>")+"\n"
   for line in process.stdout:
-    yield ''.join(bash("echo -e $(cat << 'EOHTML' | /usr/bin/aha -n"+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+htmlinterpreter+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
   yield ''.join("</pre>")
 
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
