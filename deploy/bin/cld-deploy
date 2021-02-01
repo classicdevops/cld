@@ -384,7 +384,7 @@ DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${ACTION_NAME}/script)"
 [ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list)"
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined"
 
-OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+OUTPUT_FORMAT_STDERR=$(cat << 'EOUTPUT'
 stty rows 50 columns 2000 ; TERM=xterm
 PS1='\[\033[01;34m\]\D{%d-%m-%Y %T} \[\e[38;5;172m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]> \[\033[00m\]'
 exec 9>&2; exec 8> >(while IFS='' read -e line || [ -n "$line" ]; do printf "\033[31m${line}\033[0m\n"; done)
@@ -392,10 +392,10 @@ trap "exec 2>&8;" DEBUG; PROMPT_COMMAND='exec 2>&9;'
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
-[ "$FROM" = "API" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+
+OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+stty rows 50 columns 2000 ; TERM=xterm
 PS1='\[\033[01;34m\]\D{%d-%m-%Y %T} \[\e[38;5;172m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]> \[\033[00m\]'
-stty rows 50 columns 200 ; TERM=xterm
-PS1='\D{%d-%m-%Y %T} \u@\H \w > '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
