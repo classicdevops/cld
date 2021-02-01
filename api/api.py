@@ -93,8 +93,8 @@ def cmd_${CLD_UTIL//[.-]/_}():
     except:
       pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
-    cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
-    resp = Response(cmdoutput, status=200, mimetype='application/json')
+    #cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
+    resp = Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg), status=200, mimetype='text/plain')
     return resp
 
 EOL
