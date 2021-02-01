@@ -436,28 +436,10 @@ fi
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}")
 do
   CLD_DEPLOY_LOGS
-  if [ "$VM" = "" ] ; then
-   echo "VM is not defined"
-  else
-    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6)
-    if [ "$GROUP" = "" ] ; then sleep 1s; GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6) ; fi
-    if [ "$GROUP" = "" ] ; then echo "$VM have incorrect GROUP" ; continue ; fi
-    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
-    then
-    source <(for GROUPFUNC in funcvars funcdeploy funcdeploynotty
-        do
-          echo "${GROUP}_${GROUPFUNC}(){"
-          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
-          echo '}'
-        done)
-      CLD_VARS=${GROUP}_funcvars
-      CLD_DEPLOY=${GROUP}_funcdeploy
-      CLD_DEPLOY_NOTTY=${GROUP}_funcdeploynotty
-    else
-      CLD_VARS=EXTERNAL_VARS
-      CLD_DEPLOY=EXTERNAL_DEPLOY
-      CLD_DEPLOY_NOTTY=EXTERNAL_DEPLOY_NOTTY
-    fi
+
+  if [ "$VM" ]
+  then
+    INSTANCE_GROUP_FUNCS
     echo -e "Deploy started at $VM\e[48;5;6m          \e[K\e[00m"
     $CLD_VARS
 #    [ "$BACKGROUND" ] || echo
