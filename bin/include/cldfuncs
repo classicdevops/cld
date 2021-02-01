@@ -260,6 +260,11 @@ echo "${CLOUD::-1} writen fo file ${FILE}"
 echo "${CLOUD::-1}" >> ${FILE}
 }
 
+passwordgen()
+{
+echo $(< /dev/urandom tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25})
+}
+
 cldhelp()
 {
 (

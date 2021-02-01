@@ -17,11 +17,11 @@ source /var/cld/bin/include/cldfuncs
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--user=' && CLDUSER="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--user=' && CLDUSER="$(echo $OPTS | cut -d '=' -f 2-)"
 done
 
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
-for USER_SET in $(cat /var/cld/creds/passwd | grep "${CLDUSER}")
+for USER_SET in $(cat /var/cld/creds/passwd | grep "${CLDUSER}:")
 do
 USER_NAME=$(cut -d : -f 1 <<< $USER_SET)
 USER_TGID=$(cut -d : -f 2 <<< $USER_SET)
@@ -37,7 +37,7 @@ then
     echo PAM user $USER_NAME found
 else
     echo PAM user $USER_NAME not found - creating
-    USER_PASSWORD=$(echo $(< /dev/urandom tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}))
+    USER_PASSWORD=$(passwordgen)
     useradd ${USER_NAME} --shell /bin/bash
     echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME} &>/dev/null
     mkdir /home/${USER_NAME} &>/dev/null
