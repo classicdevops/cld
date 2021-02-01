@@ -13,7 +13,7 @@ $3                                 Third PATTERN filtering existing deploys - in
 --clouds=srv_1.2.3.4               Instance pattern or list comma separated
 --groups=GROUP1,GROUP2             Filtering by instance groups
 --test=0                           Execute test script after deploy - 0 is disabled - 1 is enabled
---retry=0                          Count of retry deploy attempts per instance if ssh connection not established
+--retry=1                          Count of retry deploy attempts per instance if ssh connection not established
 --timeout=180                      Timeout of deploy script in seconds
 --testtimeout=180                  Timeout of test script in seconds
 --backuptimeout=180                Timeout for backup/custombackup script         
@@ -218,8 +218,9 @@ done
 fi
 
 source /var/cld/deploy/actions/${ACTION_NAME}/vars
+[ "${RETRY}" == "0" ] && RETRY=1
 
-if [ "$BACKUP" == 1 -a "$RUN" != "1" ]
+if [ "$BACKUP" == "1" -a "$RUN" != "1" ]
 then
     if [ -f /var/cld/deploy/actions/${ACTION_NAME}/backup_list -a "$(cat /var/cld/deploy/actions/${ACTION_NAME}/backup_list 2>/dev/null | wc -l)" != "0" ]
     then
