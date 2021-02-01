@@ -15,7 +15,7 @@ from os import linesep
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
-htmlinterpreter = bash('echo -n $(which aha 2>/dev/null && echo --no-header --black || which cat)').strip()
+htmlinterpreter = bash('echo -n $(which aha 2>/dev/null && echo --no-header || which cat)').strip()
 
 def bashstream(cmd):
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
