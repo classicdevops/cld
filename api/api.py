@@ -17,7 +17,7 @@ def bash(cmd):
 
 def bashstream(cmd):
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
-  yield ''.join("<pre>")
+  yield ''.join("<pre>")+"\n"
   for line in process.stdout:
     yield ''.join(bash("echo -e $(cat << 'EOHTML' | /usr/bin/aha -n"+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
   yield ''.join("</pre>")
@@ -98,7 +98,7 @@ def cmd_${CLD_UTIL//[.-]/_}():
       pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
     #cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
-    resp = Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg), status=200, mimetype='text/plain')
+    resp = Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg), status=200, mimetype='text/html')
     return resp
 
 EOL
