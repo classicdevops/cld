@@ -392,6 +392,13 @@ trap "exec 2>&8;" DEBUG; PROMPT_COMMAND='exec 2>&9;'
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
+[ "$FROM" = "API" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+PS1='\[\033[01;34m\]\D{%d-%m-%Y %T} \[\e[38;5;172m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]> \[\033[00m\]'
+stty rows 50 columns 200 ; TERM=xterm
+PS1='\D{%d-%m-%Y %T} \u@\H \w > '
+END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
+EOUTPUT
+)
 DEPLOY_INIT=$(cat << EOACTIONVARS
 ACTION_PREFIX="${ACTION_PREFIX}"
 ACTION_NAME="${ACTION_NAME}"
