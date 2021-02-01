@@ -397,6 +397,12 @@ EOACTIONVARS
 if [ "$RUN" != "1" ]
 then
     echo Deploy will affect $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -l) instances
+    cat << EOL
+
+Equivalent non-interactive command after save:
+cld-deploy --run --deploy=${DEPLOY}
+
+EOL
     APPROVE_DEPLOY=("Run" "Exit" "Save and exit")
     echo "Run deploy?"
     select APPROVE_CASE in "${APPROVE_DEPLOY[@]}"
