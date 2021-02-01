@@ -394,7 +394,7 @@ EOUTPUT
 )
 
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
-stty rows 50 columns 2000 ; TERM=xterm-16color
+stty rows 50 columns 2000 ; TERM=xterm
 PS1='\[\033[01;34m\]\D{%d-%m-%Y %T} \[\e[38;5;172m\]\u\[\033[01;33m\]@\[\033[01;36m\]\H \[\033[01;33m\]\w \[\033[01;35m\]> \[\033[00m\]'
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
