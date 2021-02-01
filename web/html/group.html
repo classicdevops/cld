@@ -158,10 +158,10 @@ Umount  function: <br>
 <textarea{{funcstatus}} id="FuncUmountArea" name="groupfuncumount" class="form-control" rows="4" style="resize: none">{{groupfuncumount}}</textarea>
 <br>
 Deploy  function: <br>
-<textarea{{funcstatus}} id="FuncUmountArea" name="groupfuncdeploy" class="form-control" rows="4" style="resize: none">{{groupfuncdeploy}}</textarea>
+<textarea{{funcstatus}} id="FuncDeployArea" name="groupfuncdeploy" class="form-control" rows="4" style="resize: none">{{groupfuncdeploy}}</textarea>
 <br>
 Deploy no tty  function: <br>
-<textarea{{funcstatus}} id="FuncUmountArea" name="groupfuncdeploynotty" class="form-control" rows="4" style="resize: none">{{groupfuncdeploynotty}}</textarea>
+<textarea{{funcstatus}} id="FuncDeploynottyArea" name="groupfuncdeploynotty" class="form-control" rows="4" style="resize: none">{{groupfuncdeploynotty}}</textarea>
 <br>
 <button type="submit" class="btn btn-light bt mb-2" style="float: right" form="groupfuncs">Apply functions</button>
 
@@ -191,6 +191,14 @@ document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', functio
     $(this).height(this.scrollHeight);
 });
     $('#FuncUnountArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
+});
+    $('#FuncDeployArea').keyup(function(){
+    $(this).height(100);
+    $(this).height(this.scrollHeight);
+});
+    $('#FuncDeploynottyArea').keyup(function(){
     $(this).height(100);
     $(this).height(this.scrollHeight);
 });
