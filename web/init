@@ -174,6 +174,7 @@ server  {
     access_log /var/log/nginx-main-access.log;
 	server_name DOMAIN;
 	
+    add_header X-Content-Type-Options nosniff;
 	location / {
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
@@ -188,7 +189,6 @@ server  {
 	proxy_set_header   X-Forwarded-For $remote_addr;
 	proxy_set_header   X-Forwarded-Proto $real_scheme;
 	}
-	
 	location /api {
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
