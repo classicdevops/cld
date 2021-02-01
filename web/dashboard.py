@@ -427,11 +427,13 @@ def group():
     allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list | head -c -1').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -v "$(/var/cld/bin/cld --groups='+request.args['name']+' --list)" | head -c -1').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
-    groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/bin/include/defaultvars')
-    groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/bin/include/defaultterm')
-    groupfuncmount = bash('cat /var/cld/access/groups/'+group+'/funcmount || cat /var/cld/bin/include/defaultmount')
-    groupfuncumount = bash('cat /var/cld/access/groups/'+group+'/funcumount || cat /var/cld/bin/include/defaultumount')
-    return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount)
+    groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/access/groups/default/default_funcvars')
+    groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/access/groups/default/default_functerm')
+    groupfuncmount = bash('cat /var/cld/access/groups/'+group+'/funcmount || cat /var/cld/access/groups/default/default_funcmount')
+    groupfuncumount = bash('cat /var/cld/access/groups/'+group+'/funcumount || cat /var/cld/access/groups/default/default_funcumount')
+    groupfuncdeploy = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/access/groups/default/default_funcdeploy')
+    groupfuncdeploynotty = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/access/groups/default/default_funcdeploynotty')
+    return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount, groupfuncdeploy=groupfuncdeploy, groupfuncdeploynotty=groupfuncdeploynotty)
 
 @app.route('/adduser', methods=['POST'])
 def adduser():
@@ -571,12 +573,22 @@ def groupfuncs():
       groupfuncumount = request.form['groupfuncumount']
     except:
       pass
+    try:  
+      groupfuncdeploy = request.form['groupfuncdeploy']
+    except:
+      pass
+    try:  
+      groupfuncdeploynotty = request.form['groupfuncdeploynotty']
+    except:
+      pass
     if groupfuncs == 'on':
       bash('echo 1 > /var/cld/access/groups/'+group+'/funcs')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcvars"+os.linesep+groupfuncvars+os.linesep+'EOPARSINGSCRIPT')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/functerm"+os.linesep+groupfuncterm+os.linesep+'EOPARSINGSCRIPT')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcmount"+os.linesep+groupfuncmount+os.linesep+'EOPARSINGSCRIPT')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcumount"+os.linesep+groupfuncumount+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcdeploy"+os.linesep+groupfuncdeploy+os.linesep+'EOPARSINGSCRIPT')
+      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcdeploynotty"+os.linesep+groupfuncdeploynotty+os.linesep+'EOPARSINGSCRIPT')
       return redirect('/admin', code=302)
     else:
       bash('echo 0 > /var/cld/access/groups/'+group+'/funcs')
