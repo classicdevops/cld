@@ -393,6 +393,27 @@ ACTION_NAME="${ACTION_NAME}"
 EOACTIONVARS
 )
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
+
+if [ "$RUN" != "1" ]
+then
+    APPROVE_DEPLOY=("Run" "Exit" "Save and exit")
+    echo "Run deploy?"
+    select APPROVE_CASE in "${APPROVE_DEPLOY[@]}"
+    do
+        if [ "$APPROVE_CASE" == "Run" ]
+        then 
+          break
+        elif [ "$APPROVE_CASE" == "Exit" ]
+        then
+          exit 0
+        elif [ "$APPROVE_CASE" == "Save and exit" ]
+        then
+          cp /var/cld/deploy/actions/${ACTION_NAME}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
+          exit 0
+        fi
+    done
+fi
+
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}")
 do
   CLD_DEPLOY_LOGS
