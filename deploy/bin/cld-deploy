@@ -409,19 +409,25 @@ END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
 
-[ "$CLD_DEPLOY_OUTPUT" = "bw" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+if [ "$CLD_DEPLOY_OUTPUT" = "bw" ]
+then
+OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 export TERM=xterm-old ; stty rows 50 columns 500 
 PS1='\D{%d-%m-%Y %T} \u@\H \w > '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
-
-[ "$CLD_DEPLOY_OUTPUT" = "min" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+export TERM=xterm-old
+elif [ "$CLD_DEPLOY_OUTPUT" = "min" ] 
+then
+OUTPUT_FORMAT=$(cat << 'EOUTPUT'
 export TERM=xterm-old ; stty rows 50 columns 500
 PS1='> '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
+export TERM=xterm-old
+fi
 
 DEPLOY_INIT=$(cat << EOACTIONVARS
 ACTION_PREFIX="${ACTION_PREFIX}"
