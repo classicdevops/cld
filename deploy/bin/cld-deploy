@@ -25,6 +25,8 @@ $3                                 Third PATTERN filtering existing deploys - in
 --custombackup=0                   Use custom backup script before deploy - 0 is disabled - 1 is enabled
 --async=1                          Synchronous or asynchronous mode of deploy - 0 is sync - 1 is async
 --debug=0                          Verbose mode of connect and additional predeploy scripts will put to the output
+--output=full|bw|min               Output deploy format - full is default
+--vars=var1=value1,var2=value2     Pass variables to deploy
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -171,7 +173,14 @@ echo $OPTS | grep -q  '^\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d
 echo $OPTS | grep -q  '^\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--output=' && CLD_DEPLOY_OUTPUT=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--vars=' && CLD_DEPLOY_VARIABLES=$(echo $OPTS | cut -d '=' -f 2)
 done
+
+if [ "$CLD_DEPLOY_VARIABLES" ]
+then
+    CLD_DEPLOY_VARIABLES=$(echo "${CLD_DEPLOY_VARIABLES}" | tr ',' '\n' | egrep "^[A-Za-z0-9_-]+=")
+fi
 
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && BACKUP_LIST="$(cat /var/cld/deploy/deploys/${DEPLOY}/backup_list 2>/dev/null)"
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined" 
@@ -399,6 +408,21 @@ PS1='\[\033[01;34m\]\D{%d-%m-%Y %T} \[\e[38;5;172m\]\u\[\033[01;33m\]@\[\033[01;
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
+
+[ "$CLD_DEPLOY_OUTPUT" = "bw" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+stty rows 50 columns 500 ; TERM=xterm-mono
+PS1='\D{%d-%m-%Y %T} \u@\H \w > '
+END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
+EOUTPUT
+)
+
+[ "$CLD_DEPLOY_OUTPUT" = "min" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
+stty rows 50 columns 500 ; TERM=xterm
+PS1='> '
+END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
+EOUTPUT
+)
+
 DEPLOY_INIT=$(cat << EOACTIONVARS
 ACTION_PREFIX="${ACTION_PREFIX}"
 ACTION_NAME="${ACTION_NAME}"
@@ -475,6 +499,7 @@ $CLD_DEPLOY $CONNECT_ARGS << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACT
 $OUTPUT_FORMAT
 $DEPLOY_INIT
 #BEGIN_DEPLOY
+$CLD_DEPLOY_VARIABLES
 $DEPLOY_SCRIPT
 END_DEPLOY
 EODEPLOYRUN
