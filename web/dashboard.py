@@ -418,7 +418,7 @@ def group():
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
       groupfuncs = bash('grep -qs "1" /var/cld/access/groups/'+group+'/funcs && echo -n "custom" || echo -n "default"').replace('\n', '')
       groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
-      cloudcount = bash('grep -v "^#|^$" /var/cld/access/groups/'+group+'/clouds | wc -l').strip()
+      cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+group+'/clouds | wc -l').strip()
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype+";"+groupfuncs)
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype', 'groupfuncs']
     for n, i in enumerate(groups):
