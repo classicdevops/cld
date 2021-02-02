@@ -153,8 +153,8 @@ INSTANCE_GROUP_FUNCS()
 {
 CLD_USER_GROUPS=$(cat /var/cld/access/users/${SUDO_USER}/groups | grep -v "^$\|^#" | head -c -1 | tr '\n' ',')
 CLD_USER_GROUPS_COUNT=$(grep -v "^#\|^$" /var/cld/access/users/${SUDO_USER}/groups | wc -l)
-[ "$CLD_USER_GROUPS_COUNT" -eq 1 ] && export GROUP=$(source <(echo grep -l demo.wap.group /var/cld/access/groups/${CLD_USER_GROUPS}/clouds) | cut -d '/' -f 6 | tail -1)
-[ "$CLD_USER_GROUPS_COUNT" -gt 1 ] && export GROUP=$(source <(echo grep -l demo.wap.group /var/cld/access/groups/\{${CLD_USER_GROUPS}\}/clouds) | cut -d '/' -f 6 | tail -1)
+[ "$CLD_USER_GROUPS_COUNT" -eq 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/${CLD_USER_GROUPS}/clouds) | cut -d '/' -f 6 | tail -1)
+[ "$CLD_USER_GROUPS_COUNT" -gt 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/\{${CLD_USER_GROUPS}\}/clouds) | cut -d '/' -f 6 | tail -1)
 [ "$GROUP" ] || export GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
 if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
 if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
