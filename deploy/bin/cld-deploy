@@ -174,7 +174,7 @@ echo $OPTS | grep -q  '^\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '^\--output=' && CLD_DEPLOY_OUTPUT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--vars=' && CLD_DEPLOY_VARIABLES=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '^\--vars=' && CLD_DEPLOY_VARIABLES=$(echo $OPTS | cut -d '=' -f 2-)
 done
 
 if [ "$CLD_DEPLOY_VARIABLES" ]
