@@ -98,8 +98,8 @@
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             {% if username == 'admin' %}<li><a href="/admin">Administration</a></li>{% endif %}
-                            <li><a href="/settings">Settings</a></li>
-                            <li><a href="/logout">Logout</a></li>
+                            <li><a href="{{ url_for('profile') }}">Settings</a></li>
+                            <li><a href="{{ url_for('logout') }}">Logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
 </label>
 
 <label class="btn paymentMethod">
-<a href="{{ url_for('settings') }}"  onclick="window.location.href = '{{ url_for('settings') }}';">
+<a href="{{ url_for('profile') }}"  onclick="window.location.href = '{{ url_for('profile') }}';">
 <div class="method visa" style="border-radius: 3px;text-align: center;">
 <br>
 <img src="../img/profile.svg" style="height: 80;">
