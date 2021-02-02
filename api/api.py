@@ -90,7 +90,7 @@ def cmd_${CLD_UTIL//[.-]/_}():
     user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
     cmd_args = ''
     try:
-        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+        cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
     except:
         pass
     bg = ''
