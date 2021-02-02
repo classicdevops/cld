@@ -410,14 +410,14 @@ EOUTPUT
 )
 
 [ "$CLD_DEPLOY_OUTPUT" = "bw" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
-stty rows 50 columns 500 ; TERM=xterm-mono
+stty rows 50 columns 500 ; TERM=xterm-old
 PS1='\D{%d-%m-%Y %T} \u@\H \w > '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
 
 [ "$CLD_DEPLOY_OUTPUT" = "min" ] && OUTPUT_FORMAT=$(cat << 'EOUTPUT'
-stty rows 50 columns 500 ; TERM=xterm
+stty rows 50 columns 500 ; TERM=xterm-old
 PS1='> '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
