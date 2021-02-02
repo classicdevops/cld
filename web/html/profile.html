@@ -151,20 +151,7 @@
                         </div>
                     </div>
                 </div>
-    <script>
-    var password = document.getElementById("password"), confirm_password = document.getElementById("confirm_password");
 
-    function validatePassword(){
-      if(password.value != confirm_password.value) {
-        confirm_password.setCustomValidity("Passwords Don't Match");
-      } else {
-        confirm_password.setCustomValidity('');
-      }
-    }
-
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
-    </script>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
@@ -184,6 +171,21 @@
                             <button type="submit" class="pure-button pure-button-primary">Change</button>
                             </fieldset>
                             </form>
+    <script>
+    var password = document.getElementById("password");
+    var confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+      if(password.value != confirm_password.value) {
+        confirm_password.setCustomValidity("Passwords Don't Match");
+      } else {
+        confirm_password.setCustomValidity('');
+      }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+    </script>
                         </div>
                     </div>
                 </div>
