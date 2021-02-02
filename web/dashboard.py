@@ -620,11 +620,13 @@ def addcloud():
     bash('echo "'+cloudname+'_'+cloudip+'_'+cloudport+'_'+clouduser+cloudpassword+'" >> /var/cld/access/groups/'+cloudgroup+'/clouds')
     return redirect('/admin', code=302)
   
-@app.route('/settings')
-def settings():
+@app.route('/profile')
+def profile():
   if 'username' in session:
     username = session['username']
-    return render_template('html/settings.html', username=username)
+    clouds=bash('sudo -u '+username+' sudo /var/cld/bin/cld --list').strip()
+    perms=bash('grep "^'+username+':" /var/cld/creds/passwd').strip().split(':')
+    return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
 
 @app.route('/devops')
 def devops():

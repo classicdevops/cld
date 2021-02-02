@@ -116,10 +116,7 @@
                         </h4>
                     </div>
                     <div id="collapse3" class="panel-collapse collapse">
-                        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                            commodo consequat.</div>
+                        <div class="panel-body"><pre>{{clouds}}</pre></div>
                     </div>
                 </div>
                 <div class="panel panel-default">
@@ -130,10 +127,28 @@
                         </h4>
                     </div>
                     <div id="collapse1" class="panel-collapse collapse in">
-                        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                            commodo consequat.</div>
+                        <div class="panel-body">
+                            <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+                            <thead>
+                                <tr style="cursor: pointer;">
+                                    <td style="width: 35%%">User</td>
+                                    <td>Telegram ID</td>
+                                    <td>Api token</td>
+                                    <td>Modules</td>
+                                    <td>Tools</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ perms[0] }}</td>
+                                    <td>{{ perms[1] }}</td>
+                                    <td>{{ perms[2] }}</td>
+                                    <td>{{ perms[3] }}</td>
+                                    <td>{{ perms[4] }}</td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="panel panel-default">
