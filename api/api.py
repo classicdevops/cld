@@ -23,19 +23,21 @@ else:
 
 def bashstream(cmd, format="html"):
   addopentag = ""
-  addclosetab = ""
+  addclosetag = ""
+  addstringtag = ""
   outputargs = ""
   if format == "html" and ansifiltercheck == "0":
     outputargs = " -Hf"
     addopentag = "<pre>"
-    addclosetab = "</pre>"
+    addclosetag = "</pre>"
   elif format == "plain" and ansifiltercheck == "0":
     outputargs = " -Tf"
+    addstringtag = "\n"
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   yield ''.join(addopentag)
   for line in process.stdout:
-    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
-  yield ''.join(addclosetab)
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))+addstringtag
+  yield ''.join(addclosetag)
 
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
 
