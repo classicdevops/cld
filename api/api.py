@@ -16,7 +16,7 @@ def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
 ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1').strip()
-if ansifiltercheck == 0:
+if ansifiltercheck == "0":
   outputinterpreter = bash('which ansifilter').strip()
 else:
   outputinterpreter = bash('which cat').strip()
