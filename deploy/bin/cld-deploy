@@ -421,12 +421,12 @@ export TERM=xterm-old
 elif [ "$CLD_DEPLOY_OUTPUT" = "min" ] 
 then
 OUTPUT_FORMAT=$(cat << 'EOUTPUT'
-export TERM=xterm-old ; stty rows 50 columns 500
+export TERM=xterm ; stty rows 50 columns 500
 PS1='> '
 END_DEPLOY() { exit &>/dev/null; } ; unset HISTFILE
 EOUTPUT
 )
-export TERM=xterm-old
+export TERM=xterm
 fi
 
 DEPLOY_INIT=$(cat << EOACTIONVARS
