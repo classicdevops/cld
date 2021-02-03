@@ -25,11 +25,11 @@ def bashstream(cmd, format="html"):
   addopentag = ""
   addclosetab = ""
   outputargs = ""
-  if format == "html" and ansifiltercheck == 0:
+  if format == "html" and ansifiltercheck == "0":
     outputargs = " -Hf"
     addopentag = "<pre>"
     addclosetab = "</pre>"
-  elif format == "plain" and ansifiltercheck == 0:
+  elif format == "plain" and ansifiltercheck == "0":
     outputargs = " -Tf"
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   yield ''.join(addopentag)
