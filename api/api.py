@@ -114,7 +114,7 @@ def cmd_${CLD_UTIL//[.-]/_}():
     except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
     #cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
-    return = Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, output), status=200, mimetype='text/'+output)
+    return Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, output), status=200, mimetype='text/'+output)
 
 EOL
 done
