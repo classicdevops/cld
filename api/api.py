@@ -24,7 +24,6 @@ else:
 def bashstream(cmd, format="html"):
   addopentag = ""
   addclosetag = ""
-  addstringtag = ""
   outputargs = ""
   if format == "html" and ansifiltercheck == "0":
     outputargs = " -Hf"
@@ -32,11 +31,10 @@ def bashstream(cmd, format="html"):
     addclosetag = "</pre>"
   elif format == "plain" and ansifiltercheck == "0":
     outputargs = " -Tf"
-    addstringtag = "\n"
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   yield ''.join(addopentag)
   for line in process.stdout:
-    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))+addstringtag
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
   yield ''.join(addclosetag)
 
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
@@ -102,7 +100,8 @@ def cmd_${CLD_UTIL//[.-]/_}():
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", request.args['token'], remoteaddr()) 
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
-    output = 'html'
+    if ansifiltercheck == "0": output = 'html'
+    else: output = 'plain'
     try: output = str(re.match('^[a-z]+$', request.args['output']).string)
     except: pass
     cmd_args = ''
