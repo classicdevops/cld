@@ -15,14 +15,27 @@ from os import linesep
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
 
-htmlinterpreter = bash('echo -n $(which aha 2>/dev/null && echo --no-header || which cat)').strip()
+ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1').strip()
+if ansifiltercheck == 0:
+  outputinterpreter = bash('which ansifilter').strip()
+else:
+  outputinterpreter = bash('which cat').strip()
 
-def bashstream(cmd):
+def bashstream(cmd, format="html"):
+  addopentag = ""
+  addclosetab = ""
+  outputargs = ""
+  if format == "html" and ansifiltercheck == 0:
+    outputargs = " -Hf"
+    addopentag = "<pre>"
+    addclosetab = "</pre>"
+  elif format == "plain" and ansifiltercheck == 0:
+    outputargs = " -Tf"
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
-  yield ''.join("<pre>")+"\n"
+  yield ''.join(addopentag)
   for line in process.stdout:
-    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+htmlinterpreter+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
-  yield ''.join("</pre>")
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
+  yield ''.join(addclosetab)
 
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
 
@@ -85,22 +98,20 @@ cat << EOL
 @app.route('/${CLD_UTIL/cld-/}')
 def cmd_${CLD_UTIL//[.-]/_}():
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", request.args['token'], remoteaddr()) 
-    if checkresult[0] != "granted":
-      return Response("403", status=403, mimetype='application/json')
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+    output = 'html'
+    try: output = str(re.match('^[a-z]+$', request.args['output']).string)
+    except: pass
     cmd_args = ''
-    try:
-        cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
-    except:
-        pass
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
+    except: pass
     bg = ''
-    try:
-      if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
-    except:
-      pass
+    try: if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
+    except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
     #cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
-    resp = Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg), status=200, mimetype='text/html')
+    resp = Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, output), status=200, mimetype='text/html')
     return resp
 
 EOL
