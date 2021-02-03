@@ -107,7 +107,8 @@ def cmd_${CLD_UTIL//[.-]/_}():
     try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
     except: pass
     bg = ''
-    try: if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
+    try: 
+      if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
     except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
     #cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
