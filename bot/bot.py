@@ -24,9 +24,7 @@ def cmd_passwd(message):
     passlen = 21
     cmd_args = ''
     try:
-        for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
-        print(cmd_args, flush=True)
-        cmd_args = int(re.match('[0-9]{1,3}', cmd_args).string)
+        cmd_args = int(re.match('[0-9]{1,3}', message.text.split()[1:]).string)
         print(cmd_args, flush=True)
         passlen = cmd_args
     except:
