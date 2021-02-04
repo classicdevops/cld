@@ -22,9 +22,8 @@ api_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -
 @bot.message_handler(commands=["passwd"])
 def cmd_passwd(message):
     passlen = 21
-    print(str(message.text.split()[1:][0]), flush=True)
     try:
-        passlen = int(message.text.split()[1:][0])
+        passlen = int(message.text.split()[2])
     except:
         pass
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
