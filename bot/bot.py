@@ -24,7 +24,7 @@ def cmd_passwd(message):
     passlen = 21
     try:
         print(str(message.text.split()[1:][0]), flush=True)
-        passlen = int(re.match('^[0-9]{1,3}\$', str(message.text.split()[1:][0])).string)
+        passlen = int(re.match('[0-9]{1,3}', str(message.text.split()[1:][0])).string)
     except:
         pass
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
