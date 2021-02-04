@@ -21,9 +21,16 @@ api_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -
 # Generate password
 @bot.message_handler(commands=["passwd"])
 def cmd_passwd(message):
+    passlen = 21
+    try:
+        for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
+        cmd_args = int(re.match('^[0-9]{1,3"\$', cmd_args).string)
+        passlen = cmd_args
+    except:
+        pass
     chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
     password = ''
-    for c in range(21):
+    for c in range(passlen):
        password += random.choice(chars)
     bot.send_message(message.chat.id, password)
 

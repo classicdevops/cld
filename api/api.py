@@ -20,6 +20,7 @@ if ansifiltercheck == "0":
   outputinterpreter = bash('which ansifilter').strip()
 else:
   outputinterpreter = bash('which cat').strip()
+  print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
 
 def bashstream(cmd, format="html"):
   addopentag = ""
