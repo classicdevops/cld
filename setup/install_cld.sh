@@ -283,8 +283,6 @@ mkdir -p /etc/ssl/
 mkdir -p /etc/ssl/certs/
 mkdir -p /etc/ssl/private/
 openssl req -x509 -nodes -days 3650 -newkey rsa:4096 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com"
-cp -r /etc/ssl /var/cld/docker/xtermnginx/etc/nginx/
-rm -f /var/cld/docker/xtermnginx/etc/nginx/ssl/certs && /usr/bin/cp -r /etc/pki/tls/certs /var/cld/docker/xtermnginx/etc/nginx/ssl/
 mkdir /var/log/cld &>/dev/null
 
 #install cld
