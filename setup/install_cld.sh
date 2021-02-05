@@ -196,7 +196,27 @@ yum install -y wget
 yum install -y jq
 yum install -y ansifilter
 yum install -y certbot
+cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://nginx.org/packages/mainline/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+EONGINX
 yum install -y nginx
+yum install -y screen
+yum install -y supervisor
+sed -i 's#^files = supervisord.d/\*\.ini$#files = supervisord.d/*.ini supervisor/conf.d/*.conf#g' /etc/supervisord.conf
 
 yum install python3 python3-pip  -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
@@ -254,10 +274,30 @@ yum install -y wget
 yum install -y jq
 yum install -y ansifilter
 yum install -y certbot
+yum install -y screen
+yum install -y supervisor
+sed -i 's#^files = supervisord.d/\*\.ini$#files = supervisord.d/*.ini supervisor/conf.d/*.conf#g' /etc/supervisord.conf
+cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://nginx.org/packages/mainline/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+EONGINX
 yum install -y nginx
 
 yum install python3 python3-pip  -y
-pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
+pip3 install cryptography flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 }
 
 system_setup_d9()
