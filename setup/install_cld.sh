@@ -154,24 +154,10 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion
-
-#install base soft
-yum install wget -y
-
-#install docker python
-bash -x <(wget -qO- https://get.docker.com/)
-systemctl enable docker
-systemctl start docker
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot nginx
 
 yum install python3 python3-pip  -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
-
-#install yarn nodejs
-bash -x <(wget -qO- https://rpm.nodesource.com/setup_10.x)
-wget -qO /etc/yum.repos.d/yarn.repo https://dl.yarnpkg.com/rpm/yarn.repo
-rpm --import https://dl.yarnpkg.com/rpm/pubkey.gpg
-yum install yarn nodejs -y
 }
 
 system_setup_c8()
@@ -184,66 +170,26 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion
-
-#install base soft
-yum install wget -y
-
-#install docker python
-bash -x <(wget -qO- https://get.docker.com/)
-systemctl enable docker
-systemctl start docker
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot nginx
 
 yum install python3 python3-pip  -y
-pip3 install flask redis python-pam docker-compose Image
-
-#install yarn nodejs
-bash -x <(wget -qO- https://rpm.nodesource.com/setup_10.x)
-wget -qO /etc/yum.repos.d/yarn.repo https://dl.yarnpkg.com/rpm/yarn.repo
-rpm --import https://dl.yarnpkg.com/rpm/pubkey.gpg
-yum install yarn nodejs -y
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 }
 
 system_setup_d9()
 {
 #install base soft
 apt update
-apt install apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen supervisor jq -y
-
-#install docker python
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-apt update
-apt install docker-ce docker-compose python python3-pip  -y
-pip3 install flask redis python-pam
-
-#install yarn nodejs
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-apt-get update && apt install yarn -y
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-apt-get install -y nodejs
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen supervisor jq python3 python3-pip certbot nginx
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 }
 
 system_setup_d10()
 {
 #install base soft
 apt update
-apt install apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen supervisor jq -y
-
-#install docker python
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-apt update
-apt install docker-ce docker-compose python python3-pip  -y
-pip3 install flask redis python-pam
-
-#install yarn nodejs
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-apt-get update && apt install yarn -y
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-apt-get install -y nodejs
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen supervisor jq python3 python3-pip certbot nginx
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 }
 
 cld_install()
@@ -262,20 +208,6 @@ cd /var
 git clone https://github.com/achendev/cld.git
 cd cld
 
-#install wetty.js
-git clone https://github.com/achendev/wetty.git
-cd wetty
-yarn
-yarn build
-sed -i -r 's#(.*res\.setHeader.*)#//\1#g' /var/cld/wetty/node_modules/frameguard/index.js
-
-#install RichFileManager
-cd /var/cld
-git clone https://github.com/achendev/richfilemanagerflask.git
-cd richfilemanagerflask
-pip3 install Image
-ip addr add 172.17.0.250/16 dev docker0
-
 #sync files from repo
 rsync -avzP /var/cld/setup/etc/ /etc/
 rsync -avzP /var/cld/setup/access /var/cld/
@@ -288,18 +220,15 @@ export CLD_PATH="/var/cld/bin:/var/cld/deploy/bin:/var/cld/cm/bin:$(echo -n "$(l
 PATH="$PATH:$CLD_PATH"
 EOBASHRC
 
-#xtermnginx enable
-cd /var/cld/docker/xtermnginx/
-touch /var/cld/docker/xtermnginx/etc/nginx/conf.d/sessid
-docker-compose up -d
-
 HOSTIP=$(wget -qO- ipinfo.io/ip)
 sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 
 systemctl restart supervisor
+systemctl restart supervisord
 systemctl enable supervisor
+systemctl enable supervisord
 
-find /var/cld/ -f -name 'initset' | xargs
+/var/cld/bin/init-main
 
 echo "admin:::ALL:ALL" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd
