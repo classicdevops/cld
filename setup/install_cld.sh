@@ -154,7 +154,49 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot nginx
+yum install -y pwgen
+yum install -y sshpass
+yum install -y deltarpm
+yum install -y psmisc
+yum install -y e2fsprogs
+yum install -y net-tools
+yum install -y openssl
+yum install -y yum-utils
+yum install -y wget
+yum install -y nano
+yum install -y ntpdate
+yum install -y patch
+yum install -y telnet
+yum install -y bind-utils
+yum install -y expect
+yum install -y nscd
+yum install -y which
+yum install -y ltrace
+yum install -y mc
+yum install -y sudo
+yum install -y iftop
+yum install -y ncdu
+yum install -y htop
+yum install -y ntp
+yum install -y zip
+yum install -y unzip
+yum install -y pigz
+yum install -y iotop
+yum install -y sysstat
+yum install -y lsof
+yum install -y strace
+yum install -y atop
+yum install -y multitail
+yum install -y apg
+yum install -y yum-plugin-replace
+yum install -y mailx
+yum install -y bash-completion
+yum install -y git
+yum install -y wget
+yum install -y jq
+yum install -y ansifilter
+yum install -y certbot
+yum install -y nginx
 
 yum install python3 python3-pip  -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
@@ -170,7 +212,49 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot nginx
+yum install -y pwgen
+yum install -y sshpass
+yum install -y deltarpm
+yum install -y psmisc
+yum install -y e2fsprogs
+yum install -y net-tools
+yum install -y openssl
+yum install -y yum-utils
+yum install -y wget
+yum install -y nano
+yum install -y ntpdate
+yum install -y patch
+yum install -y telnet
+yum install -y bind-utils
+yum install -y expect
+yum install -y nscd
+yum install -y which
+yum install -y ltrace
+yum install -y mc
+yum install -y sudo
+yum install -y iftop
+yum install -y ncdu
+yum install -y htop
+yum install -y ntp
+yum install -y zip
+yum install -y unzip
+yum install -y pigz
+yum install -y iotop
+yum install -y sysstat
+yum install -y lsof
+yum install -y strace
+yum install -y atop
+yum install -y multitail
+yum install -y apg
+yum install -y yum-plugin-replace
+yum install -y mailx
+yum install -y bash-completion
+yum install -y git
+yum install -y wget
+yum install -y jq
+yum install -y ansifilter
+yum install -y certbot
+yum install -y nginx
 
 yum install python3 python3-pip  -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
