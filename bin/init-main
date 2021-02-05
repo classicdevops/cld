@@ -12,7 +12,7 @@ EOL
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com CLD_DOMAIN\|cldapi.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
-
+touch /var/cld/acess/groups/default/clouds
 for INIT in $(ls -pd  /var/cld/*/init /var/cld/modules/*/init 2>/dev/null)
 do
 ${INIT}
