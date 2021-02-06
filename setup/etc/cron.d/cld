@@ -1,4 +1,3 @@
-*/5 * * * * root bash -lc "/var/cld/crons/hypervisor_parser"
-#0 17 * * * root bash -lc "/var/cld/bot/bin/backup_checker send"
+*/5 * * * * root bash -lc "/var/cld/bin/cld-groupparser"
 #* * * * * root bash -lc "/var/cld/bot/bin/access_list_to_ssh" &>/dev/null
-#0 12 * * * root bash -lc "/var/cld/crons/etc_backup"
+#0 12 * * * root bash -lc "/var/cld/modules/etcbackup/bin/cld-etcbackup"

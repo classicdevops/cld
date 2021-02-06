@@ -102,7 +102,6 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 if [ "$JSON" == "1" ]
 then
-  SUDO_USER=admin
   for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
   do
     CLOUDS=$(cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
@@ -121,6 +120,40 @@ else
     cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
   done
   [ "$CLD_GROUPS" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
+fi
+}
+
+MODULES_USER_ALLOWED() {
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2 | tr '\n' ',' | sed 's#,#/bin,#g' | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--json' && JSON=1
+done
+
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+CLD_TOOLS=$(grep alias /home/${SUDO_USER}/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | grep "${CLD_MODULES}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+if [ "$JSON" == "1" ]
+then
+    for CLD_MODULE in $(rev <<< "$CLD_TOOLS" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev)
+    do
+    cat << EOL | tr -d '\n'
+{"module": "$CLD_MODULE",
+"tools": $(echo "$CLD_TOOLS" | grep "${CLD_MODULE}/bin/" | rev | cut -d / -f 1 | rev | awk 'BEGIN {print "["} {print "\x22"$1"\x22,"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
+},
+EOL
+    done | head -c -1 | cat <(printf '[') - <(printf ']')
+else
+    for CLD_MODULE in $(rev <<< "$CLD_TOOLS" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev)
+    do
+    cat << EOL
+${CLD_MODULE}:
+$(echo "$CLD_TOOLS" | grep "${CLD_MODULE}/bin/" | rev | cut -d / -f 1 | rev)
+
+EOL
+done
 fi
 }
 
