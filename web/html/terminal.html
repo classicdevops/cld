@@ -55,18 +55,6 @@
 }
 
 #ServerListUl li span {
-    border: 1px solid #1e88e5;
-    margin-top: -1px; /* Prevent double borders */
-    background-color: white;
-    padding: 4px;
-    text-decoration: none;
-    color: black;
-    display: block;
-    font-size: 10;
-    color: lightslategray;
-    border-right-width: 0;
-    border-left-width: 0;
-    border-bottom-width: 0;
     font-weight: bold;
     font-variant-caps: petite-caps;
 }
@@ -163,8 +151,9 @@
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newtab("bash/", "terminal")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for cld_dict in cld_instances %}
+                            <li><span>{{ cld_dict['name'] }}</span></li>
                             {% for cld_instance in cld_dict['clouds'] %}
-                            <li><a onclick='newtab("cldx/{{ cld_instance }}", "{{ cld_instance.__str__().split('_')[0] }}")' class="nav-link active" id="{{ cld_instance }}-link" data-toggle="tab" href="#{{ cld_instance }}"></a></li>
+                            <li><a onclick='newtab("cldx/{{ cld_instance }}", "{{ cld_instance.__str__().split('_')[0] }}")' class="nav-link active" id="{{ cld_instance }}-link" data-toggle="tab" href="#{{ cld_instance }}">{{ cld_instance }}</a></li>
                             {% endfor %}
                         {% endfor %}
                         {% for srv in srv_list %}
