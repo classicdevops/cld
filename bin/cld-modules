@@ -8,6 +8,7 @@ $1                            First PATTERN filtering allowed tools
 $2                            Second PATTERN filtering allowed tools
 $3                            Third PATTERN filtering allowed tools
 --json                        Json outout option
+--beauty                      Using together with --json option to beautify json output
 --modules=MODULE1,MODULE2     Filtering by cld modules
 EOL
 )
@@ -27,7 +28,7 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--json' && JSON=1
-echo $OPTS | grep -q  '^\--beautify' && JSON_BEAUTY=1
+echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
