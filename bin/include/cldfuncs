@@ -21,6 +21,7 @@ then
   F='`'
   B='*'
 fi
+
 VM_LIST() {
 (
 for GROUP in $(ls /var/cld/access/groups/)
@@ -60,10 +61,8 @@ if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
 fusermount -uzq $LOCALMOUNTPATH >> /dev/null
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $PWD | grep -q "^$" || PWDOPT="-o password_stdin"
-#    DEVICE=$(ssh -q -o "RequestTTY force" $USR@$MSK "sudo prlctl exec $CT df -P" | tr '\r' '\n' | egrep "/$" | awk '{print $1}' | tr -d '\r' | tr -d '\n') >> /dev/null
-#    VZPOINT=$(ssh -q -o "RequestTTY force" $USR@$MSK "df -P" | tr '\r' '\n' | grep "$DEVICE" | awk '{print $6}' | tr -d '\r' | tr -d '\n') >> /dev/null
-echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "sudo grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r' | tr -d '\n')
-echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r' | tr -d '\n')
+echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "sudo grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r\n')
+echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $USR | grep -q root || sshfs -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 >/dev/null
 echo $USR | grep -q root && sshfs -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 >/dev/null
