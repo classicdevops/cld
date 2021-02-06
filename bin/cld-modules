@@ -1,3 +1,4 @@
+#!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 Show list of modules and tools
 EOL
