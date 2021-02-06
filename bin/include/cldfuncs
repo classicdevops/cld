@@ -100,7 +100,7 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
-if [ "JSON" == "1" ]
+if [ "$JSON" == "1" ]
 then
   SUDO_USER=admin
   for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
