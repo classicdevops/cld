@@ -1,4 +1,16 @@
 #!/bin/bash
+if [ "$(stat -c "%a" /var/cld)" != "700" ] 
+then
+chattr -i /var/cld
+chmod 700 /var/cld
+chattr +i /var/cld
+fi
+
+if ! [[ "$(lsattr -d /var/cld)" =~ ^[A-Za-z-]+i[A-Za-z-]+\ +/var/cld$ ]] 
+then
+chattr +i /var/cld
+fi
+
 [ "$SUDO_USER" ] || SUDO_USER=admin
 if [ "$FROM" == "API" ] 
 then 
@@ -266,7 +278,7 @@ echo "${CLOUD::-1}" >> ${FILE}
 
 passwordgen()
 {
-echo $(< /dev/urandom tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25})
+cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}
 }
 
 cldhelp()
