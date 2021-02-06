@@ -179,7 +179,7 @@
                         <li><a onclick='newtab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for cld_dict in cld_tools %}
                             <li><span>module: {{ cld_dict['module'] }}</span></li>
-                            {% for cld_tool in cld_dict['clouds'] %}
+                            {% for cld_tool in cld_dict['tools'] %}
                             <li><a onclick='newtab("{{ cld_tool }}")' class="nav-link active" id="{{ cld_tool }}-link" data-toggle="tab" href="#{{ cld_tool }}">{{ cld_tool }}</a></li>
                             {% endfor %}
                         {% endfor %}
