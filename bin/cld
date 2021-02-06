@@ -9,6 +9,7 @@ $2                       Second PATTERN filtering allowed instances
 $3                       Third PATTERN filtering allowed instances
 --list                   Show filtered instances and exit
 --json                   Using together --list to json output
+--beauty                 Using together with --list and --json option to beautify json output
 --groups=GROUP1,GROUP2   Filtering by instance groups
 --debug                  Verbose output of connection
 EOL
@@ -33,11 +34,13 @@ echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--list' && LIST=1
 echo $OPTS | grep -q  '^\--json' && JSON=1
+echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
+[ "$JSON_BEAUTY" == "1" ] && JSON_BEAUTY_ARG='| jq . -C'
 
-if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ; exit 0 ; fi
+if [ "$LIST" = "1" ] ; then source <(echo -n CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG}) ; exit 0 ; fi
 
 echo "Please select instance to enter"
 select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
