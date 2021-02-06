@@ -54,6 +54,17 @@
   background-color: #eee;
 }
 
+#ServerListUl li span {
+    color: gray;
+    font-size: small;
+    font-weight: bold;
+    font-variant-caps: petite-caps;
+}
+
+#ServerListUl li span:hover:not(.header) {
+  background-color: #eee;
+}
+
 </style>
     <script>
     function idgen() {
@@ -111,7 +122,7 @@
         ul = document.getElementById("ServerListUl");
         li = ul.getElementsByTagName("li");
         for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("a")[0];
+            a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
             txtValue = a.textContent || a.innerText;
             if (txtValue.toUpperCase().indexOf(filter) > -1) {
                 li[i].style.display = "";
@@ -166,8 +177,11 @@
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newtab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
-                        {% for util in utils %}
-                        <li><a onclick='newtab("{{ util }}")' class="nav-link active" id="{{ util }}-link" data-toggle="tab" href="#{{ util }}">{{ util }}</a></li>
+                        {% for cld_dict in cld_tools %}
+                            <li><span>module: {{ cld_dict['module'] }}</span></li>
+                            {% for cld_tool in cld_dict['clouds'] %}
+                            <li><a onclick='newtab("{{ cld_tool }}")' class="nav-link active" id="{{ cld_tool }}-link" data-toggle="tab" href="#{{ cld_tool }}">{{ cld_tool }}</a></li>
+                            {% endfor %}
                         {% endfor %}
                     </ul>
                 </div>
