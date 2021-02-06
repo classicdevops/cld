@@ -54,15 +54,6 @@
   background-color: #eee;
 }
 
-#ServerListUl li a span {
-    font-weight: bold;
-    font-variant-caps: petite-caps;
-}
-
-#ServerListUl li a span:hover:not(.header) {
-  background-color: #eee;
-}
-
 </style>
     <script>
     function idgen() {
@@ -151,7 +142,7 @@
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newtab("bash/", "terminal")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for cld_dict in cld_instances %}
-                            <li><a><span>{{ cld_dict['name'] }}</span></a></li>
+                            <li style="font-weight: bold;font-variant-caps: petite-caps;">{{ cld_dict['name'] }}</li>
                             {% for cld_instance in cld_dict['clouds'] %}
                             <li><a onclick='newtab("cldx/{{ cld_instance }}", "{{ cld_instance.__str__().split('_')[0] }}")' class="nav-link active" id="{{ cld_instance }}-link" data-toggle="tab" href="#{{ cld_instance }}">{{ cld_instance }}</a></li>
                             {% endfor %}
