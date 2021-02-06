@@ -1,6 +1,5 @@
 #!/bin/bash
-cd "$(dirname "${BASH_SOURCE[0]}")"
-source ../creds/creds
+source /var/cld/bin/include/cldfuncs
 
 for GROUP in $(ls /var/cld/access/groups/)
 do

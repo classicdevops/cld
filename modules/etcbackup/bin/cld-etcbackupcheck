@@ -1,0 +1,42 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+source /var/cld/creds/creds_backup_monitoring
+
+[ "$SUDO_USER" = "" ] && SUDO_USER=admin
+
+mkdir -p /var/cld/log/check_backup/$(date +%F) &>/dev/null
+rm -f /var/cld/log/check_backup/$(date +%F)/status_etc &>/dev/null
+echo \`Configuration backup status:\` | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
+for VM in $(CLOUDS_USER_ALLOWED | cut -d _ -f -2)
+do
+unset STORAGE_NAME BACKUP_PATH BACKUP_FILE BACKUP_SIZE LAST_BACKUP LAST_BACKUP_DATE
+STORAGE_NAME=${ETC_STORAGE_NAME}
+BACKUP_PATH=${ETC_BACKUP_PATH}
+BACKUP_FILE=$(ls -h $BACKUP_PATH/$(date +%F)/$VM*.gz 2>/dev/null | tail -1)
+LAST_BACKUP=$(ls -h $BACKUP_PATH/*/$VM*.gz 2>/dev/null | tail -1)
+if [ "${BACKUP_FILE}" != "" ]
+then
+BACKUP_SIZE=$(du ${BACKUP_FILE} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024)}')
+test $(echo ${BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 400 && echo "OK - ${VM} - ${BACKUP_SIZE}M" || echo "FAIL - ${VM} - ${BACKUP_SIZE}M"
+elif [ "${LAST_BACKUP}" != "" ]
+then
+LAST_BACKUP_DATE=$(echo "${LAST_BACKUP}" | cut -d / -f 6)
+LAST_BACKUP_SIZE=$(du ${LAST_BACKUP} | tr '\t' ' ' | cut -d ' ' -f 1 | awk '{printf("%.2f\n",$1/1024)}')
+test $(echo ${LAST_BACKUP_SIZE} | awk '{printf("%.2f\n",$1*1024)}' | cut -d . -f 1) -ge 400 && echo "OK - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M" || echo "FAIL - ${VM} - Last ${LAST_BACKUP_DATE} ${LAST_BACKUP_SIZE}M"
+else
+echo "BACKUP NOT FOUND - $VM"
+fi
+
+done | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
+
+for SOURCE_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
+do
+split --suffix-length=2 --lines=50 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FILE}_
+rm -f ${SOURCE_FILE}
+done
+
+for STATUS_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
+do
+test "$1" == "send" && wget -qO- "https://api.telegram.org/bot${MONITORING_BOT_TOKEN}/sendMessage?chat_id=${MONITORING_CHAT_ID}&parse_mode=Markdown&text=$(cat ${STATUS_FILE} | awk '{print "\`"$0"\`"}' | sed -e 's#Last#\`\*Last\*\`#g' -e 's#FAIL#\`\*FAIL\*\`#g' -e 's#NOT FOUND#\`\*NOT FOUND\*\`#g' | sed 's#\\##g' | sed ':a;N;$!ba;s#\n#%0A#g')"
+sleep 0.5s
+done
