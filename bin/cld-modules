@@ -33,4 +33,4 @@ done
 [ "$JSON" == "1" ] && JSONARG='--json'
 [ "$JSON_BEAUTY" == "1" ] && JSON_BEAUTY_ARG='| jq .'
 
-source <(printf MODULES_USER_ALLOWED --modules="${CLD_MODULES}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
+source <(echo -n MODULES_USER_ALLOWED --modules="${CLD_MODULES}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
