@@ -30,4 +30,4 @@ done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
 
-CLOUDS_USER_ALLOWED --modules="${CLD_MODULES}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3"
+MODULES_USER_ALLOWED --modules="${CLD_MODULES}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3"
