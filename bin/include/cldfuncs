@@ -93,12 +93,30 @@ CLOUDS_USER_ALLOWED() {
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--json' && JSON=1
 done
-for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
-do
-cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
-done
-[ "$CLD_GROUPS" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
+if [ "JSON" ]
+then
+  SUDO_USER=admin
+  for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
+  do
+    CLOUDS=$(cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | head -c -1)
+    if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
+    then
+      cat << EOL | tr -d '\n'
+      {"name": "$GROUP",
+      "clouds": $(echo -n "$CLOUDS" | jq -R -s -c 'split("\n")')
+      },
+EOL
+    fi
+  done | head -c -1 | cat <(echo -n '[') - <(echo -n ']')
+else
+  for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
+  do
+    cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null
+  done
+  [ "$CLD_GROUPS" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null
+fi
 }
 
 CHECK_DNS()
