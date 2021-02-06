@@ -349,7 +349,7 @@ def terminal():
   if 'username' in session:
     username = session['username']
     usergroups = bash('grep -v "^$\||#" /var/cld/access/users/'+username+'/groups').split('\n')
-    cld_instances = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list --json')
+    cld_instances = json.loads(bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list --json'))
     srv_list = bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
     return render_template('html/terminal.html', username=username, srv_list=srv_list, cld_instances=cld_instances)
 
