@@ -54,6 +54,27 @@
   background-color: #eee;
 }
 
+#ServerListUl li span {
+    border: 1px solid #1e88e5;
+    margin-top: -1px; /* Prevent double borders */
+    background-color: white;
+    padding: 4px;
+    text-decoration: none;
+    color: black;
+    display: block;
+    font-size: 10;
+    color: lightslategray;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-bottom-width: 0;
+    font-weight: bold;
+    font-variant-caps: petite-caps;
+}
+
+#ServerListUl li span:hover:not(.header) {
+  background-color: #eee;
+}
+
 </style>
     <script>
     function idgen() {
@@ -145,9 +166,9 @@
                         <li><a onclick='newtab("cldx/{{ srv }}", "{{ srv.__str__().split('_')[0] }}")' class="nav-link active" id="{{ srv }}-link" data-toggle="tab" href="#{{ srv }}">{{ srv }}</a></li>
                         {% endfor %}
                         {% for cld_dict in cld_instances %}
-                            <li style="font-weight: bold;font-variant-caps: petite-caps;">{{ cld_dict['name'] }}</li>
+                            <li><span>{{ cld_dict['name'] }}</span></li>
                             {% for cld_instance in cld_dict['clouds'] %}
-                            <li><a onclick='newtab("cldx/{{ cld_instance }}", "{{ cld_instance.__str__().split('_')[0] }}")' class="nav-link active" id="{{ cld_instance }}-link" data-toggle="tab" href="#{{ cld_instance }}">
+                            <li><a onclick='newtab("cldx/{{ cld_instance }}", "{{ cld_instance.__str__().split('_')[0] }}")' class="nav-link active" id="{{ cld_instance }}-link" data-toggle="tab" href="#{{ cld_instance }}"></a></li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
