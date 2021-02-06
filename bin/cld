@@ -31,13 +31,15 @@ do
 echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--list' && LIST=1
-echo $OPTS | grep -q  '^\--json' && JSON='--json'
+echo $OPTS | grep -q  '^\--json' && JSON=1
 done
 
-if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSON}" "$ARG1" "$ARG2" "$ARG3" ; exit 0 ; fi
+[ "$JSON" == "1" ] && JSONARG='--json'
+
+if [ "$LIST" = "1" ] ; then CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ; exit 0 ; fi
 
 echo "Please select instance to enter"
-select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSON}"  "$ARG1" "$ARG2" "$ARG3")
+select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSONARG}"  "$ARG1" "$ARG2" "$ARG3")
 do
   CLD_LOGS
   if [ "$VM" ]
