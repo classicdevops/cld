@@ -19,6 +19,7 @@ import struct
 import fcntl
 import shlex
 import threading
+import json
 
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
