@@ -110,7 +110,7 @@ then
     then
       cat << EOL | tr -d '\n'
 {"group": "$GROUP",
-"clouds": $(echo -n "$CLOUDS" | jq -R -s -c 'split("\n")')
+"clouds": $(echo -n "$CLOUDS" | awk 'BEGIN {print "["} {print "\x22"$1"\x22,"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
 },
 EOL
     fi
