@@ -27,8 +27,10 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--json' && JSON=1
+echo $OPTS | grep -q  '^\--beautify' && JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
+[ "$JSON_BEAUTY" == "1" ] && JSON_BEAUTY_ARG='| jq .'
 
-MODULES_USER_ALLOWED --modules="${CLD_MODULES}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3"
+source <(echo MODULES_USER_ALLOWED --modules="${CLD_MODULES}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
