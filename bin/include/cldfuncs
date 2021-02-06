@@ -109,7 +109,7 @@ then
     if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
     then
       cat << EOL | tr -d '\n'
-{"name": "$GROUP",
+{"group": "$GROUP",
 "clouds": $(echo -n "$CLOUDS" | jq -R -s -c 'split("\n")')
 },
 EOL
