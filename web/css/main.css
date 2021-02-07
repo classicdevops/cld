@@ -289,6 +289,7 @@ text-align: center;
         font-family: 'D3 Euronism';
         font-weight: normal;
         font-size: 26px;
+        letter-spacing: 2px;
     }
 
     .ng-animate-start {
