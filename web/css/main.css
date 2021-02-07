@@ -285,7 +285,7 @@ text-align: center;
         padding: 20px 15px;
     }
 
-    .navbar-default .navbar-brand .nav-logo {
+    .a.navbar-brand.nav-logo {
         font-family: 'D3 Euronism';
         font-weight: normal;
         font-size: 26px;
