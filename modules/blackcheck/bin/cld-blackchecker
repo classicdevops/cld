@@ -1,4 +1,5 @@
-#!/bin/bashHELP_DESC=$(cat << 'EOL'
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
 Utility to check all instances addresses if there is in spam lists
 EOL
 )
