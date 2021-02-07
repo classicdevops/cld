@@ -15,7 +15,8 @@ cld-etcbackupcheck --send=1234567
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-source /var/cld/creds/creds_backup_monitoring
+
+init-load-constants ETC_STORAGE_NAME\|networkstorage ETC_BACKUP_PATH\|/networkstorage/backup/files/all_etc
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 for VM in $(CLOUDS_USER_ALLOWED)

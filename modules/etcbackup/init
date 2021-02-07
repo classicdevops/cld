@@ -1,0 +1,4 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+
+init-load-constants ETC_STORAGE_NAME\|networkstorage ETC_BACKUP_PATH\|/networkstorage/backup/files/all_etc TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB

@@ -2,9 +2,21 @@
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
 
-echo "Are you using MIKROTIK ?" 
-select ANSWER in yes no
-do
-[ "${ANSWER}" == "yes" ] && init-load-constants MIKROTIK_USER\|admin MIKROTIK_PASSWORD\|Y0uRM1kr071Kp455W0rD MIKROTIK_HOST\|1.2.3.4 || echo skipped
-break
-done
+if grep "^MIKROTIK=" /var/cld/creds/creds
+then
+	echo -n ""
+else
+	echo "Are you using MIKROTIK ?" 
+	select ANSWER in yes no
+	do
+		if [ "${ANSWER}" == "yes" ]
+			then
+				init-load-constants MIKROTIK_USER\|admin MIKROTIK_PASSWORD\|Y0uRM1kr071Kp455W0rD MIKROTIK_HOST\|1.2.3.4 || echo skipped
+				echo MIKROTIK=1 >> /var/cld/creds/creds
+				break
+			elif [ "${ANSWER}" == "no" ]
+				echo MIKROTIK=0 >> /var/cld/creds/creds
+				break
+		fi
+	done
+fi

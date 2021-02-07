@@ -78,14 +78,14 @@ echo $OPTS | grep -q '\-\-hyper=' && HYPER=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 done
 
-[ "$HPR_PREFIX" == "" ] && HPR_PREFIX=HPR
+[ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
 
-[ "$HYPERVISOR" != "" ] && HYPERVISOR=$(CLOUDS_USER_ALLOWED | grep -i "^$HPR_PREFIX" | grep "$HYPER" | head -1)
+[ "$HYPERVISOR" != "" ] && HYPERVISOR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "$HYPER" | head -1)
 
 if [ "$HYPERVISOR" == "" ]
 then
 echo Please choose HYPERVISOR
-select VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HPR_PREFIX")
+select VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 if [ "$VM" ]
 then
