@@ -1,6 +1,26 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+PVE hypervisors backup status parser
+Should be setted up on cron with send and telegram chat id arguments
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--send=1234567                     Enable send report to telegram by chat id
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-cmbackupcheck
+cld-cmbackupcheck --send=1234567
+EOL
+)
 source /var/cld/bin/include/cldfuncs
-source /var/cld/creds/creds_backup_monitoring
+
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q '\-\-send=' && TELEGRAM_CHAT_ID=$(echo $OPTS | cut -d '=' -f 2)
+done
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 
@@ -68,8 +88,11 @@ split --suffix-length=2 --lines=50 --numeric-suffixes ${SOURCE_FILE} ${SOURCE_FI
 rm -f ${SOURCE_FILE}
 done
 
+if [ "$TELEGRAM_CHAT_ID" != "" ]
+then
 for STATUS_FILE in $(ls /var/cld/log/check_backup/$(date +%F)/*)
 do
-test "$1" == "send" && wget -qO- "https://api.telegram.org/bot${MONITORING_BOT_TOKEN}/sendMessage?chat_id=${MONITORING_CHAT_ID}&parse_mode=Markdown&text=$(cat ${STATUS_FILE} | awk '{print "\`"$0"\`"}' | sed -e 's#Last#\`\*Last\*\`#g' -e 's#FAIL#\`\*FAIL\*\`#g' -e 's#NOT FOUND#\`\*NOT FOUND\*\`#g' | sed 's#\\##g' | sed ':a;N;$!ba;s#\n#%0A#g')"
+wget -qO- "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&parse_mode=Markdown&text=$(cat ${STATUS_FILE} | awk '{print "\`"$0"\`"}' | sed -e 's#Last#\`\*Last\*\`#g' -e 's#FAIL#\`\*FAIL\*\`#g' -e 's#NOT FOUND#\`\*NOT FOUND\*\`#g' | sed 's#\\##g' | sed ':a;N;$!ba;s#\n#%0A#g')"
 sleep 0.5s
 done
+fi

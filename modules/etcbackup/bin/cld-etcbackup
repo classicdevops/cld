@@ -1,11 +1,28 @@
 #!/bin/bash
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Classicdeploy etc backup tool
+Should be setted up on daily cron
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--send=1234567                     Enable send report to telegram by chat id
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-etcbackupcheck
+cld-etcbackupcheck --send=1234567
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 source /var/cld/creds/creds_backup_monitoring
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 for VM in $(CLOUDS_USER_ALLOWED)
 do
-timeout 60 cldmount $VM || continue
+
+timeout 90s sudo -u ${SUDO_USER} sudo /var/cld/bin/cldxmount ${VM} || continue
+
 LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 
 mkdir -p /backup/files/all_etc/ &>/dev/null
