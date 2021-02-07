@@ -1,4 +1,16 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Get information filtering by domain name - based on classicdeploy DNS backup infromation
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       FQDN
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-domain example.com
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 grep --color=always -s "^$1" /var/cld/modules/dns/data/{cf,ibs}/`TZ=Europe/Moscow date +%F`/{cf,ibs}_dns_list
 tail -n 999 /var/cld/modules/dns/data/{cf,ibs}/`TZ=Europe/Moscow date +%F`/*$1* 2>/dev/null | grep -v "\;\;" | ack --color --passthru $1 | less -R | cat
