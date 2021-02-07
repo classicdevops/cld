@@ -4,6 +4,7 @@ Add or update private ip of user to access list
 Tool mostly oriented to BOT and API interfaces
 Arguments filling automatically by using /myip command at Telegram chat with bot
 If ip address is not detected - return api link with temporary token to add ip auto detected just by click
+To add an ip address to access list via CLI - use cld-enableip
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
@@ -13,11 +14,11 @@ $3                       ip address
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-myip
-cld-myip 1.2.3.4
+cld-myip #BOT
+cld-myip 1.2.3.4 #BOT
 EOL
 )
-HELP_ONLY="CLI"
+HELP_ONLY="BOT"
 source /var/cld/bin/include/cldfuncs
 
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
@@ -29,7 +30,7 @@ cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips |
 (cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts; systemctl reload squid) &>/dev/null & disown
 (cat /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/32;"}' > /etc/nginx/accesslist && service nginx reload) &>/dev/null & disown
 
-bash -lc "/var/cld/modules/access/bin/access_list_to_ssh" &>/dev/null &
+ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || bash -lc "/var/cld/modules/access/bin/cld-accesslistdeploy" &>/dev/null & disown
 
 #iron throne deploy
 #bash -lc "/var/cld/bot/bin/access_list_to_mikrotik" &
