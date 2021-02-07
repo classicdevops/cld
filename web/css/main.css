@@ -329,6 +329,11 @@ text-align: center;
         border-bottom-width: 1px;
     }
 
+@media screen and (max-width: 2560px) {
+  .header {
+    width: 80%;
+  }
+}
     /* collapsed sidebar styles */
     @media screen and (max-width: 767px) {
         .row-offcanvas {
