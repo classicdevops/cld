@@ -33,8 +33,8 @@ label {
 }
 
 .paymentWrap {
-	#padding: 50px;
-	#margin-left: 10px;
+/*	padding: 50px;*/
+	margin-left: -5px;
 }
 label {
     font-weight: 100;
