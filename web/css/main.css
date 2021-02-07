@@ -335,6 +335,13 @@ text-align: center;
         width: 80%;
       }
     }
+
+    @media (min-width: 768px) {
+    .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+        margin-left: -12px;
+    }
+    }
+    
     /* collapsed sidebar styles */
     @media screen and (max-width: 767px) {
         .row-offcanvas {
