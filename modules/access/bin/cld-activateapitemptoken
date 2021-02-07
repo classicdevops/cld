@@ -1,10 +1,10 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Add or update private ip of user to access list
+Add or update private IP of user to access list
 Tool oriented to BOT and API interfaces
 Arguments filling automatically by passing link after using /myip command at Telegram chat with bot
-By this tool ip address of user detecting automatically from incoming get request
-To add an ip address to access list via CLI - use cld-enableip
+By this tool IP address of user detecting automatically from incoming get request
+To add an IP address to access list via CLI - use cld-enableip
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
