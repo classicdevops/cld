@@ -282,6 +282,10 @@ text-align: center;
 
     .navbar-default .navbar-brand {
         color: #1e88e5;
+        font-family: 'D3 Euronism';
+        font-weight: normal;
+        font-size: 26px;
+        padding: 20px 15px;
     }
 
     .ng-animate-start {
