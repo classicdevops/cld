@@ -261,7 +261,7 @@ def connect():
     #except: pass
     #else: return
     cmd_args = ''
-    try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args.get('args')).string)+" ; sleep 1s"
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args.get('args')).string)+" "
     except: cmd_args = " "
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
@@ -275,7 +275,7 @@ def connect():
     time.sleep(0.05)
     if child_pid == 0:
       #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
-      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, shell=True, executable='/bin/bash')
+      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args+" ; sleep 0.5s", shell=True, executable='/bin/bash')
     elif isinstance(child_pid, int):
       app.config["shell"]["childpid"][socketid] = child_pid
       try: subprocpid
