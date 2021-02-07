@@ -14,6 +14,13 @@
         display: block;
     }
 
+@font-face {
+    font-family: 'D3 Euronism';
+    font-style: normal;
+    font-weight: normal;
+    src: local('D3 Euronism'), url('/font/D3Euronism.woff') format('woff');
+}
+
 .tab-content>.active {
     padding-top: 10px;
 }

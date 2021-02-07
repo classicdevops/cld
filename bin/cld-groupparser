@@ -1,4 +1,17 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Classicdeploy instances group parser - executing parsing scripts of groups marked as "parsing" - not affecting "manual" type groups
+Should be setted up on regular cron execution
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--user=USERNAME          Username filter - all users will reinitialized if argument not passed
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-groupparser
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 
 for GROUP in $(ls /var/cld/access/groups/)

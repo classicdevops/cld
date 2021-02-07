@@ -311,6 +311,10 @@ def send_img(path):
 def send_js(path):
     return send_from_directory('js', path)
 
+@app.route('/font/<path:path>')
+def send_font(path):
+    return send_from_directory('font', path)
+
 @app.route('/favicon.ico')
 def send_favicon():
     return send_from_directory('img', 'favicon.ico')
