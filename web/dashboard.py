@@ -261,7 +261,7 @@ def connect():
     #except: pass
     #else: return
     cmd_args = ''
-    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args.get('args')).string)+" "
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args.get('args')).string)+" ; sleep 1s"
     except: cmd_args = " "
     user = session["username"]
     if cldutility == 'bash': shellcmd = '/bin/bash'
