@@ -12,4 +12,4 @@ sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens
 cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | sort -u > /var/cld/api/accesslist 2>/dev/null
 (cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts; systemctl reload squid) &>/dev/null & disown
 (cat /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/32;"}' > /etc/nginx/accesslist && service nginx reload) &>/dev/null & disown
-bash -lc "/var/cld/bot/bin/access_list_to_ssh" &>/dev/null &
+ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || bash -lc "/var/cld/modules/access/bin/cld-accesslistdeploy" &>/dev/null & disown

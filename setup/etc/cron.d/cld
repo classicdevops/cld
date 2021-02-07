@@ -1,3 +1,4 @@
+MAILTO=""
 */5 * * * * root bash -lc "/var/cld/bin/cld-groupparser"
-#* * * * * root bash -lc "/var/cld/bot/bin/access_list_to_ssh" &>/dev/null
+#* * * * * root bash -lc "/var/cld/modules/access/bin/cld-accesslistdeploy --groups=default" &>/dev/null
 #0 12 * * * root bash -lc "/var/cld/modules/etcbackup/bin/cld-etcbackup"
