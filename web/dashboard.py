@@ -83,14 +83,15 @@ app.config['UPLOAD_FOLDER'] = upload_dir
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-#@app.before_request
-
+#include code from web.py of modules
 cldm={}
 for webfile in bash("/usr/bin/ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
   cldmodule=bash('echo '+webfile+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule, flush=True)
   exec(open(webfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
+
+#recreate symlinks to templates in external directories for this dashboard.py
 bash('''rm -f /var/cld/web/modules/*
 mkdir /var/cld/web/modules &>/dev/null
 for WEB_TEMPLATE_PATH in $(ls -d /var/cld/{cm,deploy}/web /var/cld/modules/*/web 2>/dev/null)
@@ -99,6 +100,7 @@ WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
 ln -s ${WEB_TEMPLATE_PATH} /var/cld/web/modules/${WEB_MODULE}
 done''')
 
+#generate help endpoints for each CLD tool
 exec(bash('''
 for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include)
 do
