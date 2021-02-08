@@ -13,6 +13,7 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 CLDUSER=$1
+[ "$CLDUSER" ] || echoexit1 CLD user is not defined
 userdel ${CLDUSER}
 rm -f /home/${CLDUSER}/*
 rmdir /home/${CLDUSER}

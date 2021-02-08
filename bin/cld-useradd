@@ -29,6 +29,7 @@ ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 [ "${ARG1}" = "${ARG2}" ] && unset ARG2
 
 CLD_USER=$ARG1
+[ "$CLD_USER" ] || echoexit1 CLD user is not defined
 CLD_USER_PASSWORD=$ARG2
 [ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cldmount,cldx,cldxmount"
 # useradd ${CLD_USER} --shell /bin/bash

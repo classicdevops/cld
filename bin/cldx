@@ -26,7 +26,6 @@ echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 
 echo $OPTS | grep -q  '^\--list' && LIST=1
 done
 
-[ "$SUDO_USER" = "" ] && SUDO_USER=admin
 echo $1
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
 do
