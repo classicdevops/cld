@@ -2,7 +2,7 @@
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
 
-if grep "^MIKROTIK=" /var/cld/creds/creds
+if grep -q "^MIKROTIK=" /var/cld/creds/creds
 then
 	echo -n ""
 else
@@ -14,7 +14,8 @@ else
 				init-load-constants MIKROTIK_USER\|admin MIKROTIK_PASSWORD\|Y0uRM1kr071Kp455W0rD MIKROTIK_HOST\|1.2.3.4 || echo skipped
 				echo MIKROTIK=1 >> /var/cld/creds/creds
 				break
-			elif [ "${ANSWER}" == "no" ]
+		elif [ "${ANSWER}" == "no" ]
+            then
 				echo MIKROTIK=0 >> /var/cld/creds/creds
 				break
 		fi
