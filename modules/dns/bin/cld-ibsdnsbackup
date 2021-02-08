@@ -1,4 +1,13 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Backup DNS zones by API of all your Internetbs accounts setted up in /var/cld/creds/creds_dns_ibs_api_list
+Should be setted up for daily cron
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-ibsdnsbackup
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 [ -e /var/cld/ibs/`TZ=Europe/Moscow date +%F` ] || mkdir -p /var/cld/ibs/`TZ=Europe/Moscow date +%F`/
 truncate -s 0 /var/cld/modules/dns/data/ibs/$(TZ=Europe/Moscow date +%F)/ibs_dns_list

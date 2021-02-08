@@ -1,4 +1,13 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Backup DNS zones by API of all your CloudFlare accounts setted up in /var/cld/creds/creds_dns_cf_api_list
+Should be setted up for daily cron
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-cfdnsbackup
+EOL
+)
 source /var/cld/bin/include/cldfuncs
 [ -e /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F) ] || mkdir -p /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)
 truncate -s 0 /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list
