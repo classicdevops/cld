@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 Classicdeploy etc backup tool
 Should be setted up on daily cron
