@@ -17,12 +17,21 @@ source /var/cld/bin/include/cldfuncs
 
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB ETC_STORAGE_NAME\|networkstorage ETC_BACKUP_PATH\|/networkstorage/backup/files/all_etc
 
-[ "$SUDO_USER" = "" ] && SUDO_USER=admin
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+CLD_GROUPS=${CLD_GROUPS:-default}
 
 mkdir -p /var/cld/log/check_backup/$(date +%F) &>/dev/null
 rm -f /var/cld/log/check_backup/$(date +%F)/status_etc &>/dev/null
 echo \`Configuration backup status:\` | tee -a /var/cld/log/check_backup/$(date +%F)/status_etc
-for VM in $(CLOUDS_USER_ALLOWED | cut -d _ -f -2)
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" | cut -d _ -f -2)
 do
 unset STORAGE_NAME BACKUP_PATH BACKUP_FILE BACKUP_SIZE LAST_BACKUP LAST_BACKUP_DATE
 STORAGE_NAME=${ETC_STORAGE_NAME}

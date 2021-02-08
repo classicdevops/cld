@@ -6,16 +6,17 @@ Should be setted up on cron
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       First PATTERN filtering allowed instances
-$2                       Second PATTERN filtering allowed instances
-$3                       Third PATTERN filtering allowed instances
---groups=GROUP1,GROUP2   Filtering by instance groups - default value is "default" group
---mikrotik               Enable access list deploy to Mikrotik
+$1                             First PATTERN filtering allowed instances
+$2                             Second PATTERN filtering allowed instances
+$3                             Third PATTERN filtering allowed instances
+--groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
+--allowedgroups=GROUP1,GROUP2  Groups of instances which ip addresses will be added to accesslist together with /var/cld/modules/access/data/myips and /var/cld/modules/access/data/enabledips - default is the same as --groups or "default"
+--mikrotik                     Enable access list deploy to Mikrotik
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-accesslistdeploy
-cld-accesslistdeploy --groups=default,prod,hypervisors
+cld-accesslistdeploy --groups=default,prod,hypervisors --allowedgroups=default
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -27,17 +28,19 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--allowedgroups=' && CLD_ALLOW_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--mikrotik' && MIKROTIK=1
 done
 
 CLD_GROUPS=${CLD_GROUPS:-default}
+[ "$CLD_ALLOW_GROUPS" ] || CLD_ALLOW_GROUPS=${CLD_GROUPS:-default}
 
 DEPLOY_ACCESS_LIST=$(cat << EOACCESSLIST
 cat > /etc/hosts.allow << 'EOHOSTSACCESS'
 $(
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
-grep -vh "^$\|^#" /var/cld/access/groups/default/clouds | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
+$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}") | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
 )
 EOHOSTSACCESS
 
