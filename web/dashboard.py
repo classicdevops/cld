@@ -85,6 +85,13 @@ Session(app)
 
 #@app.before_request
 
+cldm={}
+for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").strip().split('\n'):
+  cldmodule=bash('echo '+webfile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
+  cldm[cldmodule]=cldmodule
+  print(cldmodule)
+  exec(open(webfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
+
 exec(bash('''
 for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include)
 do

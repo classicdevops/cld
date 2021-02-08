@@ -35,6 +35,9 @@
 /bot/myip_tokens
 /api/accesslist
 
+#web
+/var/cld/web/modules/*
+
 #legacy simlink
 /ext_srv
 
