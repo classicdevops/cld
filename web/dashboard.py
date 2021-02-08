@@ -91,6 +91,13 @@ for webfile in bash("/usr/bin/ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/
   cldm[cldmodule]=cldmodule
   print(cldmodule, flush=True)
   exec(open(webfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
+bash('''rm -f /var/cld/web/modules/*
+mkdir /var/cld/web/modules &>/dev/null
+for WEB_TEMPLATE_PATH in $(ls -d /var/cld/{cm,deploy}/web /var/cld/modules/*/web 2>/dev/null)
+do
+WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
+ln -s ${WEB_TEMPLATE_PATH} /var/cld/web/modules/${WEB_MODULE}
+done''')
 
 exec(bash('''
 for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include)
