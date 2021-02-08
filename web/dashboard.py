@@ -89,7 +89,7 @@ cldm={}
 for webfile in bash("/usr/bin/ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").strip().split('\n'):
   cldmodule=bash('echo '+webfile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
   cldm[cldmodule]=cldmodule
-  print(cldmodule)
+  print(cldmodule, flush=True)
   exec(open(webfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
 exec(bash('''
