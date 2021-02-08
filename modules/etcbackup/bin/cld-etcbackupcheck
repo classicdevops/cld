@@ -15,7 +15,7 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB ETC_STORAGE_NAME\|networkstorage ETC_BACKUP_PATH\|/networkstorage/backup/files/all_etc
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin
 
