@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 [ -e /var/cld/ibs/`TZ=Europe/Moscow date +%F` ] || mkdir -p /var/cld/ibs/`TZ=Europe/Moscow date +%F`/
 truncate -s 0 /var/cld/modules/dns/data/ibs/$(TZ=Europe/Moscow date +%F)/ibs_dns_list
 for IBSAPI in $(cat /var/cld/creds/creds_dns_ibs_api_list | grep -v "^#")

@@ -1,4 +1,5 @@
 #!/bin/bash
+source /var/cld/bin/include/cldfuncs
 [ -e /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F) ] || mkdir -p /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)
 truncate -s 0 /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
