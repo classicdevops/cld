@@ -68,7 +68,7 @@ EOCHECK
 rm -f /var/cld/log/check_backup/$(date +%F)/* &>/dev/null
 
 echo \`Hypervisor backup status:\` | tee -a /var/cld/log/check_backup/$(date +%F)/status
-for HPR in $(CLOUDS_USER_ALLOWED | grep HPR)
+for HPR in $(CLOUDS_USER_ALLOWED | grep "^HPR")
 do
 HPR_NAME=`echo $HPR | cut -d "_" -f 1`
 SRV=`echo $HPR | cut -d "_" -f 2`

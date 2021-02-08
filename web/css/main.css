@@ -39,13 +39,22 @@ label {
 label {
     font-weight: 100;
 }
+
+label.btn.paymentmethod {
+    padding: 112px;
+    box-shadow: none;
+    position: relative;
+    margin-right: unset;
+    display: table-cell;
+    float: left;
+}
+
 .paymentWrap .paymentBtnGroup {
 	max-width: 100%;
 	margin: auto;
 	color: #e6e6e6;
 	
 }
-
 .paymentWrap .paymentBtnGroup .paymentMethod {
 	padding: 112px;
 	box-shadow: none;
@@ -341,7 +350,7 @@ text-align: center;
         margin-left: -12px;
     }
     }
-    
+
     /* collapsed sidebar styles */
     @media screen and (max-width: 767px) {
         .row-offcanvas {
