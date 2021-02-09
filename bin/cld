@@ -15,13 +15,13 @@ $3                       Third PATTERN filtering allowed instances
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld
-cld prod 1.2.
-cld --groups=gcloud prod --debug
-cld prod 1.2. --list
+cld #CLI
+cld prod 1.2. #CLI
+cld --groups=gcloud prod --debug #CLI
+cld prod 1.2. --list 
+cld prod 1.2. --groups=default --list --json --beauty
 EOL
 )
-HELP_ONLY="CLI"
 
 source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
@@ -38,7 +38,7 @@ echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
-[ "$JSON_BEAUTY" == "1" ] && JSON_BEAUTY_ARG='| jq . -C'
+[ "$JSON_BEAUTY" == "1" -a "FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C' || JSON_BEAUTY_ARG='| jq .'
 
 if [ "$LIST" = "1" ] ; then source <(echo -n CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG}) ; exit 0 ; fi
 

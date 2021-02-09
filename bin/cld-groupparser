@@ -4,10 +4,6 @@ Classicdeploy instances group parser - executing parsing scripts of groups marke
 Should be setted up on regular cron execution
 EOL
 )
-HELP_ARGS=$(cat << 'EOL'
---user=USERNAME          Username filter - all users will reinitialized if argument not passed
-EOL
-)
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-groupparser
 EOL
