@@ -34,7 +34,12 @@ done
 }
 
 CLD_LOGS() {
+if ! [ -d /var/cld/log/session/ ]
+then
+chattr -i /var/cld/
 mkdir -p /var/cld/log/session/ &>/dev/null
+chattr +i /var/cld/
+fi
 CLD_LOG=/var/cld/log/session/${SUDO_USER}_${VM}_`date +"%d-%m-%y_%H-%M"`
 }
 
