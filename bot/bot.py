@@ -107,6 +107,7 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
     except:
         pass
+    print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
     cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args)
     bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
