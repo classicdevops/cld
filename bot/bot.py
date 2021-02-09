@@ -114,6 +114,20 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
 EOL
 done
 '''))
+@bot.message_handler(commands=["template"])
+def cmd_cld_template(message):
+    checkresult = checkperms("deploy", "cld-template", message.from_user.id, message.chat.id, message.from_user.username)
+    if checkresult[0] != "granted": return
+    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\n"')
+    cmd_args=''
+    try:
+        for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
+        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', cmd_args).string)
+    except:
+        pass
+    print('sudo -u '+user+' sudo FROM=BOT /var/cld/deploy/bin/cld-template '+cmd_args, flush=True)
+    cmdoutput = bash("sudo -u "+user+" sudo FROM=BOT /var/cld/deploy/bin/cld-template "+cmd_args+" | awk -v F='`' '{print F$0F}'")
+    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
 if __name__ == '__main__':
      bot.polling(none_stop=True)
