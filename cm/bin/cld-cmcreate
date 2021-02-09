@@ -39,6 +39,7 @@ echo  "`date` - ${@:0}" >> /var/log/cld/cm/cmd_create.log
 touch /var/cld/cm/LOCK
 CMLOCK=$(cat /var/cld/cm/LOCK)
 [ -d "/var/cld/cm/data" ] || mkdir -p /var/cld/cm/data &>/dev/null
+[ -f "/var/cld/cm/data/queue_create" ] || touch /var/cld/cm/data/queue_create
 if grep -q "1" /var/cld/cm/LOCK ; then echo "${@:0}" >> /var/cld/cm/data/queue_create
 echo LOCK detected, do you want FORCE UNLOCK ?
 select LOCK in yes no
