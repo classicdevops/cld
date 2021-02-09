@@ -38,8 +38,8 @@ echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
-[ "$JSON_BEAUTY" == "1" -a "FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
-[ "$JSON_BEAUTY" == "1" -a "FROM" != "API" ] && JSON_BEAUTY_ARG='| jq .'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='| jq .'
 
 if [ "$LIST" = "1" ] ; then source <(echo -n CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${JSONARG}" "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG}) ; exit 0 ; fi
 
