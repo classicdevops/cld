@@ -55,6 +55,10 @@ grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "ss
 EOHOSTSBLACK
 
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
+@reboot root bash -lc "truncate -s 0 /etc/hosts.deny"
+@reboot root bash -lc "truncate -s 0 /root/sbin/iptables_access"
+@reboot root bash -lc "truncate -s 0 /etc/cron.d/iptables_access"
+@reboot root bash -lc "iptables -F"
 53-55 14-15 * * * root bash -lc "truncate -s 0 /etc/hosts.deny"
 EOCRON
 chmod 644 /etc/cron.d/hosts_deny_drop
