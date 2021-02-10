@@ -45,10 +45,10 @@ def accesslist():
   return bash("cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq").split('\n')
 
 def allowmoduleusers(cldmodule):
-  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
 
 def allowutilityusers(cldutility):
-  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
 
 def checkperms(cldmodule, cldutility, user):
   user=re.match("[A-z0-9_.-]+", user)[0]
@@ -899,7 +899,7 @@ def backendgitpull():
         bg = '''&>/dev/null &'''
     except:
       pass
-    cmd = bash('(cd /var/cld/ && git reset --hard && git pull origin master ; supervisorctl stop cldpanel ; sleep 1s ; supervisorctl start cldpanel) &>/dev/null & disown' + bg)
+    cmd = bash('(cd /var/cld/ && chattr -i /var/cld && git reset --hard && git pull origin master ; supervisorctl stop cldpanel ; sleep 1s ; supervisorctl start cldpanel) &>/dev/null & disown' + bg)
     resp = Response(cmd, status=200, mimetype='text/plain')
     return resp
 

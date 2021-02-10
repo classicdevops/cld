@@ -58,10 +58,10 @@ except:
   pass
 
 def allowmoduleusers(cldmodule):
-  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
 
 def allowutilityusers(cldutility):
-  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1 | head -c -1 | tr "\n" ","''').strip().split(','))
+  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
 
 def checkperms(cldmodule, cldutility, token):
   token=re.match("[A-z0-9_.-]+", token)[0]
