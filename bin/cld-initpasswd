@@ -103,3 +103,16 @@ then
     sed -i -r 's#'${USER_NAME}':(.*?)::(.*?):(.*?)#'${USER_NAME}':\1:'${USER_TOKEN}':\2:\3#g' /var/cld/creds/passwd
 fi
 done
+for USER_PATH in $(ls /var/cld/access/users/* -d)
+do
+    USER_NAME=$(rev <<< $USER_PATH | cut -d / -f 1 | rev)
+    if grep -q "^${USER_NAME}:" /var/cld/creds/passwd
+    then
+        echo -n ""
+    else
+        rm -f ${USER_PATH}/* &>/dev/null
+        rmdir $USER_PATH &>/dev/null
+        userdel ${USER_NAME} &>/dev/null
+        echo $USER_NAME deleted due was not found at access rigths matrix file /var/cld/creds/passwd
+    fi
+done
