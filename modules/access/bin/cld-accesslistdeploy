@@ -112,6 +112,8 @@ echo \$LOCAL_NETS | grep "^\$" && LOCAL_NETS=\$(cat << 'EOPORTS'
 EOPORTS
 )
 
+echo ${HOSTNAME}
+
 [ "\$ALLOWED_IPS_LINES" -ge "3" ] && source <(
 iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "\${BLACK_IPS}" | grep -v "/32 -j DROP" | iptables-restore
