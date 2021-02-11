@@ -51,6 +51,7 @@ EOLPVEZSYNC
 
 KVM_STOP=$(cat << 'EOKVMSTOP'
 sleep 3s
+qm unlock $KVM_ID &>/dev/null
 qm stop $KVM_ID
 EOKVMSTOP
 )
