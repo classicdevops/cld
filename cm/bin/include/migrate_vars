@@ -42,6 +42,9 @@ EOPREPARE
 )
 
 PVE_ZSYNC=$(cat << 'EOLPVEZSYNC'
+cat << EOL
+/usr/sbin/pve-zsync sync --source ${SOURCE_ZFS_PARTITION} --dest ${DEST_HPR_NAME}:${DEST_STORAGE_PATH} --verbose --name $KVM_NAME --skip
+EOL
 /usr/sbin/pve-zsync sync --source ${SOURCE_ZFS_PARTITION} --dest ${DEST_HPR_NAME}:${DEST_STORAGE_PATH} --verbose --name $KVM_NAME --skip
 EOLPVEZSYNC
 )
