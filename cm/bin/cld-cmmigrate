@@ -52,27 +52,27 @@ SOURCE_HPR_NAME=$(cut -d _ -f 1 <<< $KVM_SET)
 KVM_NAME=$(cut -d _ -f 2 <<< ${KVM_SET})
 KVM_ID=$(cut -d _ -f 3 <<< ${KVM_SET})
 
-if [ "$SOURCE_HPR" == "" ]
+if [ "${SOURCE_HPR}" == "" ]
 then
 SOURCE_HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${SOURCE_HPR_NAME}_")
 fi
-[ "$SOURCE_HPR" ] || echoexit1 Source hypervisor is not defined - exit
+[ "${SOURCE_HPR}" ] || echoexit1 Source hypervisor is not defined - exit
 
 if [ "$SOURCE_STORAGE" == "" ]
 then
-SOURCE_STORAGE=$(get-storage-by-id $SOURCE_HPR ${KVM_ID})
+SOURCE_STORAGE=$(get-storage-by-id ${SOURCE_HPR} ${KVM_ID})
 fi
 [ "$SOURCE_STORAGE" ] || echoexit1 Source storage is not defined - exit
 
-if [ "$SOURCE_STORAGE" == "" ]
+if [ "$SOURCE_STORAGE_PATH" == "" ]
 then
-SOURCE_STORAGE=$(get-storage-by-id $SOURCE_HPR ${KVM_ID})
+SOURCE_STORAGE_PATH=$(get-zfs-storage-path-by-name ${SOURCE_HPR} ${SOURCE_STORAGE})
 fi
-[ "$SOURCE_STORAGE" ] || echoexit1 Source storage is not defined - exit
+[ "$SOURCE_STORAGE_PATH" ] || echoexit1 Source storage path is not defined - exit
 
 if [ "$SOURCE_ZFS_PARTITION" == "" ]
 then
-SOURCE_ZFS_PARTITION=$(get-zfs-partition-by-id $SOURCE_HPR ${SOURCE_STORAGE} ${KVM_ID})
+SOURCE_ZFS_PARTITION=$(get-zfs-partition-by-id ${SOURCE_HPR} ${SOURCE_STORAGE_PATH} ${KVM_ID})
 fi
 [ "$SOURCE_ZFS_PARTITION" ] || echoexit1 Source zfs partition is not defined - exit
 
@@ -103,6 +103,12 @@ done
 fi
 [ "$DEST_STORAGE" ] || echoexit1 Destination hypervisor is not defined - exit
 
+if [ "$DEST_STORAGE_PATH" == "" ]
+then
+DEST_STORAGE_PATH=$(get-zfs-storage-path-by-name ${DEST_HPR} ${DEST_STORAGE})
+fi
+[ "$DEST_STORAGE_PATH" ] || echoexit1 Destination storage path is not defined - exit
+
 SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
 [ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
 
@@ -111,9 +117,9 @@ DEST_HPR_IP=$(cut -d "_" -f 2 <<< $DEST_HPR)
 DEST_HPR_PORT=$(cut -d "_" -f 3 <<< $DEST_HPR)
 DEST_HPR_USER=$(cut -d "_" -f 4 <<< $DEST_HPR)
 
-SOURCE_HPR_IP=$(cut -d "_" -f 2 <<< $SOURCE_HPR)
-SOURCE_HPR_PORT=$(cut -d "_" -f 3 <<< $SOURCE_HPR)
-SOURCE_HPR_USER=$(cut -d "_" -f 4 <<< $SOURCE_HPR)
+SOURCE_HPR_IP=$(cut -d "_" -f 2 <<< ${SOURCE_HPR})
+SOURCE_HPR_PORT=$(cut -d "_" -f 3 <<< ${SOURCE_HPR})
+SOURCE_HPR_USER=$(cut -d "_" -f 4 <<< ${SOURCE_HPR})
 
 source /var/cm/bin/include/migrate_vars
 
@@ -162,7 +168,7 @@ if ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${
 	then
 		echo Access test script passed
 	else
-		echoexit1 Fail to access to $DEST_HPR FROM $SOURCE_HPR - exit
+		echoexit1 Fail to access to $DEST_HPR FROM ${SOURCE_HPR} - exit
 fi
 echo
 echo "Start migrate KMV $KVM_NAME"
