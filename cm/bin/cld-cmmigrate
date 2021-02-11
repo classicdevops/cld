@@ -72,7 +72,7 @@ fi
 
 if [ "$SOURCE_ZFS_PARTITION" == "" ]
 then
-SOURCE_ZFS_PARTITION=$(get-storage-by-id $SOURCE_HPR ${SOURCE_STORAGE} ${KVM_ID})
+SOURCE_ZFS_PARTITION=$(get-zfs-partition-by-id $SOURCE_HPR ${SOURCE_STORAGE} ${KVM_ID})
 fi
 [ "$SOURCE_ZFS_PARTITION" ] || echoexit1 Source zfs partition is not defined - exit
 
