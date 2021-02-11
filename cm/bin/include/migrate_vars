@@ -63,6 +63,6 @@ START_KVM=$(cat << 'EODONE'
 sed "s#$SOURCE_STORAGE#$DEST_STORAGE#g" /etc/pve/qemu-server/${KVM_ID}.conf > /tmp/${KVM_ID}.conf
 cat /tmp/${KVM_ID}.conf > /etc/pve/qemu-server/${KVM_ID}.conf
 sleep 3s
-qm stop $KVM_ID
+qm start $KVM_ID
 EODONE
 )
