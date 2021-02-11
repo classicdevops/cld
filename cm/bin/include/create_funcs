@@ -41,9 +41,6 @@ USR=`echo $1 | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep 'pool:' /etc/pve/storage.cfg" 2>/dev/null  | awk '{print $2}'
 }
 
-
-grep "vm-${VMID}-disk-0" /etc/pve/qemu-server/${VMID}.conf | cut -d : -f 2 | head -1 | tr -d '[:space:]'
-
 get-storage-by-id ()
 {
 SRV=`echo $1 | cut -d "_" -f 2`
