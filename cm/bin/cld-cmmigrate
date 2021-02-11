@@ -14,6 +14,7 @@ cld-cmmigrate --id=10001 --dest=HPR-pve-1_1.2.3.4_22_root
 EOL
 )
 source /var/cld/bin/include/cldfuncs
+source /var/cld/cm/bin/include/create_funcs
 
 for OPTS in ${@:1}
 do
