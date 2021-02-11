@@ -136,6 +136,8 @@ $SWITCH_KVM_CONFIGS
 $START_KVM
 EOL
 
+[ "$DEBUG" == "YES" ] && echoexit1 Exit due debug
+
 echo
 echo Preparing hypervisors
 echo
