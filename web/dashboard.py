@@ -85,7 +85,7 @@ Session(app)
 
 #include code from web.py of modules
 cldm={}
-for webfile in bash("/usr/bin/ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
+for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
   cldmodule=bash('echo '+webfile+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule, flush=True)
