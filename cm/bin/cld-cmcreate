@@ -30,7 +30,6 @@ cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cp
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-[ "$SUDO_USER" = "" ] && SUDO_USER=admin
 source /var/cld/cm/bin/include/bot
 source /var/cld/cm/bin/include/create_funcs
 source /var/cld/cm/bin/include/create_vars
@@ -79,6 +78,8 @@ echo $OPTS | grep -q '\-\-privatenet=' && PRIVATENET=$(echo $OPTS | cut -d '=' -
 echo $OPTS | grep -q '\-\-hyper=' && HYPER=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 done
+
+init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 [ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
 
@@ -213,7 +214,7 @@ if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
 if [ "$STORAGE" == "" ]
 then
 echo "Please choose PVE STORAGE"
-select STORAGE in $(get-storage-pools)
+select STORAGE in $(get-storage-pools $HYPERVISOR)
 do
 STORAGE=$STORAGE
 echo

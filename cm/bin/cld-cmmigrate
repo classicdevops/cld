@@ -1,0 +1,196 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Migrate KVM manager
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--id=10001                              KVM id
+--desthpr=HPR-pve-1_1.2.3.4_22_root     Destionation PVE hypervisor
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-cmmigrate #CLI
+cld-cmmigrate --id=10001 --desthpr=HPR-pve-1_1.2.3.4_22_root
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-desthpr=' && DEST_HPR=$(echo $OPTS | cut -d '=' -f 2)
+done
+
+init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
+
+[ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
+
+if [ "$KVM_ID" ]
+then
+KVM_SET=$(grep -s "_${KVM_ID}$" /var/cld/cm/tmp/kvm_list)
+[ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$")
+fi
+
+if [ "$KVM_SET" = "" ]
+then
+echo KVM_SET is not defined - parsing hypervisors
+echo Please choose KVM to migrate
+select KVM_SET in $(get-kvm-list 2>/dev/null)
+do
+if [ "$KVM_SET" ]
+then
+KVM_SET=$KVM_SET
+echo
+break
+fi
+done
+fi
+[ "${KVM_SET}" ] || echoexit1 KVM_SET is not defined - exit
+SOURCE_HPR_NAME=$(cut -d _ -f 1 <<< $KVM_SET)
+KVM_NAME=$(cut -d _ -f 2 <<< ${KVM_SET})
+KVM_ID=$(cut -d _ -f 3 <<< ${KVM_SET})
+
+if [ "$SOURCE_HPR" == "" ]
+then
+SOURCE_HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${SOURCE_HPR_NAME}_")
+fi
+[ "$SOURCE_HPR" ] || echoexit1 Source hypervisor is not defined - exit
+
+if [ "$SOURCE_STORAGE" == "" ]
+then
+SOURCE_STORAGE=$(get-storage-by-id $SOURCE_HPR ${KVM_ID})
+fi
+[ "$SOURCE_STORAGE" ] || echoexit1 Source storage is not defined - exit
+
+if [ "$SOURCE_STORAGE" == "" ]
+then
+SOURCE_STORAGE=$(get-storage-by-id $SOURCE_HPR ${KVM_ID})
+fi
+[ "$SOURCE_STORAGE" ] || echoexit1 Source storage is not defined - exit
+
+if [ "$SOURCE_ZFS_PARTITION" == "" ]
+then
+SOURCE_ZFS_PARTITION=$(get-storage-by-id $SOURCE_HPR ${SOURCE_STORAGE} ${KVM_ID})
+fi
+[ "$SOURCE_ZFS_PARTITION" ] || echoexit1 Source zfs partition is not defined - exit
+
+if [ "$DEST_HPR" == "" ]
+then
+echo Please choose HYPERVISOR
+select DEST_HPR in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
+do
+if [ "$DEST_HPR" ]
+then
+DEST_HPR=$DEST_HPR
+echo
+break
+fi
+done
+fi
+[ "$DEST_HPR" ] || echoexit1 Destination hypervisor is not defined - exit
+
+if [ "$DEST_STORAGE" == "" ]
+then
+echo "Please choose PVE destionation STORAGE on ${DEST_HPR}"
+select STORAGE in $(get-storage-pools ${DEST_HPR})
+do
+DEST_STORAGE=$STORAGE
+echo
+break
+done
+fi
+[ "$DEST_STORAGE" ] || echoexit1 Destination hypervisor is not defined - exit
+
+SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
+[ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
+
+DEST_HPR_NAME=$(cut -d "_" -f 1 <<< $DEST_HPR)
+DEST_HPR_IP=$(cut -d "_" -f 2 <<< $DEST_HPR)
+DEST_HPR_PORT=$(cut -d "_" -f 3 <<< $DEST_HPR)
+DEST_HPR_USER=$(cut -d "_" -f 4 <<< $DEST_HPR)
+
+SOURCE_HPR_IP=$(cut -d "_" -f 2 <<< $SOURCE_HPR)
+SOURCE_HPR_PORT=$(cut -d "_" -f 3 <<< $SOURCE_HPR)
+SOURCE_HPR_USER=$(cut -d "_" -f 4 <<< $SOURCE_HPR)
+
+source /var/cm/bin/include/migrate_vars
+
+cat << EOL
+COMMANDS FOR DEBUG:
+
+$CONSTANTS
+
+$PREPARE_SOURCE_HPR
+
+$PREPARE_DEST_HPR
+
+$PREPARE_CONF
+
+$PVE_ZSYNC
+
+$KVM_STOP
+
+$SWITCH_KVM_CONFIGS
+
+$START_KVM
+EOL
+
+echo
+echo Preparing hypervisors
+echo
+#PREPARE DESTINATION HYPERVISOR
+timeout 60 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+${CONSTANTS}
+${PREPARE_DEST_HPR}
+EOSSH
+
+#PREPARE SOURCE HYPEVISOR
+timeout 60 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} "bash -s" << EOSSH
+${CONSTANTS}
+${PREPARE_SOURCE_HPR}
+EOSSH
+echo
+echo Hypervisors prepared to migrate
+echo
+
+echo Checking access between $SOURC_HPR and $DEST_HPR hypervisors
+if ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} "ssh -o \"StrictHostKeyChecking no\" -p ${DEST_HPR_PORT} $DEST_HPR_IP \"echo done\"" | grep -q "done"
+	then
+		echo Access test script passed
+	else
+		echoexit1 Fail to access to $DEST_HPR FROM $SOURCE_HPR - exit
+fi
+echo
+echo "Start migrate KMV $KVM_NAME"
+echo
+for ITTER in 1 2 3
+do
+ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
+$CONSTANTS
+$PVE_ZSYNC
+EOSSH
+done
+echo
+echo "Ready to stop KVM before switch - please stop database at $KVM_NAME and press enter to continue migration process" ; read SKIP_WAIT
+echo
+ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
+$CONSTANTS
+$KVM_STOP
+$PVE_ZSYNC
+EOSSH
+echo
+echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press enter" ; read SKIP_WAIT
+echo
+ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
+$CONSTANTS
+$SWITCH_KVM_CONFIGS
+EOSSH
+echo
+echo "KVM configs switched - starting KVM at $DEST_HPR"
+echo
+ssh -o -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+${CONSTANTS}
+${START_KVM}
+EOSSH
+echo
+echo "Migration of  $KVM_NAME completed - check everything and delete source ZFS partition at $DEST_HPR yourself"

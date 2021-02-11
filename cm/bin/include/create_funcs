@@ -2,7 +2,7 @@ get-last-vmid ()
 {
 mkdir -p /var/cld/cm/tmp/ &>/dev/null
 truncate -s 0 /var/cld/cm/tmp/last_vmid
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HPR_PREFIX")
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 (
 SRV=`echo $VM | cut -d "_" -f 2`
@@ -15,12 +15,49 @@ wait
 sort -nu /var/cld/cm/tmp/last_vmid | tail -1
 }
 
+get-kvm-list ()
+{
+mkdir -p /var/cld/cm/tmp &>/dev/null
+truncate -s 0 /var/cld/cm/tmp/kvm_list
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
+do
+(
+HPRNM=`echo $VM | cut -d "_" -f 1`
+SRV=`echo $VM | cut -d "_" -f 2`
+PRT=`echo $VM | cut -d "_" -f 3`
+USR=`echo $VM | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print hpr"_"$2"_"$1}' | grep -v '_500' >> /var/cld/cm/tmp/kvm_list
+) &
+done
+wait
+cat /var/cld/cm/tmp/kvm_list
+}
+
 get-storage-pools ()
 {
-SRV=`echo $HYPERVISOR | cut -d "_" -f 2`
-PRT=`echo $HYPERVISOR | cut -d "_" -f 3`
-USR=`echo $HYPERVISOR | cut -d "_" -f 4`
+SRV=`echo $1 | cut -d "_" -f 2`
+PRT=`echo $1 | cut -d "_" -f 3`
+USR=`echo $1 | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep 'pool:' /etc/pve/storage.cfg" 2>/dev/null  | awk '{print $2}'
+}
+
+
+grep "vm-${VMID}-disk-0" /etc/pve/qemu-server/${VMID}.conf | cut -d : -f 2 | head -1 | tr -d '[:space:]'
+
+get-storage-by-id ()
+{
+SRV=`echo $1 | cut -d "_" -f 2`
+PRT=`echo $1 | cut -d "_" -f 3`
+USR=`echo $1 | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep 'vm-${2}-disk-0' /etc/pve/qemu-server/${2}.conf" | cut -d : -f 2 | head -1 | tr -d '[:space:]'
+}
+
+get-zfs-partition-by-id ()
+{
+SRV=`echo $1 | cut -d "_" -f 2`
+PRT=`echo $1 | cut -d "_" -f 3`
+USR=`echo $1 | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "zfs list | grep '$2'" grep "${3}-disk-0" | awk '{print $1}'
 }
 
 get-ovh-gateway ()
@@ -29,4 +66,54 @@ SRV=`echo $HYPERVISOR | cut -d "_" -f 2`
 PRT=`echo $HYPERVISOR | cut -d "_" -f 3`
 USR=`echo $HYPERVISOR | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "ip route get 1.1.1.1" | grep dev | head -1 | awk '{print $3}'
+}
+
+get-hypervisor-ssh-key-list()
+{
+GET_KEY=$(cat << 'EOSSH'
+[ -f /root/.ssh/id_rsa.pub ] || ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N "" &>/dev/null
+cat /root/.ssh/id_rsa.pub
+EOSSH
+)
+DEPLOY_CLD_KEY=$(cat << EOSSH
+grep -q $HOSTNAME /root/.ssh/authorized_keys2 || echo "$(cat /root/.ssh/id_rsa.pub)" >> /root/.ssh/authorized_keys2
+EOSSH
+)
+for HYPERVISOR in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
+do
+(
+SRV=`echo $HYPERVISOR | cut -d "_" -f 2`
+PRT=`echo $HYPERVISOR | cut -d "_" -f 3`
+USR=`echo $HYPERVISOR | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" << EOSSH
+${DEPLOY_CLD_KEY}
+${GET_KEY}
+EOSSH
+) &
+done
+wait
+}
+
+get-hypervisor-ssh-key()
+{
+GET_KEY=$(cat << 'EOSSH'
+[ -f /root/.ssh/id_rsa.pub ] || ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N "" &>/dev/null
+cat /root/.ssh/id_rsa.pub
+EOSSH
+)
+DEPLOY_CLD_KEY=$(cat << EOSSH
+grep -q $HOSTNAME /root/.ssh/authorized_keys2 || echo "$(cat /root/.ssh/id_rsa.pub)" >> /root/.ssh/authorized_keys2
+EOSSH
+)
+[ "$1" ] || echoexit1 Hypervisor argument is not defined while using get-hypervisor-ssh-key function - exit
+for HYPERVISOR in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "${1}" | head -1)
+do
+SRV=`echo $HYPERVISOR | cut -d "_" -f 2`
+PRT=`echo $HYPERVISOR | cut -d "_" -f 3`
+USR=`echo $HYPERVISOR | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" << EOSSH
+${DEPLOY_CLD_KEY}
+${GET_KEY}
+EOSSH
+done
 }

@@ -1,0 +1,64 @@
+
+CONSTANTS=$(cat << EOCONST
+KVM_ID=$KVM_ID
+KVM_SET=$KVM_SET
+KVM_NAME=$KVM_NAME
+SOURCE_HPR=$SOURCE_HPR
+SOURCE_HPR_IP=$SOURCE_HPR_IP
+SOURCE_HPR_PORT=$SOURCE_HPR_PORT
+SOURCE_HPR_USER=$SOURCE_HPR_USER
+SOURCE_STORAGE=$SOURCE_STORAGE
+SOURCE_ZFS_PARTITION=$SOURCE_ZFS_PARTITION
+SOURCE_HPR_SSH_KEY=$SOURCE_HPR_SSH_KEY
+DEST_HPR=$DEST_HPR
+DEST_HPR_NAME=$DEST_HPR_NAME
+DEST_HPR_IP=$DEST_HPR_IP
+DEST_HPR_PORT=$DEST_HPR_PORT
+DEST_HPR_USER=$DEST_HPR_USER
+DEST_STORAGE=$DEST_STORAGE
+EOCONST
+)
+
+PREPARE_SOURCE_HPR=$(cat << 'EOPREPARE'
+cat > /root/.ssh/config << EOL
+Host $DEST_HPR_NAME
+Hostname $DEST_HPR_IP
+User $DEST_HPR_USER
+Port $DEST_HPR_PORT
+
+EOL
+ssh -q -o StrictHostKeyChecking=no -p $DEST_HPR_PORT $DEST_HPR_USER@$DEST_HPR_IP "exit" &>/dev/null
+dpkg --list | grep -q pve-zsync || apt install pve-zsync -y
+EOPREPARE
+
+)
+
+PREPARE_DEST_HPR=$(cat << 'EOPREPARE'
+grep -q "${SOURCE_HPR_SSH_KEY}" /root/.ssh/authorized_keys || echo "${SOURCE_HPR_SSH_KEY}" >> /root/.ssh/authorized_keys
+dpkg --list | grep -q pve-zsync || apt install pve-zsync -y
+EOPREPARE
+)
+
+PVE_ZSYNC=$(cat << 'EOLPVEZSYNC'
+/usr/sbin/pve-zsync sync --source ${SOURCE_ZFS_PARTITION} --dest ${DEST_HPR_NAME}:${DEST_STORAGE} --verbose --name $KVM_NAME --skip
+EOLPVEZSYNC
+)
+
+KVM_STOP=$(cat << 'EOKVMSTOP'
+sleep 3s
+qm stop $KVM_ID
+EOKVMSTOP
+)
+
+SWITCH_KVM_CONFIGS=$(cat << 'EODONE'
+sleep 3s
+rsync -avP --no-perms /etc/pve/qemu-server/${KVM_ID}.conf ${DEST_HPR_NAME}:/etc/pve/qemu-server/
+mv /etc/pve/qemu-server/${KVM_ID}.conf /root/${KVM_ID}.conf_$(date +%F_%H:%M)
+EODONE
+)
+
+START_KVM=$(cat << 'EODONE'
+sleep 3s
+qm stop $KVM_ID
+EODONE
+)
