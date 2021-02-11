@@ -55,7 +55,7 @@ EOKVMSTOP
 SWITCH_KVM_CONFIGS=$(cat << 'EODONE'
 sleep 3s
 rsync -avP --no-perms /etc/pve/qemu-server/${KVM_ID}.conf ${DEST_HPR_NAME}:/etc/pve/qemu-server/
-mv /etc/pve/qemu-server/${KVM_ID}.conf /root/${KVM_ID}.conf_$(date +%F_%H:%M)
+mv /etc/pve/qemu-server/${KVM_ID}.conf /root/${KVM_ID}.conf_$(date +%F_%H-%M)
 EODONE
 )
 

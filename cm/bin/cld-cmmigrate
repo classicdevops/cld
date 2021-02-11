@@ -164,7 +164,7 @@ echo Hypervisors prepared to migrate
 echo
 
 echo Checking access between $SOURC_HPR and $DEST_HPR hypervisors
-if ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} "ssh -o \"StrictHostKeyChecking no\" -p ${DEST_HPR_PORT} $DEST_HPR_IP \"echo done\"" | grep -q "done"
+if ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} "ssh -o \"StrictHostKeyChecking=no\" -p ${DEST_HPR_PORT} $DEST_HPR_IP \"echo done\"" | grep -q "done"
 	then
 		echo Access test script passed
 	else
@@ -198,7 +198,7 @@ EOSSH
 echo
 echo "KVM configs switched - starting KVM at $DEST_HPR"
 echo
-ssh -o -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
 ${CONSTANTS}
 ${START_KVM}
 EOSSH
