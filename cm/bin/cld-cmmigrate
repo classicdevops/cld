@@ -5,12 +5,12 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 --id=10001                              KVM id
---desthpr=HPR-pve-1_1.2.3.4_22_root     Destionation PVE hypervisor
+--dest=HPR-1-pve_1.2.3.4_22_root     Destionation PVE hypervisor
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-cmmigrate #CLI
-cld-cmmigrate --id=10001 --desthpr=HPR-pve-1_1.2.3.4_22_root
+cld-cmmigrate --id=10001 --dest=HPR-pve-1_1.2.3.4_22_root
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -18,7 +18,8 @@ source /var/cld/bin/include/cldfuncs
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-desthpr=' && DEST_HPR=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-dest=' && DEST_HPR=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 done
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
