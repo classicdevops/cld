@@ -171,7 +171,7 @@ if ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${
 		echoexit1 Fail to access to $DEST_HPR FROM ${SOURCE_HPR} - exit
 fi
 echo
-echo "Start migrate KMV $KVM_NAME"
+echo "Start migrate KVM $KVM_NAME"
 echo
 for ITTER in 1 2 3
 do
@@ -179,6 +179,7 @@ ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOU
 $CONSTANTS
 $PVE_ZSYNC
 EOSSH
+sleep 3s
 done
 echo
 echo "Ready to stop KVM before switch - please stop database at $KVM_NAME and press enter to continue migration process" ; read SKIP_WAIT
