@@ -94,6 +94,7 @@ EOL
 )
 
 DETECT_OS_REPLACE_GATEWAY=$(cat << 'EOL'
+cat /mnt/vm${KVM_ID}/etc/*-release
 if grep --quiet 'stretch' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/network/interfaces
 elif grep --quiet 'CentOS release 6' /mnt/vm${KVM_ID}/etc/*-release ; then
