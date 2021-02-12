@@ -218,12 +218,13 @@ GATEWAY=$(get-ovh-gateway $DEST_HPR)
 echo
 echo Changing KVM gateway at $DEST_HPR
 echo
-ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+ssh -o StrictHostKeyChecking=no -o "RequestTTY force" -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
 ${CONSTANTS}
 GATEWAY=${GATEWAY}
 ${DETECT_MOUNT_ZFS_STORAGE}
 ${DETECT_OS_REPLACE_GATEWAY}
 ${UMOUNT_ZFS_CHECK}
+exit
 EOSSH
 echo
 [ "$OVH" == "1" ] && OVH_HPR_NAME=$(caovh-get-servicename-by-ip $DEST_HPR_IP)
