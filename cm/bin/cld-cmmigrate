@@ -211,10 +211,10 @@ echo
 echo "KVM configs switched - check if migrated KVM need change gateway"
 echo
 
-[ "$HPR_DC" == "ovh" ] && init-load-constants OVH\|0 OVH_CONSUMER_KEY\|uAjAWotdxHyxQ7ddvAFCco3sa990wHqsy OVH_APP_KEY\|X05b2oM4vmsc4Nz8F OVH_APP_SECRET\|nW76Meps7rZGFLFrR7XgL4dsKS6xJwEF
-[ "$HPR_DC" == "ovh" ] && GATEWAY=$(get-ovh-gateway $DEST_HPR)
 if [ "$HPR_DC" == "ovh" ]
 then
+init-load-constants OVH\|0 OVH_CONSUMER_KEY\|uAjAWotdxHyxQ7ddvAFCco3sa990wHqsy OVH_APP_KEY\|X05b2oM4vmsc4Nz8F OVH_APP_SECRET\|nW76Meps7rZGFLFrR7XgL4dsKS6xJwEF
+GATEWAY=$(get-ovh-gateway $DEST_HPR)
 echo
 echo Changing KVM gateway at $DEST_HPR
 echo
