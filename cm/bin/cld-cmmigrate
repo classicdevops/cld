@@ -222,6 +222,8 @@ ssh -o StrictHostKeyChecking=no -o "RequestTTY force" -p ${DEST_HPR_PORT} ${DEST
 unset HISTFILE
 ${CONSTANTS}
 GATEWAY=${GATEWAY}
+qm status $KVM_ID
+sleep 5s
 ${DETECT_MOUNT_ZFS_STORAGE}
 ${DETECT_OS_REPLACE_GATEWAY}
 ${UMOUNT_ZFS_CHECK}
