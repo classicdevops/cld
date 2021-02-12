@@ -219,6 +219,7 @@ echo
 echo Changing KVM gateway at $DEST_HPR
 echo
 ssh -o StrictHostKeyChecking=no -o "RequestTTY force" -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+unset HISTFILE
 ${CONSTANTS}
 GATEWAY=${GATEWAY}
 ${DETECT_MOUNT_ZFS_STORAGE}
