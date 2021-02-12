@@ -1,0 +1,187 @@
+caovh-get-servicename-by-ip()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/ip/${1}
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq '.routedTo.serviceName' | tr -d '"'
+}
+
+caovh-move-ip()
+{
+HTTP_METHOD="POST"
+HTTP_QUERY="https://ca.api.ovh.com/1.0/ip/${1}/move"
+HTTP_BODY="{\"to\":\"${2}\"}"
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .
+}
+
+caovh-get-gateway-by-servicename()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/dedicated/server/${1}/specifications/network
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .routing.ipv4.gateway | tr -d '"'
+}
+
+caovh-get-macs()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/dedicated/server/${1}/virtualMac
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .[] | tr -d '"' | tr ',' ' '
+}
+
+caovh-get-ip-by-mac()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/dedicated/server/${1}/virtualMac/${2}/virtualAddress
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .[] | tr -d '"'
+}
+
+caovh-get-all-hypers()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/dedicated/server
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .[] | tr -d ',''"'
+}
+
+caovh-order-failover-ip-get-duration()
+{
+HTTP_METHOD="GET"
+HTTP_QUERY="https://ca.api.ovh.com/1.0/order/dedicated/server/${1}/failoverIP/?country=${2}"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | tr -d '[',']','"'
+}
+
+caovh-order-failover-ip()
+{
+HTTP_METHOD="POST"
+HTTP_QUERY="https://ca.api.ovh.com/1.0/order/dedicated/server/${1}/failoverIP/${2}"
+HTTP_BODY="{\"country\": \"${3}\"}"
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq -r .url
+}
+
+caovh-get-ips-without-macs()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/ip
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq -r .[] | grep -v "$(cat /var/cm/dc/caovh_ip_list | cut -d _ -f 1)" | grep -v "^$\|:" | cut -d / -f 1
+}
+
+caovh-get-ips-country-not-null()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/ip/${1}
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq -r 'select(.country != null) | .ip,.country' | tr -d '\n' | sed 's#/32#_#g' | grep _
+}
+
+caovh-get-ips-for-create-macs()
+{
+for IP in $(caovh-get-ips-without-macs)
+do
+caovh-get-ips-country-not-null $IP
+done
+}
+
+caovh-create-virtual-mac()
+{
+HTTP_METHOD="POST"
+HTTP_ENDPOINT=/dedicated/server/${1}/virtualMac
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY="{\"ipAddress\": \"${2}\",\"type\": \"ovh\",\"virtualMachineName\": \"${2}\"}"
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .
+}
+
+caovh-get-coutry-by-ip()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/ip/${1}
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq -r '.country'
+}
+
+caovh-get-services-to-move()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/ip/${1}/move
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq -r '.dedicatedServer[].service'
+}
+
+caovh-get-ip-info()
+{
+HTTP_METHOD="GET"
+HTTP_ENDPOINT=/ip/${1}
+HTTP_QUERY="https://ca.api.ovh.com/1.0$HTTP_ENDPOINT"
+HTTP_BODY=""
+
+TIME=$(curl -s https://ca.api.ovh.com/1.0/auth/time)
+CLEAR_SIGN="$OVH_APP_SECRET+$OVH_CONSUMER_KEY+$HTTP_METHOD+$HTTP_QUERY+$HTTP_BODY+$TIME"
+SIG='$1$'$(echo -n $CLEAR_SIGN | openssl dgst -sha1 | sed -e 's/^.* //')
+curl -sX $HTTP_METHOD -H "Content-Type:application/json;charset=utf-8"  -H "X-Ovh-Application:$OVH_APP_KEY" -H "X-Ovh-Timestamp:$TIME" -H "X-Ovh-Signature:$SIG" -H "X-Ovh-Consumer:$OVH_CONSUMER_KEY" --data "$HTTP_BODY" $HTTP_QUERY | jq .
+}

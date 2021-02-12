@@ -67,9 +67,9 @@ timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p
 
 get-ovh-gateway ()
 {
-SRV=`echo $HYPERVISOR | cut -d "_" -f 2`
-PRT=`echo $HYPERVISOR | cut -d "_" -f 3`
-USR=`echo $HYPERVISOR | cut -d "_" -f 4`
+SRV=`echo $1 | cut -d "_" -f 2`
+PRT=`echo $1 | cut -d "_" -f 3`
+USR=`echo $1 | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "ip route get 1.1.1.1" | grep dev | head -1 | awk '{print $3}'
 }
 
@@ -97,6 +97,14 @@ EOSSH
 ) &
 done
 wait
+}
+
+get-kvm-ip-by-id()
+{
+SRV=`echo $1 | cut -d "_" -f 2`
+PRT=`echo $1 | cut -d "_" -f 3`
+USR=`echo $1 | cut -d "_" -f 4`
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm guest cmd ${2} network-get-interfaces" | jq -r '.[] ."ip-addresses"[] | select(."ip-address-type"=="ipv4" and .prefix==32)."ip-address"'
 }
 
 get-hypervisor-ssh-key()

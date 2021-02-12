@@ -189,7 +189,7 @@ fi
 if [ "$GATEWAY" == "" -a "$HPR_DC" == "ovh" ]
 then
 echo GATEWAY is not defined - detecting - please wait
-GATEWAY=$(get-ovh-gateway)
+GATEWAY=$(get-ovh-gateway $HYPERVISOR)
 elif [ "$GATEWAY" == "" -a "$HPR_DC" == "hetzner" ]
 then
 GATEWAY=$HPR_HOST

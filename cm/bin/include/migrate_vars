@@ -70,3 +70,42 @@ sleep 3s
 qm start $KVM_ID
 EODONE
 )
+
+DETECT_MOUNT_ZFS_STORAGE=$(cat << 'EOL'
+storage=`grep "scsi0:" /etc/pve/qemu-server/${KVM_ID}.conf | cut -d ' ' -f 2 | cut -d ':' -f 1`
+path1=`grep -A1 $storage /etc/pve/storage.cfg | grep "pool\ " | awk '{print $2}'`
+path2=`grep "scsi0:" /etc/pve/qemu-server/${KVM_ID}.conf | cut -d ',' -f 1 | cut -d ':' -f 3`
+filepath=`readlink -e /dev/zvol/${path1}/${path2}`
+END_SECOND_PARTITION=`fdisk -l $filepath | grep p2 | awk '{print $2}'`
+UNIT=`fdisk -l $filepath | grep Units | cut -d ' ' -f 6`
+sleep 5s
+mkdir -p /mnt/vm${KVM_ID}
+mount -o loop,offset=$(($END_SECOND_PARTITION * $UNIT)) $filepath /mnt/vm${KVM_ID}
+EOL
+)
+
+UMOUNT_ZFS_CHECK=$(cat << 'EOL'
+umount /mnt/vm${KVM_ID}
+e2fsck -f ${filepath}p2
+resize2fs ${filepath}p2
+EOL
+)
+
+DETECT_OS_REPLACE_GATEWAY=$(cat << 'EOL'
+if grep --quiet 'stretch' /etc/*-release ; then
+sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/network/interfaces
+elif grep --quiet 'CentOS release 6' /etc/*-release ; then
+sed -i -r 's#(GATEWAY=)'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/sysconfig/network-scripts/ifcfg-eth0
+elif grep --quiet 'Linux release 7' /etc/*-release ; then
+sed -i -r 's#(GATEWAY=")'.*'#\1'$GATEWAY'"#g' /mnt/vm${KVM_ID}/etc/sysconfig/network-scripts/ifcfg-eth0
+elif grep --quiet 'CentOS Linux 8' /etc/*-release ; then
+sed -i -r 's#(GATEWAY=")'.*'#\1'$GATEWAY'"#g' /mnt/vm${KVM_ID}/etc/sysconfig/network-scripts/ifcfg-ens18
+elif grep --quiet 'xenial\|yakkety' /etc/*-release ; then
+sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/network/interfaces
+elif grep --quiet 'bionic\|cosmic' /etc/*-release ; then
+sed -i -r 's#- to: ([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/32#- to: '$GATEWAY'/32#g' /mnt/vm${KVM_ID}/etc/netplan/50-cloud-init.yaml
+else
+echo Operation system is not supported
+fi
+EOL
+)

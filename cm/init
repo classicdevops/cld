@@ -2,3 +2,23 @@
 source /var/cld/bin/include/cldfuncs
 
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB HYPERVISOR_NAME_PREFIX\|HPR
+
+if grep -q "^OVH=" /var/cld/creds/creds
+then
+	echo -n ""
+else
+	echo "Are you using OVH ?" 
+	select ANSWER in yes no
+	do
+		if [ "${ANSWER}" == "yes" ]
+			then
+				init-load-constants HYPERVISOR_NAME_PREFIX\|HPR OVH_CONSUMER_KEY\|uAjAWotdxHyxQ7ddvAFCco3sa990wHqsy OVH_APP_KEY\|X05b2oM4vmsc4Nz8F OVH_APP_SECRET\|nW76Meps7rZGFLFrR7XgL4dsKS6xJwEF
+				echo OVH=1 >> /var/cld/creds/creds
+				break
+		elif [ "${ANSWER}" == "no" ]
+            then
+				echo OVH=0 >> /var/cld/creds/creds
+				break
+		fi
+	done
+fi

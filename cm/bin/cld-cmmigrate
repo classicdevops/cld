@@ -51,6 +51,9 @@ fi
 SOURCE_HPR_NAME=$(cut -d _ -f 1 <<< $KVM_SET)
 KVM_NAME=$(cut -d _ -f 2 <<< ${KVM_SET})
 KVM_ID=$(cut -d _ -f 3 <<< ${KVM_SET})
+[ "$KVM_ID" ] || echoexit1 KVM_ID is not defined - exit
+[ "$KVM_NAME" ] || echoexit1 KVM_NAME is not defined - exit
+[ "$SOURCE_HPR_NAME" ] || echoexit1 SOURCE_HPR_NAME is not defined - exit
 
 if [ "${SOURCE_HPR}" == "" ]
 then
@@ -111,6 +114,11 @@ fi
 
 SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
 [ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
+
+KVM_IP="$(get-kvm-ip-by-id ${SOURCE_HPR} ${KVM_ID})"
+[ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
+
+HPR_DC=$(cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 
 DEST_HPR_NAME=$(cut -d "_" -f 1 <<< $DEST_HPR)
 DEST_HPR_IP=$(cut -d "_" -f 2 <<< $DEST_HPR)
@@ -182,7 +190,7 @@ EOSSH
 sleep 3s
 done
 echo
-echo "Ready to stop KVM before switch - please stop database at $KVM_NAME and press enter to continue migration process" ; read SKIP_WAIT
+echo "Ready to stop KVM BEFORE switch - please STOP DATABASE at $KVM_NAME and PRESS [ENTER] to continue migration process" ; read SKIP_WAIT
 echo
 ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
 $CONSTANTS
@@ -190,12 +198,44 @@ $KVM_STOP
 $PVE_ZSYNC
 EOSSH
 echo
-echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press enter" ; read SKIP_WAIT
+if [ "$HPR_DC" != "ovh" ]
+then
+echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]" ; read SKIP_WAIT
+fi
 echo
 ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
 $CONSTANTS
 $SWITCH_KVM_CONFIGS
 EOSSH
+echo
+echo "KVM configs switched - check if migrated KVM need change gateway"
+echo
+
+
+if [ "$HPR_DC" == "ovh" ]
+then
+source /var/cld/cm/bin/include/dc_funcs
+init-load-constants OVH\|0 OVH_CONSUMER_KEY\|uAjAWotdxHyxQ7ddvAFCco3sa990wHqsy OVH_APP_KEY\|X05b2oM4vmsc4Nz8F OVH_APP_SECRET\|nW76Meps7rZGFLFrR7XgL4dsKS6xJwEF
+GATEWAY=$(get-ovh-gateway $DEST_HPR_IP)
+sleep 5s
+[ "$OVH" == "1" ] && OVH_HPR_NAME=$(caovh-get-servicename-by-ip $DEST_HPR_IP)
+[ ${KVM_IP} != "" -a "$OVH" == "1" ] && caovh-move-ip ${KVM_IP} ${OVH_HPR_NAME} || echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]"
+[ ${KVM_IP} != "" -a "$OVH" == "1" ] || read SKIP_WAIT
+ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+${CONSTANTS}
+GATEWAY=${GATEWAY}
+${DETECT_MOUNT_ZFS_STORAGE}
+${DETECT_OS_REPLACE_GATEWAY}
+${UMOUNT_ZFS_CHECK}
+EOSSH
+elif [ "$HPR_DC" == "hetzner" ]
+then
+GATEWAY=$HPR_HOST
+elif [ "$HPR_DC" == "online" ]
+then
+GATEWAY=62.210.0.2
+fi
+
 echo
 echo "KVM configs switched - starting KVM at $DEST_HPR"
 echo
@@ -204,4 +244,4 @@ ${CONSTANTS}
 ${START_KVM}
 EOSSH
 echo
-echo "Migration of  $KVM_NAME completed - check everything and delete source ZFS partition at $DEST_HPR yourself"
+echo "Migration of  $KVM_NAME completed - you need check everything and delete source ZFS partition at $DEST_HPR yourself"
