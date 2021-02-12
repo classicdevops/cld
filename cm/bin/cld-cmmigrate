@@ -239,6 +239,20 @@ then
 GATEWAY=62.210.0.2
 fi
 
+if [ "$HPR_DC" == "ovh" ]
+then
+echo
+echo Changing KVM gateway at $DEST_HPR
+echo
+ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+${CONSTANTS}
+GATEWAY=${GATEWAY}
+${DETECT_MOUNT_ZFS_STORAGE}
+${DETECT_OS_REPLACE_GATEWAY}
+${UMOUNT_ZFS_CHECK}
+EOSSH
+fi
+
 echo
 echo "KVM configs switched - starting KVM at $DEST_HPR"
 echo
