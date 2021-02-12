@@ -118,7 +118,7 @@ SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
 KVM_IP="$(get-kvm-ip-by-id ${SOURCE_HPR} ${KVM_ID})"
 [ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
 
-HPR_DC=$(/var/cld/modules/dns/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
+HPR_DC=$(/var/cld/modules/dns/bin/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 
 DEST_HPR_NAME=$(cut -d "_" -f 1 <<< $DEST_HPR)
 DEST_HPR_IP=$(cut -d "_" -f 2 <<< $DEST_HPR)
