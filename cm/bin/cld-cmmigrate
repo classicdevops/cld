@@ -118,7 +118,7 @@ SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
 KVM_IP="$(get-kvm-ip-by-id ${SOURCE_HPR} ${KVM_ID})"
 [ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
 
-HPR_DC=$(cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
+HPR_DC=$(/var/cld/modules/dns/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 
 DEST_HPR_NAME=$(cut -d "_" -f 1 <<< $DEST_HPR)
 DEST_HPR_IP=$(cut -d "_" -f 2 <<< $DEST_HPR)
@@ -221,6 +221,9 @@ sleep 5s
 [ "$OVH" == "1" ] && OVH_HPR_NAME=$(caovh-get-servicename-by-ip $DEST_HPR_IP)
 [ ${KVM_IP} != "" -a "$OVH" == "1" ] && caovh-move-ip ${KVM_IP} ${OVH_HPR_NAME} || echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]"
 [ ${KVM_IP} != "" -a "$OVH" == "1" ] || read SKIP_WAIT
+echo
+echo Changing KVM gateway at $DEST_HPR
+echo
 ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
 ${CONSTANTS}
 GATEWAY=${GATEWAY}
