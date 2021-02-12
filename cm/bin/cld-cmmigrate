@@ -118,8 +118,6 @@ SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
 
 KVM_IP="$(get-kvm-ip-by-id ${SOURCE_HPR} ${KVM_ID})"
 
-HPR_DC=$(sudo /var/cld/modules/dns/bin/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
-
 DEST_HPR_NAME=$(cut -d "_" -f 1 <<< $DEST_HPR)
 DEST_HPR_IP=$(cut -d "_" -f 2 <<< $DEST_HPR)
 DEST_HPR_PORT=$(cut -d "_" -f 3 <<< $DEST_HPR)
@@ -128,6 +126,8 @@ DEST_HPR_USER=$(cut -d "_" -f 4 <<< $DEST_HPR)
 SOURCE_HPR_IP=$(cut -d "_" -f 2 <<< ${SOURCE_HPR})
 SOURCE_HPR_PORT=$(cut -d "_" -f 3 <<< ${SOURCE_HPR})
 SOURCE_HPR_USER=$(cut -d "_" -f 4 <<< ${SOURCE_HPR})
+
+HPR_DC=$(/var/cld/modules/dns/bin/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 
 source /var/cld/cm/bin/include/migrate_vars
 
