@@ -94,17 +94,17 @@ EOL
 )
 
 DETECT_OS_REPLACE_GATEWAY=$(cat << 'EOL'
-if grep --quiet 'stretch' /etc/*-release ; then
+if grep --quiet 'stretch' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/network/interfaces
-elif grep --quiet 'CentOS release 6' /etc/*-release ; then
+elif grep --quiet 'CentOS release 6' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#(GATEWAY=)'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/sysconfig/network-scripts/ifcfg-eth0
-elif grep --quiet 'Linux release 7' /etc/*-release ; then
+elif grep --quiet 'Linux release 7' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#(GATEWAY=")'.*'#\1'$GATEWAY'"#g' /mnt/vm${KVM_ID}/etc/sysconfig/network-scripts/ifcfg-eth0
-elif grep --quiet 'CentOS Linux 8' /etc/*-release ; then
+elif grep --quiet 'CentOS Linux 8' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#(GATEWAY=")'.*'#\1'$GATEWAY'"#g' /mnt/vm${KVM_ID}/etc/sysconfig/network-scripts/ifcfg-ens18
-elif grep --quiet 'xenial\|yakkety' /etc/*-release ; then
+elif grep --quiet 'xenial\|yakkety' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#(.*gateway\ )'.*'#\1'$GATEWAY'#g' /mnt/vm${KVM_ID}/etc/network/interfaces
-elif grep --quiet 'bionic\|cosmic' /etc/*-release ; then
+elif grep --quiet 'bionic\|cosmic' /mnt/vm${KVM_ID}/etc/*-release ; then
 sed -i -r 's#- to: ([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/32#- to: '$GATEWAY'/32#g' /mnt/vm${KVM_ID}/etc/netplan/50-cloud-init.yaml
 else
 echo Operation system is not supported
