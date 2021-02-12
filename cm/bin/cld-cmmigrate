@@ -223,9 +223,11 @@ unset HISTFILE
 ${CONSTANTS}
 GATEWAY=${GATEWAY}
 qm status $KVM_ID
-sleep 5s
+sleep 3s
 ${DETECT_MOUNT_ZFS_STORAGE}
+sleep 3s
 ${DETECT_OS_REPLACE_GATEWAY}
+sleep 3s
 ${UMOUNT_ZFS_CHECK}
 exit
 EOSSH
