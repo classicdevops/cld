@@ -88,7 +88,7 @@ EOL
 
 UMOUNT_ZFS_CHECK=$(cat << 'EOL'
 umount /mnt/vm${KVM_ID}
-e2fsck -f ${filepath}p2
+e2fsck -fp ${filepath}p2
 resize2fs ${filepath}p2
 EOL
 )
