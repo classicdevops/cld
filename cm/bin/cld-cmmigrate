@@ -116,7 +116,6 @@ SOURCE_HPR_SSH_KEY="$(get-hypervisor-ssh-key ${SOURCE_HPR})"
 [ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
 
 KVM_IP="$(get-kvm-ip-by-id ${SOURCE_HPR} ${KVM_ID})"
-[ "${SOURCE_HPR_SSH_KEY}" ] || exhoexit1 SOURCE_HPR_SSH_KEY is not defined - exit
 
 HPR_DC=$(/var/cld/modules/dns/bin/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 
@@ -216,11 +215,22 @@ if [ "$HPR_DC" == "ovh" ]
 then
 source /var/cld/cm/bin/include/dc_funcs
 init-load-constants OVH\|0 OVH_CONSUMER_KEY\|uAjAWotdxHyxQ7ddvAFCco3sa990wHqsy OVH_APP_KEY\|X05b2oM4vmsc4Nz8F OVH_APP_SECRET\|nW76Meps7rZGFLFrR7XgL4dsKS6xJwEF
-GATEWAY=$(get-ovh-gateway $DEST_HPR_IP)
+GATEWAY=$(get-ovh-gateway $DEST_HPR)
 sleep 5s
+echo
+echo Changing KVM gateway at $DEST_HPR
+echo
+ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
+${CONSTANTS}
+GATEWAY=${GATEWAY}
+${DETECT_MOUNT_ZFS_STORAGE}
+${DETECT_OS_REPLACE_GATEWAY}
+${UMOUNT_ZFS_CHECK}
+EOSSH
+echo
 [ "$OVH" == "1" ] && OVH_HPR_NAME=$(caovh-get-servicename-by-ip $DEST_HPR_IP)
-[ ${KVM_IP} != "" -a "$OVH" == "1" ] && caovh-move-ip ${KVM_IP} ${OVH_HPR_NAME} || echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]"
-[ ${KVM_IP} != "" -a "$OVH" == "1" ] || read SKIP_WAIT
+[ "${KVM_IP}" != "" -a "$OVH" == "1" ] && caovh-move-ip ${KVM_IP} ${OVH_HPR_NAME} || echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]"
+[ "${KVM_IP}" != "" -a "$OVH" == "1" ] || read SKIP_WAIT
 echo
 echo Changing KVM gateway at $DEST_HPR
 echo
@@ -237,20 +247,6 @@ GATEWAY=$HPR_HOST
 elif [ "$HPR_DC" == "online" ]
 then
 GATEWAY=62.210.0.2
-fi
-
-if [ "$HPR_DC" == "ovh" ]
-then
-echo
-echo Changing KVM gateway at $DEST_HPR
-echo
-ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
-${CONSTANTS}
-GATEWAY=${GATEWAY}
-${DETECT_MOUNT_ZFS_STORAGE}
-${DETECT_OS_REPLACE_GATEWAY}
-${UMOUNT_ZFS_CHECK}
-EOSSH
 fi
 
 echo
