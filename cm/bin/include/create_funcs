@@ -104,7 +104,7 @@ get-kvm-ip-by-id()
 SRV=`echo $1 | cut -d "_" -f 2`
 PRT=`echo $1 | cut -d "_" -f 3`
 USR=`echo $1 | cut -d "_" -f 4`
-timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm guest cmd ${2} network-get-interfaces" | jq -r '.[] ."ip-addresses"[] | select(."ip-address-type"=="ipv4" and .prefix==32)."ip-address"'
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm guest cmd ${2} network-get-interfaces" | jq -r '.[] ."ip-addresses"[] | select(."ip-address-type"=="ipv4")."ip-address"' | grep -v "127.0.0.1\|172.16.0" | grep -svf <(cat /var/cld/creds/local_nets)
 }
 
 get-hypervisor-ssh-key()
