@@ -1,4 +1,4 @@
-@app.route('/myipinit')
+@app.route('/all/myipinit')
 def myip():
   if 'token' in request.args:
     token = re.fullmatch(r'[a-z0-9]+', request.args['token']).string
