@@ -165,15 +165,15 @@ def tool(cldutility, args=None):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
-@app.route("/getfile/<instance>/<filepath>")
-def getfile(instance, filepath):
+@app.route("/getfile/<instance>")
+def getfile(instance):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
     instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json').strip())[0]['clouds'][0]
-    filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', filepath).string)
+    filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.args['filepath']).string)
     mountpath = '/home/'+user+'/mnt/'+instance
     fullfilepath = mountpath+filepath
     if os.path.ismount(mountpath) == True:
