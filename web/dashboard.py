@@ -176,15 +176,15 @@ def getfile(instance):
     mountpath = '/home/'+user+'/mnt/'+instance
     fullfilepath = mountpath+filepath
     filename = os.path.basename(filepath)
-    if os.path.ismount(mountpath) == True:
-      return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
-    else:
+    if os.path.ismount(mountpath) != True:
       bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cldxmount '+instance)
       time.sleep(3)
-      if os.path.ismount(mountpath) == True:
-        return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
-      else:
-        return Response('Instance directory mount failed', status=403, mimetype='text/plain')
+    if os.path.ismount(mountpath) != True:
+      return Response('Instance directory mount failed', status=403, mimetype='text/plain')
+    if os.path.exists(fullfilepath) != True or os.path.isfile(fullfilepath) != True:
+      return Response('File not exist', status=403, mimetype='text/plain')
+    return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
+
 
 def keepalive_shell_sessions():
     print("keepalive_shell_sessions started", flush=True)
