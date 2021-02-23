@@ -204,10 +204,10 @@ def uploadfile(instance):
       time.sleep(3)
     if os.path.ismount(mountpath) != True:
       return Response('Instance directory mount failed', status=403, mimetype='text/plain')
-    if os.path.exists(fullfilepath) != True or os.path.isdir(fullfilepath) != True:
+    if os.path.isdir(fullfilepath) != True:
       return Response('Directory not exist', status=403, mimetype='text/plain')
-    file.save(fullfilepath)
-    print(fullfilepath, flush=True)
+    file.save(fullfilepath+'/'+filename)
+    print(fullfilepath+'/'+filename, flush=True)
     return Response('File uploaded', status=200, mimetype='text/plain')
 
 def keepalive_shell_sessions():
