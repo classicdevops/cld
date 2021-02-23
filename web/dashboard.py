@@ -185,7 +185,7 @@ def getfile(instance):
       return Response('File not exist', status=403, mimetype='text/plain')
     return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
 
-@app.route("/uploadfile/<instance>")
+@app.route("/uploadfile/<instance>", methods=['GET','POST'])
 def uploadfile(instance):
   if 'username' in session:
     user = session['username']
