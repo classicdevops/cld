@@ -185,6 +185,28 @@ def getfile(instance):
       return Response('File not exist', status=403, mimetype='text/plain')
     return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
 
+@app.route("/uploadfile/<instance>")
+def uploadfile(instance):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
+    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json').strip())[0]['clouds'][0]
+    try: filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.args['filepath']).string)
+    except: filepath = '/tmp'
+    mountpath = '/home/'+user+'/mnt/'+instance
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    fullfilepath = mountpath+filepath
+    if os.path.ismount(mountpath) != True:
+      bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cldxmount '+instance)
+      time.sleep(3)
+    if os.path.ismount(mountpath) != True:
+      return Response('Instance directory mount failed', status=403, mimetype='text/plain')
+    if os.path.exists(fullfilepath) != True or os.path.isdir(fullfilepath) != True:
+      return Response('Directory not exist', status=403, mimetype='text/plain')
+    file.save(os.path.join(mountpath, filename))
 
 def keepalive_shell_sessions():
     print("keepalive_shell_sessions started", flush=True)
