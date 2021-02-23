@@ -29,8 +29,7 @@ def stream_file(filepath, chunksize=8192):
     while True:
       chunk = f.read(chunksize)
       if chunk:
-        for b in chunk:
-          yield b
+        yield chunk
       else:
         break
 
@@ -176,13 +175,14 @@ def getfile(instance):
     filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.args['filepath']).string)
     mountpath = '/home/'+user+'/mnt/'+instance
     fullfilepath = mountpath+filepath
+    filename = os.path.basename(filepath)
     if os.path.ismount(mountpath) == True:
-      return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream')
+      return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
     else:
       bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cldxmount '+instance)
       time.sleep(3)
       if os.path.ismount(mountpath) == True:
-        return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream')
+        return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream', headers={'Content-Disposition': f'attachment; filename={filename}'})
       else:
         return Response('Instance directory mount failed', status=403, mimetype='text/plain')
 
