@@ -24,7 +24,17 @@ import json
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
-cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
+def stream_file(filepath, chunksize=8192):
+  with open(filepath, "rb") as f:
+    while True:
+      chunk = f.read(chunksize)
+      if chunk:
+        for b in chunk:
+          yield b
+      else:
+        break
+
+cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''').strip()
 
 def check_pid(pid):
   try:
@@ -154,6 +164,27 @@ def tool(cldutility, args=None):
     for c in range(16):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
+
+@app.route("/getfile/<instance>/<filepath>")
+def getfile(instance, filepath):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
+    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json').strip())[0]['clouds'][0]
+    filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', filepath).string)
+    mountpath = '/home/'+user+'/mnt/'+instance
+    fullfilepath = mountpath+filepath
+    if os.path.ismount(mountpath) == True:
+      return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream')
+    else:
+      bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cldxmount '+instance)
+      time.sleep(3)
+      if os.path.ismount(mountpath) == True:
+        return Response(stream_file(fullfilepath), status=200, mimetype='application/octet-stream')
+      else:
+        return Response('Instance directory mount failed', status=403, mimetype='text/plain')
 
 def keepalive_shell_sessions():
     print("keepalive_shell_sessions started", flush=True)
