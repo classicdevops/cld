@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Classicdeploy web - shell</title>
+  <style>
+  html {font-family: arial;}
+::-webkit-scrollbar {width: 5px;}
+::-webkit-scrollbar-track {background: #000000;}
+::-webkit-scrollbar-thumb {background: #747473;}
+::-webkit-scrollbar-thumb:hover {background: #555;}
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.9.0/css/xterm.css" />
+</head>
+<body style="background: black;">
+
+<span style="font-size: small;color: white;">classic deploy web shell</span>&nbsp;&nbsp;&nbsp;
+<span style="font-size: small;color: white;">status: <span style="font-size: small;color: black;background-color: lightgray;" id="status">| connecting... |</span></span>
+
+<div style="width: 100%; height: calc(100% - 25px);" id="terminal"></div>
+<!-- xterm -->
+<script src="https://cdn.jsdelivr.net/npm/xterm@4.9.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.4.0/lib/xterm-addon-fit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.4.0/lib/xterm-addon-web-links.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-search@0.7.0/lib/xterm-addon-search.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
+
+<script>
+//  Terminal.applyAddon(FitAddon.FitAddon())
+//  Terminal.applyAddon(webLinks)
+//  Terminal.applyAddon(search)
+  const term = new Terminal({
+        cursorBlink: false,
+        macOptionIsMeta: true,
+        scrollback: 20000,
+        }),
+    fit = new FitAddon.FitAddon();
+  term.loadAddon(fit);
+  term.open(document.getElementById('terminal'));
+  fit.fit()
+  term.resize(15, 50)
+  console.log(`size: ${term.cols} columns, ${term.rows} rows`)
+  // term.toggleFullScreen(true)
+
+  term.onData(function (data) {
+    console.log("data", data)
+    socket.emit("input", {"input": data})
+  });
+
+  var socketstatus = 1
+  const socket = io.connect('/cld', {query: {'cldutility': '{{cldutility}}', 'args': '{{cmd_args}}'}});
+  socket.io._reconnection = false
+  const status = document.getElementById("status")
+  
+  socket.on("output", function(data){
+    console.log("new output", data)
+    term.write(data.output)
+  })
+
+  socket.on("connect", () => {
+    fitToscreen()
+    socket.emit('room', socket.id);
+    status.innerHTML = '<span style="background-color: lightgreen;color: black;">| connected |</span>'
+    var socketstatus = 2
+    document.querySelector('.xterm-helper-textarea').focus();
+    keepalive();
+    }
+  )
+
+  socket.on('disconnect', function(data){
+    console.log("disconnect", data)
+    socket.off()
+    socket.destroy();
+    status.innerHTML = '<span style="background-color: #ff8383;">| disconnected |</span>'
+    //socket.emit("disconnect")
+    var socketstatus = 0
+  })
+
+  function fitToscreen(){
+    fit.fit()
+    socket.emit("resize", {"cols": term.cols, "rows": term.rows})
+  }
+
+  function debounce(func, wait_ms) {
+    let timeout
+    return function(...args) {
+      const context = this
+      clearTimeout(timeout)
+      timeout = setTimeout(() => func.apply(context, args), wait_ms)
+    }
+  }
+
+  const wait_ms = 50;
+  window.onresize = debounce(fitToscreen, wait_ms)
+
+function copySelectionText(){
+    var copysuccess // var to check whether execCommand successfully executed
+    try{
+        copysuccess = document.execCommand("copy") // run command to copy selected text to clipboard
+    } catch(e){
+        copysuccess = false
+    }
+    return copysuccess
+}
+
+document.body.addEventListener('mouseup', function(){
+    var copysuccess = copySelectionText() // copy user selected text to clipboard
+}, false)
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function keepalive() {
+  while (true) {
+    if (socketstatus === 0) { break; }
+    socket.emit("keepalive")
+    await sleep(5000);
+  }
+}
+</script>
+
+</body>
+</html>

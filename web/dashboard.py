@@ -164,6 +164,29 @@ def tool(cldutility, args=None):
        socketid += random.choice(chars)
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
+@app.route("/tool/cldx/<args>")
+def cldx(cldutility, args=None):
+  if 'username' in session:
+    user = session['username']
+    cldutility = 'cldx'
+    if cldutility != 'bash':
+      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
+    else:
+      cldfile = '/bin/bash'
+    if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    else: cldmodule = "bash"
+    checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
+    except: cmd_args = ''
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    except: pass
+    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
+    socketid = ''
+    for c in range(16):
+       socketid += random.choice(chars)
+    return render_template("html/cldx.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
+
 @app.route("/getfile/<instance>")
 def getfile(instance):
   if 'username' in session:
