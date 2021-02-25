@@ -165,7 +165,7 @@ def tool(cldutility, args=None):
     return render_template("html/socket.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
 
 @app.route("/tool/cldx/<args>")
-def cldx(cldutility, args=None):
+def cldx(args):
   if 'username' in session:
     user = session['username']
     cldutility = 'cldx'
