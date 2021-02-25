@@ -13,6 +13,15 @@
 </head>
 <body style="background: black;">
 
+<div id="buttons" style="padding-left: 70%;position: absolute;z-index: 1;">
+<input type="text" placeholder="/path/to/file_for_download" class="form-control" id="downloadfile" value="" required="" style="border-color: white;border-style: solid;background-color: black;color:white;">&nbsp;<button style="border-color: green;border-style: solid;background-color: black;color:green;" id="downloadbtn" name="downloadbtn" href="#">download</button>
+
+<input type="text" name="target" id="target" placeholder="/dir/to/upload_file" style="border-color: white;border-style: solid;background-color: black;color:white;border-width:2;">
+<input id="uploadfile" type="file" name="sortpic" style="border-color: white;border-style: solid;background-color: black;width:120;color:white;border-width:2">
+<button id="uploadfilebtn" style="border-color: green;border-style: solid;background-color: black;color:green;">Upload</button>
+<div id="statusbar"></div>
+<br></div>
+
 <span style="font-size: small;color: white;">classic deploy web shell</span>&nbsp;&nbsp;&nbsp;
 <span style="font-size: small;color: white;">status: <span style="font-size: small;color: black;background-color: lightgray;" id="status">| connecting... |</span></span>
 
@@ -118,6 +127,44 @@ async function keepalive() {
   }
 }
 </script>
+
+<script>
+$(function () {
+$('#downloadbtn').click(function () {
+var filepath = $('#downloadfile').val();
+$.ajax({
+type: 'GET',
+success: function (result) {
+window.location = 'https://devcld.classicdeploy.com/getfile/{{cmd_args}}?filepath=' + filepath;
+}
+});
+return false;
+});
+});
+</script>
+<script>
+$('#uploadfilebtn').on('click', function() {
+var file_data = $('#uploadfile').prop('files')[0];
+var target = $('#target').val();
+var form_data = new FormData();
+form_data.append('file', file_data);
+form_data.append('filepath', target);
+alert(form_data);
+$.ajax({
+url: 'https://devcld.classicdeploy.com/uploadfile/{{cmd_args}}',
+dataType: 'text',
+cache: false,
+contentType: false,
+processData: false,
+data: form_data,
+type: 'post',
+success: function(script_response){
+$('#statusbar').html('<span id="response" style="color:green;">' + result + '</span>');
+}
+});
+});
+</script>
+
 
 </body>
 </html>
