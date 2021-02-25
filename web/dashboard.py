@@ -141,7 +141,7 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
 @app.route("/tool/cldx/<args>")
-def tool(args):
+def cldx(args):
   if 'username' in session:
     user = session['username']
     cldutility = 'cldx'
