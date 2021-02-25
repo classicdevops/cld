@@ -140,6 +140,29 @@ def set_winsize(fd, row, col, xpix=0, ypix=0):
     winsize = struct.pack("HHHH", row, col, xpix, ypix)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
 
+@app.route("/tool/cldx/<args>")
+def tool(args):
+  if 'username' in session:
+    user = session['username']
+    cldutility = 'cldx'
+    if cldutility != 'bash':
+      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
+    else:
+      cldfile = '/bin/bash'
+    if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    else: cldmodule = "bash"
+    checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
+    except: cmd_args = ''
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    except: pass
+    chars = 'abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890'
+    socketid = ''
+    for c in range(16):
+       socketid += random.choice(chars)
+    return render_template("html/cldx.html", socketid=socketid, cldutility=cldutility, cmd_args=cmd_args)
+
 @app.route("/tool/<cldutility>")
 @app.route("/tool/<cldutility>/")
 @app.route("/tool/<cldutility>/<args>")
@@ -193,7 +216,7 @@ def uploadfile(instance):
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
     instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json').strip())[0]['clouds'][0]
-    try: filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.args['filepath']).string)
+    try: filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.form['filepath']).string)
     except: filepath = '/tmp'
     mountpath = '/home/'+user+'/mnt/'+instance
     file = request.files['file']
