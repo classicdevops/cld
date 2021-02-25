@@ -115,13 +115,14 @@ if (file.test(copysuccess)) {
     console.log("Dir: "+copysuccess);
 }
 else {
-    console.log("Nothing");
+    console.log("Nothing: "+copysuccess);
 }
     return copysuccess
 }
 
 document.body.addEventListener('mouseup', function(){
     var copysuccess = copySelectionText() // copy user selected text to clipboard
+console.log("Nothing: "+copysuccess);
 }, false)
 
 function sleep(ms) {
