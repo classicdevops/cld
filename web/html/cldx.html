@@ -148,7 +148,6 @@ var target = $('#target').val();
 var form_data = new FormData();
 form_data.append('file', file_data);
 form_data.append('filepath', target);
-alert(form_data);
 $.ajax({
 url: 'https://devcld.classicdeploy.com/uploadfile/{{cmd_args}}',
 dataType: 'text',
@@ -158,11 +157,15 @@ processData: false,
 data: form_data,
 type: 'post',
 success: function(script_response){
-$('#statusbar').html('<span id="response" style="color:green;">' + result + '</span>');
+$('#target').css({'border': '2px solid green'});
+},
+error: function(script_response){
+$('#target').css({'border': '2px solid red'});
 }
 });
 });
 </script>
+
 
 
 </body>
