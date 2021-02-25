@@ -107,6 +107,16 @@ function copySelectionText(){
     } catch(e){
         copysuccess = false
     }
+var file = new RegExp("^/[A-Za-z0-9._/ -]+.$");
+var dir = new RegExp("^/[A-Za-z0-9._/ -]+/$");
+if (file.test(copysuccess)) {
+    console.log("File: "+copysuccess);
+} else if (dir.test(copysuccess)) {
+    console.log("Dir: "+copysuccess);
+}
+else {
+    console.log("Nothing");
+}
     return copysuccess
 }
 
