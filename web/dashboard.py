@@ -145,12 +145,8 @@ def cldx(args):
   if 'username' in session:
     user = session['username']
     cldutility = 'cldx'
-    if cldutility != 'bash':
-      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
-    else:
-      cldfile = '/bin/bash'
-    if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
-    else: cldmodule = "bash"
+    cldfile = "/var/cld/bin/cldx"
+    cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
