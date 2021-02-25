@@ -145,7 +145,7 @@ var filepath = $('#downloadfile').val();
 $.ajax({
 type: 'GET',
 success: function (result) {
-window.location = 'https://devcld.classicdeploy.com/getfile/{{cmd_args}}?filepath=' + filepath;
+window.location = '/getfile/{{cmd_args}}?filepath=' + filepath;
 }
 });
 return false;
@@ -160,7 +160,7 @@ var form_data = new FormData();
 form_data.append('file', file_data);
 form_data.append('filepath', target);
 $.ajax({
-url: 'https://devcld.classicdeploy.com/uploadfile/{{cmd_args}}',
+url: '/uploadfile/{{cmd_args}}',
 dataType: 'text',
 cache: false,
 contentType: false,
