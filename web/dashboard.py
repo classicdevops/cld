@@ -59,6 +59,27 @@ def allowmoduleusers(cldmodule):
 def allowutilityusers(cldutility):
   return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
 
+def usermodules(user):
+  modules = set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').strip().split(','))
+  if "ALL" in modules:
+    return set(bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').strip().split('\n'))
+  else:
+    return modules
+
+def usertools(user):
+  tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').strip().split(','))
+  if "ALL" in tools:
+    return set(bash('find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include | rev | cut -d / -f 1 | rev').strip().split('\n'))
+  else:
+    return tools
+
+def userisadmin(user):
+  user=re.match("[A-z0-9_.-]+", user)[0]
+  if bash('''awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2-''').strip() == "ALL:ALL":
+    return True
+  else:
+    return False
+
 def checkperms(cldmodule, cldutility, user):
   user=re.match("[A-z0-9_.-]+", user)[0]
   cldmodule=str(cldmodule)
@@ -92,6 +113,7 @@ app.config['UPLOAD_FOLDER'] = upload_dir
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
+webmodule = {}
 #include code from web.py of modules
 cldm={}
 for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
@@ -397,6 +419,10 @@ def send_css(path):
 def send_img(path):
     return send_from_directory('img', path)
 
+@app.route('/modules/<module>/content/<path:path>')
+def send_module_content(path):
+    return send_from_directory('modules/'+module+'/content', path)
+
 @app.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('js', path)
@@ -411,9 +437,23 @@ def send_favicon():
 
 @app.route('/')
 def index():
-   if 'username' not in session: return redirect('/login', code=302)
-   username = session['username']
-   return render_template('html/index.html', username=username)
+    if 'username' not in session: return redirect('/login', code=302)
+    user = session['username']
+    usermodules = usermodules(user)
+    usermodules = list()
+    for usermodule in usermodules:
+      name = usermodule
+      if os.path.isfile('modules/'+usermodule+'/content/logo.svg'):
+        logo = 'modules/'+usermodule+'/content/logo.svg'
+      else:
+        logo = 'img/module.svg'
+      try: desc = webmodule[usermodule]['desc']
+      except: desc = "module "+usermodule
+    usermodules.append(name+";"+logo+";"+desc)
+    init_module = ['name', 'logo', 'desc']
+    for n, i in enumerate(usermodules):
+      usermodules[n] = {k:v for k,v in zip(init_module,usermodules[n].split(';'))}
+    return render_template('html/index.html', username=user, usermodules=usermodules)
 
 @app.route('/panel/')
 def dashboard():

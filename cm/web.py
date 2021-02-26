@@ -1,4 +1,7 @@
-@app.route("/cm/")
+webmodule["cm"] = {}
+webmodule["cm"]["desc"] = "Cloud manager"
+|
+@app.route("/cm")
 def cm_index():
   if 'username' in session:
     user = session['username']
