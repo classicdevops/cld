@@ -211,7 +211,7 @@ def uploadfile(instance):
     checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
-    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json').strip())[0]['clouds'][0]
+    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance).strip())[0]['clouds'][0]
     try: filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.form['filepath']).string)
     except: filepath = '/tmp'
     mountpath = '/home/'+user+'/mnt/'+instance
