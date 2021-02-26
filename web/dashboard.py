@@ -420,7 +420,7 @@ def send_img(path):
     return send_from_directory('img', path)
 
 @app.route('/modules/<module>/content/<path:path>')
-def send_module_content(path):
+def send_module_content(module, path):
     return send_from_directory('modules/'+module+'/content', path)
 
 @app.route('/js/<path:path>')
