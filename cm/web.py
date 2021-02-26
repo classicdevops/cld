@@ -1,6 +1,6 @@
 webmodule["cm"] = {}
-webmodule["cm"]["desc"] = "Cloud manager"
-webmodule["cm"]["homename"] = "Virtual environment control"
+webmodule["cm"]["homename"] = "Cloud manager"
+webmodule["cm"]["desc"] = "Virtual environment control"
 @app.route("/cm")
 def cm_index():
   if 'username' in session:
