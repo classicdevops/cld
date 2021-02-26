@@ -439,9 +439,9 @@ def send_favicon():
 def index():
     if 'username' not in session: return redirect('/login', code=302)
     user = session['username']
-    usermodules = usermodules(user)
-    usermodules = list()
-    for usermodule in usermodules:
+    cldusermodules = usermodules(user)
+    modulesset = list()
+    for usermodule in cldusermodules:
       name = usermodule
       if os.path.isfile('modules/'+usermodule+'/content/logo.svg'):
         logo = 'modules/'+usermodule+'/content/logo.svg'
@@ -449,11 +449,11 @@ def index():
         logo = 'img/module.svg'
       try: desc = webmodule[usermodule]['desc']
       except: desc = "module "+usermodule
-    usermodules.append(name+";"+logo+";"+desc)
+    modulesset.append(name+";"+logo+";"+desc)
     init_module = ['name', 'logo', 'desc']
-    for n, i in enumerate(usermodules):
-      usermodules[n] = {k:v for k,v in zip(init_module,usermodules[n].split(';'))}
-    return render_template('html/index.html', username=user, usermodules=usermodules)
+    for n, i in enumerate(modulesset):
+      modulesset[n] = {k:v for k,v in zip(init_module,modulesset[n].split(';'))}
+    return render_template('html/index.html', username=user, usermodules=modulesset)
 
 @app.route('/panel/')
 def dashboard():
