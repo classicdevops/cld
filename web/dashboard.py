@@ -452,7 +452,7 @@ def index():
       try: homename = webmodule[module]['homename']
       except: homename = module.capitalize().replace('.local', '')
       modules.append(name+";"+logo+";"+desc+";"+homename)
-    init_module = ['name', 'logo', 'desc']
+    init_module = ['name', 'logo', 'desc', 'homename']
     for n, i in enumerate(modules):
       modules[n] = {k:v for k,v in zip(init_module,modules[n].split(';'))}
     return render_template('html/index.html', username=user, modules=modules)
