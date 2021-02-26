@@ -1,3 +1,4 @@
+@app.route('/tcloud/<telegram_file_id>/<file_name>')
 @app.route('/all/tcloud/<telegram_file_id>/<file_name>')
 def telegramclouddownload(telegram_file_id, file_name):
 	try:

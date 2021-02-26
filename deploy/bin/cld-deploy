@@ -498,7 +498,7 @@ done
 [ "$TIMEOUT" ] || TIMEOUT=3600
 for DEPLOY_ITTER in $(seq 1 $RETRY)
 do
-DEPLOY_CHECK_LOG=$(grep -qs "@.*>.*#BEGIN_DEPLOY" $CLD_ACTION_LOG && echo 0 || echo 1)
+DEPLOY_CHECK_LOG=$(grep -qs "#BEGIN_DEPLOY" $CLD_ACTION_LOG && echo 0 || echo 1)
 if [ "$DEPLOY_CHECK_LOG" == "1" ]
 then
 $CLD_DEPLOY $CONNECT_ARGS << EODEPLOYRUN | cldtail ${SHOW_ALL} | tee -a $CLD_ACTION_LOG
