@@ -439,21 +439,21 @@ def send_favicon():
 def index():
     if 'username' not in session: return redirect('/login', code=302)
     user = session['username']
-    cldusermodules = usermodules(user)
-    modulesset = list()
-    for usermodule in cldusermodules:
-      name = usermodule
-      if os.path.isfile('modules/'+usermodule+'/content/logo.svg'):
-        logo = 'modules/'+usermodule+'/content/logo.svg'
+    modulelist = list(usermodules(user))
+    modules = list()
+    for module in modulelist:
+      name = module
+      if os.path.isfile('modules/'+module+'/content/logo.svg'):
+        logo = 'modules/'+module+'/content/logo.svg'
       else:
         logo = 'img/module.svg'
-      try: desc = webmodule[usermodule]['desc']
-      except: desc = "module "+usermodule
-    modulesset.append(name+";"+logo+";"+desc)
+      try: desc = webmodule[module]['desc']
+      except: desc = "module "+module
+    modules.append(name+";"+logo+";"+desc)
     init_module = ['name', 'logo', 'desc']
-    for n, i in enumerate(modulesset):
-      modulesset[n] = {k:v for k,v in zip(init_module,modulesset[n].split(';'))}
-    return render_template('html/index.html', username=user, usermodules=modulesset)
+    for n, i in enumerate(modules):
+      modules[n] = {k:v for k,v in zip(init_module,modules[n].split(';'))}
+    return render_template('html/index.html', username=user, modules=modules)
 
 @app.route('/panel/')
 def dashboard():
