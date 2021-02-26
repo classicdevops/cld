@@ -9,5 +9,5 @@ def tcloud_get_file(message):
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
     except:
         pass
-    answer = "downloadlink:\n`https://"+api_domain+"/api/tcloud/"+message.document.file_id+"/"+message.document.file_name+"`"
+    answer = "downloadlink:\n`https://"+api_domain+"/api/all/tcloud/"+message.document.file_id+"/"+message.document.file_name+"`"
     bot.send_message(message.chat.id, answer, parse_mode='Markdown')

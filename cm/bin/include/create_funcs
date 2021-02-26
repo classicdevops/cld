@@ -15,8 +15,9 @@ wait
 sort -nu /var/cld/cm/tmp/last_vmid | tail -1
 }
 
-get-kvm-list ()
+get-kvm-list()
 {
+HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 mkdir -p /var/cld/cm/tmp &>/dev/null
 truncate -s 0 /var/cld/cm/tmp/kvm_list
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
@@ -33,7 +34,35 @@ wait
 cat /var/cld/cm/tmp/kvm_list
 }
 
-get-storage-pools ()
+get-kvm-list-json()
+{
+HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
+DATEID=$(date +%S%N | head -c 4)
+mkdir -p /var/cld/cm/tmp &>/dev/null
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
+do
+(
+HPRNM=`echo $VM | cut -d "_" -f 1`
+SRV=`echo $VM | cut -d "_" -f 2`
+PRT=`echo $VM | cut -d "_" -f 3`
+USR=`echo $VM | cut -d "_" -f 4`
+QMS=$(timeout 10 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print $2"_"$1"_"$3}' | grep -v '_500')
+if [ "$(echo -n "$QMS" | wc -w)" != "0" ]
+then
+cat >> /var/cld/cm/tmp/kvm_json_${DATEID} << EOL | tr -d '\n'
+{"hypervisor": "$HPRNM",
+"instances": $(echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\x22name\x22:\x22"$1"\x22,\x22id\x22:\x22"$2"\x22,\x22status\x22:\x22"$3"\x22},"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
+},
+EOL
+fi
+) &
+sleep 0.1s
+done
+wait
+head -c -2 /var/cld/cm/tmp/kvm_json_${DATEID} | cat <(echo -n '[') - <(echo -n ']')
+}
+
+get-storage-pools()
 {
 SRV=`echo $1 | cut -d "_" -f 2`
 PRT=`echo $1 | cut -d "_" -f 3`
@@ -41,7 +70,7 @@ USR=`echo $1 | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep 'pool:' /etc/pve/storage.cfg" 2>/dev/null  | awk '{print $2}'
 }
 
-get-storage-by-id ()
+get-storage-by-id()
 {
 SRV=`echo $1 | cut -d "_" -f 2`
 PRT=`echo $1 | cut -d "_" -f 3`
@@ -49,7 +78,7 @@ USR=`echo $1 | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep 'vm-${2}-disk-0' /etc/pve/qemu-server/${2}.conf" | cut -d : -f 2 | head -1 | tr -d '[:space:]'
 }
 
-get-zfs-partition-by-id ()
+get-zfs-partition-by-id()
 {
 SRV=`echo $1 | cut -d "_" -f 2`
 PRT=`echo $1 | cut -d "_" -f 3`
@@ -65,7 +94,7 @@ USR=`echo $1 | cut -d "_" -f 4`
 timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "grep -A5 $2 /etc/pve/storage.cfg"  | grep pool | grep -v ":" | head -1 | awk '{print $2}'
 }
 
-get-ovh-gateway ()
+get-ovh-gateway()
 {
 SRV=`echo $1 | cut -d "_" -f 2`
 PRT=`echo $1 | cut -d "_" -f 3`
