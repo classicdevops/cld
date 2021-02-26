@@ -449,7 +449,7 @@ def index():
         logo = 'img/module.svg'
       try: desc = webmodule[module]['desc']
       except: desc = "module "+module
-    modules.append(name+";"+logo+";"+desc)
+      modules.append(name+";"+logo+";"+desc)
     init_module = ['name', 'logo', 'desc']
     for n, i in enumerate(modules):
       modules[n] = {k:v for k,v in zip(init_module,modules[n].split(';'))}
