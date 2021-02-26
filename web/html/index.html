@@ -144,6 +144,21 @@
 </a>
 </label>
 
+{% for module in usermodules %}
+<label class="btn paymentMethod">
+<a href="/{{ module.name }}"  onclick="window.location.href = '/{{ module.name }}';">
+<div class="method visa" style="border-radius: 3px;text-align: center;">
+<br>
+<img src="../{{ module.logo }}" style="height: 80;">
+<br>
+<span style="color:#177ddb;font-size:1.4rem;font-weight: 300;">{{ module.name }}</span>
+<hr class="pricer" style="margin-top:10px;margin-bottom:6px;">
+<span style="color:#b5b5b5;font-size:1.4rem;font-weight: 100;"><br>{{ module.desc }}</span>
+</div>
+</a>
+</label>
+{% endfor %}
+
 {% if username == 'admin' %}
 <label class="btn paymentMethod">
 <a href="{{ url_for('admin') }}" onclick="window.location.href = '{{ url_for('admin') }}';">
