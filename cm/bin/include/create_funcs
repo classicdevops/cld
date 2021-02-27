@@ -64,7 +64,6 @@ cat >> /var/cld/cm/tmp/kvm_json_${DATEID} << EOL | tr -d '\n'
 EOL
 fi
 ) &
-sleep 0.1s
 done
 wait
 head -c -2 /var/cld/cm/tmp/kvm_json_${DATEID} | cat <(echo -n '[') - <(echo -n ']')
