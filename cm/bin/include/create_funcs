@@ -43,6 +43,11 @@ get-kvm-list-json()
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 DATEID=$(date +%S%N | head -c 4)
 mkdir -p /var/cld/cm/tmp &>/dev/null
+KVM_LIST_FILE_STRINGS=$(cat /var/cld/cm/tmp/kvm_json | wc -l)
+KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/cm/tmp/kvm_json)))
+KVM_CRON_PARSING=$(grep -v "^#" /etc/cron.d/cld | egrep -q "cld-cmclouds.+\-\-json" && echo 1 || echo 0)
+if [ "$KVM_LIST_FILE_STRINGS" -lt "2" -o "$KVM_SEC_FILE_CHANGED" -ge "60" -a "$KVM_CRON_PARSING" -eq "0" ]
+then
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 (
@@ -81,9 +86,13 @@ fi
 ) &
 done
 wait
-head -c -2 /var/cld/cm/tmp/kvm_json_${DATEID} | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_tmp
-unalias mv &>/dev/null ; mv /var/cld/cm/tmp/kvm_json_tmp /var/cld/cm/tmp/kvm_json
+head -c -2 /var/cld/cm/tmp/kvm_json_${DATEID} | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
+rm -f /var/cld/cm/tmp/kvm_json_${DATEID} &>/dev/null
+unalias mv &>/dev/null ; mv /var/cld/cm/tmp/kvm_json_${DATEID}_full /var/cld/cm/tmp/kvm_json
 cat /var/cld/cm/tmp/kvm_json
+else
+cat /var/cld/cm/tmp/kvm_json
+fi
 }
 
 get-storage-pools()
