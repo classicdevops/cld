@@ -100,14 +100,14 @@ CLOUDS_USER_ALLOWED() {
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n')"
-echo $OPTS | grep -q  '^\--json' && JSON=1
+echo $OPTS | grep -q  '^\--json' && JSONFUNCOUT=1
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
-if [ "$JSON" == "1" ]
+if [ "$JSONFUNCOUT" == "1" ]
 then
   for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
   do
@@ -134,7 +134,7 @@ MODULES_USER_ALLOWED() {
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2 | tr '\n' ',' | sed 's#,#/bin,#g' | tr ',' '\n')"
-echo $OPTS | grep -q  '^\--json' && JSON=1
+echo $OPTS | grep -q  '^\--json' && JSONFUNCOUT=1
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
@@ -142,7 +142,7 @@ ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 CLD_TOOLS=$(grep alias /home/${SUDO_USER}/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | grep "${CLD_MODULES}" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
-if [ "$JSON" == "1" ]
+if [ "$JSONFUNCOUT" == "1" ]
 then
     for CLD_MODULE in $(rev <<< "$CLD_TOOLS" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev)
     do
