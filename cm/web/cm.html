@@ -85,14 +85,14 @@
     }
     function appendform(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         $('#'+id).append('\
-            <div class="well well-sm">name: '+name+'</div>\
-            <div class="well well-sm">id: '+kvmid+'</div>\
-            <div class="well well-sm">status: '+status+'</div>\
-            <div class="well well-sm">cpu: '+cpu+'</div>\
-            <div class="well well-sm">ram: '+ram+'</div>\
-            <div class="well well-sm">disk: '+disk+'</div>\
-            <div class="well well-sm">whiteips: '+whiteips+'</div>\
-            <div class="well well-sm">grayips: '+grayips+'</div>\
+            <pre>name: '+name+'</pre>\
+            <pre>id: '+kvmid+'</pre>\
+            <pre>status: '+status+'</pre>\
+            <pre>cpu: '+cpu+'</pre>\
+            <pre>ram: '+ram+'</pre>\
+            <pre>disk: '+disk+'</pre>\
+            <pre>whiteips: '+whiteips+'</pre>\
+            <pre>grayips: '+grayips+'</pre>\
             <form onsubmit="openutil(\''+id+'\', \''+name+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+name+'\')" style="width: 10%;">Run</button>        </form>')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
