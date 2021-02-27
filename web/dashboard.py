@@ -493,7 +493,7 @@ def toolkit():
   if 'username' in session:
     username = session['username']
     cld_tools = json.loads(bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld-modules --json'))
-    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev | head -c -1''').split('\n')
+    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev''').strip().split('\n')
     return render_template('html/toolkit.html', username=username, utils=utils, cld_tools=cld_tools)
 
 @app.route('/admin')
@@ -503,7 +503,7 @@ def admin():
     userlist = bash('echo -n $(ls /var/cld/access/users/ | cat)').split(' ')
     users = list()
     for user in userlist:
-      userid = bash('grep ^'+user+': /etc/passwd | cut -d : -f 3 | head -c -1')
+      userid = bash('grep ^'+user+': /etc/passwd | cut -d : -f 3')
       role = bash('cat /var/cld/access/users/'+user+'/role').replace('\n', '')
       groups = bash('echo -n $(cat /var/cld/access/users/'+user+'/groups)').replace(' ', ',')
       status = bash("grep -q '"+user+":!' /etc/shadow && echo -n 0 || echo -n 1")
@@ -517,7 +517,7 @@ def admin():
     for group in grouplist:
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual"')
       groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
-      cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+group+'/clouds | wc -l | head -c -1')
+      cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+group+'/clouds | wc -l')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
     for n, i in enumerate(groups):
@@ -541,8 +541,8 @@ def user():
     for n, i in enumerate(users):
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
-    allowedclouds = bash('sudo -u '+request.args['name']+' sudo FROM=CLI /var/cld/bin/cld --list | head -c -1').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list) | head -c -1').split('\n')
+    allowedclouds = bash('sudo -u '+request.args['name']+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list)').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
 @app.route('/group')
@@ -562,7 +562,7 @@ def group():
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
-    allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list | head -c -1').split('\n')
+    allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(/var/cld/bin/cld --groups='+request.args['name']+' --list)').strip().split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
     groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/access/groups/default/default_funcvars').strip()

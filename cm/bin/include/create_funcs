@@ -17,10 +17,14 @@ sort -nu /var/cld/cm/tmp/last_vmid | tail -1
 
 get-kvm-list()
 {
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 mkdir -p /var/cld/cm/tmp &>/dev/null
 truncate -s 0 /var/cld/cm/tmp/kvm_list
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
 (
 HPRNM=`echo $VM | cut -d "_" -f 1`
@@ -36,10 +40,14 @@ cat /var/cld/cm/tmp/kvm_list
 
 get-kvm-list-json()
 {
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 DATEID=$(date +%S%N | head -c 4)
 mkdir -p /var/cld/cm/tmp &>/dev/null
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
 (
 HPRNM=`echo $VM | cut -d "_" -f 1`
