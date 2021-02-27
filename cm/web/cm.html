@@ -84,7 +84,16 @@
         );
     }
     function appendform(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
-        $('#'+id).append('<form onsubmit="openutil(\''+id+'\', \''+name+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+name+'\')" style="width: 10%;">Run</button>        </form>')
+        $('#'+id).append('\
+            <div class="well well-sm">name: '+name+'</div>\
+            <div class="well well-sm">id: '+kvmid+'</div>\
+            <div class="well well-sm">status: '+status+'</div>\
+            <div class="well well-sm">cpu: '+cpu+'</div>\
+            <div class="well well-sm">ram: '+ram+'</div>\
+            <div class="well well-sm">disk: '+disk+'</div>\
+            <div class="well well-sm">whiteips: '+whiteips+'</div>\
+            <div class="well well-sm">grayips: '+grayips+'</div>\
+            <form onsubmit="openutil(\''+id+'\', \''+name+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+name+'\')" style="width: 10%;">Run</button>        </form>')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
