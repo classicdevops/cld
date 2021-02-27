@@ -74,7 +74,7 @@ if [ "$(echo -n "$QMS" | wc -w)" != "0" ]
 then
 cat >> /var/cld/cm/tmp/kvm_json_${DATEID} << EOL | tr -d '\n'
 {"hypervisor": "$HPRNM",
-"instances": $(echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\x22id\x22:\x22"$1"\x22,\x22name\x22:\x22"$2"\x22,\x22status\x22:\x22"$3"\x22,\x22ram\x22:\x22"$4"\x22,\x22disk\x22:\x22"$5"\x22,\x22cores\x22:\x22"$6"\x22,\x22whiteips\x22:\x22"$7"\x22,\x22grayips\x22:\x22"$8"\x22},"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
+"instances": $(echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\x22""id\x22"":\x22"""$1"\x22"",\x22""name\x22"":\x22"$2"\x22"",\x22""status\x22"":\x22"$3"\x22"",\x22""ram\x22"":\x22"$4"\x22"",\x22""disk\x22"":\x22"$5"\x22"",\x22""cores\x22"":\x22"$6"\x22"",\x22""whiteips\x22"":\x22"$7"\x22"",\x22""grayips\x22"":\x22"$8"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
 },
 EOL
 fi
