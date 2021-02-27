@@ -80,7 +80,7 @@
       return new Promise((resolve) => setTimeout(resolve, time));
     }
     function appendtab(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
-        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+name+'\', \''+kvmid+'\', \''+status+'\', \''+cpu+'\', \''+ram+'\', \''+disk+'\', \''+whiteips+'\', \''+grayips'\')">⟳</button>' + name + '</a></li>'
+        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+name+'\', \''+kvmid+'\', \''+status+'\', \''+cpu+'\', \''+ram+'\', \''+disk+'\', \''+whiteips+'\', \''+grayips+'\')">⟳</button>' + name + '</a></li>'
         );
     }
     function appendform(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
