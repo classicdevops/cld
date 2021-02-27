@@ -35,7 +35,7 @@ done
 
 if [ "$JSON" == "1" ]
 then
-source <(echo -n get-kvm-list-json "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
+get-kvm-list-json
 else
 get-kvm-list
 fi
