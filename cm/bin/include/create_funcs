@@ -82,7 +82,7 @@ fi
 done
 wait
 head -c -2 /var/cld/cm/tmp/kvm_json_${DATEID} | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_tmp
-unalias mv ; mv /var/cld/cm/tmp/kvm_json_tmp /var/cld/cm/tmp/kvm_json
+unalias mv &>/dev/null ; mv /var/cld/cm/tmp/kvm_json_tmp /var/cld/cm/tmp/kvm_json
 cat /var/cld/cm/tmp/kvm_json
 }
 
