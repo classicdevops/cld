@@ -167,10 +167,10 @@
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newdirecttab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
-                        {% for cld_dict in cld_tools %}
-                            <li><span>module: {{ cld_dict['module'] }}</span></li>
-                            {% for cld_tool in cld_dict['tools'] %}
-                            <li><a onclick='newtab("{{ cld_tool }}")' class="nav-link active" id="{{ cld_tool }}-link" data-toggle="tab" href="#{{ cld_tool }}">{{ cld_tool }}</a></li>
+                        {% for cld_dict in cld_clouds %}
+                            <li><span>hypervisor: {{ cld_dict['hypervisor'] }}</span></li>
+                            {% for cld_cloud in cld_dict['instances'] %}
+                            <li><a onclick='newtab("{{ cld_cloud.name }}")' class="nav-link active" id="{{ cld_cloud.name }}-link" data-toggle="tab" href="#{{ cld_cloud.name }}">{{ cld_cloud.name }} {{ cld_cloud.id }} {{ cld_cloud.status }}</a></li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
