@@ -61,7 +61,7 @@ KVM_ID=$(cut -d _ -f 1 <<< $KVM_SET)
 KVM_IPS=$(qm guest cmd ${KVM_ID} network-get-interfaces | jq -r '.[] ."ip-addresses"[] | select(."ip-address-type"=="ipv4")."ip-address"')
 WHITE_IPS=$(egrep -v "(^127\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)" <<< ${KVM_IPS} | tr '\n' ',' | head -c -1)
 GRAY_IPS=$(egrep "(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)" <<< ${KVM_IPS} | tr '\n' ',' | head -c -1)
-KVM_CORES=$(grep "^cores:" /etc/pve/qemu-server/30254.conf | tr -d ' ' | cut -d : -f 2)
+KVM_CORES=$(grep "^cores:" /etc/pve/qemu-server/${KVM_ID}.conf | tr -d ' ' | cut -d : -f 2)
 echo ${KVM_SET}_${KVM_CORES}_${WHITE_IPS}_${GRAY_IPS}
 ) & 2>/dev/null
 done
