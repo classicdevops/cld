@@ -7,5 +7,5 @@ def cm_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    cld_tools = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld-modules --json'))
-    return render_template('modules/cm/index.html', username=user, cld_tools=cld_tools)
+    cld_clouds = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/cm/bin/cld-cmclouds --json'))
+    return render_template('modules/cm/cm.html', username=user, cld_clouds=cld_clouds)
