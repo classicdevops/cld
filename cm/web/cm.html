@@ -95,9 +95,9 @@
             <p>white ip: '+whiteips+'</p>\
             <p>private ip: '+grayips+'</p>\
             </div>\
-            </div>\
+            <form onsubmit="startmigrate(\''+id+'\', \''+kvmid+'\')"><div class="form-group">\
             <button type="button" class="btn btn-primary" onclick="startmigrate(\''+id+'\', \''+kvmid+'\')" style="width: 10%;">Migrate KVM</button>\
-            ')
+            </form>')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
