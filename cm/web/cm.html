@@ -85,14 +85,14 @@
     }
     function appendform(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         $('#'+id).append('\
-            <pre>'+name+'</pre>\
-            <pre>id: '+kvmid+'</pre>\
-            <pre>status: '+status+'</pre>\
-            <pre>cpu: '+cpu+'</pre>\
-            <pre>ram: '+ram+'</pre>\
-            <pre>disk: '+disk+'</pre>\
-            <pre>whiteips: '+whiteips+'</pre>\
-            <pre>grayips: '+grayips+'</pre>\
+            name: <pre>'+name+'</pre>\
+            id: <pre>'+kvmid+'</pre>\
+            status: <pre>'+status+'</pre>\
+            cpu: <pre>'+cpu+'</pre>\
+            ram: <pre>'+ram+'</pre>\
+            disk: <pre>'+disk+'</pre>\
+            whiteips: <pre>'+whiteips+'</pre>\
+            grayips: <pre>'+grayips+'</pre>\
             <form onsubmit="openutil(\''+id+'\', \''+name+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+name+'\')" style="width: 10%;">Run</button>        </form>')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
