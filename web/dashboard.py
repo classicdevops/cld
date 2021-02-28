@@ -532,6 +532,9 @@ def admin():
 @app.route('/user')
 def user():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     name = [str(request.args['name'])]
     users = list()
@@ -553,6 +556,9 @@ def user():
 @app.route('/group')
 def group():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     name = [str(request.args['name'])]
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
@@ -581,6 +587,9 @@ def group():
 @app.route('/adduser', methods=['POST'])
 def adduser():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     newuser = request.form['newuser']
     newpassword = request.form['newpass']
     bash('/var/cld/bin/cld-useradd '+newuser+' '+newpassword).replace('\n', ' ')
@@ -589,6 +598,9 @@ def adduser():
 @app.route('/deluser', methods=['GET'])
 def deluser():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     deluser = request.args['name']
     bash('/var/cld/bin/cld-userdel '+deluser).replace('\n', ' ')
     return redirect('/admin', code=302)
@@ -596,6 +608,9 @@ def deluser():
 @app.route('/addgroup', methods=['POST'])
 def addgroup():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     newgroup = request.form['newgroup']
     bash('/var/cld/bin/cld-groupadd '+newgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
@@ -603,6 +618,9 @@ def addgroup():
 @app.route('/delgroup', methods=['GET'])
 def delgroup():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     delgroup = request.args['name']
     bash('/var/cld/bin/cld-groupdel '+delgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
@@ -610,6 +628,9 @@ def delgroup():
 @app.route('/enableuser', methods=['GET'])
 def enableuser():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     enableuser = request.args['name']
     bash('passwd --unlock '+enableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
@@ -617,6 +638,9 @@ def enableuser():
 @app.route('/disableuser', methods=['GET'])
 def disableuser():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     disableuser = request.args['name']
     bash('passwd --lock '+disableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
@@ -624,6 +648,9 @@ def disableuser():
 @app.route('/usergroups', methods=['GET','POST'])
 def usergroups():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     user = request.args['name']
     groups = list(request.form.to_dict())
     # print(dir(request.form))
@@ -636,6 +663,9 @@ def usergroups():
 @app.route('/userclouds', methods=['GET','POST'])
 def userclouds():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     user = request.args['name']
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     if str(clouds) == "['([])']":
@@ -649,6 +679,9 @@ def userclouds():
 @app.route('/groupusers', methods=['GET','POST'])
 def groupusers():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     group = request.args['name']
     users = ",".join(list(request.form.to_dict())).split(',')
     denyusers = [os.path.basename(name) for name in os.listdir("/var/cld/access/users/") if os.path.isdir('/var/cld/access/users/'+name) and name not in users]
@@ -663,6 +696,9 @@ def groupusers():
 @app.route('/groupclouds', methods=['GET','POST'])
 def groupclouds():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     group = request.args['name']
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     if str(clouds) == "['([])']":
@@ -676,6 +712,9 @@ def groupclouds():
 @app.route('/grouptype', methods=['GET','POST'])
 def grouptype():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     group = request.args['name']
     grouptype = ''
     try:
@@ -694,6 +733,9 @@ def grouptype():
 @app.route('/groupfuncs', methods=['GET','POST'])
 def groupfuncs():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     group = request.args['name']
     groupfuncs = ''
     try:
@@ -740,6 +782,9 @@ def groupfuncs():
 @app.route('/cloudadd')
 def cloudadd():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     groups = bash('''source <(awk '{print "grep -q 0 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
     return render_template('html/cloudadd.html', username=username, groups=groups)
@@ -747,6 +792,9 @@ def cloudadd():
 @app.route('/addcloud', methods=['GET','POST'])
 def addcloud():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     cloudname = request.form['cloudname']
     cloudip = request.form['cloudip']
@@ -774,6 +822,9 @@ def profile():
 @app.route('/devops')
 def devops():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     templatelist = bash('ls /var/cld/devops/templates/ | cat').split('\n')[:-1]
     templates = list()
@@ -821,18 +872,27 @@ def devops():
 @app.route('/devops/template')
 def devopstemplate():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     return render_template('html/devops/template.html', username=username)
 
 @app.route('/devops/templateadd')
 def devopstemplateadd():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     return render_template('html/devops/templateadd.html', username=username)
 
 @app.route('/devops/addtemplate', methods=['GET','POST'])
 def adddevopstemplate():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     templatename = request.form['templatename']
     description = request.form['description']
@@ -911,18 +971,27 @@ def adddevopstemplate():
 @app.route('/devops/deploy')
 def devopsdeploy():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     return render_template('html/devops/deploy.html', username=username)
 
 @app.route('/devops/deployadd')
 def devopsdeployadd():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     return render_template('html/devops/deployadd.html', username=username)
 
 @app.route('/devops/adddeploy', methods=['GET','POST'])
 def adddevopsdeploy():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     templatename = request.form['templatename']
     description = request.form['description']
@@ -1001,12 +1070,18 @@ def adddevopsdeploy():
 @app.route('/devops/action')
 def devopsaction():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     return render_template('html/devops/action.html', username=username)
 
 @app.route('/devops/actionadd')
 def devopsactionadd():
   if 'username' in session:
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     username = session['username']
     return render_template('html/devops/actionadd.html', username=username)
 
