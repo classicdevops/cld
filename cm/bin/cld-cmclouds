@@ -53,4 +53,4 @@ source <(echo -n get-kvm-list-json "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
 else
 get-kvm-list
 fi
-grep -sv "^#" /etc/cron.d/* | egrep -s "cld-cmclouds.+\-\-json" | grep -qs root  && echo 0 || echo '* * * * * root /var/cld/cm/bin/cld-cmclouds --json &>/dev/null' >> /etc/cron.d/cld
+grep -sv "^#" /etc/cron.d/* | egrep -s "cld-cmclouds.+\-\-json" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cmclouds --json &>/dev/null' >> /etc/cron.d/cld
