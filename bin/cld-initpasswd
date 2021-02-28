@@ -118,6 +118,6 @@ do
 done
 sed -i '/CLD_PATH/d' /root/.bashrc &>/dev/null
 cat >> /root/.bashrc << 'EOL'
-export CLD_PATH="/var/cld/bin:/var/cld/*/bin:$(echo -n "$(ls -d /var/cld/modules/*/bin)" | tr "\n" :)"
+export CLD_PATH="/var/cld/bin:$(echo -n "$(ls -d /var/cld/*/bin /var/cld/modules/*/bin)" | tr "\n" :)"
 PATH="$PATH:$CLD_PATH"
 EOL
