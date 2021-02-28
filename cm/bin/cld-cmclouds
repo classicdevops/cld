@@ -32,8 +32,13 @@ echo $OPTS | grep -q  '^\--json' && JSON=1
 echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
-[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='jq "[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]" | jq . -C'
-[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='jq "[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]" | jq .'
+
+if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]
+then
+	JSON_BEAUTY_ARG='jq "[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]" | jq . -C'
+else
+	JSON_BEAUTY_ARG='jq "[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]"'
+fi
 
 if [ "$JSON" == "1" ]
 then
