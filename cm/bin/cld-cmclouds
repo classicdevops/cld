@@ -23,6 +23,8 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
+ALLOWED_HPRS=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | cut -d _ -f 1 | head -c -1)
+
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--hypers=' && HPRS="$(echo $OPTS | cut -d '=' -f 2)"
@@ -30,8 +32,8 @@ echo $OPTS | grep -q  '^\--json' && JSON=1
 echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
-[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
-[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='| jq .'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='jq "[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]" | jq . -C'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='jq "[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]" | jq .'
 
 if [ "$JSON" == "1" ]
 then
