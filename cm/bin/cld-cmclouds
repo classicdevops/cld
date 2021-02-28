@@ -9,6 +9,7 @@ $2                            Second PATTERN filtering allowed clouds
 $3                            Third PATTERN filtering allowed clouds
 --json                        Json outout option
 --beauty                      Using together with --json option to beautify json output
+--nocache                     Force hypervisors parsing without cache output
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -31,6 +32,7 @@ do
 echo $OPTS | grep -q  '^\--hypers=' && HPRS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--json' && JSON=1
 echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
+echo $OPTS | grep -q  '^\--nocache' && NOCACHE=1
 done
 
 
@@ -53,4 +55,4 @@ source <(echo -n get-kvm-list-json "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
 else
 get-kvm-list
 fi
-grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cmclouds.+\-\-json" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cmclouds --json &>/dev/null' >> /etc/cron.d/cld
+grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cmclouds.+\-\-json/+\-\-nocache" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cmclouds --json --nochache &>/dev/null' >> /etc/cron.d/cld
