@@ -43,6 +43,7 @@ get-kvm-list-json()
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 DATEID=$(date +%S%N | head -c 4)
 mkdir -p /var/cld/cm/tmp &>/dev/null
+[ -f "$/var/cld/cm/tmp/kvm_json" ] || touch /var/cld/cm/tmp/kvm_json
 KVM_LIST_FILE_STRINGS=$(cat /var/cld/cm/tmp/kvm_json | wc -l)
 KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/cm/tmp/kvm_json)))
 if [ "$KVM_LIST_FILE_STRINGS" -lt "2" -o "$KVM_SEC_FILE_CHANGED" -ge "90" ]
