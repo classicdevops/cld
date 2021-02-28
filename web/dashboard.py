@@ -123,13 +123,15 @@ for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>
   exec(open(webfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
 #recreate symlinks to templates in external directories for this dashboard.py
-bash('''rm -f /var/cld/web/modules/*
+bash('''
+rm -f /var/cld/web/modules/*
 mkdir /var/cld/web/modules &>/dev/null
 for WEB_TEMPLATE_PATH in $(ls -d /var/cld/{cm,deploy}/web /var/cld/modules/*/web 2>/dev/null)
 do
 WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
 ln -s ${WEB_TEMPLATE_PATH} /var/cld/web/modules/${WEB_MODULE}
-done''')
+done
+''')
 
 #generate help endpoints for each CLD tool
 exec(bash('''
@@ -500,6 +502,9 @@ def toolkit():
 def admin():
   if 'username' in session:
     username = session['username']
+    if userisadmin(username) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     userlist = bash('echo -n $(ls /var/cld/access/users/ | cat)').split(' ')
     users = list()
     for user in userlist:
