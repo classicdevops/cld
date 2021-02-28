@@ -45,8 +45,7 @@ DATEID=$(date +%S%N | head -c 4)
 mkdir -p /var/cld/cm/tmp &>/dev/null
 KVM_LIST_FILE_STRINGS=$(cat /var/cld/cm/tmp/kvm_json | wc -l)
 KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/cm/tmp/kvm_json)))
-KVM_CRON_PARSING=$(grep -v "^#" /etc/cron.d/cld | egrep -q "cld-cmclouds.+\-\-json" && echo 1 || echo 0)
-if [ "$KVM_LIST_FILE_STRINGS" -lt "2" -o "$KVM_SEC_FILE_CHANGED" -ge "60" -a "$KVM_CRON_PARSING" -eq "0" ]
+if [ "$KVM_LIST_FILE_STRINGS" -lt "2" -o "$KVM_SEC_FILE_CHANGED" -ge "90" ]
 then
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
