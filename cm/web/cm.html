@@ -181,9 +181,9 @@
                             <li><span>host: {{ cld_dict['hypervisor'] }}</span></li>
                             {% for cld_cloud in cld_dict['instances'] %}
                             {% if cld_cloud.status == 'running' %}
-                            {% set color = 'green' %}
+                            {% set color = 'limegreen' %}
                             {% elif cld_cloud.status == 'stopped' %}
-                            {% set color = 'red' %}
+                            {% set color = 'orangered' %}
                             {% else %}
                             {% set color = 'violet' %}
                             {% endif %}
