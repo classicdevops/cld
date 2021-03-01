@@ -83,7 +83,7 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 [ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
 
-[ "$HYPERVISOR" != "" ] && HYPERVISOR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "$HYPER" | head -1)
+[ "$HYPER" != "" ] && HYPERVISOR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "$HYPER" | head -1)
 
 if [ "$HYPERVISOR" == "" ]
 then
