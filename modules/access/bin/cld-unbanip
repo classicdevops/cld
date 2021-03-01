@@ -13,8 +13,8 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
-echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || echo "ip address is incorrect please fix it and try again"
-echo ${1} | egrep -q "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" || exit 1
+echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || echo "ip address is incorrect please fix it and try again"
+echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || exit 1
 grep -q "${1}" /var/cld/modules/access/data/blackips && (sed -i '/'${1}'/d' /var/cld/modules/access/data/blackips && echo "ip ${F}${1}${F} successfully deleted from black list") || echo "ip ${F}${1}${F} not in black list"
 
 UNBAN_IP=$1
