@@ -357,7 +357,7 @@ EOL
 echo
 cat << EOL
 Equivalent non-interactive command:
-cld-cmcreate --hyper=${HYPERVISOR} --os=${OS} --name=${VMNAME} --cpu=${VMCPU} --ram=${VMMEMORY} --disk=${DISK} --ip=${IPADDR} --mac=${MACADDR} --gate=${GATEWAY} --storage=${STORAGE}
+cld-cmcreate --hyper=${HYPERVISOR} --os=${OS} --name=${VMNAME} --cpu=${VMCPU} --ram=$(expr ${VMMEMORY} / 1024) --disk=${DISK} --ip=${IPADDR} --mac=${MACADDR} --gate=${GATEWAY} --storage=${STORAGE}
 echo
 EOL
 echo "Approve settings?"
