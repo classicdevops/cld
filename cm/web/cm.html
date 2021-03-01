@@ -180,7 +180,14 @@
                         {% for cld_dict in cld_clouds %}
                             <li><span>host: {{ cld_dict['hypervisor'] }}</span></li>
                             {% for cld_cloud in cld_dict['instances'] %}
-                            <li><a onclick='newtab("{{ cld_cloud.name }}", "{{ cld_cloud.id }}", "{{ cld_cloud.status }}", "{{ cld_cloud.cores }}", "{{ cld_cloud.ram }}", "{{ cld_cloud.disk }}", "{{ cld_cloud.whiteips }}", "{{ cld_cloud.grayips }}")' class="nav-link active" id="{{ cld_cloud.name }}-link" data-toggle="tab" href="#{{ cld_cloud.name }}">{{ cld_cloud.name }} {{ cld_cloud.status }} {{ cld_cloud.whiteips }}</a></li>
+                            {% if cld_cloud.status == 'running' %}
+                            {% set color = 'limegreen' %}
+                            {% elif cld_cloud.status == 'stopped' %}
+                            {% set color = 'orangered' %}
+                            {% else %}
+                            {% set color = 'violet' %}
+                            {% endif %}
+                            <li><a onclick='newtab("{{ cld_cloud.name }}", "{{ cld_cloud.id }}", "{{ cld_cloud.status }}", "{{ cld_cloud.cores }}", "{{ cld_cloud.ram }}", "{{ cld_cloud.disk }}", "{{ cld_cloud.whiteips }}", "{{ cld_cloud.grayips }}")' class="nav-link active" id="{{ cld_cloud.name }}-link" data-toggle="tab" href="#{{ cld_cloud.name }}"><span style="color: {{ color }};">● </span>{{ cld_cloud.name }} {{ cld_cloud.whiteips }}</a></li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
