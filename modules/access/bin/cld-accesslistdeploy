@@ -36,7 +36,7 @@ CLD_GROUPS=${CLD_GROUPS:-default}
 [ "$CLD_ALLOW_GROUPS" ] || CLD_ALLOW_GROUPS=${CLD_GROUPS:-default}
 
 DEPLOY_ACCESS_LIST=$(cat << EOACCESSLIST
-cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS' | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
+cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS' | egrep "sshd: [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
 $(
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
