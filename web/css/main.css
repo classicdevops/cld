@@ -44,6 +44,10 @@ label {
     font-weight: 100;
 }
 
+.btn-group>.btn:first-child {
+    margin-left: -1px;
+}
+
 .paymentWrap .paymentBtnGroup {
 	max-width: 100%;
 	margin: auto;
