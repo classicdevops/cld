@@ -45,7 +45,7 @@
 
 #web
 /web/modules/*
-
+/web/flask_session/*
 #legacy simlink
 /ext_srv
 
