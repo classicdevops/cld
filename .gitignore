@@ -21,8 +21,9 @@
 /access/users/admin/*
 
 /modules/*
+!/modules/access/
 !/modules/blackcheck/
-!/modules/{dns,access}/
+!/modules/dns/
 !/modules/etcbackup/
 !/modules/telegramcloud/
 !/modules/zabbixcontrol/
