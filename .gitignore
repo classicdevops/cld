@@ -20,6 +20,14 @@
 /access/groups/
 /access/users/admin/*
 
+/var/cld/modules/*
+!/var/cld/modules/access
+!/var/cld/modules/blackcheck
+!/var/cld/modules/dns
+!/var/cld/modules/etcbackup
+!/var/cld/modules/telegramcloud
+!/var/cld/modules/zabbixcontrol
+
 #deploy
 /deploy/templates/*
 /deploy/deploys/*
