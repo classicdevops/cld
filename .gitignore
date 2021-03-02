@@ -21,12 +21,12 @@
 /access/users/admin/*
 
 /modules
-!/modules/access
-!/modules/blackcheck
-!/modules/dns
-!/modules/etcbackup
-!/modules/telegramcloud
-!/modules/zabbixcontrol
+!/modules/access/*
+!/modules/blackcheck/*
+!/modules/dns/*
+!/modules/etcbackup/*
+!/modules/telegramcloud/*
+!/modules/zabbixcontrol/*
 
 #deploy
 /deploy/templates/*
