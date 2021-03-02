@@ -20,7 +20,7 @@
 /access/groups/
 /access/users/admin/*
 
-/var/cld/modules/
+/var/cld/modules
 /var/cld/modules/*
 !/var/cld/modules/access
 !/var/cld/modules/blackcheck
