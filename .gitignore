@@ -20,6 +20,7 @@
 /access/groups/
 /access/users/admin/*
 
+#modules
 /modules/*
 !/modules/access/
 !/modules/blackcheck/
@@ -34,6 +35,7 @@
 /deploy/actions/*
 /deploy/repo_list
 /devops/
+
 #certs
 /docker/xtermnginx/etc/nginx/ssl
 
