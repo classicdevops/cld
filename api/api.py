@@ -120,7 +120,7 @@ EOL
 done
 '''))
 
-@app.route('/test')
+@app.route('/all/ip')
 def index():
   return remoteaddr()
 

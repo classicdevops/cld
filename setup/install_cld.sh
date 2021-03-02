@@ -390,4 +390,3 @@ cld_install
 else
 echo Operation system is not supported
 fi
-}
