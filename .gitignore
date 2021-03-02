@@ -20,13 +20,13 @@
 /access/groups/
 /access/users/admin/*
 
-/modules
-!/modules/access/*
-!/modules/blackcheck/*
-!/modules/dns/*
-!/modules/etcbackup/*
-!/modules/telegramcloud/*
-!/modules/zabbixcontrol/*
+/modules/*
+!/modules/access/
+!/modules/blackcheck/
+!/modules/dns/
+!/modules/etcbackup/
+!/modules/telegramcloud/
+!/modules/zabbixcontrol/
 
 #deploy
 /deploy/templates/*
@@ -44,7 +44,7 @@
 /api/accesslist
 
 #web
-/var/cld/web/modules/*
+/web/modules/*
 
 #legacy simlink
 /ext_srv
