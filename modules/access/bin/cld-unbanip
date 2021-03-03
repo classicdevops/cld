@@ -18,6 +18,7 @@ echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-
 grep -q "${1}" /var/cld/modules/access/data/blackips && (sed -i '/'${1}'/d' /var/cld/modules/access/data/blackips && echo "ip ${F}${1}${F} successfully deleted from black list") || echo "ip ${F}${1}${F} not in black list"
 
 UNBAN_IP=$1
+egrep -q "^([a-f0-9:]+:+)+[a-f0-9]+$" <<< ${UNBAN_IP} && UNBAN_IP=$(sipcalc ${UNBAN_IP} | grep "^Expanded" | cut -d '-' -f 2 | tr -d ' ')
 source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
