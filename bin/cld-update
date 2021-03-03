@@ -1,19 +1,16 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Utility for initialization all required by system and modules constants - run all */init scripts of cld
-Affect /var/cld/creds/creds file and others if it setted up in modules init scripts
-Using  init-load-constants() and init-string() functions from /var/cld/bin/include/cldfuncs
+Classicdeploy update tool
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-init-main
+cld-update
 EOL
 )
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
-init-load-constants CLD_DOMAIN\|cld.yourdomain.com CLD_DOMAIN\|cldapi.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
-for INIT in $(ls -pd  /var/cld/*/init /var/cld/modules/*/init 2>/dev/null)
-do
-${INIT}
-done
+chattr -i /var/cld
+systemctl stop cld
+cd /var/cld && git pull --force origin/master
+systemctl start cld
