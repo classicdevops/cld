@@ -17,3 +17,92 @@ for INIT in $(ls -pd  /var/cld/*/init /var/cld/modules/*/init 2>/dev/null)
 do
 ${INIT}
 done
+
+if grep -qi "centos\|rhel" /etc/*-release
+then
+USR_PATH="/usr"
+elif grep -qi "debian\|ubuntu" /etc/*-release
+then
+USR_PATH=""
+fi
+
+cat > ${USR_PATH}/lib/systemd/system/cld-api.service << EOL
+[Unit]
+Description=Classic deploy api interface service
+After=multi-user.target
+PartOf=cld.service
+
+[Service]
+WorkingDirectory=/var/cld/api
+Type=idle
+ExecStart=${USR_PATH}/bin/bash -lc "/usr/bin/python3 /var/cld/api/api.py | tee -a /var/log/cld-api.log"
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+StartLimitBurst=99999
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+cat > ${USR_PATH}/lib/systemd/system/cld-bot.service << EOL
+[Unit]
+Description=Classic deploy bot interface service
+After=multi-user.target
+PartOf=cld.service
+
+[Service]
+WorkingDirectory=/var/cld/bot
+Type=idle
+ExecStart=${USR_PATH}/bin/bash -lc "/usr/bin/python3 /var/cld/bot/bot.py | tee -a /var/log/cld-bot.log"
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+StartLimitBurst=99999
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+cat > ${USR_PATH}/lib/systemd/system/cld-web.service << EOL
+[Unit]
+Description=Classic deploy web interface service
+After=multi-user.target
+PartOf=cld.service
+
+[Service]
+WorkingDirectory=/var/cld/web
+Type=idle
+ExecStart=${USR_PATH}/bin/bash -lc "/usr/bin/python3 /var/cld/web/dashboard.py | tee -a /var/log/cld-web.log"
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+StartLimitBurst=99999
+
+[Install]
+WantedBy=multi-user.target
+EOL
+cat > ${USR_PATH}/lib/systemd/system/cld.service << EOL
+[Unit]
+Description=Main classicdeploy additional interfaces service
+Wants=cld-api.service
+Wants=cld-bot.service
+Wants=cld-web.service
+
+[Service]
+WorkingDirectory=/var/cld
+Type=idle
+ExecStart=${USR_PATH}/bin/sleep infinity
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+StartLimitBurst=99999
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+
+systemctl daemon-reload
+systemctl enable cld
+systemctl restart cld
