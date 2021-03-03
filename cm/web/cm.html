@@ -39,11 +39,11 @@
     border: 1px solid #1e88e5;
     margin-top: -1px; /* Prevent double borders */
     background-color: white;
-    padding: 4px;
+    padding: 2px;
     text-decoration: none;
     color: black;
     display: block;
-    font-size: 10;
+    font-size: 12;
     color: lightslategray;
     border-right-width: 0;
     border-left-width: 0;
@@ -95,7 +95,7 @@
             <p>white ip: '+whiteips+'</p>\
             <p>private ip: '+grayips+'</p>\
             </div>\
-            <button type="button" class="btn btn-primary" onclick="startmigrate(\''+id+'\', \''+kvmid+'\')" style="width: 10%;margin-top: 10px;">Migrate KVM</button>\
+            <button type="button" class="btn btn-primary" onclick="startmigrate(\''+id+'\', \''+kvmid+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button>\
             ')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
@@ -174,7 +174,7 @@
         <div class="container term">
             <div class="row row-offcanvas row-offcanvas-left">
                 <!-- sidebar -->
-                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 18%;">
+                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 18%;min-width: 280px;">
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                         {% for cld_dict in cld_clouds %}
