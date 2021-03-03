@@ -1088,14 +1088,7 @@ def devopsactionadd():
 #Just easy direct pipeline for early dev version, will deleted in the future
 @app.route('/backendgitpull')
 def backendgitpull():
-    bg = ''
-    try:
-      bg = str(int(request.args['bg']))
-      if bg == '1':
-        bg = '''&>/dev/null &'''
-    except:
-      pass
-    cmd = bash('(cd /var/cld/ && chattr -i /var/cld && git reset --hard && git pull origin master ; supervisorctl stop cldpanel ; sleep 1s ; supervisorctl start cldpanel) &>/dev/null & disown' + bg)
+    cmd = bash('/var/cld/bin/cld-update &>/dev/null & disown')
     resp = Response(cmd, status=200, mimetype='text/plain')
     return resp
 
