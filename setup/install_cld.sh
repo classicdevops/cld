@@ -174,8 +174,6 @@ module_hotfixes=true
 EONGINX
 yum install -y nginx
 yum install -y screen
-yum install -y supervisor
-sed -i 's#^files = supervisord.d/\*\.ini$#files = supervisord.d/*.ini supervisor/conf.d/*.conf#g' /etc/supervisord.conf
 
 yum install python3 python3-pip  -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
@@ -191,8 +189,7 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen supervisor sipcalc --skip-broken
-sed -i 's#^files = supervisord.d/\*\.ini$#files = supervisord.d/*.ini supervisor/conf.d/*.conf#g' /etc/supervisord.conf
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc --skip-broken
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
 [nginx-stable]
 name=nginx stable repo
@@ -220,7 +217,7 @@ system_setup_d9()
 {
 #install base soft
 apt update
-apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen supervisor jq python3 python3-pip certbot nginx
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
 }
 
@@ -228,7 +225,7 @@ system_setup_d10()
 {
 #install base soft
 apt update
-apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen supervisor jq python3 python3-pip certbot nginx
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
 }
 
@@ -260,11 +257,6 @@ EOBASHRC
 
 HOSTIP=$(wget -qO- ipinfo.io/ip)
 sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
-
-systemctl restart supervisor
-systemctl restart supervisord
-systemctl enable supervisor
-systemctl enable supervisord
 
 /var/cld/bin/init-main
 
