@@ -229,7 +229,7 @@ server  {
 }
 EOL
 touch /etc/nginx/accesslist /etc/nginx/deny.conf
-service nginx restart
+systemctl restart nginx
 
 for LOOP_FUNC in funcvars_VARS functerm_TERMINAL funcmount_MOUNT funcumount_UMOUNT funcdeploy_DEPLOY funcdeploynotty_DEPLOY_NOTTY
     do
