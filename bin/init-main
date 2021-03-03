@@ -34,12 +34,15 @@ PartOf=cld.service
 
 [Service]
 WorkingDirectory=/var/cld/api
-Type=idle
-ExecStart=${USR_PATH}/bin/bash -lc "/usr/bin/python3 /var/cld/api/api.py | tee -a /var/log/cld-api.log"
+Type=simple
+ExecStart=/usr/bin/python3 /var/cld/api/api.py
 RemainAfterExit=no
 Restart=always
-RestartSec=5s
-StartLimitBurst=99999
+RestartSec=2
+StartLimitBurst=999999
+StartLimitInterval=0
+KillMode=process
+
 
 [Install]
 WantedBy=multi-user.target
@@ -53,12 +56,15 @@ PartOf=cld.service
 
 [Service]
 WorkingDirectory=/var/cld/bot
-Type=idle
-ExecStart=${USR_PATH}/bin/bash -lc "/usr/bin/python3 /var/cld/bot/bot.py | tee -a /var/log/cld-bot.log"
+Type=simple
+ExecStart=/usr/bin/python3 /var/cld/bot/bot.py
 RemainAfterExit=no
 Restart=always
-RestartSec=5s
-StartLimitBurst=99999
+RestartSec=2
+StartLimitBurst=999999
+StartLimitInterval=0
+KillMode=process
+
 
 [Install]
 WantedBy=multi-user.target
@@ -72,12 +78,15 @@ PartOf=cld.service
 
 [Service]
 WorkingDirectory=/var/cld/web
-Type=idle
-ExecStart=${USR_PATH}/bin/bash -lc "/usr/bin/python3 /var/cld/web/dashboard.py | tee -a /var/log/cld-web.log"
+Type=simple
+ExecStart=/usr/bin/python3 /var/cld/web/dashboard.py
 RemainAfterExit=no
 Restart=always
-RestartSec=5s
-StartLimitBurst=99999
+RestartSec=2
+StartLimitBurst=999999
+StartLimitInterval=0
+KillMode=process
+
 
 [Install]
 WantedBy=multi-user.target
