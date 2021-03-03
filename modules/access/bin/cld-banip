@@ -23,5 +23,5 @@ source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
-cf-firewall-rules-ip-ban-add ${BLACK_IP} ${COMMENT}_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip ${F}${BLACK_IP}${F} successfully banned by *cloudflare* for account ${F}${CFACC}${F}"
+cf-firewall-rules-ip-ban-add ${BLACK_IP} ${COMMENT}_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip ${BLACK_IP} successfully banned by CloudFlare for account ${CFACC}"
 done
