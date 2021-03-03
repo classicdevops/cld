@@ -13,4 +13,5 @@ source /var/cld/bin/include/cldfuncs
 chattr -i /var/cld
 systemctl stop cld
 cd /var/cld && git pull --force origin/master
+/var/cld/bin/cld-initpasswd
 systemctl start cld
