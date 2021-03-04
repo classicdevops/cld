@@ -154,7 +154,7 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot sipcalc
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse fuse-sshfs strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot sipcalc
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
 [nginx-stable]
 name=nginx stable repo
@@ -186,10 +186,10 @@ setenforce 0
 systemctl stop firewalld
 systemctl disable firewalld
 iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F  ; iptables -t mangle -F  ; iptables -F ; iptables -X
-
+yum config-manager --set-enabled powertools
 yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc --skip-broken
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse fuse-sshfs strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc --skip-broken
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
 [nginx-stable]
 name=nginx stable repo
