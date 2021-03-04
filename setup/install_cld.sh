@@ -154,7 +154,7 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot sipcalc
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot sipcalc
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
 [nginx-stable]
 name=nginx stable repo
@@ -189,7 +189,7 @@ iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEP
 
 yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc --skip-broken
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc --skip-broken
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
 [nginx-stable]
 name=nginx stable repo
@@ -226,7 +226,7 @@ system_setup_d10()
 #install base soft
 apt update
 apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
-pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc 
 }
 
 cld_install()
