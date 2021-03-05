@@ -27,16 +27,13 @@ echo $OPTS | grep -q  '^\--list' && LIST=1
 done
 
 echo $1
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
-do
-  CLD_LOGS
-  if [ "$VM" ]
-  then
-    INSTANCE_GROUP_FUNCS
-    echo "You had chosen ${GROUP} $VM"
-    $CLD_VARS
-    echo
-    $CLD_TERMINAL
-  fi
-  break
-done
+VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
+CLD_LOGS
+if [ "$VM" ]
+then
+INSTANCE_GROUP_FUNCS
+echo "You had chosen ${GROUP} $VM"
+$CLD_VARS
+echo
+$CLD_TERMINAL
+fi
