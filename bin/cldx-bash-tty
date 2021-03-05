@@ -37,6 +37,5 @@ if [ "$VM" ]
 then
 INSTANCE_GROUP_FUNCS
 $CLD_VARS
-echo
 $CLD_DEPLOY
 fi
