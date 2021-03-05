@@ -10,8 +10,8 @@ $1                       First PATTERN filtering allowed instances and choose la
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cldx prod 1.2.3.4_instance_22_root
-cldx prod 1.2.3.4_instance_22_root --groups=gcloud --debug
+cldx prod instance_1.2.3.4_22_root
+cldx prod instance_1.2.3.4_22_root --groups=gcloud --debug
 EOL
 )
 HELP_ONLY="CLI"

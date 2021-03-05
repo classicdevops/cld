@@ -2,7 +2,6 @@
 HELP_DESC=$(cat << 'EOL'
 Direct instance deploy CLI utility of classic deploy access system
 Read pipe input and execute on remote CLD instance
-Require "exit" at the end of input to stop execution
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
@@ -12,10 +11,9 @@ $1                       First PATTERN filtering allowed instances and choose la
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cldx-bash-tty 1.2.3.4_instance_22_root << EOCLD
+cldx-bash-tty instance_1.2.3.4_22_root << EOCLD
 script
 commands
-exit
 EOCLD
 EOL
 )
