@@ -22,6 +22,15 @@ else:
   outputinterpreter = bash('which cat').strip()
   print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
 
+def stream_file(filepath, chunksize=8192):
+  with open(filepath, "rb") as f:
+    while True:
+      chunk = f.read(chunksize)
+      if chunk:
+        yield chunk
+      else:
+        break
+
 def bashstream(cmd, format="html"):
   addopentag = ""
   addclosetag = ""
