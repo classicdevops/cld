@@ -10,7 +10,7 @@ import subprocess
 import random
 import datetime
 from urllib.request import urlopen
-from os import linesep
+import os
 
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
@@ -44,7 +44,7 @@ def bashstream(cmd, format="html"):
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   yield ''.join(addopentag)
   for line in process.stdout:
-    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+linesep+line.decode('utf8')+linesep+"EOHTML"+linesep+")"))
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+os.linesep+line.decode('utf8')+os.linesep+"EOHTML"+os.linesep+")"))
   yield ''.join(addclosetag)
 
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
