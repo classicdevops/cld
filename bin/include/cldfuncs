@@ -80,20 +80,20 @@ EXTERNAL_TERMINAL() {
 [ "$USR" == "root" ] || sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i" | tee -a $CLD_LOG
 }
 
-[ "$TIMEOUT" ] || export TIMEOUT=300
+[ "$TIMEOUT" ] || export TIMEOUT=60
 EXTERNAL_DEPLOY() {
 [ "$USR" == "root" ] && timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1
 [ "$USR" == "root" ] || timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo bash -s" 2>&1
 }
 
-[ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=300
+[ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=60
 EXTERNAL_DEPLOY_NOTTY() {
 [ "$USR" == "root" ] && timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1
 [ "$USR" == "root" ] || timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" 2>&1
 }
 
 EXTERNAL_UMOUNT() {
-LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq $LOCALMOUNTPATH >> /dev/null ; rmdir $LOCALMOUNTPATH
+LOCALMOUNTPATH="/home/$SUDO_USER/mnt/$VM" &>/dev/null ; fusermount -uzq $LOCALMOUNTPATH &>/dev/null ; rmdir $LOCALMOUNTPATH &>/dev/null
 }
 
 CLOUDS_USER_ALLOWED() {
