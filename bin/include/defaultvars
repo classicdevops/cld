@@ -1,5 +1,0 @@
-#!/bin/bash
-SRV=`echo $VM | cut -d "_" -f 2`
-PRT=`echo $VM | cut -d "_" -f 3`
-USR=`echo $VM | cut -d "_" -f 4`
-PWD=`grep $VM /var/cld/access/groups/${GROUP}/clouds | cut -d _ -f -4`

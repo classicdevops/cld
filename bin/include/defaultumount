@@ -1,2 +1,0 @@
-#!/bin/bash
-LOCALMOUNTPATH=`echo "/home/$SUDO_USER/mnt/$VM"` >> /dev/null ; fusermount -uzq $LOCALMOUNTPATH >> /dev/null ; rmdir $LOCALMOUNTPATH
