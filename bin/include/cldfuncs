@@ -217,6 +217,12 @@ do
 done
 }
 
+echoexit0()
+{
+echo "${@:1}"
+exit 0
+}
+
 echoexit1()
 {
 echo "${@:1}"

@@ -4,8 +4,9 @@ Migrate KVM manager
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
---id=10001                              KVM id
+--id=10001                           KVM id
 --dest=HPR-1-pve_1.2.3.4_22_root     Destination PVE hypervisor
+--clonefs                            Just clone ZFS partition to destination hypervisor without anu destruction actions
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -21,6 +22,7 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-dest=' && DEST_HPR=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-clonefs' && CLONEFS=1
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 done
 
@@ -189,6 +191,7 @@ $PVE_ZSYNC
 EOSSH
 sleep 3s
 done
+[ "$CLONEFS" = "1" ] && echoexit0 FS image of $KVM_NAME cloned to $DEST_HPR - exit
 echo
 echo "Ready to stop KVM BEFORE switch - please STOP DATABASE at $KVM_NAME and PRESS [ENTER] to continue migration process" ; read SKIP_WAIT
 echo
