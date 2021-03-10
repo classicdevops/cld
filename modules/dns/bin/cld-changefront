@@ -25,7 +25,7 @@ echo $OPTS | grep -q  '^\--proxy\|^\-proxy' && CFPROXY="-proxy"
 done
 
 CURR_DATE=$(TZ=Europe/Moscow date +%F)
-/var/cld/modules/dns/cf_dns_backup
+/var/cld/modules/dns/bin/cld-cfdnsbackup
 
 A_RECORD_LIST=$(grep "$ORIGIN_IP" -R /var/cld/modules/dns/data/cf/${CURR_DATE}/ | cut -d : -f 2- | grep -P "\tA\t$ORIGIN_IP" | cut -d A -f 1 | rev | cut -d . -f 2- | rev)
 
