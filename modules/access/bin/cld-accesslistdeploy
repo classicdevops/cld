@@ -39,7 +39,7 @@ DEPLOY_ACCESS_LIST=$(cat << EOACCESSLIST
 cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
 $(
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
 CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
