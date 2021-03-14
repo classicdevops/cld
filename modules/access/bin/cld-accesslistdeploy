@@ -125,26 +125,26 @@ EOPORTS
 echo \${HOSTNAME}
 
 [ "\$ALLOWED_IPS_LINES" -ge "3" ] && source <(
-iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccess
 iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "\${BLACK_IPS}" | grep -v "/32 -j DROP" | iptables-restore
 for LOCAL_NET in \$LOCAL_NETS
 do
-echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT"
+echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
 done
 for IP in \$ALLOWED_IPS
 do
 cat << EOL
-iptables -A INPUT -s \${IP}/32 -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT
+iptables -A INPUT -s \${IP}/32 -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess
 EOL
 done
 cat << EOL
-iptables -A INPUT -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
-iptables -A INPUT -p udp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP
+iptables -A INPUT -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
+iptables -A INPUT -p udp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
 EOL
 for BLACK_IP in \$BLACK_IPS
 do
 cat << EOL
-iptables -I INPUT -s \${BLACK_IP}/32 -j DROP
+iptables -I INPUT -s \${BLACK_IP}/32 -j DROP -m comment --comment cldaccess
 EOL
 done
 )
