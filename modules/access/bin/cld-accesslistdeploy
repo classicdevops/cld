@@ -51,8 +51,18 @@ $(
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 )
 EOHOSTSBLACK
+cat > /etc/hosts.ports.tmp << 'EOHOSTSPORTS'
+$(cat /var/cld/creds/protected_ports 2>/dev/null)
+EOHOSTSPORTS
+
+cat > /etc/hosts.localnets.tmp << 'EOHOSTSLOCALS'
+$(cat /var/cld/creds/local_nets 2>/dev/null)
+EOHOSTSLOCALS
+
 unalias mv &>/dev/null
 mv /etc/hosts.allow.tmp /etc/hosts.allow
+mv /etc/hosts.ports.tmp /etc/hosts.ports
+mv /etc/hosts.localnets.tmp /etc/hosts.localnets
 EOACCESSLIST
 )
 
@@ -100,12 +110,9 @@ EOIPS
 ALLOWED_IPS_LINES=$(wc -w <<< "$ALLOWED_IPS")
 
 #Should be MORE than 1 ports
-ALLOWED_PORTS=$(cat << 'EOPORTS'
-$(cat /var/cld/creds/protected_ports 2>/dev/null)
-EOPORTS
-)
+ALLOWED_PORTS="$(cat /etc/hosts.ports)"
 
-echo $ALLOWED_PORTS | grep "^$" && ALLOWED_PORTS=$(cat << 'EOPORTS'
+[ "$ALLOWED_PORTS" ] || ALLOWED_PORTS=$(cat << 'EOPORTS'
 21
 22
 5672
@@ -118,12 +125,9 @@ echo $ALLOWED_PORTS | grep "^$" && ALLOWED_PORTS=$(cat << 'EOPORTS'
 EOPORTS
 )
 
-LOCAL_NETS=$(cat << 'EOPORTS'
-$(cat /var/cld/creds/local_nets 2>/dev/null)
-EOPORTS
-)
+LOCAL_NETS="$(cat /etc/hosts.localnets)""
 
-echo $LOCAL_NETS | grep "^$" && LOCAL_NETS=$(cat << 'EOPORTS'
+[ "$LOCAL_NETS" ] || LOCAL_NETS=$(cat << 'EOPORTS'
 172.16.0.0/24
 EOPORTS
 )
