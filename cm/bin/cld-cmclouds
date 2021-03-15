@@ -35,6 +35,7 @@ echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 echo $OPTS | grep -q  '^\--nocache' && NOCACHE=1
 done
 
+[ "$NOCACHE" ] || NOCACHE=0
 
 if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]
 then
