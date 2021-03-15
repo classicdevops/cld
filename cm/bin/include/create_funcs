@@ -49,14 +49,7 @@ KVM_LIST_FILE_STRINGS=$(cat /var/cld/cm/tmp/kvm_json | wc -l)
 KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/cm/tmp/kvm_json)))
 if [ "$KVM_LIST_FILE_STRINGS" -lt "2" -o "$KVM_SEC_FILE_CHANGED" -ge "90" -o "$NOCACHE" -eq "1" ]
 then
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
-do
-(
-HPRNM=`echo $VM | cut -d "_" -f 1`
-SRV=`echo $VM | cut -d "_" -f 2`
-PRT=`echo $VM | cut -d "_" -f 3`
-USR=`echo $VM | cut -d "_" -f 4`
-timeout 10 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << 'EOSSH' | tr '\r' '\n' >> /var/cld/cm/tmp/kvm_json_${DATEID}
+PARSING_SCRIPT=$(cat << 'EOPARSING'
 get-kvm-set()
 {
 which jq &>/dev/null || apt install jq -y &>/dev/null
@@ -91,6 +84,18 @@ echo '[],'
 fi
 )
 EOL
+EOPARSING
+)
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+do
+(
+HPRNM=`echo $VM | cut -d "_" -f 1`
+SRV=`echo $VM | cut -d "_" -f 2`
+PRT=`echo $VM | cut -d "_" -f 3`
+USR=`echo $VM | cut -d "_" -f 4`
+timeout 10 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << EOSSH | tr '\r' '\n' >> /var/cld/cm/tmp/kvm_json_${DATEID}
+HPRNM=${HPRNM}
+${PARSING_SCRIPT}
 EOSSH
 ) &
 done
