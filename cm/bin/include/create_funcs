@@ -94,7 +94,7 @@ EOSSH
 ) &
 done
 wait
-cat /var/cld/cm/tmp/kvm_json_${DATEID} | tr -d '\r\n' | sed 's#],$#]#g' | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
+cat /var/cld/cm/tmp/kvm_json_${DATEID} | tr -d '\r\n' | sed 's#},$#}#g' | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
 rm -f /var/cld/cm/tmp/kvm_json_${DATEID} &>/dev/null
 unalias mv &>/dev/null ; mv /var/cld/cm/tmp/kvm_json_${DATEID}_full /var/cld/cm/tmp/kvm_json
 cat /var/cld/cm/tmp/kvm_json
