@@ -111,8 +111,9 @@ ALLOWED_IPS_LINES=$(wc -w <<< "$ALLOWED_IPS")
 
 #Should be MORE than 1 ports
 ALLOWED_PORTS="$(cat /etc/hosts.ports)"
-
-[ "$ALLOWED_PORTS" ] || ALLOWED_PORTS=$(cat << 'EOPORTS'
+if ! [ "$ALLOWED_PORTS" ]
+then
+ALLOWED_PORTS=$(cat << 'EOPORTS'
 21
 22
 5672
@@ -124,13 +125,16 @@ ALLOWED_PORTS="$(cat /etc/hosts.ports)"
 25672
 EOPORTS
 )
+fi
 
 LOCAL_NETS="$(cat /etc/hosts.localnets)""
-
-[ "$LOCAL_NETS" ] || LOCAL_NETS=$(cat << 'EOPORTS'
+if ! [ "$LOCAL_NETS" ]
+then
+LOCAL_NETS=$(cat << 'EOPORTS'
 172.16.0.0/24
 EOPORTS
 )
+fi
 
 echo ${HOSTNAME}
 
