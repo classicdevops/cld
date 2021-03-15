@@ -55,7 +55,7 @@ HPRNM=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-QMS=$(timeout 10 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << 'EOSSH' | tr '\r' '\n'
+timeout 10 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << 'EOSSH' | tr '\r' '\n' >> /var/cld/cm/tmp/kvm_json_${DATEID}
 get-kvm-set()
 {
 which jq &>/dev/null || apt install jq -y &>/dev/null
@@ -72,21 +72,29 @@ echo ${KVM_SET}_${KVM_CORES}_${WHITE_IPS}_${GRAY_IPS}
 done
 wait
 }
-get-kvm-set 2>/dev/null
-EOSSH
-)
+CORES=$(nproc)
+BUSY_CORES=$(cat /proc/loadavg | cut -d ' ' -f 3 | cut -d '.' -f 1)
+FREE_CORES=$(expr $CORES - $BUSY_CORES)
+MEM=$(cat /proc/meminfo | awk '/(MemTotal|MemAvailable)/ {print int($2/1024/1024)}' | head -c -1 | tr '\n' '_')
+QMS=$(get-kvm-set 2>/dev/null)
+cat << EOL | tr -d '\n' | sed 's#],$#]#g' | cat - <(echo '},')
+{"hypervisor": "$HPRNM",
+"resources": $(echo "${CORES}_${FREE_CORES}_${MEM}"| awk -F _ '{print "{\x22""cores\x22"":\x22"""$1"\x22"",\x22""free cores\x22"":\x22"$2"\x22"",\x22""ram\x22"":\x22"$3"\x22"",\x22""free ram\x22"":\x22"$4"\x22""},"}' | tr -d '\n' | sed 's#,]#]#g')
+"storages": $(zpool list -pH -o name,size,alloc,free,fragmentation,capacity,health | tr '\t' '_' | awk -F _ 'BEGIN {print "["} {print "{\x22""name\x22"":\x22"""$1"\x22"",\x22""size\x22"":\x22"int($2/1024/1024/1024)"\x22"",\x22""allocated\x22"":\x22"int($3/1024/1024/1024)"\x22"",\x22""free\x22"":\x22"int($4/1024/1024/1024)"\x22"",\x22""fragmentation\x22"":\x22"$5"\x22"",\x22""capacity\x22"":\x22"$6"\x22"",\x22""health\x22"":\x22"$7"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g')
+"instances": $(
 if [ "$(echo -n "$QMS" | wc -w)" != "0" ]
 then
-cat >> /var/cld/cm/tmp/kvm_json_${DATEID} << EOL | tr -d '\n'
-{"hypervisor": "$HPRNM",
-"instances": $(echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\x22""id\x22"":\x22"""$1"\x22"",\x22""name\x22"":\x22"$2"\x22"",\x22""status\x22"":\x22"$3"\x22"",\x22""ram\x22"":\x22"$4"\x22"",\x22""disk\x22"":\x22"$5"\x22"",\x22""cores\x22"":\x22"$6"\x22"",\x22""whiteips\x22"":\x22"$7"\x22"",\x22""grayips\x22"":\x22"$8"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
-},
-EOL
+echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\x22""id\x22"":\x22"""$1"\x22"",\x22""name\x22"":\x22"$2"\x22"",\x22""status\x22"":\x22"$3"\x22"",\x22""ram\x22"":\x22"$4"\x22"",\x22""disk\x22"":\x22"$5"\x22"",\x22""cores\x22"":\x22"$6"\x22"",\x22""whiteips\x22"":\x22"$7"\x22"",\x22""grayips\x22"":\x22"$8"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g'
+else
+echo '[],'
 fi
+)
+EOL
+EOSSH
 ) &
 done
 wait
-head -c -2 /var/cld/cm/tmp/kvm_json_${DATEID} | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
+cat /var/cld/cm/tmp/kvm_json_${DATEID} | tr -d '\r\n' | sed 's#],$#]#g' | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
 rm -f /var/cld/cm/tmp/kvm_json_${DATEID} &>/dev/null
 unalias mv &>/dev/null ; mv /var/cld/cm/tmp/kvm_json_${DATEID}_full /var/cld/cm/tmp/kvm_json
 cat /var/cld/cm/tmp/kvm_json
