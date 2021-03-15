@@ -35,7 +35,7 @@ done
 CLD_GROUPS=${CLD_GROUPS:-default}
 [ "$CLD_ALLOW_GROUPS" ] || CLD_ALLOW_GROUPS=${CLD_GROUPS:-default}
 
-DEPLOY_ACCESS_LIST=$(cat << EOACCESSLIST
+CLD_ACCESS_LIST=$(cat << EOACCESSLIST
 cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
 $(
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
@@ -46,19 +46,20 @@ grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+
 CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
 )
 EOHOSTSACCESS
-
 unalias mv &>/dev/null
 mv /etc/hosts.allow.tmp /etc/hosts.allow
-
 truncate -s 0 /etc/hosts.deny
-ALLOWED_IPS_LINES=\$(egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" /etc/hosts.allow | wc -l)
-[ "\$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny || truncate -s 0 /etc/hosts.deny
-
 cat >> /etc/hosts.deny << 'EOHOSTSBLACK'
 $(
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 )
 EOHOSTSBLACK
+EOACCESSLIST
+)
+
+CLD_ACCESS_DEPLOY=$(cat << 'EOACCESSDEPLOY'
+ALLOWED_IPS_LINES=$(egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" /etc/hosts.allow | wc -w)
+[ "$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny || truncate -s 0 /etc/hosts.deny
 
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
 @reboot root bash -lc "truncate -s 0 /etc/hosts.deny"
@@ -79,27 +80,27 @@ mkdir -p /root/sbin/ &>/dev/null
 
 cat > /root/sbin/iptables_access << 'EOIPTABLES'
 #!/bin/bash
-ALLOWED_IPS=\$(cat << EOIPS
-\$(cat /etc/hosts.allow | awk '{print \$2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+ALLOWED_IPS=$(cat << EOIPS
+$(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 EOIPS
 )
 
-BLACK_IPS=\$(cat << EOIPS
-\$(cat /etc/hosts.deny | awk '{print \$2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+BLACK_IPS=$(cat << EOIPS
+$(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 EOIPS
 )
 
-[ "\$BLACK_IPS" ] || BLACK_IPS=172.31.255.254
+[ "$BLACK_IPS" ] || BLACK_IPS=172.31.255.254
 
-ALLOWED_IPS_LINES=\$(echo "\$ALLOWED_IPS" | wc -l)
+ALLOWED_IPS_LINES=$(wc -w <<< "$ALLOWED_IPS")
 
 #Should be MORE than 1 ports
-ALLOWED_PORTS=\$(cat << 'EOPORTS'
+ALLOWED_PORTS=$(cat << 'EOPORTS'
 $(cat /var/cld/creds/protected_ports 2>/dev/null)
 EOPORTS
 )
 
-echo \$ALLOWED_PORTS | grep "^\$" && ALLOWED_PORTS=\$(cat << 'EOPORTS'
+echo $ALLOWED_PORTS | grep "^$" && ALLOWED_PORTS=$(cat << 'EOPORTS'
 21
 22
 5672
@@ -112,47 +113,88 @@ echo \$ALLOWED_PORTS | grep "^\$" && ALLOWED_PORTS=\$(cat << 'EOPORTS'
 EOPORTS
 )
 
-LOCAL_NETS=\$(cat << 'EOPORTS'
+LOCAL_NETS=$(cat << 'EOPORTS'
 $(cat /var/cld/creds/local_nets 2>/dev/null)
 EOPORTS
 )
 
-echo \$LOCAL_NETS | grep "^\$" && LOCAL_NETS=\$(cat << 'EOPORTS'
+echo $LOCAL_NETS | grep "^$" && LOCAL_NETS=$(cat << 'EOPORTS'
 172.16.0.0/24
 EOPORTS
 )
 
-echo \${HOSTNAME}
+echo ${HOSTNAME}
 
-[ "\$ALLOWED_IPS_LINES" -ge "3" ] && source <(
+IPTABLES_STATE="$(iptables-save)"
+
+if [ "$ALLOWED_IPS_LINES" -lt "3" ]
+then
+iptables-save | grep -v DROP | iptables-restore
+truncate -s 0 /etc/hosts.deny
+exit 1
+fi
+
+if grep -q "cldaccess" <<< "${IPTABLES_STATE}"
+then
+FIRST_LINE=$(grep -nh cldaccess <<< "${IPTABLES_STATE}" | head -1 | cut -d : -f 1)
+LAST_LINE=$(grep -nh cldaccess <<< "${IPTABLES_STATE}" | tail -1 | cut -d : -f 1)
+FIRST_PART=$(head -n $((${FIRST_LINE}-1)) <<< "${IPTABLES_STATE}")
+SECOND_PART=$(tail -n +$((${LAST_LINE}+1)) <<< "${IPTABLES_STATE}")
+iptables-restore << EOACCESS
+$FIRST_PART
+$(
+for BLACK_IP in $BLACK_IPS
+do
+echo "-I INPUT -s ${BLACK_IP}/32 -j DROP -m comment --comment cldaccess"
+done
+
+echo "-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccess"
+for LOCAL_NET in $LOCAL_NETS
+do
+echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
+done
+
+for IP in $ALLOWED_IPS
+do
+echo "-A INPUT -s ${IP}/32 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
+done
+)
+-A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
+-A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
+
+$SECOND_PART
+EOACCESS
+else
+source <(
 iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccess
-iptables-save | grep -v "\$(echo \$ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "\${BLACK_IPS}" | grep -v "/32 -j DROP" | iptables-restore
-for LOCAL_NET in \$LOCAL_NETS
+iptables-save | grep -v "$(echo $ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "${BLACK_IPS}" | grep -v "/32 -j DROP" | iptables-restore
+for LOCAL_NET in $LOCAL_NETS
 do
-echo "iptables -A INPUT -s \${LOCAL_NET} -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
+echo "iptables -A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
 done
-for IP in \$ALLOWED_IPS
+for IP in $ALLOWED_IPS
 do
 cat << EOL
-iptables -A INPUT -s \${IP}/32 -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess
+iptables -A INPUT -s ${IP}/32 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess
 EOL
 done
 cat << EOL
-iptables -A INPUT -p tcp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
-iptables -A INPUT -p udp -m multiport --dports \$(echo \$ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
+iptables -A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
+iptables -A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
 EOL
-for BLACK_IP in \$BLACK_IPS
+for BLACK_IP in $BLACK_IPS
 do
 cat << EOL
-iptables -I INPUT -s \${BLACK_IP}/32 -j DROP -m comment --comment cldaccess
+iptables -I INPUT -s ${BLACK_IP}/32 -j DROP -m comment --comment cldaccess
 EOL
 done
 )
+fi
 
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
 ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/iptables_access) accesslist
-EOACCESSLIST
+EOACCESSDEPLOY
 )
 
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
@@ -165,7 +207,8 @@ $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
 $CLD_DEPLOY_NOTTY << EOSSH
-$DEPLOY_ACCESS_LIST
+$CLD_ACCESS_LIST
+$CLD_ACCESS_DEPLOY
 EOSSH
 ) &
 
@@ -189,5 +232,6 @@ timeout 30s sshpass -p "${MIKROTIK_PASSWORD}" ssh ${MIKROTIK_USER}@${MIKROTIK_HO
 fi
 
 cat << EOL | bash
-$DEPLOY_ACCESS_LIST
+$CLD_ACCESS_LIST
+$CLD_ACCESS_DEPLOY
 EOL
