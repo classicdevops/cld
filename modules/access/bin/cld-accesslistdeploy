@@ -127,7 +127,7 @@ EOPORTS
 )
 fi
 
-LOCAL_NETS="$(cat /etc/hosts.localnets)""
+LOCAL_NETS="$(cat /etc/hosts.localnets)"
 if ! [ "$LOCAL_NETS" ]
 then
 LOCAL_NETS=$(cat << 'EOPORTS'
