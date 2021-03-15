@@ -46,20 +46,25 @@ grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+
 CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
 )
 EOHOSTSACCESS
-unalias mv &>/dev/null
-mv /etc/hosts.allow.tmp /etc/hosts.allow
-truncate -s 0 /etc/hosts.deny
-cat >> /etc/hosts.deny << 'EOHOSTSBLACK'
+cat > /etc/hosts.deny.tmp << 'EOHOSTSBLACK'
 $(
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 )
 EOHOSTSBLACK
+unalias mv &>/dev/null
+mv /etc/hosts.allow.tmp /etc/hosts.allow
 EOACCESSLIST
 )
 
 CLD_ACCESS_DEPLOY=$(cat << 'EOACCESSDEPLOY'
 ALLOWED_IPS_LINES=$(egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" /etc/hosts.allow | wc -w)
-[ "$ALLOWED_IPS_LINES" -ge "3" ] && echo "sshd: ALL" > /etc/hosts.deny || truncate -s 0 /etc/hosts.deny
+if [ "$ALLOWED_IPS_LINES" -ge "3" ] 
+then
+echo "sshd: ALL" >> /etc/hosts.deny.tmp
+mv /etc/hosts.deny.tmp /etc/hosts.deny
+else
+truncate -s 0 /etc/hosts.deny
+fi
 
 cat > /etc/cron.d/hosts_deny_drop << 'EOCRON'
 @reboot root bash -lc "truncate -s 0 /etc/hosts.deny"
@@ -128,6 +133,11 @@ echo ${HOSTNAME}
 IPTABLES_STATE="$(iptables-save)"
 
 if [ "$ALLOWED_IPS_LINES" -lt "3" ]
+then
+iptables-save | grep -v DROP | iptables-restore
+truncate -s 0 /etc/hosts.deny
+exit 1
+elif ! [ "$ALLOWED_IPS_LINES" ]
 then
 iptables-save | grep -v DROP | iptables-restore
 truncate -s 0 /etc/hosts.deny
