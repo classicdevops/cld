@@ -40,6 +40,7 @@ cat /var/cld/cm/tmp/kvm_list
 
 get-kvm-list-json()
 {
+unalias mv
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 DATEID=$(date +%S%N | head -c 4)
 mkdir -p /var/cld/cm/tmp &>/dev/null
