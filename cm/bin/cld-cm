@@ -39,7 +39,7 @@ done
 
 [ "$NOCACHE" ] || NOCACHE=0
 
-if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]
+if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" -o "$FROM" == "WEB" ]
 then
 JSON_BEAUTY_ARG=$(cat << EOL
 | jq  -C '[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]'
