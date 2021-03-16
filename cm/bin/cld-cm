@@ -34,18 +34,19 @@ do
 echo $OPTS | grep -q  '^\--hypers=' && HPRS="$(echo $OPTS | cut -d '=' -f 2)"
 echo $OPTS | grep -q  '^\--json' && JSON=1
 echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
+echo $OPTS | grep -q  '^\--minify' && JSON_MINIFY=1
 echo $OPTS | grep -q  '^\--nocache' && NOCACHE=1
 done
 
 [ "$NOCACHE" ] || NOCACHE=0
 
-if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" -o "$JSON_BEAUTY" == "1" -a "$FROM" == "WEB" ]
+if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]
 then
 JSON_BEAUTY_ARG=$(cat << EOL
 | jq  -C '[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]'
 EOL
 )
-elif [ "$JSON_BEAUTY" != "1" -a "$FROM" == "WEB" ]
+elif [ "$JSON_MINIFY" == "1" ]
 then
 JSON_BEAUTY_ARG=$(cat << EOL
 | jq  -c '[ .[] | select( .hypervisor | contains($(echo "$ALLOWED_HPRS" | awk '{print "\x22"$1"\x22,"}' | head -c -2))) ]'

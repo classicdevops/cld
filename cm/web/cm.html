@@ -115,7 +115,7 @@
     function appendhprcontent(id, name) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
-        $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/--json "+name, dataType : 'text',
+        $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/--json --minify"+name, dataType : 'text',
             success: function (data) {
             var obj = JSON.parse(data);
             $('#'+id).append('\
