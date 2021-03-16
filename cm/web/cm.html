@@ -119,10 +119,10 @@
             success: function (data) {
             var obj = JSON.parse(data);
             $('#'+id).append(obj.hypervisor + " <br> Cores: " + obj.resources.cores + " <br> Free cores: " + obj.resources.free_cores + " <br> Ram: " + obj.resources.ram + " <br> Free ram: " + obj.resources.free_ram)
-            }
-            for for (i in obj.storages) {
+            for (i in obj.storages) {
                 var storage = obj.storages[i];
                 $('#'+id).append(" Storage name: " + storage.name + " <br> Size: " + storage.size + " <br> Allocated: " + storage.allocated + " <br> Free: " + storage.free + " <br> Fragmentation: " + storage.fragmentation + " <br> Capacity: " + storage.capacity + " <br> Health: " + storage.health + " <br><br> ") 
+            }
             }
             });
     }
