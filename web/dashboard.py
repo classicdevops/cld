@@ -185,6 +185,8 @@ def webapi_${CLD_UTIL//[.-]/_}(args=None):
       if request.args['output'] == 'html':
         cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args+' | '+outputinterpreter)
         return Response(cmdoutput, status=200, mimetype='text/html')
+    except:
+      pass
     cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
     return Response(cmdoutput, status=200, mimetype='text/plain')
 
