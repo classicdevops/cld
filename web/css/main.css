@@ -20,7 +20,8 @@ p {
 
 .prein {
     display: inline;
-    padding: 5.5px;
+    padding-left: 5px;
+    padding-right: 5px;
     margin: 0 0 10px;
     font-size: 13px;
     line-height: 1.42857143;
