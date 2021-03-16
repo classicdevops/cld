@@ -120,21 +120,21 @@
             var obj = JSON.parse(data);
             $('#'+id).append('\
              <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
-             <p>cores: ' + obj[0].resources.cores + '</p>\
-             <p>free cores: ' + obj[0].resources.free_cores + '</p>\
-             <p>ram: ' + obj[0].resources.ram + '</p>\
-             <p>free ram: ' + obj[0].resources.free_ram + '</p> </div> <br>')
+             <p>cores: <pre>' + obj[0].resources.cores + '</pre></p>\
+             <p>free cores: <pre>' + obj[0].resources.free_cores + '</pre></p>\
+             <p>ram: <pre>' + obj[0].resources.ram + '</pre></p>\
+             <p>free ram: <pre>' + obj[0].resources.free_ram + '</pre></p> </div> <br>')
             for (i in obj[0].storages) {
                 var storage = obj[0].storages[i];
                 $('#'+id).append('\
                 <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
-                <p>storage name: ' + storage.name + '</p>\
-                <p>size: ' + storage.size + '</p>\
-                <p>allocated: ' + storage.allocated + '</p>\
-                <p>free: ' + storage.free + '</p>\
-                <p>fragmentation: ' + storage.fragmentation + '</p>\
-                <p>capacity: ' + storage.capacity + '</p>\
-                <p>health: ' + storage.health + '</p>\
+                <p>storage name: <pre>' + storage.name + '</pre></p>\
+                <p>size: <pre>' + storage.size + '</pre></p>\
+                <p>allocated: <pre>' + storage.allocated + '</pre></p>\
+                <p>free: <pre>' + storage.free + '</pre></p>\
+                <p>fragmentation: <pre>' + storage.fragmentation + '</pre></p>\
+                <p>capacity: <pre>' + storage.capacity + '</pre></p>\
+                <p>health: <pre>' + storage.health + '</pre></p>\
                 </div>\
                 ')
             }
