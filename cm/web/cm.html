@@ -138,8 +138,8 @@
     };
     function newtab(name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         var id = idgen();
-        appendtab(id, name);
-        appendcontent(id, name);
+        appendtab(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips);
+        appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips);
     };
     function newdirecttab(util) {
         var id = idgen();
