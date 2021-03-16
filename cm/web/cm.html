@@ -118,10 +118,25 @@
         $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/--json "+name, dataType : 'text',
             success: function (data) {
             var obj = JSON.parse(data);
-            $('#'+id).append(" Cores: " + obj[0].resources.cores + " <br> Free cores: " + obj[0].resources.free_cores + " <br> Ram: " + obj[0].resources.ram + " <br> Free ram: " + obj[0].resources.free_ram + "<br>" )
+            $('#'+id).append('\
+             <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
+             <p>Cores: ' + obj[0].resources.cores + '</p>\
+             <p> Free cores: ' + obj[0].resources.free_cores + '</p>\
+             <p> Ram: ' + obj[0].resources.ram + '</p>\
+             <p> Free ram: ' + obj[0].resources.free_ram + '</p> </div>')
             for (i in obj[0].storages) {
                 var storage = obj[0].storages[i];
-                $('#'+id).append("Storage name: " + storage.name + " <br> Size: " + storage.size + " <br> Allocated: " + storage.allocated + " <br> Free: " + storage.free + " <br> Fragmentation: " + storage.fragmentation + " <br> Capacity: " + storage.capacity + " <br> Health: " + storage.health + " <br>") 
+                $('#'+id).append('\
+                <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
+                <p> Storage name: ' + storage.name + '</p>\
+                <p> Size: ' + storage.size + '</p>\
+                <p> Allocated: ' + storage.allocated + '</p>\
+                <p> Free: ' + storage.free + '</p>\
+                <p> Fragmentation: ' + storage.fragmentation + '</p>\
+                <p> Capacity: ' + storage.capacity + '</p>\
+                <p> Health: ' + storage.health + '</p>\
+                </div>\
+                ')
             }
             }
             });
