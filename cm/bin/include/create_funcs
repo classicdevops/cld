@@ -73,7 +73,7 @@ MEM=$(cat /proc/meminfo | awk '/(MemTotal|MemAvailable)/ {print int($2/1024/1024
 QMS=$(get-kvm-set 2>/dev/null)
 cat << EOL | tr -d '\n' | sed 's#],$#]#g' | cat - <(echo '},')
 {"hypervisor": "$HPRNM",
-"resources": $(echo "${CORES}_${FREE_CORES}_${MEM}"| awk -F _ '{print "{\x22""cores\x22"":\x22"""$1"\x22"",\x22""free cores\x22"":\x22"$2"\x22"",\x22""ram\x22"":\x22"$3"\x22"",\x22""free ram\x22"":\x22"$4"\x22""},"}' | tr -d '\n' | sed 's#,]#]#g')
+"resources": $(echo "${CORES}_${FREE_CORES}_${MEM}"| awk -F _ '{print "{\x22""cores\x22"":\x22"""$1"\x22"",\x22""free_cores\x22"":\x22"$2"\x22"",\x22""ram\x22"":\x22"$3"\x22"",\x22""free_ram\x22"":\x22"$4"\x22""},"}' | tr -d '\n' | sed 's#,]#]#g')
 "storages": $(zpool list -pH -o name,size,alloc,free,fragmentation,capacity,health | tr '\t' '_' | awk -F _ 'BEGIN {print "["} {print "{\x22""name\x22"":\x22"""$1"\x22"",\x22""size\x22"":\x22"int($2/1024/1024/1024)"\x22"",\x22""allocated\x22"":\x22"int($3/1024/1024/1024)"\x22"",\x22""free\x22"":\x22"int($4/1024/1024/1024)"\x22"",\x22""fragmentation\x22"":\x22"$5"\x22"",\x22""capacity\x22"":\x22"$6"\x22"",\x22""health\x22"":\x22"$7"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g')
 "instances": $(
 if [ "$(echo -n "$QMS" | wc -w)" != "0" ]
