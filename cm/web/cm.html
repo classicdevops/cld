@@ -112,44 +112,44 @@
         //     }
         // });
     }
-    // function appendhprcontent(id, name) {
-    //     $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
-    //     document.getElementById(id + "-tab").click();
-    //     $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/--json --minify"+name, dataType : 'text',
-    //         success: function (data) {
-    //         var obj = JSON.parse(data);
-    //         $('#'+id).append('\
-    //          <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
-    //          <div>cores: <div class="prein">' + obj[0].resources.cores + '</div></div>\
-    //          <div>free cores: <div class="prein">' + obj[0].resources.free_cores + '</div></div>\
-    //          <div>ram: <div class="prein">' + obj[0].resources.ram + '</div></div>\
-    //          <div>free ram: <div class="prein">' + obj[0].resources.free_ram + '</div></div> </div> <br>')
-    //         for (i in obj[0].storages) {
-    //             var storage = obj[0].storages[i];
-    //             $('#'+id).append('\
-    //             <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
-    //             <div>storage name: <div class="prein">' + storage.name + '</div></div>\
-    //             <div>size: <div class="prein">' + storage.size + '</div></div>\
-    //             <div>allocated: <div class="prein">' + storage.allocated + '</div></div>\
-    //             <div>free: <div class="prein">' + storage.free + '</div></div>\
-    //             <div>fragmentation: <div class="prein">' + storage.fragmentation + '</div></div>\
-    //             <div>capacity: <div class="prein">' + storage.capacity + '</div></div>\
-    //             <div>health: <div class="prein">' + storage.health + '</div></div>\
-    //             </div>\
-    //             ')
-    //         }
-    //         }
-    //         });
-    // }
     function appendhprcontent(id, name) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
-        $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/?args="+name+" --json --beauty&output=html", dataType : 'text',
+        $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/--json --minify"+name, dataType : 'text',
             success: function (data) {
-            $('#'+id).append(data)
+            var obj = JSON.parse(data);
+            $('#'+id).append('\
+             <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
+             <div>cores: <div class="prein">' + obj[0].resources.cores + '</div></div>\
+             <div>free cores: <div class="prein">' + obj[0].resources.free_cores + '</div></div>\
+             <div>ram: <div class="prein">' + obj[0].resources.ram + '</div></div>\
+             <div>free ram: <div class="prein">' + obj[0].resources.free_ram + '</div></div> </div> <br>')
+            for (i in obj[0].storages) {
+                var storage = obj[0].storages[i];
+                $('#'+id).append('\
+                <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
+                <div>storage name: <div class="prein">' + storage.name + '</div></div>\
+                <div>size: <div class="prein">' + storage.size + '</div></div>\
+                <div>allocated: <div class="prein">' + storage.allocated + '</div></div>\
+                <div>free: <div class="prein">' + storage.free + '</div></div>\
+                <div>fragmentation: <div class="prein">' + storage.fragmentation + '</div></div>\
+                <div>capacity: <div class="prein">' + storage.capacity + '</div></div>\
+                <div>health: <div class="prein">' + storage.health + '</div></div>\
+                </div>\
+                ')
+            }
             }
             });
     }
+    // function appendhprcontent(id, name) {
+    //     $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+    //     document.getElementById(id + "-tab").click();
+    //     $.ajax({type : 'GET', url: "/webapi/tool/cld-cm/?args="+name+" --json --beauty&output=html", dataType : 'text',
+    //         success: function (data) {
+    //         $('#'+id).append(data)
+    //         }
+    //         });
+    // }
     function appendframe(id, util) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
