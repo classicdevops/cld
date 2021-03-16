@@ -155,6 +155,13 @@ EOL
 done
 '''))
 
+ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1').strip()
+if ansifiltercheck == "0":
+  outputinterpreter = bash('which ansifilter').strip() + ' -Hf'
+else:
+  outputinterpreter = bash('which cat').strip()
+  print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
+
 #generate webapi endpoints for each CLD tool
 exec(bash('''
 for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include)
@@ -175,8 +182,13 @@ def webapi_${CLD_UTIL//[.-]/_}(args=None):
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
     except: pass
     print('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args, flush=True)
-    cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
-    return Response(cmdoutput, status=200, mimetype='text/plain')
+    try:
+      if request.args['output'] == 'html':
+        cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args+' | '+outputinterpreter)
+        return Response(cmdoutput, status=200, mimetype='text/html')
+    except:
+      cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
+      return Response(cmdoutput, status=200, mimetype='text/plain')
 
 EOL
 done

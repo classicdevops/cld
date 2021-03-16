@@ -144,7 +144,7 @@ if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_DEPLOYS" == "1" ]
 then
 echo "Please choose deploy:"
 echo
-select DEPLOY_SELECT in $(ls /var/cld/deploy/deploys/ | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
+select DEPLOY_SELECT in $(grep -lf /var/cld/access/users/${SUDO_USER}/groups /var/cld/deploy/deploys/*/vars | rev | cut -d / -f 2 | rev | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
 [ "$DEPLOY_SELECT" ] && DEPLOY=$DEPLOY_SELECT
 [ "$DEPLOY_SELECT" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
