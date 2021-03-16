@@ -83,6 +83,10 @@
         $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+name+'\', \''+kvmid+'\', \''+status+'\', \''+cpu+'\', \''+ram+'\', \''+disk+'\', \''+whiteips+'\', \''+grayips+'\')">⟳</button>' + name + '</a></li>'
         );
     }
+    function appendhprtab(id, name) {
+        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatehprtab(\''+id+'\', \''+name+'\')">⟳</button>' + name + '</a></li>'
+        );
+    }
     function appendform(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         $('#'+id).append('\
             <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
@@ -196,7 +200,8 @@
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                         {% for cld_dict in cld_clouds %}
-                            <li><span>host: {{ cld_dict['hypervisor'] }}</span></li>
+                            <li><span><a onclick='newhprtab("{{ cld_dict['hypervisor'] }}")' class="nav-link active" id="{{ cld_dict['hypervisor'] }}-link" data-toggle="tab" href="#{{ cld_dict['hypervisor'] }}">host: {{ cld_dict['hypervisor'] }}</a></span></li>
+<!--                             <li><span>host: {{ cld_dict['hypervisor'] }}</span></li> -->
                             {% for cld_cloud in cld_dict['instances'] %}
                             {% if cld_cloud.status == 'running' %}
                             {% set color = 'limegreen' %}
