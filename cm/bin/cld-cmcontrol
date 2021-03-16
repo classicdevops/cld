@@ -1,0 +1,110 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Control KVM state manager
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--id=10001                                KVM id
+--hyper=HPR-1-pve_1.2.3.4_22_root         Hypervisor of target KVM
+--cmd=start|stop|reset|suspend|resume     Command for target KVM
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-cmcontrol #CLI
+cld-cmcontrol --cmd=start --id=10001 --hyper=HPR-pve-1_1.2.3.4_22_root
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+source /var/cld/cm/bin/include/dc_funcs
+source /var/cld/cm/bin/include/create_funcs
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-hyper=' && HPR=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-cmd=' && COMMAND=$(echo $OPTS | cut -d '=' -f 2)
+done
+
+init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
+
+[ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
+
+if [ "$KVM_ID" = "" -a "$HPR" != "" ]
+then
+KVM_SET=$(grep -s "_${KVM_ID}$" /var/cld/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
+[ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_$(cut -d _ -f 1 <<< "$HPR")")
+fi
+
+if [ "$KVM_SET" = "" ]
+then
+echo KVM_SET is not defined - parsing hypervisors
+echo Please choose KVM to migrate
+select KVM_SET in $(get-kvm-list 2>/dev/null)
+do
+if [ "$KVM_SET" ]
+then
+KVM_SET=$KVM_SET
+echo
+break
+fi
+done
+fi
+[ "${KVM_SET}" ] || echoexit1 KVM_SET is not defined - exit
+HPR_NAME=$(cut -d _ -f 3 <<< {KVM_SET})
+KVM_NAME=$(cut -d _ -f 1 <<< ${KVM_SET})
+KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
+[ "$KVM_ID" ] || echoexit1 KVM_ID is not defined - exit
+[ "$KVM_NAME" ] || echoexit1 KVM_NAME is not defined - exit
+[ "$HPR_NAME" ] || echoexit1 HPR_NAME is not defined - exit
+
+if [ "${HPR}" == "" ]
+then
+HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${HPR_NAME}_")
+fi
+[ "${HPR}" ] || echoexit1 Target hypervisor is not defined - exit
+
+if [ "$COMMAND" = "start" ]
+then
+DEPLOY_SCRIPT=$(cat << EOL
+qm start ${KVM_ID}
+EOL
+)
+elif [ "$COMMAND" = "stop" ]
+then
+DEPLOY_SCRIPT=$(cat << EOL
+qm stop ${KVM_ID}
+EOL
+)
+elif [ "$COMMAND" = "reset" ]
+then
+DEPLOY_SCRIPT=$(cat << EOL
+qm reset ${KVM_ID}
+EOL
+)
+elif [ "$COMMAND" = "resume" ]
+then
+DEPLOY_SCRIPT=$(cat << EOL
+qm resume ${KVM_ID}
+EOL
+)
+elif [ "$COMMAND" = "suspend" ]
+then
+DEPLOY_SCRIPT=$(cat << EOL
+qm suspend ${KVM_ID}
+EOL
+)
+else
+echoexit1 Command is not defined
+fi
+
+VM=$(CLOUDS_USER_ALLOWED | grep -i "^${HPR}" | tail -1)
+CLD_LOGS
+if [ "$VM" ]
+then
+INSTANCE_GROUP_FUNCS
+$CLD_VARS
+$CLD_DEPLOY_NOTTY << EOSSH
+KVM_ID=${KVM_ID}
+${DEPLOY_SCRIPT}
+EOSSH
+fi
