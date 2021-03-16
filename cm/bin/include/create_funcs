@@ -47,7 +47,7 @@ mkdir -p /var/cld/cm/tmp &>/dev/null
 [ -f "$/var/cld/cm/tmp/kvm_json" ] || touch /var/cld/cm/tmp/kvm_json
 KVM_LIST_FILE_STRINGS=$(grep -o '"hypervisor":' /var/cld/cm/tmp/kvm_json | wc -w)
 KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/cm/tmp/kvm_json)))
-if [ "$KVM_LIST_FILE_STRINGS" -lt "2" -o "$KVM_SEC_FILE_CHANGED" -ge "90" -o "$NOCACHE" -eq "1" ]
+if [ "$KVM_LIST_FILE_STRINGS" -lt "1" -o "$KVM_SEC_FILE_CHANGED" -ge "90" -o "$NOCACHE" -eq "1" ]
 then
 PARSING_SCRIPT=$(cat << 'EOPARSING'
 get-kvm-set()
