@@ -139,12 +139,14 @@ CRON="${CRON}"
 EOVARS
 fi
 
+[ "$DEPLOY" ] && DEPLOY=$(deploys-user-allowed | grep "${DEPLOY}" | tail -1)
+
 [ "$DEPLOY" == "" -a "$RUN" == "1" ] && echoexit1 Deploy is not defined
 if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_DEPLOYS" == "1" ]
 then
 echo "Please choose deploy:"
 echo
-select DEPLOY_SELECT in $(grep -lf /var/cld/access/users/${SUDO_USER}/groups /var/cld/deploy/deploys/*/vars | rev | cut -d / -f 2 | rev | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
+select DEPLOY_SELECT in $(deploys-user-allowed | grep "$ARG1" | grep "$ARG2" | grep "$ARG3")
 do
 [ "$DEPLOY_SELECT" ] && DEPLOY=$DEPLOY_SELECT
 [ "$DEPLOY_SELECT" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
