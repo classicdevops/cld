@@ -31,7 +31,7 @@ HPRNM=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print hpr"_"$2"_"$1}' | grep -v '_500' >> /var/cld/cm/tmp/kvm_list
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print $1"_"$2"_"hpr}' | grep -v '_500' >> /var/cld/cm/tmp/kvm_list
 ) &
 done
 wait
