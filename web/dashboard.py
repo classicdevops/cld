@@ -155,6 +155,33 @@ EOL
 done
 '''))
 
+#generate webapi endpoints for each CLD tool
+exec(bash('''
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include)
+do
+CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
+CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
+cat << EOL
+@app.route('/webapi/tool/${CLD_UTIL}')
+@app.route('/webapi/tool/${CLD_UTIL}/')
+@app.route('/webapi/tool/${CLD_UTIL}/<args>')
+def help_${CLD_UTIL//[.-]/_}(args=None):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", user, remoteaddr()) 
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
+    except: cmd_args = ''
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
+    except: pass
+    print('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args, flush=True)
+    cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
+    return Response(cmdoutput, status=200, mimetype='text/plain')
+
+EOL
+done
+'''))
+
 #socketio
 app.config["shell"] = {}
 app.config["shell"]["childpid"] = {}

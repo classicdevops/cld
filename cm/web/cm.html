@@ -108,6 +108,15 @@
         //     }
         // });
     }
+    function appendhprcontent(id, name) {
+        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+        document.getElementById(id + "-tab").click();
+        $.ajax({type : 'GET', url: "/webapi/cld-cm/--json "+name, dataType : 'text',
+            success: function (data) {
+            $('#'+id).append('<pre>'+data+'</pre>')
+            }
+        });
+    }
     function appendframe(id, util) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
@@ -122,10 +131,15 @@
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
         };
+    function newhprtab(name) {
+        var id = idgen();
+        appendhprtab(id, name);
+        appendhprcontent(id, name);
+    };
     function newtab(name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         var id = idgen();
-        appendtab(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips);
-        appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips);
+        appendtab(id, name);
+        appendcontent(id, name);
     };
     function newdirecttab(util) {
         var id = idgen();
@@ -135,6 +149,10 @@
     function updatetab(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips) {
         $('#'+id).html('')
         appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips);
+    };
+    function updatehprtab(id, name) {
+        $('#'+id).html('')
+        appendhprcontent(id, name);
     };
     </script>
     <script>
