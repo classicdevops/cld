@@ -181,14 +181,12 @@ def webapi_${CLD_UTIL//[.-]/_}(args=None):
     except: cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', request.args['args']).string)
     except: pass
-    print('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args, flush=True)
     try:
       if request.args['output'] == 'html':
         cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args+' | '+outputinterpreter)
         return Response(cmdoutput, status=200, mimetype='text/html')
-    except:
-      cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
-      return Response(cmdoutput, status=200, mimetype='text/plain')
+    cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
+    return Response(cmdoutput, status=200, mimetype='text/plain')
 
 EOL
 done
