@@ -165,7 +165,7 @@ cat << EOL
 @app.route('/webapi/tool/${CLD_UTIL}')
 @app.route('/webapi/tool/${CLD_UTIL}/')
 @app.route('/webapi/tool/${CLD_UTIL}/<args>')
-def help_${CLD_UTIL//[.-]/_}(args=None):
+def webapi_${CLD_UTIL//[.-]/_}(args=None):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", user, remoteaddr()) 
