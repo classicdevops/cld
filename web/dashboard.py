@@ -157,7 +157,7 @@ done
 
 ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1').strip()
 if ansifiltercheck == "0":
-  outputinterpreter = bash('which ansifilter').strip() + ' -H'
+  outputinterpreter = bash('which ansifilter').strip() + ' -Hf'
 else:
   outputinterpreter = bash('which cat').strip()
   print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
@@ -185,7 +185,7 @@ def webapi_${CLD_UTIL//[.-]/_}(args=None):
       if request.args['output'] == 'html':
         print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} '+cmd_args+' | '+outputinterpreter, flush=True)
         cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+' | '+outputinterpreter)
-        return Response(cmdoutput, status=200, mimetype='text/html')
+        return Response('<pre>'+cmdoutput+'</pre>', status=200, mimetype='text/html')
     except:
       pass
     print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} '+cmd_args, flush=True)
