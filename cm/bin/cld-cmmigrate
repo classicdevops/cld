@@ -83,7 +83,7 @@ fi
 
 if [ "$DEST_HPR" == "" ]
 then
-echo Please choose HYPERVISOR
+echo Please choose destination HYPERVISOR
 select DEST_HPR in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -v "${SOURCE_HPR}")
 do
 if [ "$DEST_HPR" ]
