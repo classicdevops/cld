@@ -109,7 +109,7 @@ HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${HPR_NA
 fi
 [ "${HPR}" ] || echoexit1 Target hypervisor is not defined - exit
 
-VM=$(CLOUDS_USER_ALLOWED | grep -i "^${HPR}" | tail -1)
+VM=$(CLOUDS_USER_ALLOWED | grep "^${HPR}" | tail -1)
 CLD_LOGS
 if [ "$VM" ]
 then
@@ -119,4 +119,6 @@ $CLD_DEPLOY_NOTTY << EOSSH
 KVM_ID=${KVM_ID}
 ${DEPLOY_SCRIPT}
 EOSSH
+else
+echoexit1 Target hypervisor for deploy script is not defined - exit
 fi
