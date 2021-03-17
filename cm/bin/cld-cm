@@ -65,4 +65,4 @@ source <(echo -n get-kvm-list-json "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
 else
 get-kvm-list
 fi
-grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cm.+\-\-json.+\-\-nocache" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cm --json --nocache &>/dev/null' >> /etc/cron.d/cld
+grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cm .+\-\-json.+\-\-nocache" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cm --json --nocache &>/dev/null' >> /etc/cron.d/cld
