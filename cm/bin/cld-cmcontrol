@@ -126,7 +126,6 @@ else
 echoexit1 Target hypervisor for deploy script is not defined - exit
 fi
 
-(
-/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & disown &>/dev/null
-/var/cld/cm/bin/cld-cm &>/dev/null & disown &>/dev/null
-) &>/dev/null
+/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & 
+/var/cld/cm/bin/cld-cm &>/dev/null &
+wait

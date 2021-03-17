@@ -257,7 +257,6 @@ EOSSH
 echo
 echo "Migration of  $KVM_NAME completed - you need check everything and delete source ZFS partition at $DEST_HPR yourself"
 
-(
-/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & disown &>/dev/null
-/var/cld/cm/bin/cld-cm &>/dev/null & disown &>/dev/null
-) &>/dev/null
+/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & 
+/var/cld/cm/bin/cld-cm &>/dev/null &
+wait
