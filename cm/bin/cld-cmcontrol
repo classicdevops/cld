@@ -22,14 +22,14 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-hyper=' && HPR=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-cmd=' && COMMAND=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-cmd=' && !=$(echo $OPTS | cut -d '=' -f 2)
 done
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 [ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
 
-if [ "$KVM_ID" = "" -a "$HPR" != "" ]
+if [ "$KVM_ID" != "" -a "$HPR" != "" ]
 then
 KVM_SET=$(grep -s "_${KVM_ID}$" /var/cld/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
 [ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_$(cut -d _ -f 1 <<< "$HPR")")
@@ -63,19 +63,19 @@ HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${HPR_NA
 fi
 [ "${HPR}" ] || echoexit1 Target hypervisor is not defined - exit
 
-if [ "$COMMAND" = "start" ]
+if [ "$!" = "start" ]
 then
 DEPLOY_SCRIPT=$(cat << EOL
 qm start ${KVM_ID}
 EOL
 )
-elif [ "$COMMAND" = "stop" ]
+elif [ "$!" = "stop" ]
 then
 DEPLOY_SCRIPT=$(cat << EOL
 qm stop ${KVM_ID}
 EOL
 )
-elif [ "$COMMAND" = "reset" ]
+elif [ "$!" = "reset" ]
 then
 DEPLOY_SCRIPT=$(cat << EOL
 qm reset ${KVM_ID}
