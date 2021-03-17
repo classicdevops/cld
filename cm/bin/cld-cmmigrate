@@ -60,7 +60,7 @@ KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
 
 if [ "${SOURCE_HPR}" == "" ]
 then
-SOURCE_HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${SOURCE_HPR_NAME}_")
+SOURCE_HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${SOURCE_HPR_NAME}")
 fi
 [ "${SOURCE_HPR}" ] || echoexit1 Source hypervisor is not defined - exit
 
@@ -94,6 +94,8 @@ echo
 break
 fi
 done
+else
+DEST_HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -v "${DEST_HPR}")
 fi
 [ "$DEST_HPR" ] || echoexit1 Destination hypervisor is not defined - exit
 
