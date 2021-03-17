@@ -104,7 +104,7 @@
             <button type="button" class="btn btn-danger" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'reset\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Reset KVM</button>\
             <button type="button" class="btn btn-primary" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'resume\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Resume KVM</button>\
             <button type="button" class="btn btn-warning" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'suspend\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Suspend KVM</button>\
-            <button type="button" class="btn btn-info" onclick="startmigrate(\''+id+'\', \''+kvmid+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button>\
+            <button type="button" class="btn btn-info" onclick="startmigrate(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button>\
             ')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips, hyper) {
@@ -165,8 +165,8 @@
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/"></iframe>');
         });
         }
-    function startmigrate(id, kvmid) {
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-cmmigrate/--id='+kvmid+'"></iframe>');
+    function startmigrate(id, kvmid, hyper) {
+        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-cmmigrate/--id='+kvmid+' --source='+hyper+'"></iframe>');
         sleep(2000).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
