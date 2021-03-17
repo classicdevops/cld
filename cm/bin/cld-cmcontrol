@@ -22,7 +22,7 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-hyper=' && HPR=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-cmd=' && !=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-cmd=' && COMMAND=$(echo $OPTS | cut -d '=' -f 2)
 done
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
@@ -38,7 +38,7 @@ fi
 if [ "$KVM_SET" = "" ]
 then
 echo KVM_SET is not defined - parsing hypervisors
-echo Please choose KVM to migrate
+echo Please choose KVM to control
 select KVM_SET in $(get-kvm-list 2>/dev/null)
 do
 if [ "$KVM_SET" ]
@@ -57,25 +57,19 @@ KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
 [ "$KVM_NAME" ] || echoexit1 KVM_NAME is not defined - exit
 [ "$HPR_NAME" ] || echoexit1 HPR_NAME is not defined - exit
 
-if [ "${HPR}" == "" ]
-then
-HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${HPR_NAME}_")
-fi
-[ "${HPR}" ] || echoexit1 Target hypervisor is not defined - exit
-
-if [ "$!" = "start" ]
+if [ "$COMMAND" = "start" ]
 then
 DEPLOY_SCRIPT=$(cat << EOL
 qm start ${KVM_ID}
 EOL
 )
-elif [ "$!" = "stop" ]
+elif [ "$COMMAND" = "stop" ]
 then
 DEPLOY_SCRIPT=$(cat << EOL
 qm stop ${KVM_ID}
 EOL
 )
-elif [ "$!" = "reset" ]
+elif [ "$COMMAND" = "reset" ]
 then
 DEPLOY_SCRIPT=$(cat << EOL
 qm reset ${KVM_ID}
@@ -94,8 +88,26 @@ qm suspend ${KVM_ID}
 EOL
 )
 else
-echoexit1 Command is not defined
+echo Command is not defined
+echo Please choose COMMAND to $KVM_SET
+select COMMAND in start stop reset resume suspend
+do
+if [ "$COMMAND" ]
+then
+COMMAND=$COMMAND
+echo
+break
 fi
+done
+fi
+
+[ "$COMMAND" ] || echoexit1 Command is not defined - exit
+
+if [ "${HPR}" == "" ]
+then
+HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${HPR_NAME}_")
+fi
+[ "${HPR}" ] || echoexit1 Target hypervisor is not defined - exit
 
 VM=$(CLOUDS_USER_ALLOWED | grep -i "^${HPR}" | tail -1)
 CLD_LOGS
