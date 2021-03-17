@@ -50,7 +50,7 @@ fi
 done
 fi
 [ "${KVM_SET}" ] || echoexit1 KVM_SET is not defined - exit
-HPR_NAME=$(cut -d _ -f 3 <<< {KVM_SET})
+HPR_NAME=$(cut -d _ -f 3 <<< ${KVM_SET})
 KVM_NAME=$(cut -d _ -f 1 <<< ${KVM_SET})
 KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
 [ "$KVM_ID" ] || echoexit1 KVM_ID is not defined - exit
