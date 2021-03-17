@@ -400,6 +400,10 @@ VMMAC=`ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" ${HPR_USER}@$HPR "sudo 
 
 truncate -s 0 /var/cld/cm/LOCK
 
+/var/cld/cm/bin/cld-cm --json --nocache &
+/var/cld/cm/bin/cld-cm &
+wait
+
 if echo "`stat /var/cld/cm/data/queue_create | awk 'NR==2 {print $2}'`" | grep -q "^0$"
 then
  exit 0
@@ -408,8 +412,3 @@ CMD_CREATE="`head -1 /var/cld/cm/data/queue_create`"
 sed -i '1d' /var/cld/cm/data/queue_create
 echo ${CMD_CREATE} | bash
 fi
-
-(
-/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & disown &>/dev/null
-/var/cld/cm/bin/cld-cm &>/dev/null & disown &>/dev/null
-) &>/dev/null
