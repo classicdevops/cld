@@ -32,7 +32,7 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 if [ "$KVM_ID" ]
 then
-KVM_SET=$(grep -s "_${KVM_ID}$" /var/cld/cm/tmp/kvm_list)
+KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list)
 [ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$")
 fi
 
