@@ -142,6 +142,9 @@
                 <div>health: <div class="prein">' + storage.health + '</div></div>\
                 </div>\
                 ')
+            $('#'+id).append('\
+            <button type="button" class="btn btn-success" onclick="createkvm(\''+id+'\', \''+name+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Create KVM</button>\
+            ')
             }
             }
             });
@@ -164,6 +167,13 @@
         }
     function startmigrate(id, kvmid) {
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-cmmigrate/--id='+kvmid+'"></iframe>');
+        sleep(2000).then(() => {
+        console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
+        document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
+        });
+        };
+    function createkvm(id, hyper) {
+        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-cmcreate/--hyper='+hyper+'"></iframe>');
         sleep(2000).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
