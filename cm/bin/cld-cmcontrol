@@ -31,7 +31,7 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 if [ "$KVM_ID" != "" -a "$HPR" != "" ]
 then
-KVM_SET=$(grep -s "_${KVM_ID}$" /var/cld/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
+KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
 [ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_$(cut -d _ -f 1 <<< "$HPR")")
 fi
 
@@ -100,7 +100,6 @@ elif [ "$COMMAND" = "suspend" ]
 then
 DEPLOY_SCRIPT=$(cat << 'EOL'
 qm suspend ${KVM_ID}
-qm list | grep "${KVM_ID}" | head -1
 EOL
 )
 fi
