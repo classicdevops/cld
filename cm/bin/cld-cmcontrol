@@ -59,32 +59,33 @@ KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
 
 if [ "$COMMAND" = "start" ]
 then
-DEPLOY_SCRIPT=$(cat << EOL
+DEPLOY_SCRIPT=$(cat << 'EOL'
 qm start ${KVM_ID}
 EOL
 )
 elif [ "$COMMAND" = "stop" ]
 then
-DEPLOY_SCRIPT=$(cat << EOL
+DEPLOY_SCRIPT=$(cat << 'EOL'
 qm stop ${KVM_ID}
 EOL
 )
 elif [ "$COMMAND" = "reset" ]
 then
-DEPLOY_SCRIPT=$(cat << EOL
+DEPLOY_SCRIPT=$(cat << 'EOL'
 qm reset ${KVM_ID}
 EOL
 )
 elif [ "$COMMAND" = "resume" ]
 then
-DEPLOY_SCRIPT=$(cat << EOL
+DEPLOY_SCRIPT=$(cat << 'EOL'
 qm resume ${KVM_ID}
 EOL
 )
 elif [ "$COMMAND" = "suspend" ]
 then
-DEPLOY_SCRIPT=$(cat << EOL
+DEPLOY_SCRIPT=$(cat << 'EOL'
 qm suspend ${KVM_ID}
+qm list | grep "${KVM_ID}" | head -1
 EOL
 )
 else
