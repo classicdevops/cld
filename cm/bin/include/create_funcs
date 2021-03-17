@@ -157,7 +157,7 @@ cat /root/.ssh/id_rsa.pub
 EOSSH
 )
 DEPLOY_CLD_KEY=$(cat << EOSSH
-grep -q $HOSTNAME /root/.ssh/authorized_keys2 || echo "$(cat /root/.ssh/id_rsa.pub)" >> /root/.ssh/authorized_keys2
+grep -qs $HOSTNAME /root/.ssh/authorized_keys2 || echo "$(cat /root/.ssh/id_rsa.pub)" >> /root/.ssh/authorized_keys2
 EOSSH
 )
 for HYPERVISOR in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
