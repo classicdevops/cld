@@ -116,9 +116,10 @@ if [ "$VM" ]
 then
 INSTANCE_GROUP_FUNCS
 $CLD_VARS
-$CLD_DEPLOY_NOTTY << EOSSH
+$CLD_DEPLOY << EOSSH
 KVM_ID=${KVM_ID}
 ${DEPLOY_SCRIPT}
+exit
 EOSSH
 else
 echoexit1 Target hypervisor for deploy script is not defined - exit
