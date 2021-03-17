@@ -5,13 +5,14 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 --id=10001                           KVM id
---dest=HPR-1-pve_1.2.3.4_22_root     Destination PVE hypervisor
+--source=HPR-pve-1_1.2.3.4_22_root   Source PVE hypervisor
+--dest=HPR-pve-2_2.3.4.5_22_root     Destination PVE hypervisor
 --clonefs                            Just clone ZFS partition to destination hypervisor without anu destruction actions
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-cmmigrate #CLI
-cld-cmmigrate --id=10001 --dest=HPR-pve-1_1.2.3.4_22_root
+cld-cmmigrate --id=10001 --source=HPR-pve-1_1.2.3.4_22_root --dest=HPR-pve-2_2.3.4.5_22_root
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -22,6 +23,7 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-dest=' && DEST_HPR=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q '\-\-source=' && SOURCE_HPR=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-clonefs' && CLONEFS=1
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 done
@@ -30,10 +32,10 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 [ "$HYPERVISOR_NAME_PREFIX" == "" ] && HYPERVISOR_NAME_PREFIX=HPR
 
-if [ "$KVM_ID" ]
+if [ "$KVM_ID" != "" -a "$SOURCE_HPR" != "" ]
 then
-KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list)
-[ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$")
+KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list | grep "_${SOURCE_HPR}")
+[ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_${SOURCE_HPR}")
 fi
 
 if [ "$KVM_SET" = "" ]
@@ -58,10 +60,7 @@ KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
 [ "$KVM_NAME" ] || echoexit1 KVM_NAME is not defined - exit
 [ "$SOURCE_HPR_NAME" ] || echoexit1 SOURCE_HPR_NAME is not defined - exit
 
-if [ "${SOURCE_HPR}" == "" ]
-then
 SOURCE_HPR=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep "^${SOURCE_HPR_NAME}")
-fi
 [ "${SOURCE_HPR}" ] || echoexit1 Source hypervisor is not defined - exit
 
 if [ "$SOURCE_STORAGE" == "" ]
