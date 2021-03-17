@@ -90,14 +90,14 @@
     function appendform(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips, hyper) {
         $('#'+id).append('\
             <div style="font-family: monospace;font-weight: bold;font-variant-caps: petite-caps;font-size: larger;">\
-            <div>name: <div class="prein">' + name + '</div></div>\
-            <div>id: <div class="prein">' + kvmid + '</div></div>\
-            <div>status: <div class="prein">' + status + '</div></div>\
-            <div>cpu: <div class="prein">' + cpu + '</div></div>\
-            <div>ram: <div class="prein">' + ram + '</div></div>\
-            <div>disk: <div class="prein">' + disk + '</div></div>\
-            <div>white ip: <div class="prein">' + whiteips + '</div></div>\
-            <div>private ip: <div class="prein">' + grayips + '</div></div>\
+            <div>name: <div class="prein">' + name.upper() + '</div></div>\
+            <div>id: <div class="prein">' + kvmid.upper() + '</div></div>\
+            <div>status: <div class="prein">' + status.upper() + '</div></div>\
+            <div>cpu: <div class="prein">' + cpu.upper() + '</div></div>\
+            <div>ram: <div class="prein">' + ram.upper() + '</div></div>\
+            <div>disk: <div class="prein">' + disk.upper() + '</div></div>\
+            <div>white ip: <div class="prein">' + whiteips.upper() + '</div></div>\
+            <div>private ip: <div class="prein">' + grayips.upper() + '</div></div>\
             </div>\
             <button type="button" class="btn btn-primary" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'start\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Start KVM</button>\
             <button type="button" class="btn btn-danger" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'stop\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Stop KVM</button>\
