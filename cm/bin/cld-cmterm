@@ -31,13 +31,13 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 if [ "$KVM_ID" != "" -a "$HPR" != "" ]
 then
 KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
-[ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_$(cut -d _ -f 1 <<< "$HPR")")
+[ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}_" | grep "_$(cut -d _ -f 1 <<< "$HPR")")
 fi
 
 if [ "$KVM_SET" = "" ]
 then
 echo KVM_SET is not defined - parsing hypervisors
-echo Please choose KVM to control
+echo Please choose KVM to activate console
 select KVM_SET in $(get-kvm-list 2>/dev/null)
 do
 if [ "$KVM_SET" ]
