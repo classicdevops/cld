@@ -103,9 +103,9 @@
             <button type="button" class="btn btn-danger" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'stop\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Stop KVM</button>\
             <button type="button" class="btn btn-danger" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'reset\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Reset KVM</button>\
             <button type="button" class="btn btn-success" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'resume\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Resume KVM</button>\
-            <button type="button" class="btn btn-warning" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'suspend\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Suspend KVM</button>\
-            <button type="button" class="btn btn-info" onclick="startmigrate(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button>\
-            <button type="button" class="btn btn-primary" onclick="cmterminal(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button>\
+            <button type="button" class="btn btn-warning" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'suspend\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Suspend KVM</button><br>\
+            <button type="button" class="btn btn-info" onclick="startmigrate(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button><br>\
+            <button type="button" class="btn btn-primary" onclick="cmterminal(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">KVM Terminal</button>\
             ')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips, hyper) {
