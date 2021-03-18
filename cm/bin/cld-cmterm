@@ -10,10 +10,11 @@ HELP_ARGS=$(cat << 'EOL'
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-cmterm #CLI
+cld-cmterm
 cld-cmterm --cmd=start --id=10001 --hyper=HPR-pve-1_1.2.3.4_22_root
 EOL
 )
+HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 source /var/cld/cm/bin/include/dc_funcs
 source /var/cld/cm/bin/include/create_funcs
