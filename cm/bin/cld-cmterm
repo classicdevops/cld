@@ -79,7 +79,8 @@ $CLD_DEPLOY_NOTTY << EOSSH
 KVM_ID=${KVM_ID}
 ${DEPLOY_SCRIPT}
 EOSSH
-$CLD_TERMINAL <<< qm terminal ${KVM_ID}
+[ "$USR" == "root" ] && sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "qm terminal ${KVM_ID}" | tee -a $CLD_LOG
+[ "$USR" == "root" ] || sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo qm terminal ${KVM_ID}" | tee -a $CLD_LOG
 else
 echoexit1 Target hypervisor for deploy script is not defined - exit
 fi
