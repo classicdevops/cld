@@ -81,7 +81,6 @@ echo $OPTS | grep -q '\-\-hyper=' && HYPER=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
 echo $OPTS | grep -q '\-\-run' && RUN=1
 done
-done
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
