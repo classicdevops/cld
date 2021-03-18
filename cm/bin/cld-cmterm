@@ -81,7 +81,7 @@ ${DEPLOY_SCRIPT}
 EOSSH
 $CLD_DEPLOY << EOSSH
 KVM_ID=${KVM_ID}
-qm terminal $VMID
+qm terminal ${KVM_ID}
 exit
 EOSSH
 else
