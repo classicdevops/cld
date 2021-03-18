@@ -196,7 +196,7 @@
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
         };
-    function cldx(id, hyper, kvmid) {
+    function destroykvm(id, hyper, kvmid) {
         $('#'+id).html('<p>To confirm the operation please type it manually in the terminal:<p>\
 <pre>qm stop '+kvmid+'\
 qm destroy '+kvmid+'<pre><br>\
