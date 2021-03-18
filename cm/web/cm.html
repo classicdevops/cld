@@ -106,6 +106,7 @@
             <button type="button" class="btn btn-warning" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'suspend\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Suspend KVM</button><br>\
             <button type="button" class="btn btn-info" onclick="startmigrate(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Migrate KVM</button><br>\
             <button type="button" class="btn btn-primary" onclick="cmterminal(\''+id+'\', \''+kvmid+'\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">KVM Terminal</button>\
+            <button type="button" class="btn btn-primary" onclick="destroykvm(\''+id+'\', \''+hyper+'\', \''+kvmid+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Terminal</button>\
             ')
     }
     function appendcontent(id, name, kvmid, status, cpu, ram, disk, whiteips, grayips, hyper) {
@@ -190,6 +191,16 @@
         };
     function cldx(id, hyper) {
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cldx/'+hyper+'"></iframe>');
+        sleep(2000).then(() => {
+        console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
+        document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
+        });
+        };
+    function cldx(id, hyper, kvmid) {
+        $('#'+id).html('<p>To confirm the operation please type it manually in the terminal:<p>\
+<pre>qm stop '+kvmid+'\
+qm destroy '+kvmid+'<pre><br>\
+        <iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cldx/'+hyper+'"></iframe>');
         sleep(2000).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
