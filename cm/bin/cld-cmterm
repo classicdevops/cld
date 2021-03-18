@@ -79,10 +79,7 @@ $CLD_DEPLOY_NOTTY << EOSSH
 KVM_ID=${KVM_ID}
 ${DEPLOY_SCRIPT}
 EOSSH
-$CLD_TERMINAL << EOSSH
-KVM_ID=${KVM_ID}
-qm terminal ${KVM_ID}
-EOSSH
+$CLD_TERMINAL <<< qm terminal ${KVM_ID}
 else
 echoexit1 Target hypervisor for deploy script is not defined - exit
 fi
