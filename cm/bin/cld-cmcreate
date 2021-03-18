@@ -404,7 +404,9 @@ truncate -s 0 /var/cld/cm/LOCK
 /var/cld/cm/bin/cld-cm &>/dev/null &
 wait
 
-if echo "`stat /var/cld/cm/data/queue_create | awk 'NR==2 {print $2}'`" | grep -q "^0$"
+cat /var/cld/cm/data/queue_create
+
+if du /var/cld/cm/data/queue_create | tr '\t' ' ' | cut -d ' ' -f 1 | grep -q "^0$"
 then
  exit 0
 else
