@@ -21,12 +21,13 @@ HELP_ARGS=$(cat << 'EOL'
 --autologin=0                      Autologin to root user for serial consone - 0 is disabled - 1 is enabled
 --privatenet=172.16.0.0/24         Private net filter for private network KVM device
 --hyper=HPR-dc-1-n0000001          Hypervisor full cld string or pattern
+--run                              Non interactive mode
 --debug                            Debug mode - if flag exist will list command and exit without execution
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-cmcreate #CLI
-cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cpu=2 --ram=2 --disk=20 --ip=1.2.3.4 --gate=1.2.3.1 --id=10001 --storage=zfs01
+cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cpu=2 --ram=2 --disk=20 --ip=1.2.3.4 --gate=1.2.3.1 --id=10001 --storage=zfs01 --run
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -78,6 +79,8 @@ echo $OPTS | grep -q '\-\-autologin=' && AUTO_LOGIN=$(echo $OPTS | cut -d '=' -f
 echo $OPTS | grep -q '\-\-privatenet=' && PRIVATENET=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-hyper=' && HYPER=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
+echo $OPTS | grep -q '\-\-run' && RUN=1
+done
 done
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
@@ -361,6 +364,8 @@ Equivalent non-interactive command:
 cld-cmcreate --hyper=${HYPERVISOR} --os=${OS} --name=${VMNAME} --cpu=${VMCPU} --ram=$(expr ${VMMEMORY} / 1024) --disk=${DISK} --ip=${IPADDR} --mac=${MACADDR} --gate=${GATEWAY} --storage=${STORAGE}
 
 EOL
+if [ "$RUN" != "1" ]
+then
 echo "Approve settings?"
 echo -n "y/n: " && read ANSWER ; if [ "$ANSWER" = "y" ]
 then
@@ -369,7 +374,7 @@ else
 truncate -s 0 /var/cld/cm/LOCK
 exit 1
 fi
-
+fi
 
 echo "${VMID}" > /var/cld/cm/data/last_vmid
 
