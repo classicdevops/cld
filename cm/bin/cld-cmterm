@@ -59,7 +59,7 @@ KVM_ID=$(cut -d _ -f 2 <<< ${KVM_SET})
 
 DEPLOY_SCRIPT=$(cat << 'EOL'
 ROOTPASSWORD=$(cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c 25)
-echo -e "${ROOTPASSWORD}\n${ROOTPASSWORD}\n" | sudo qm guest passwd ${KVM_ID} root && echo New root password: ${ROOTPASSWORD} || echo Password change failed
+echo -e "${ROOTPASSWORD}\n${ROOTPASSWORD}\n" | sudo qm guest passwd ${KVM_ID} root && echo New root password: ${ROOTPASSWORD} || echo Password change failed for: ${ROOTPASSWORD}
 echo
 EOL
 )
