@@ -10,8 +10,6 @@ def telegramclouddownload(telegram_file_id, file_name):
 @app.route('/cldcloud/<filename>')
 @app.route('/all/cldcloud/<filename>')
 def cldclouddownload(filename):
-    checkresult = checkperms("vpnpub", "NONE", request.args['token']) 
-    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     if os.path.exists('/var/cld/modules/telegramcloud/data/all/'+str(filename)) != True:
       return Response('404', status=404, mimetype='text/plain')
     return Response(stream_file('/var/cld/modules/telegramcloud/data/all/'+str(filename)), status=200, mimetype='text/plain')
