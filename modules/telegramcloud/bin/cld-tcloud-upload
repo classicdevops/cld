@@ -30,6 +30,6 @@ FILE_NAME=$(rev <<< ${FILE_PATH} | cut -d / -f 1 | rev)
 FILE_ID=$(curl -sF chat_id="${TG_GROUP}" -F document=@"${FILE_PATH}" https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument | jq -r .result.document.file_id)
 DOWNLOAD_LINK=https://${CLD_DOMAIN}/api/tcloud/${FILE_ID}/${FILE_NAME}
 echo $DOWNLOAD_LINK
-sleep 1s
-curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=markup&text=\`${DOWNLOAD_LINK}\`" &>/dev/null
+sleep 0.5s
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=markup&text=\`Download link: ${DOWNLOAD_LINK}\`" &>/dev/null
 
