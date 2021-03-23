@@ -12,4 +12,4 @@ def telegramclouddownload(telegram_file_id, file_name):
 def cldclouddownload(filename):
     if os.path.exists('/var/cld/modules/telegramcloud/data/all/'+str(filename)) != True:
       return Response('404', status=404, mimetype='text/plain')
-    return Response(stream_file('/var/cld/modules/telegramcloud/data/all/'+str(filename)), status=200, mimetype='text/plain')
+    return Response(stream_file('/var/cld/modules/telegramcloud/data/all/'+str(filename)), status=200, mimetype='application/octet-stream')
