@@ -7,6 +7,7 @@ def telegramclouddownload(telegram_file_id, file_name):
 		return requests.get("https://api.telegram.org/bot"+telegram_bot_token+"/getFile?file_id="+telegram_file_id).content
 	return requests.get("https://api.telegram.org/file/bot"+telegram_bot_token+"/"+tg_file_path).content, {'Content-Type': 'application/octet-stream'}
 
+@app.route('/cldcloud/<filename>')
 @app.route('/all/cldcloud/<filename>')
 def cldclouddownload(filename):
     checkresult = checkperms("vpnpub", "NONE", request.args['token']) 
