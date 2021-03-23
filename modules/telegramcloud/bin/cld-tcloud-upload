@@ -1,0 +1,35 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Upload file to telegram cloud
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--chatid=-1234567891011|123456789      Telegram chat or user id
+--file=/tmp/file_for_upload            Absolute file path at cld server
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-tcloud-upload --chatid=-1234567891011 --file=/tmp/file_for_upload
+EOL
+)
+HELP_ONLY="CLI"
+
+source /var/cld/bin/include/cldfuncs
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cld.example.com
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--chatid=' && TG_GROUP="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--file=' && FILE_PATH="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+[ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details
+[ "$FILE_PATH" ] || echoexit1 File path is not defined - use --help argument for details
+
+FILE_NAME=$(rev <<< ${FILE_PATH} | cut -d / -f 1 | rev)
+FILE_ID=$(curl -F chat_id="${TG_GROUP}" -F document=@"${FILE_PATH}" https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument | jq -r .result.document.file_id)
+DOWNLOAD_LINK=https://${CLD_DOMAIN}/api/tcloud/${FILE_ID}/${FILE_NAME}
+echo $DOWNLOAD_LINK
+sleep 1s
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=html&text=${DOWNLOAD_LINK}"
+
