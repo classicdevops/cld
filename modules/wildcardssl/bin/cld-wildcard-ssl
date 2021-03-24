@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Wildcard certificate issuance of all domains of attached cloudflare accounts
+Wildcard certificate issuance for all domains of attached cloudflare accounts
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
