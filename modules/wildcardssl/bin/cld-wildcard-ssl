@@ -16,7 +16,7 @@ do
 echo "${CFAPI}"
 CFACC=$(echo "${CFAPI}" | cut -d "_" -f 1)
 CFKEY=$(echo "${CFAPI}" | cut -d "_" -f 2)
-curl -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
+curl -sX GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
      -H "X-Auth-Email: ${CFACC}" \
      -H "X-Auth-Key: ${CFKEY}" \
      -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | sed 's#$#_'${CFACC}'#g' | awk '{print $2"_"$4}' >> /var/cld/modules/wildcardssl/data/cf_dns_list_${CLD_TIMESTAMP}
