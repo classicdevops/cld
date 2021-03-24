@@ -1,1 +1,40 @@
 #!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Wildcard certificate issuance of all domains of attached cloudflare accounts
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-wildcard-ssl
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+init-load-constants CLD_DOMAIN\|cldapi.yourdomain.com
+TIMESTAMP=$(date +%s)
+[ -e /var/cld/modules/wildcardssl/data ] || mkdir -p /var/cld/modules/wildcardssl/data
+for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+do
+echo "${CFAPI}"
+CFACC=$(echo "${CFAPI}" | cut -d "_" -f 1)
+CFKEY=$(echo "${CFAPI}" | cut -d "_" -f 2)
+curl -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
+     -H "X-Auth-Email: ${CFACC}" \
+     -H "X-Auth-Key: ${CFKEY}" \
+     -H "Content-Type: application/json" | jq '.result[] | {name, id}' | grep "name\|id" | sed -e ':a;N;$!ba;s#,\n##g' -e 's#"##g' | sed 's#$#_'${CFACC}'#g' | awk '{print $2"_"$4}' >> /var/cld/modules/wildcardssl/data/cf_dns_list_${TIMESTAMP}
+done
+
+for CFSITE in $(cat /var/cld/modules/wildcardssl/data/cf_dns_list_${TIMESTAMP})
+do
+   CFNAME=$(echo "$CFSITE" | cut -d "_" -f 1)
+   CFID=$(echo "$CFSITE" | cut -d "_" -f 2)
+   CFACC=$(echo "$CFSITE" | cut -d "_" -f 3)
+   CFKEY=$(grep $CFACC /var/cld/creds/creds_dns_cf_api_list | cut -d "_" -f 2) ; echo $CFKEY
+
+CFCREDS=$(cat << EOL
+dns_cloudflare_email = ${CFACC}
+dns_cloudflare_api_key = ${CFKEY}
+EOL
+)
+certbot certonly -n -m admin@${CLD_DOMAIN} --agree-tos --expand --dns-cloudflare --dns-cloudflare-credentials <(echo "${CFCREDS}") --dns-cloudflare-propagation-seconds 30 -d ${CFNAME} -d "*.${CFNAME}"
+done
+unalias mv &>/dev/null
+mv /var/cld/modules/wildcardssl/data/cf_dns_list_${TIMESTAMP} mv /var/cld/modules/wildcardssl/data/cf_dns_list
