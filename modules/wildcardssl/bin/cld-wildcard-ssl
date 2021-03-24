@@ -29,12 +29,12 @@ do
    CFACC=$(echo "$CFSITE" | cut -d "_" -f 3)
    CFKEY=$(grep $CFACC /var/cld/creds/creds_dns_cf_api_list | cut -d "_" -f 2) ; echo $CFKEY
 
-CFCREDS=$(cat << EOL
+cat > /cld/modules/wildcardssl/data/current_domain_creds_${TIMESTAMP} << EOL
 dns_cloudflare_email = ${CFACC}
 dns_cloudflare_api_key = ${CFKEY}
 EOL
-)
-certbot certonly -n -m admin@${CLD_DOMAIN} --agree-tos --expand --dns-cloudflare --dns-cloudflare-credentials <(echo "${CFCREDS}") --dns-cloudflare-propagation-seconds 30 -d ${CFNAME} -d "*.${CFNAME}"
+chmod 600 /cld/modules/wildcardssl/data/current_domain_creds_${TIMESTAMP}
+certbot certonly -n -m admin@${CLD_DOMAIN} --agree-tos --expand --dns-cloudflare --dns-cloudflare-credentials /cld/modules/wildcardssl/data/current_domain_creds_${TIMESTAMP} --dns-cloudflare-propagation-seconds 30 -d ${CFNAME} -d "*.${CFNAME}"
 done
 unalias mv &>/dev/null
 mv /var/cld/modules/wildcardssl/data/cf_dns_list_${TIMESTAMP} mv /var/cld/modules/wildcardssl/data/cf_dns_list

@@ -176,7 +176,11 @@ yum install -y nginx
 yum install -y screen
 
 yum install python3 python3-pip  -y
+yum install python*-crypto python*-cryptography certbot -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
+
+pip3 install certbot certbot-dns-cloudflare
+pip3 install cryptography==3.2
 }
 
 system_setup_c8()
@@ -211,6 +215,11 @@ yum install -y nginx
 
 yum install python3 python3-pip  -y
 pip3 install cryptography flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
+
+yum install python*-crypto python*-cryptography certbot --skip-broken -y
+
+pip3 install certbot certbot-dns-cloudflare
+pip3 install cryptography==3.2 zope.interface==5.3.0a1
 }
 
 system_setup_d9()
