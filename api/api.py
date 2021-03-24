@@ -100,7 +100,7 @@ for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
   exec(open(apifile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
 exec(bash('''
-for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -name 'cld-*')
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -maxdepth 1 -name 'cld-*')
 do
 CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
