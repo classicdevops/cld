@@ -26,6 +26,7 @@
 !/modules/blackcheck/
 !/modules/dns/
 !/modules/etcbackup/
+!/modules/wildcardssl/
 !/modules/telegramcloud/
 !/modules/zabbixcontrol/
 
