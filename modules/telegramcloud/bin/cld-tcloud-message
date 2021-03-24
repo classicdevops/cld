@@ -1,0 +1,31 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Send message to telegram chat
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--chatid=-1234567891011|123456789      Telegram chat or user id
+Any text what here will send as is     Absolute file path at cld server
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-tcloud-message --chatid=-1234567891011 Any text what here will send as is
+EOL
+)
+HELP_ONLY="CLI"
+
+source /var/cld/bin/include/cldfuncs
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cld.example.com
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--chatid=' && TG_GROUP="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+TEXT=$(tr ' ' '\n' <<< ${@:1} | grep -v '^\--chatid=' | tr '\n' ' ')
+
+[ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details
+[ "$TEXT" ] || echoexit1 Text is not defined - use --help argument for details
+
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=markdown&text=\`\`\`${TEXT}\`\`\`" &>/dev/null
+
