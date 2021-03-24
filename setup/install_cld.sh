@@ -180,7 +180,7 @@ yum install python*-crypto python*-cryptography certbot -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 
 pip3 install certbot certbot-dns-cloudflare
-pip3 install cryptography==3.2
+pip3 install cryptography==3.2 zope.interface==5.3.0a1
 }
 
 system_setup_c8()
