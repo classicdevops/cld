@@ -23,7 +23,7 @@ def bot_bash_stream(cmd, message):
     prev_cmd_file_size = 0
     with open('/var/cld/tmp/bot_cmd_'+cmdid, 'a'): os.utime('/var/cld/tmp/bot_cmd_'+cmdid, None)
     with subprocess.Popen(cmd+' | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
-      sleep(0.2)
+      sleep(0.5)
       while p.stdout:
         cmd_file_size = os.path.getsize('/var/cld/tmp/bot_cmd_'+cmdid)
         if cmd_file_size != prev_cmd_file_size:
