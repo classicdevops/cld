@@ -27,8 +27,9 @@ def bot_bash_stream(cmd, message):
             sleep(0.5)
             if os.path.exists('/var/cld/tmp/bot_cmd_'+cmdid+'_end'):
                 break
-    bash('rm -f /var/cld/tmp/bot_cmd_'+cmdid+' /var/cld/tmp/bot_cmd_'+cmdid+'_end')
-    return bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text=bash('''tail -20 /var/cld/tmp/bot_cmd_'''+cmdid+''' | awk '{print "`"$0"`"}' '''), parse_mode='Markdown')
+    try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text=bash('''tail -20 /var/cld/tmp/bot_cmd_'''+cmdid+''' | awk '{print "`"$0"`"}' '''), parse_mode='Markdown')
+    except: pass
+    return bash('rm -f /var/cld/tmp/bot_cmd_'+cmdid+' /var/cld/tmp/bot_cmd_'+cmdid+'_end')
 
 def arg(arg, message):
   return re.search('[A-z0-9.=-]+', message.text.split()[arg])[0]
