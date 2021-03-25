@@ -13,5 +13,6 @@ source /var/cld/bin/include/cldfuncs
 chattr -i /var/cld
 systemctl stop cld
 cd /var/cld && git pull --force
+[ -e "/var/cld/tmp" ] || mkdir -p /var/cld/tmp &>/dev/null
 /var/cld/bin/cld-initpasswd
 systemctl start cld
