@@ -135,7 +135,7 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     except:
         pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
-    bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+", message)
+    bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args, message)
 
 EOL
 done
