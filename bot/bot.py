@@ -22,7 +22,7 @@ def bot_bash_stream(cmd, message):
       cmdid += random.choice(chars)
     prev_cmd_file_size = 0
     with open('/var/cld/tmp/bot_cmd_'+cmdid, 'a'): os.utime('/var/cld/tmp/bot_cmd_'+cmdid, None)
-    with subprocess.Popen(cmd+' | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
+    with subprocess.Popen(cmd+'  | tr -d "\`" | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
       while p.stdout:
         cmd_file_size = os.path.getsize('/var/cld/tmp/bot_cmd_'+cmdid)
         if cmd_file_size != prev_cmd_file_size:
@@ -135,8 +135,7 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     except:
         pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
-    cmdoutput = bash("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+" | tr -d '\`' | awk -v F='\`' '{print F\$0F}'")
-    bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
+    bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+", message)
 
 EOL
 done
