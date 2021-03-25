@@ -136,7 +136,9 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     except:
         pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
-    bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+" | tr -d '\`'", message)
+    bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+", message)
+    # cmdoutput = bash("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+" | tr -d '\`' | awk -v F='\`' '{print F\$0F}'")
+    # bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
 EOL
 done
