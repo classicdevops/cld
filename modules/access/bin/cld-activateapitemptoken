@@ -24,7 +24,7 @@ USERNAME=$(grep "${2}" /var/cld/modules/access/data/myip_tokens | cut -d _ -f 3)
 IP=${1}
 grep -q ${USERID} /var/cld/modules/access/data/myips && (sed -i "s#.*${USERID}.*#${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private IP ${F}${IP}${F} successfully updated for user ${B}${USERNAME}${B}") || (echo "${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myips ; echo "private IP ${F}${IP}${F} successfully added to access list for user ${B}${USERNAME}${B}")
 sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens
-cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | sort -u > /var/cld/api/accesslist 2>/dev/null
+{ grep -v "^#\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | sort -u > /var/cld/api/accesslist 2>/dev/null
 (cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts; systemctl reload squid) &>/dev/null & disown
 (cat /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/32;"}' > /etc/nginx/accesslist && service nginx reload) &>/dev/null & disown
 ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || bash -lc "/var/cld/modules/access/bin/cld-accesslistdeploy" &>/dev/null & disown
