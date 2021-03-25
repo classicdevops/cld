@@ -68,7 +68,7 @@ if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
 fusermount -uzq $LOCALMOUNTPATH >> /dev/null
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $PWD | grep -q "^$" || PWDOPT="-o password_stdin"
-echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "sudo grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r\n')
+echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r\n')
 echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $USR | grep -q root || sshfs -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 >/dev/null
@@ -388,8 +388,8 @@ then
 [ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< /${STRING//cld-/}
 elif [ "${METHOD}" == "API" ]
 then
-[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "BOT" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
-[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "API" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | sed 's#&args="$#"#g'
 fi
 done)
 echo
