@@ -22,11 +22,11 @@ def bot_bash_stream(cmd, message):
        cmdid += random.choice(chars)
     with subprocess.Popen(cmd+' | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
         while p.stdout:
-            bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text="bash('''tail -20 /var/cld/tmp/bot_cmd_'''+cmdid+''' | awk '{print "`"$0"`"}' '''))")
+            bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text=bash('''tail -20 /var/cld/tmp/bot_cmd_'''+cmdid+''' | awk '{print "`"$0"`"}' '''))
             time.sleep(0.5)
             if os.path.exists('/var/cld/tmp/bot_cmd_'+cmdid+'_end'):
                 break
-    bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text="bash('''tail -20 /var/cld/tmp/bot_cmd_'''+cmdid+''' | awk '{print "`"$0"`"}' '''))")
+    bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text=bash('''tail -20 /var/cld/tmp/bot_cmd_'''+cmdid+''' | awk '{print "`"$0"`"}' '''))
     bash('rm -f /var/cld/tmp/bot_cmd_'+cmdid+' /var/cld/tmp/bot_cmd_'+cmdid+'_end')
 
 def arg(arg, message):
