@@ -59,7 +59,7 @@ def remoteaddr():
   return re.match("[A-z0-9.:]+", remote_addr)[0]
 
 def accesslist():
-  return bash("cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq").split('\n')
+  return bash('{ grep -v "^#\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | sort -u').split('\n')
 
 try:
   tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
