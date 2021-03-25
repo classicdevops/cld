@@ -14,7 +14,7 @@ def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
 def bot_bash_stream(cmd, message):
-    openmessage = bot.send_message(message.chat.id, 'Command initialization', parse_mode='Markdown', disable_web_page_preview='true')
+    openmessage = bot.send_message(message.chat.id, '`initializing`', parse_mode='Markdown', disable_web_page_preview='true')
     if os.path.exists('/var/cld/tmp') != True: bash('mkdir /var/cld/tmp')
     chars = 'abcdefjhgkmnopqrstuvwxyz1234567890'
     cmdid = ''
