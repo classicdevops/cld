@@ -17,7 +17,9 @@ CLDUSER=$1
 userdel ${CLDUSER}
 rm -f /home/${CLDUSER}/*
 rmdir /home/${CLDUSER}
-rm -f /var/cld/access/users/${CLDUSER}/*
+rm -f /var/cld/access/users/${CLDUSER}/*/*/* &>/dev/null
+rm -f /var/cld/access/users/${CLDUSER}/*/* &>/dev/null
+rm -f /var/cld/access/users/${CLDUSER}/* &>/dev/null
 rmdir /var/cld/access/users/${CLDUSER}
 sed -ir "/^${CLDUSER} ALL.*/d" /etc/sudoers
 sed -i '/^'${CLDUSER}'/d' /var/cld/creds/passwd
