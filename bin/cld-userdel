@@ -15,11 +15,9 @@ source /var/cld/bin/include/cldfuncs
 CLDUSER=$1
 [ "$CLDUSER" ] || echoexit1 CLD user is not defined
 userdel ${CLDUSER}
-rm -f /home/${CLDUSER}/*
+rm -rf /home/${CLDUSER}/*
 rmdir /home/${CLDUSER}
-rm -f /var/cld/access/users/${CLDUSER}/*/*/* &>/dev/null
-rm -f /var/cld/access/users/${CLDUSER}/*/* &>/dev/null
-rm -f /var/cld/access/users/${CLDUSER}/* &>/dev/null
+rm -rf /var/cld/access/users/${CLDUSER}/*
 rmdir /var/cld/access/users/${CLDUSER}
 sed -ir "/^${CLDUSER} ALL.*/d" /etc/sudoers
 sed -i '/^'${CLDUSER}'/d' /var/cld/creds/passwd
