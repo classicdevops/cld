@@ -22,8 +22,7 @@ def bot_bash_stream(cmd, message):
        cmdid += random.choice(chars)
     with subprocess.Popen(cmd+' | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
         while p.stdout:
-            try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
-            except: pass
+            bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
             sleep(1)
             if os.path.exists('/var/cld/tmp/bot_cmd_'+cmdid+'_end'):
                 bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
