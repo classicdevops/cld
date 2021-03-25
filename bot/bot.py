@@ -14,27 +14,29 @@ def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
 def bot_bash_stream(cmd, message):
-    openmessage = bot.send_message(message.chat.id, 'Command started: '+cmd, parse_mode='Markdown', disable_web_page_preview='true')
+    openmessage = bot.send_message(message.chat.id, 'Command initialization', parse_mode='Markdown', disable_web_page_preview='true')
     if os.path.exists('/var/cld/tmp') != True: bash('mkdir /var/cld/tmp')
     chars = 'abcdefjhgkmnopqrstuvwxyz1234567890'
     cmdid = ''
     for c in range(7):
-       cmdid += random.choice(chars)
+      cmdid += random.choice(chars)
+    prev_cmd_file_size = 0
     with subprocess.Popen(cmd+' | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
-        while p.stdout:
-            sleep(0.5)
-            try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
-            except: pass
-            sleep(1.5)
-            if os.path.exists('/var/cld/tmp/bot_cmd_'+cmdid+'_end'):
-                break
-    try: 
-      bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
-    except:
-      sleep(5)
-      bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
-    print('Command '+cmd+' completed', flush=True)
-    return bash('rm -f /var/cld/tmp/bot_cmd_'+cmdid+' /var/cld/tmp/bot_cmd_'+cmdid+'_end')
+      while p.stdout:
+        cmd_file_size = os.path.getsize('/var/cld/tmp/bot_cmd_'+cmdid)
+        if cmd_file_size != prev_cmd_file_size:
+          try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
+          except: pass
+        sleep(2)
+        prev_cmd_file_size = cmd_file_size
+        if os.path.exists('/var/cld/tmp/bot_cmd_'+cmdid+'_end'):
+          break
+    cmd_file_size = os.path.getsize('/var/cld/tmp/bot_cmd_'+cmdid)
+    if cmd_file_size != prev_cmd_file_size:
+      try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -20 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
+      except: pass
+    bash('rm -f /var/cld/tmp/bot_cmd_'+cmdid+' /var/cld/tmp/bot_cmd_'+cmdid+'_end')
+    return print('Command '+cmd+' completed', flush=True)
 
 def arg(arg, message):
   return re.search('[A-z0-9.=-]+', message.text.split()[arg])[0]
