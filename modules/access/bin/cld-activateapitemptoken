@@ -29,4 +29,4 @@ sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens
 { grep -v "^#\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | sort -u > /var/cld/api/accesslist 2>/dev/null
 { cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts ; systemctl reload squid ; } &>/dev/null & disown
 { cat /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/32;"}' > /etc/nginx/accesslist && service nginx reload ; } &>/dev/null & disown
-ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || bash -lc "/var/cld/modules/access/bin/cld-accesslistdeploy" &>/dev/null & disown
+ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || /var/cld/modules/access/bin/cld-accesslistdeploy &>/dev/null & disown
