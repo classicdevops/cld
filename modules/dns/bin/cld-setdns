@@ -92,4 +92,4 @@ or use -force argument"
 [ "$CF_RECORD_ID" ] || CF_RECORD_ID=$(cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.type == \"$TYPE\" and .content == \"$CONTENT\") | .id")
 [ "$CF_RECORD_ID" ] && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully added" || echo "Error - DNS RECORD didn't set"
 [ "$CFPROXY" ]  && echo CF proxy enabled
-) | awk -v f="$F" -v b="$B" '{print f$0f}'
+) #| awk -v f="$F" -v b="$B" '{print f$0f}'
