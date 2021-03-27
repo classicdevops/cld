@@ -72,8 +72,8 @@ echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o Us
 echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 {
-echo $USR | grep -q root || sshfs -d -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 > ${SFTP_LOG} & disown
-echo $USR | grep -q root && sshfs -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 > ${SFTP_LOG} & disown
+echo $USR | grep -q root || sshfs -f -d -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH 2>&1 > ${SFTP_LOG} <<< "$PWD" & disown
+echo $USR | grep -q root && sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH  2>&1 > ${SFTP_LOG} <<< "$PWD" & disown
 } &>/dev/null
 }
 
