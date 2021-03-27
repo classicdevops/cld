@@ -23,12 +23,12 @@ def bot_bash_stream(cmd, message):
     prev_cmd_file_size = 0
     with open('/var/cld/tmp/bot_cmd_'+cmdid, 'a'): os.utime('/var/cld/tmp/bot_cmd_'+cmdid, None)
     with subprocess.Popen(cmd+' | tee -a /var/cld/tmp/bot_cmd_'+cmdid+'; touch /var/cld/tmp/bot_cmd_'+cmdid+'_end', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash') as p:
-      sleep(0.1)
       while p.stdout:
         cmd_file_size = os.path.getsize('/var/cld/tmp/bot_cmd_'+cmdid)
         if cmd_file_size != prev_cmd_file_size:
           try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -150 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
-          except: pass
+          except: 
+            pass
           sleep(1.9)
         sleep(0.1)
         prev_cmd_file_size = cmd_file_size

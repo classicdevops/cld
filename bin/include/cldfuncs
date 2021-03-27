@@ -36,13 +36,13 @@ done
 }
 
 CLD_LOGS() {
-if ! [ -d /var/cld/log/session/ ]
+CLD_LOG_DATE=$(date +%F)
+if ! [ -d "/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}" ]
 then
-chattr -i /var/cld/
-mkdir -p /var/cld/log/session/ &>/dev/null
-chattr +i /var/cld/
+mkdir -p /var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/ &>/dev/null
 fi
-CLD_LOG=/var/cld/log/session/${SUDO_USER}_${VM}_`date +"%d-%m-%y_%H-%M"`
+CLD_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_$(date +"%H-%M")
+SFTP_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_$(date +"%H-%M")
 }
 
 CLD_DEPLOY_LOGS() {
@@ -71,8 +71,10 @@ echo $PWD | grep -q "^$" || PWDOPT="-o password_stdin"
 echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r\n')
 echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
-echo $USR | grep -q root || sshfs -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 >/dev/null
-echo $USR | grep -q root && sshfs -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 >/dev/null
+{
+echo $USR | grep -q root || sshfs -d -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 > ${SFTP_LOG} & disown
+echo $USR | grep -q root && sshfs -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no $USR@$SRV:/ $LOCALMOUNTPATH <<< "$PWD" 2>&1 > ${SFTP_LOG} & disown
+} &>/dev/null
 }
 
 EXTERNAL_TERMINAL() {
