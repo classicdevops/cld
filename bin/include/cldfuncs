@@ -42,7 +42,7 @@ then
 mkdir -p /var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/ &>/dev/null
 fi
 CLD_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_$(date +"%H-%M")
-SFTP_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_sftp_$(date +"%H-%M")
+SFTP_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_sftp_$(date +"%H-%M").gz
 }
 
 CLD_DEPLOY_LOGS() {
