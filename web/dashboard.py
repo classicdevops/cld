@@ -1139,4 +1139,4 @@ def backendgitpull():
     return resp
 
 if __name__ == '__main__':
-    socketio.run(app, host='127.0.0.1', port=8080)
+    socketio.run(app, threaded=True, use_reloader=use_reloader, host='127.0.0.1', port=8080)
