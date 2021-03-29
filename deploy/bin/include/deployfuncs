@@ -19,5 +19,25 @@ defaultvars()
 
 deploys-user-allowed()
 {
-grep -lf /var/cld/access/users/${SUDO_USER}/groups /var/cld/deploy/deploys/*/vars | rev | cut -d / -f 2 | rev
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--json' && JSONFUNCOUT=1
+done
+if [ "$JSONFUNCOUT" == "1" ]
+then
+{
+printf '['
+printf '{"type":"templates",'
+printf '"content":['
+printf '"' ; ls /var/cld/deploy/templates/ | cat | head -c -1 | tr '\n' ',' | sed 's#,#","#g' ; printf '"'
+printf ']},'
+printf '{"type":"deploys",'
+printf '"content":['
+printf '"' ; egrep "CLD_GROUPS=\".+\,?$(grep -v '^$\|^#' /var/cld/access/users/${SUDO_USER}/groups),?.+\""\|"CLD_GROUPS=\"\"" /var/cld/deploy/deploys/*/vars | rev | cut -d / -f 2 | rev | head -c -1 | tr '\n' ',' | sed 's#,#","#g' ; printf '"'
+printf ']}'
+echo ']'
+}
+else
+egrep "CLD_GROUPS=\".+\,?$(grep -v '^$\|^#' /var/cld/access/users/${SUDO_USER}/groups),?.+\""\|"CLD_GROUPS=\"\"" /var/cld/deploy/deploys/*/vars | rev | cut -d / -f 2 | rev
+fi
 }

@@ -47,7 +47,16 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--run' && RUN=1
+echo $OPTS | grep -q  '^\--list' && LIST=1
+echo $OPTS | grep -q  '^\--json' && JSON=1
+echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
+
+[ "$JSON" == "1" ] && JSONARG='--json'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='| jq .'
+
+if [ "$LIST" = "1" ] ; then source <(echo -n deploys-user-allowed "${JSONARG}" ${JSON_BEAUTY_ARG}) ; exit 0 ; fi
 
 if [ "$FROM" = "API" ] 
 then
