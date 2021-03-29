@@ -167,11 +167,11 @@
                     <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newdirecttab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
-                        {% for module_dict in modules %}
-                            <li><span><a onclick='newhprtab("{{ module_dict['type'] }}")' class="nav-link active" id="{{ module_dict['type'] }}-link" data-toggle="tab" href="#{{ module_dict['type'] }}">host: {{ module_dict['type'] }}</a></span></li>
-<!--                             <li><span>host: {{ module_dict['hypervisor'] }}</span></li> -->
-                            {% for cld_deploy in module_dict['content'] %}
-                            <li><a onclick='newtab("{{ module_dict['type'] }}", "{{ cld_deploy }}")' class="nav-link active" id="{{ cld_deploy.name }}-link" data-toggle="tab" href="#{{ cld_deploy.name }}">{{ cld_deploy }}</a></li>
+                        {% for deploy_dict in deploys %}
+                            <li><span><a onclick='newhprtab("{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy_dict['type'] }}-link" data-toggle="tab" href="#{{ deploy_dict['type'] }}">type: {{ deploy_dict['type'] }}</a></span></li>
+<!--                             <li><span>host: {{ deploy_dict['hypervisor'] }}</span></li> -->
+                            {% for cld_deploy in deploy_dict['content'] %}
+                            <li><a onclick='newtab("{{ deploy_dict['type'] }}", "{{ cld_deploy }}")' class="nav-link active" id="{{ cld_deploy.name }}-link" data-toggle="tab" href="#{{ cld_deploy.name }}">{{ cld_deploy }}</a></li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
