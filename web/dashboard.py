@@ -483,8 +483,7 @@ def index():
     if 'username' not in session: return redirect('/login', code=302)
     user = session['username']
     modulelist = usermodules(user)
-    print(modulelist, flush=True)
-    if modulelist != '':
+    if modulelist != ['']:
       modulelist = list(usermodules(user))
       modules = list()
       for module in modulelist:
