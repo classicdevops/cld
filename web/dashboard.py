@@ -64,7 +64,7 @@ def usermodules(user):
   if "ALL" in modules:
     return set(bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').strip().split('\n'))
   else:
-    return modules
+    return set(bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2)"''').strip().split('\n'))
 
 def usertools(user):
   tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').strip().split(','))
