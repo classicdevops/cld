@@ -3,6 +3,7 @@ from flask import Flask, abort, request, render_template, g, Response, send_from
 from flask_session import Session
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 from werkzeug.utils import secure_filename
+import logging
 import re
 import os
 import subprocess
@@ -113,6 +114,8 @@ socketio = SocketIO(app, cors_allowed_origins='https://'+cld_domain, threading=t
 app.config['UPLOAD_FOLDER'] = upload_dir
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 webmodule = {}
 #include code from web.py of modules
