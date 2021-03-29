@@ -144,6 +144,7 @@
 </a>
 </label>
 
+{% if modules is defined %}
 {% for module in modules %}
 <label class="btn paymentMethod">
 <a href="/{{ module.name }}"  onclick="window.location.href = '/{{ module.name }}';">
@@ -158,6 +159,7 @@
 </a>
 </label>
 {% endfor %}
+{% endif %}
 
 {% if username == 'admin' %}
 <label class="btn paymentMethod">
