@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, escape, url_for, session
+from flask import Flask, abort, request, render_template, g, Response, send_from_directory, redirect, escape, url_for, session, cli
 from flask_session import Session
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 from werkzeug.utils import secure_filename
@@ -106,6 +106,7 @@ logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+cli.show_server_banner = lambda *_: None
 
 app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app, cors_allowed_origins='https://'+cld_domain, threading=threading)
