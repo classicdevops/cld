@@ -109,7 +109,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 cli.show_server_banner = lambda *_: None
 
 app = Flask(__name__, template_folder=template_dir)
-socketio = SocketIO(app, cors_allowed_origins='https://'+cld_domain, threading=threading, threaded=True, use_reloader=use_reloader)
+socketio = SocketIO(app, cors_allowed_origins='https://'+cld_domain, threading=threading, threaded=True)
 app.config['UPLOAD_FOLDER'] = upload_dir
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
