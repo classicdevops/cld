@@ -168,7 +168,7 @@
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newdirecttab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for deploy_dict in deploys %}
-                            <li><span>module: {{ deploy_dict['type'] }}</span></li>
+                            <li><span>type: {{ deploy_dict['type'] }}</span></li>
                             {% for deploy in deploy_dict['content'] %}
                             <li><a onclick='newtab("{{ deploy }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
                             {% endfor %}
