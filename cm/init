@@ -22,3 +22,43 @@ else
 		fi
 	done
 fi
+
+if grep -q "^ONLINE_NET=" /var/cld/creds/creds
+then
+	echo -n ""
+else
+	echo "Are you using ONLINE_NET ?" 
+	select ANSWER in yes no
+	do
+		if [ "${ANSWER}" == "yes" ]
+			then
+				init-load-constants HYPERVISOR_NAME_PREFIX\|HPR ONLINE_NET_PRIVATE_ACCESS_TOKEN\|jdhnkxyrhngvjycfny1w00nlvwkejkgrwx6zjv8v
+				echo ONLINE_NET=1 >> /var/cld/creds/creds
+				break
+		elif [ "${ANSWER}" == "no" ]
+            then
+				echo ONLINE_NET=0 >> /var/cld/creds/creds
+				break
+		fi
+	done
+fi
+
+if grep -q "^HETZNER=" /var/cld/creds/creds
+then
+	echo -n ""
+else
+	echo "Are you using HETZNER ?" 
+	select ANSWER in yes no
+	do
+		if [ "${ANSWER}" == "yes" ]
+			then
+				init-load-constants HYPERVISOR_NAME_PREFIX\|HPR HETZNER_ROBOT_LOGIN\|hetzner@login.con HETZNER_ROBOT_PASSWORD\|oe9AK11KMG3FceJmakXMu
+				echo HETZNER=1 >> /var/cld/creds/creds
+				break
+		elif [ "${ANSWER}" == "no" ]
+            then
+				echo HETZNER=0 >> /var/cld/creds/creds
+				break
+		fi
+	done
+fi
