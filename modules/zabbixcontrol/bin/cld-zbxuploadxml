@@ -42,6 +42,23 @@ JSON_REQUEST=$(cat << EOL | jq .
     "params": {
         "format": "xml",
         "rules": {
+            "applications": {
+                "createMissing": true,
+                "deleteMissing": false
+            },
+            "valueMaps": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "hosts": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "items": {
+                "createMissing": true,
+                "updateExisting": true,
+                "deleteMissing": false
+            },
             "screens": {
                 "createMissing": true,
                 "updateExisting": true
