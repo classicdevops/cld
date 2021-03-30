@@ -35,36 +35,19 @@ echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
 
 AUTH_TOKEN=$(authenticate)
 
-JSON_REQUEST=$(cat << EOL | tr -d '\n' | tr -s ' ' | jq .
+JSON_REQUEST=$(cat << EOL | jq .
 {
     "jsonrpc": "2.0",
     "method": "configuration.import",
     "params": {
         "format": "xml",
         "rules": {
-            "applications": {
-                "createMissing": true,
-                "deleteMissing": false
-            },
-            "valueMaps": {
-                "createMissing": true,
-                "updateExisting": true
-            },
-            "hosts": {
-                "createMissing": true,
-                "updateExisting": true
-            },
-            "items": {
-                "createMissing": true,
-                "updateExisting": true,
-                "deleteMissing": true
-            },
             "screens": {
                 "createMissing": true,
                 "updateExisting": true
             }
         },
-        "source": "$(cat $FILE  | sed 's#"#\\"#g')"
+        "source": "$(cat $FILE  | sed 's#"#\\"#g' | tr -d '\n' | tr -s ' ')"
     },
         "auth": "${AUTH_TOKEN}",
     "id": 1
