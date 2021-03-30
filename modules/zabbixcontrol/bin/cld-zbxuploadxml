@@ -35,7 +35,7 @@ echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
 
 AUTH_TOKEN=$(authenticate)
 
-JSON_REQUEST=$(cat << EOL | jq .
+JSON_REQUEST=$(cat << EOL | tr -d '\n' | tr -s ' \s\t' | jq .
 {
     "jsonrpc": "2.0",
     "method": "configuration.import",
