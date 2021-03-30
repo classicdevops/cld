@@ -42,22 +42,9 @@ JSON_REQUEST=$(cat << EOL | tr -d '\n' | tr -s ' \s\t' | jq .
     "params": {
         "format": "xml",
         "rules": {
-            "applications": {
-                "createMissing": true,
-                "deleteMissing": false
-            },
-            "valueMaps": {
-                "createMissing": true,
-                "updateExisting": false
-            },
-            "hosts": {
+            "screens": {
                 "createMissing": true,
                 "updateExisting": true
-            },
-            "items": {
-                "createMissing": true,
-                "updateExisting": true,
-                "deleteMissing": true
             }
         },
         "source": "$(cat $FILE  | sed 's#"#\\"#g')"
