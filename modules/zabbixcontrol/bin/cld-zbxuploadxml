@@ -1,0 +1,78 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Zabbix XML configuration imort tool
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--file=/tmp/zabbix.xml   Configuration XML zabbix file
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-zbxuploadxml --file=/tmp/zabbix.xml
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--file\|^\-file' && FILE="$(echo $OPTS | cut -d '=' -f 2)"
+done
+source /var/cld/creds/creds_module_zabbixcontrol
+init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10 TEMPLATEIDS\|10362,10364,10365
+
+export TEMPLATEIDS="$(tr ',' '\n' <<< ${TEMPLATEIDS})"
+# Authenticate with Zabbix API
+authenticate() {
+echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
+  \"jsonrpc\": \"2.0\",
+  \"method\": \"user.login\",
+  \"params\": {
+    \"user\": \"${ZABBIX_USER}\",
+    \"password\": \"${ZABBIX_PASS}\"
+  },
+  \"auth\": null,
+  \"id\": 0
+}" "$API" | cut -d ':' -f 3 | cut -d ',' -f 1) | tr -d '"'
+}
+
+AUTH_TOKEN=$(authenticate)
+
+JSON_REQUEST=$(cat << EOL | jq .
+{
+    "jsonrpc": "2.0",
+    "method": "configuration.import",
+    "params": {
+        "format": "xml",
+        "rules": {
+            "applications": {
+                "createMissing": true,
+                "deleteMissing": false
+            },
+            "valueMaps": {
+                "createMissing": true,
+                "updateExisting": false
+            },
+            "hosts": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "items": {
+                "createMissing": true,
+                "updateExisting": true,
+                "deleteMissing": true
+            }
+        },
+        "source": "$(cat $FILE  | sed 's#"#\\"#g')"
+    },
+        "auth": "${AUTH_TOKEN}",
+    "id": 1
+}
+EOL
+)
+
+# RESULT=$(
+curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .
+# )
+# (
+# echo "$RESULT" | grep -q result && echo Web checker for $ARG1 configured successfully || echo "$RESULT" | grep "data" | cut -d : -f 2- | cut -d ' ' -f 2- | tr -d '"''\\'
+# ) #| awk -v f="$F" -v b="$B" '{print f$0f}'

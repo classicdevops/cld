@@ -376,7 +376,7 @@ EOL
 UMOUNT_ZFS_CHECK_START=$(cat << 'EOL'
 umount /mnt/vm$VMID
 echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
-e2fsck -f ${filepath}p2
+e2fsck -fp ${filepath}p2
 resize2fs ${filepath}p2
 qm start $VMID
 EOL
@@ -389,7 +389,7 @@ kpartx -a ${filepath}
 sleep 5s
 kpartx -d ${filepath}
 losetup --offset $(($END_SECOND_PARTITION * $UNIT)) /dev/loop$VMID $filepath
-e2fsck -f /dev/loop$VMID
+e2fsck -fp /dev/loop$VMID
 resize2fs /dev/loop$VMID
 losetup -d /dev/loop$VMID
 qm start $VMID
@@ -399,7 +399,7 @@ EOL
 UMOUNT_QCOW2_CHECK_START=$(cat << 'EOL'
 umount /mnt/vm$VMID
 echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/qm_list
-e2fsck -f /dev/nbd0p2
+e2fsck -fp /dev/nbd0p2
 resize2fs /dev/nbd0p2
 qemu-nbd -d /dev/nbd0
 qm start $VMID
