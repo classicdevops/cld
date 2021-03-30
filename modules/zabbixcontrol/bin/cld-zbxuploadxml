@@ -72,7 +72,7 @@ EOL
 
 # RESULT=$(
 cat << EOL
-$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .)
+curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .
 EOL
 # )
 # (
