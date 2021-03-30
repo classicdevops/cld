@@ -17,7 +17,6 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--file\|^\-file' && FILE="$(echo $OPTS | cut -d '=' -f 2)"
 done
-source /var/cld/creds/creds_module_zabbixcontrol
 init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10 TEMPLATEIDS\|10362,10364,10365
 
 export TEMPLATEIDS="$(tr ',' '\n' <<< ${TEMPLATEIDS})"
@@ -34,7 +33,7 @@ echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
   \"id\": 0
 }" "$API" | cut -d ':' -f 3 | cut -d ',' -f 1) | tr -d '"'
 }
-
+echo auth
 AUTH_TOKEN=$(authenticate)
 
 JSON_REQUEST=$(cat << EOL | jq .
@@ -69,7 +68,7 @@ JSON_REQUEST=$(cat << EOL | jq .
 }
 EOL
 )
-
+echo request
 # RESULT=$(
 cat << EOL
 curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .
