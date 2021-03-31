@@ -96,7 +96,7 @@
                 var filename = obj[i]
                 $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
                     success: function (filecontent) {
-                    $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
+                    $('#'+id).append('<div>file: <div class="prein">' + obj[i] + '</div></div>\
                         <pre>'+filecontent+'</pre>')
                     }
                 });
