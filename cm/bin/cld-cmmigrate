@@ -7,7 +7,7 @@ HELP_ARGS=$(cat << 'EOL'
 --id=10001                           KVM id
 --source=HPR-pve-1_1.2.3.4_22_root   Source PVE hypervisor
 --dest=HPR-pve-2_2.3.4.5_22_root     Destination PVE hypervisor
---clonefs                            Just clone ZFS partition to destination hypervisor without anu destruction actions
+--clonefs                            Just clone ZFS partition to destination hypervisor without any destruction actions
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
