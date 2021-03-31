@@ -89,7 +89,7 @@
     function appendfilecontent(id, deploy, filename) {
         $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
             success: function (filecontent) {
-            $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
+            $('#'+id).append('<div>File: <div class="prein">' + filename + '</div></div>\
                 <pre>'+filecontent+'</pre>')
             }
         });
