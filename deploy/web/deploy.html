@@ -97,6 +97,8 @@
     function appendcontent(id, deploy, deploytype) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
+        deploytypestr = deploytype.slice(0, -1);
+        $('#'+id).append(deploytypestr+": "+deploy+"<br>")
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var obj = JSON.parse(files);
