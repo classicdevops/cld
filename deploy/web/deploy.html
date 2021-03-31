@@ -93,10 +93,11 @@
             success: function (files) {
             var obj = JSON.parse(files);
             for (i in obj) {
-                var elem = obj[i]
-                $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+elem, dataType : 'text',
+                var filename = obj[i]
+                $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
                     success: function (filecontent) {
-                    $('#'+id).append('<pre>'+filecontent+'</pre>')
+                    $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
+                        <pre>'+filecontent+'</pre>')
                     }
                 });
             }
