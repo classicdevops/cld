@@ -91,21 +91,20 @@
         document.getElementById(id + "-tab").click();
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: async function (files) {
-            var obj = JSON.parse(files);
-            for (i in obj) {
-                await new Promise(next=> {
-                    filename = obj[i];
-                    $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
-                        success: function (filecontent) {
-                        $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
-                            <pre>'+filecontent+'</pre>')
-                        }
+                var obj = JSON.parse(files);
+                for (i in obj) {
+                    await new Promise(next=> {
+                        $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+obj[i], dataType : 'text',
+                            success: function (filecontent) {
+                            $('#'+id).append('<div>file: <div class="prein">' + obj[i] + '</div></div>\
+                                <pre>'+filecontent+'</pre>')
+                            }
+                        });
+                        next();
                     });
-                    next();
-                });
+                }
             }
-    }
-    }
+        }
     );
     };
     function appendframe(id, deploy) {
