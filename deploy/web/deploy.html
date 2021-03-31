@@ -91,7 +91,7 @@
             success: function (filecontent) {
             $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
                 <pre>'+filecontent+'</pre>')
-            };
+            }
         });
     }
     function appendcontent(id, deploy, deploytype) {
@@ -101,9 +101,10 @@
             success: function (files) {
             var obj = JSON.parse(files);
                 for (i in obj) {
-                    appendfilecontent(id, deploy, obj[i]);
-                };
-            };
+                    var filename = obj[i]
+                    appendfilecontent(id, deploy, filename)
+                }
+            }
         });
     }
     function appendframe(id, deploy) {
@@ -112,7 +113,7 @@
         sleep(250).then(() => {
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+deploy+'/"></iframe>');
         });
-        }
+    }
     function rundeploy(id, deploy) {
         var args = document.getElementById(id+'-arg').value;
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/ '+deploy+' '+args+'"></iframe>');
@@ -120,7 +121,7 @@
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
-        };
+    }
     function newtab(deploy, deploytype) {
         var id = idgen();
         appendtab(id, deploy, deploytype);
