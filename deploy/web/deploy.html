@@ -98,10 +98,10 @@
                     success: function (filecontent) {
                     $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
                         <pre>'+filecontent+'</pre>')
-                    delete filename
                     }
                 });
-            }
+                delete filename
+                }
     }
     }
     );
