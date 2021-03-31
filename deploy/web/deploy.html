@@ -79,21 +79,30 @@
     function sleep (time) {
       return new Promise((resolve) => setTimeout(resolve, time));
     }
-    function appendtab(id, deploy) {
-        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\')">⟳</button>' + deploy + '</a></li>'
+    function appendtab(id, deploy, deploytype) {
+        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')">⟳</button>' + deploy + '</a></li>'
         );
     }
     function appendform(id, deploy) {
         $('#'+id).append('<form onsubmit="rundeploy(\''+id+'\', \''+deploy+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run</button>        </form>')
     }
-    function appendcontent(id, deploy) {
+    function appendcontent(id, deploy, deploytype) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
-        $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/vars", dataType : 'text',
-            success: function (data) {
-            $('#'+id).append('<pre>'+data+'</pre>')
+        $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
+            success: function (files) {
+            var obj = JSON.parse(files);
+            for (i in obj) {
+                var elem = obj[i]
+                $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+elem, dataType : 'text',
+                    success: function (filecontent) {
+                    $('#'+id).append('<pre>'+filecontent+'</pre>')
+                    }
+                });
             }
-        });
+    }
+    }
+    );
     }
     function appendframe(id, deploy) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
@@ -110,19 +119,19 @@
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
         };
-    function newtab(deploy) {
+    function newtab(deploy, deploytype) {
         var id = idgen();
-        appendtab(id, deploy);
-        appendcontent(id, deploy);
+        appendtab(id, deploy, deploytype);
+        appendcontent(id, deploy, deploytype);
     };
     function newdirecttab(deploy) {
         var id = idgen();
         appendtab(id, deploy);
         appendframe(id, deploy);
     };
-    function updatetab(id, deploy) {
+    function updatetab(id, deploy, deploytype) {
         $('#'+id).html('')
-        appendcontent(id, deploy);
+        appendcontent(id, deploy, deploytype);
     };
     </script>
     <script>
@@ -169,7 +178,7 @@
                         {% for deploy_dict in deploys %}
                             <li><span>type: {{ deploy_dict['type'] }}</span></li>
                             {% for deploy in deploy_dict['content'] %}
-                            <li><a onclick='newtab("{{ deploy }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
+                            <li><a onclick='newtab("{{ deploy }}", "{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
