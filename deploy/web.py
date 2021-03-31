@@ -11,7 +11,7 @@ def deploy_index():
     return render_template('modules/deploy/deploy.html', username=user, deploys=deploys)
 
 @app.route("/deploy/<deploytype>/<deploy>")
-def deploy_files(type, deploy):
+def deploy_files(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
