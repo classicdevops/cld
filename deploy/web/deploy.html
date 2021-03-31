@@ -93,15 +93,17 @@
             success: function (files) {
             var obj = JSON.parse(files);
             for (i in obj) {
+                await new Promise(next=> {
                 filename = obj[i]
-                $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
-                    success: function (filecontent) {
-                    $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
-                        <pre>'+filecontent+'</pre>')
-                    }
-                });
-                delete filename
-                }
+                    $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
+                        success: function (filecontent) {
+                        $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
+                            <pre>'+filecontent+'</pre>')
+                        }
+                    });
+                    next()
+                };
+            }
     }
     }
     );
