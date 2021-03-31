@@ -93,8 +93,8 @@
             success: function (files) {
                 var obj = JSON.parse(files);
                 for (i in obj) {
-                    filename = obj[i];
-                    (function (filename) {
+                    (filename = obj[i];
+                    function (filename) {
                         $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
                             success: function (filecontent) {
                             $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
