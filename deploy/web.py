@@ -16,7 +16,7 @@ def deploy_template_file(template, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    return bash('cat /var/cld/deploy/templates/'+template+'/'+file)
+    return Response(bash('cat /var/cld/deploy/templates/'+template+'/'+file), status=200, mimetype='text/plain')
 
 @app.route("/deploy/deploys/<deploy>/<file>")
 def deploy_deploy_file(deploy, file):
@@ -24,4 +24,4 @@ def deploy_deploy_file(deploy, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    return bash('cat /var/cld/deploy/deploys/'+deploy+'/'+file)
+    return Response(bash('cat /var/cld/deploy/deploys/'+deploy+'/'+file), status=200, mimetype='text/plain')
