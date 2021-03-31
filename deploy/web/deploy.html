@@ -94,20 +94,20 @@
             var obj = JSON.parse(files);
             for (i in obj) {
                 await new Promise(next=> {
-                filename = obj[i]
+                    filename = obj[i];
                     $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
                         success: function (filecontent) {
                         $('#'+id).append('<div>file: <div class="prein">' + filename + '</div></div>\
                             <pre>'+filecontent+'</pre>')
                         }
                     });
-                    next()
+                    next();
                 });
             }
     }
     }
     );
-    }
+    };
     function appendframe(id, deploy) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
