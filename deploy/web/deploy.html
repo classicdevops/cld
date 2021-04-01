@@ -101,8 +101,8 @@
             if (itter < 1) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
-                $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
-                    <div class="panel-heading">\
+                $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'">\
+                    <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
                       <h4 class="panel-title">\
                         <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'">\
                                 File: '+objfiles[itter]+'</a>\
