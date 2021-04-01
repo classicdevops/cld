@@ -100,7 +100,8 @@
                 success: function (filecontent) {
                 $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
                     <pre>'+filecontent+'</pre>');
-                itter++.then(appendfilecontentrec(id, deploy, objfiles, itter))
+                itter++;
+                appendfilecontentrec(id, deploy, objfiles, itter);
                 }
             });
         }
