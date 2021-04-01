@@ -127,7 +127,9 @@
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         if (deploytype == "deploys") {
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--deploy='+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
+        } else if (deploytype == "templates") {
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--template='+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
         }
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
@@ -147,8 +149,8 @@
         $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+deploy+'/"></iframe>');
         });
     }
-    function rundeploy(id, deploy) {
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/--deploy='+deploy+'"></iframe>');
+    function rundeploy(id, args) {
+        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/'+args+'"></iframe>');
         sleep(250).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
