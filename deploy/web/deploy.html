@@ -128,9 +128,9 @@
         document.getElementById(id + "-tab").click();
         $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
         deploytypestr = deploytype.slice(0, -1);
-        $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br>')
+        $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         if (deploytype == "deploys") {
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run deploy</button><br>')
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run deploy</button><br><br>')
         }
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
