@@ -95,7 +95,7 @@
         });
     }
     function appendfilecontentrec(id, deploy, objfiles, itter) {
-        if (itter <= objfiles.length) {
+        if (itter < objfiles.length) {
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
                 $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
