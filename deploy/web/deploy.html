@@ -101,14 +101,14 @@
             if (itter < 1) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
-                $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+1+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
+                $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
                     <div class="panel-heading">\
                       <h4 class="panel-title">\
-                        <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+1+'">\
+                        <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'">\
                                 File: '+objfiles[itter]+'</a>\
                         </h4>\
                     </div>\
-                    <div id="collapse'+itter+1+'" class="panel-collapse collapse'+toggle+'">\
+                    <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'">\
                         <div class="panel-body" style="padding: 0;">\
                     <pre style="padding: 0px;"><code class="hljs bash">'+filecontent+'</code></pre></div></div></div>');
                 itter++;
