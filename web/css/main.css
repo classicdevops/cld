@@ -306,7 +306,7 @@ text-align: center;
 
     .navbar-default .navbar-brand {
         color: #1e88e5;
-        padding: 20px 15px;
+        padding: 20px 0px 0px 15px;
     }
 
     a.navbar-brand.nav-logo {
