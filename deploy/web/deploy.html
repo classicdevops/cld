@@ -129,7 +129,7 @@
         if (deploytype == "deploys") {
         $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--deploy='+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
         } else if (deploytype == "templates") {
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--template='+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--template='+deploy+'\')" style="width: 10%; min-width: 100px;">Create deploy</button><br><br>')
         }
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
