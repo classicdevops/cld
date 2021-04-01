@@ -100,8 +100,17 @@
         if (itter < objfiles.length) {
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
-                $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
-                    <pre style="padding: 0px;"><code class="hljs bash">'+filecontent+'</code></pre>');
+                $('#'+id+'-accordion').append('<div class="panel panel-default" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+'" aria-expanded="true" style="cursor:pointer;">\
+                    <div class="panel-heading">\
+                      <h4 class="panel-title">\
+                        <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+'">\
+                                File: '+objfiles[itter]+'</a>\
+                        </h4>\
+                    </div>\
+                    <div id="collapse1" class="panel-collapse collapse in">\
+                        <div class="panel-body">\
+                    <div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
+                    <pre style="padding: 0px;"><code class="hljs bash">'+filecontent+'</code></pre></div></div></div>');
                 itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
@@ -116,8 +125,9 @@
         }
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
         document.getElementById(id + "-tab").click();
+        $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
         deploytypestr = deploytype.slice(0, -1);
-        $('#'+id).append(deploytypestr.capitalize()+": "+deploy+"<br><br>")
+        $('#'+id+'-accordion').append(deploytypestr.capitalize()+": "+deploy+"<br><br>")
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
