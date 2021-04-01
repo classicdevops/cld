@@ -94,18 +94,18 @@
             }
         });
     }
-function appendfilecontentrec(id, deploy, objfiles, itter) {
-    if (itter < objfiles.length) {
-        $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
-            success: function (filecontent) {
-            $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
-                <pre>'+filecontent+'</pre>');
-            itter++;
-            appendfilecontentrec(id, deploy, objfiles, itter);
-            }
-        });
+    function appendfilecontentrec(id, deploy, objfiles, itter) {
+        if (itter < objfiles.length) {
+            $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
+                success: function (filecontent) {
+                $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
+                    <pre>'+filecontent+'</pre>');
+                itter++;
+                appendfilecontentrec(id, deploy, objfiles, itter);
+                }
+            });
+        }
     }
-}
     function appendcontent(id, deploy, deploytype) {
         String.prototype.capitalize = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
@@ -116,12 +116,12 @@ function appendfilecontentrec(id, deploy, objfiles, itter) {
         $('#'+id).append(deploytypestr.capitalize()+": "+deploy+"<br><br>")
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
-            var obj = JSON.parse(files);
-  for (i in obj) {
-    var filename = obj[i]
-  appendfilecontent(id, deploy, filename).then((filecontent) =>  {$('#'+id).append('<div>File: <div class="prein">' + filename + '</div></div>\
-            <pre>'+filecontent+'</pre>')})
-    }
+            var objfiles = JSON.parse(files);
+            appendfilecontentrec(id, deploy, objfiles, 0);
+                // for (i in obj) {
+                //     var filename = obj[i]
+                //     appendfilecontent(id, deploy, filename)
+                // }
             }
         });
     }
