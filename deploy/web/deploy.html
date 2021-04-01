@@ -102,7 +102,7 @@
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
                 $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
-                    <pre><code class="bash">'+filecontent+'</code></pre>');
+                    <pre><code class="hljs bash">'+filecontent+'</code></pre>');
                 itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
