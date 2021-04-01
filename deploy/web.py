@@ -16,7 +16,7 @@ def deploy_files(deploytype, deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    return Response(json.dumps(bash('ls /var/cld/deploy/'+deploytype+'/'+deploy+'/').split('\n')), status=200, mimetype='application/json')
+    return Response(json.dumps(bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+deploytype+'/'+deploy+') ; for CLD_FILE in vars script clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')), status=200, mimetype='application/json')
 
 @app.route("/deploy/templates/<template>/<file>")
 def deploy_template_file(template, file):
