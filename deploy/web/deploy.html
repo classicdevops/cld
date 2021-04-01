@@ -98,9 +98,10 @@
     }
     function appendfilecontentrec(id, deploy, objfiles, itter) {
         if (itter < objfiles.length) {
+            if (itter === 0) { var expanded = "true" } else { var expanded = "false" };
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
-                $('#'+id+'-accordion').append('<div class="panel panel-default" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+'" aria-expanded="true" style="cursor:pointer;">\
+                $('#'+id+'-accordion').append('<div class="panel panel-default" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
                     <div class="panel-heading">\
                       <h4 class="panel-title">\
                         <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+itter+'">\
