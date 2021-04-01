@@ -13,7 +13,6 @@
     <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/monokai-sublime.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
     <style type="text/css">
     /* This is not a zero-length file! */
     </style>
@@ -102,11 +101,13 @@
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
                 $('#'+id).append('<div>File: <div class="prein">' + objfiles[itter] + '</div></div>\
-                    <pre><code class="hljs bash">'+filecontent+'</code></pre>');
+                    <pre style="padding: 0px;"><code class="hljs bash">'+filecontent+'</code></pre>');
                 itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
             });
+        } else {
+            hljs.highlightAll();
         }
     }
     function appendcontent(id, deploy, deploytype) {
