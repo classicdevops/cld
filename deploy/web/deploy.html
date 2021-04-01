@@ -86,13 +86,14 @@
     function appendform(id, deploy) {
         $('#'+id).append('<form onsubmit="rundeploy(\''+id+'\', \''+deploy+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run</button>        </form>')
     }
-    function appendfilecontent(id, deploy, filename) {
-        $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
-            success: function (filecontent) {
-            $('#'+id).append('<div>File: <div class="prein">' + filename + '</div></div>\
-                <pre>'+filecontent+'</pre>')
-            }
-        });
+function appendfilecontent(id, deploy, filename) {
+      return $.ajax({
+        type: "GET",
+        url: "/deploy/deploys/"+deploy+"/"+filename,
+          dataType : 'text',
+        async: false
+      }).then((filecontent) =>  {$('#'+id).append('<div>File: <div class="prein">' + filename + '</div></div>\
+            <pre>'+filecontent+'</pre>')});
     }
     function appendcontent(id, deploy, deploytype) {
         String.prototype.capitalize = function() {
