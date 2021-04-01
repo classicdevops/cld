@@ -117,7 +117,7 @@ CRON="${CRON}"
 EOVARS
 fi
 
-if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_TEMPLATES" == "1" ]
+if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_TEMPLATES" == "1" -a "$TEMPLATE" = "" ]
 then
 echo "Please choose template:"
 echo
