@@ -21,6 +21,7 @@ import fcntl
 import shlex
 import threading
 import json
+from engineio.payload import Payload
 
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
@@ -108,7 +109,7 @@ template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 cli.show_server_banner = lambda *_: None
-
+Payload.max_decode_packets = 64
 app = Flask(__name__, template_folder=template_dir)
 socketio = SocketIO(app, cors_allowed_origins='https://'+cld_domain, threading=threading, threaded=True)
 app.config['UPLOAD_FOLDER'] = upload_dir
