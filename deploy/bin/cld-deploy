@@ -63,7 +63,7 @@ then
 RUN=1
 fi 
 
-if [ "$RUN" != "1" ]
+if [ "$RUN" != "1" -a "$DEPLOY" = "" ]
 then
 START_ARRAY=("New deploy" "Existing deploy" "Existing template")
 echo "Run action from:"
@@ -73,6 +73,9 @@ do
 [ "$START_CASE" == "Existing deploy" ] && FROM_DEPLOYS=1 && break
 [ "$START_CASE" == "Existing template" ] && FROM_TEMPLATES=1 && break
 done
+elif [ "$DEPLOY" ]
+then
+FROM_DEPLOYS=1
 fi
 
 if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
