@@ -6,6 +6,7 @@ EOL
 HELP_ARGS=$(cat << 'EOL'
 --run                              Start deploy in non-interactive mode - interactive mode all other cases
 --deploy=deployname                Name of deploy - required if non-interactive mode
+--template=templatename            Name of template - to create deploy from template - interactive mode
 $1                                 First PATTERN filtering existing deploys - interactive mode
 $2                                 Second PATTERN filtering existing deploys - interactive mode
 $3                                 Third PATTERN filtering existing deploys - interactive mode
@@ -46,6 +47,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)
 echo $OPTS | grep -q  '\--run' && RUN=1
 echo $OPTS | grep -q  '^\--list' && LIST=1
 echo $OPTS | grep -q  '^\--json' && JSON=1
@@ -63,7 +65,7 @@ then
 RUN=1
 fi 
 
-if [ "$RUN" != "1" -a "$DEPLOY" = "" ]
+if [ "$RUN" != "1" -a "$DEPLOY" = "" -a  "$TEMPLATE" = "" ]
 then
 START_ARRAY=("New deploy" "Existing deploy" "Existing template")
 echo "Run action from:"
@@ -76,6 +78,9 @@ done
 elif [ "$DEPLOY" ]
 then
 FROM_DEPLOYS=1
+elif [ "$TEMPLATE" ]
+then
+FROM_TEMPLATES=1
 fi
 
 if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
