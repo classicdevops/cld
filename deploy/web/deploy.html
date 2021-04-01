@@ -117,11 +117,18 @@
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
-            appendfilecontentrec(id, deploy, objfiles, 0);
-                // for (i in obj) {
-                //     var filename = obj[i]
-                //     appendfilecontent(id, deploy, filename)
-                // }
+            // appendfilecontentrec(id, deploy, objfiles, 0);
+for (i in objfiles) {
+  var filename = objfiles[i]
+  appendfilecontent(id, deploy, filename).then((data) => {
+    console.log(data)
+    $('#'+id).append('<div>File: <div class="prein">' + filename + '</div></div>\
+            <pre>'+data+'</pre>')
+  })
+      .catch((error) => {
+        console.log(error)
+      })
+}
             }
         });
     }
