@@ -128,7 +128,10 @@
         document.getElementById(id + "-tab").click();
         $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
         deploytypestr = deploytype.slice(0, -1);
-        $('#'+id+'-accordion').append(deploytypestr.capitalize()+": "+deploy+"<br><br>")
+        $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
+        if (deploytype == "deploys") {
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run deploy</button>')
+        }
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
@@ -148,9 +151,8 @@
         });
     }
     function rundeploy(id, deploy) {
-        var args = document.getElementById(id+'-arg').value;
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/ '+deploy+' '+args+'"></iframe>');
-        sleep(2000).then(() => {
+        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/--deploy='+deploy+'"></iframe>');
+        sleep(250).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
