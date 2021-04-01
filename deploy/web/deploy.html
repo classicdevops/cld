@@ -85,9 +85,6 @@
         $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')">⟳</button>' + deploy + '</a></li>'
         );
     }
-    function appendform(id, deploy) {
-        $('#'+id).append('<form onsubmit="rundeploy(\''+id+'\', \''+deploy+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run</button>        </form>')
-    }
     function appendfilecontent(id, deploy, filename) {
         $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
             success: function (filecontent) {
@@ -130,7 +127,7 @@
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         if (deploytype == "deploys") {
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%;">Run deploy</button><br><br>')
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \''+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
         }
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
