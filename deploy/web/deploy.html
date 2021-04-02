@@ -171,6 +171,24 @@
         appendtab(id, deploy, deploytype);
         appendcontent(id, deploy, deploytype);
     };
+    function newdeploytab(util) {
+        var id = idgen();
+        appendtab(id, util);
+        appenddeploycontent(id, util);
+    };
+    function appendform(id, util) {
+        $('#'+id).append('<form onsubmit="openutil(\''+id+'\', \''+util+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+util+'\')" style="width: 10%;">Run</button>        </form>')
+    }
+    function appenddeploycontent(id, util) {
+        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+        document.getElementById(id + "-tab").click();
+        appendform(id, util);
+        $.ajax({type : 'GET', url: "/help/"+util, dataType : 'text',
+            success: function (data) {
+            $('#'+id).append('<pre>'+data+'</pre>')
+            }
+        });
+    }
     function newdirecttab(deploy) {
         var id = idgen();
         appendtab(id, deploy);
@@ -223,7 +241,7 @@
                     <ul class="nav" id="ServerListUl">
                         <li><a onclick='newdirecttab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
                         {% for deploy_dict in deploys %}
-                            <li id="{{ deploy_dict['type'] }}><span><a onclick='newdeploytab("{{ deploy_dict['type'][:-1] }}")' class="nav-link active" id="{{ deploy_dict['type'][:-1] }}-link" data-toggle="tab" href="#{{ deploy_dict['type'][:-1] }}">type: {{ deploy_dict['type'] }}</a></span></li>
+                            <li id="{{ deploy_dict['type'] }}><span><a onclick='newdeploytab("cld-{{ deploy_dict['type'][:-1] }}")' class="nav-link active" id="{{ deploy_dict['type'][:-1] }}-link" data-toggle="tab" href="#{{ deploy_dict['type'][:-1] }}">type: {{ deploy_dict['type'] }}</a></span></li>
                             {% for deploy in deploy_dict['content'] %}
                             <li id="{{ deploy_dict['type'] }}-{{ deploy }}"><a onclick='newtab("{{ deploy }}", "{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
                             {% endfor %}
