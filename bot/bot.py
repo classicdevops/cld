@@ -15,7 +15,7 @@ def bash(cmd):
 
 def bot_bash_stream(cmd, message):
     openmessage = bot.send_message(message.chat.id, '`initializing`', parse_mode='Markdown', disable_web_page_preview='true')
-    if os.path.exists('/var/cld/tmp') != True: bash('mkdir /var/cld/tmp')
+    if os.path.exists('/var/cld/tmp') != True: bash('chattr -i /var/cld ; mkdir /var/cld/tmp ; chattr +i /var/cld')
     chars = 'abcdefjhgkmnopqrstuvwxyz1234567890'
     cmdid = ''
     for c in range(7):
