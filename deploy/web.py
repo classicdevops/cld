@@ -35,7 +35,7 @@ def deploy_deploy_file(deploy, file):
     return Response(bash('cat /var/cld/deploy/deploys/'+deploy+'/'+file), status=200, mimetype='text/plain')
 
 @app.route("/template/delete/<template>")
-def template_delete(template, file):
+def template_delete(template):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
@@ -48,7 +48,7 @@ def template_delete(template, file):
         return Response("Template not found", status=404, mimetype='text/plain')
 
 @app.route("/deploy/delete/<deploy>")
-def deploy_delete(deploy, file):
+def deploy_delete(deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
