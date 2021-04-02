@@ -18,6 +18,23 @@ p {
     margin: 0;
 }
 
+.win-size-grip {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    bottom: 0;
+    right: 0;
+    z-index: 5000;
+    cursor: nwse-resize;
+    -webkit-clip-path: polygon(100% 0,100% 100%,0 100%);
+    clip-path: polygon(100% 0,100% 100%,0 100%);
+    background: repeating-linear-gradient(135deg,hsla(0,0%,100%,.5),hsla(0,0%,100%,.5) 2px,#000 0,#000 4px);
+}
+
+iframe {
+border-radius: 5px 5px 0px;
+}
+
 .prein {
     display: inline;
     padding-left: 5px;
@@ -173,7 +190,7 @@ label {
   margin-left: 0;
 }
 
-        .ad {
+.ad {
 position: absolute;
 bottom: 70px;
 right: 48px;
