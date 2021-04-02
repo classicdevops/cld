@@ -89,6 +89,10 @@
             </a></li>'
         );
     }
+    function appenddeploytab(id, util) {
+        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+util+'\')">⟳</button>' + util + '</a></li>'
+        );
+    }
     function appendfilecontent(id, deploy, filename) {
         $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
             success: function (filecontent) {
@@ -181,7 +185,7 @@
     };
     function newdeploytab(util) {
         var id = idgen();
-        appendtab(id, util);
+        appenddeploytab(id, util);
         appenddeploycontent(id, util);
     };
     function appendform(id, util) {
@@ -203,6 +207,10 @@
         appendframe(id, deploy);
     };
     function updatetab(id, deploy, deploytype) {
+        $('#'+id).html('')
+        appendcontent(id, deploy, deploytype);
+    };
+    function updatedeploytab(id, deploy, deploytype) {
         $('#'+id).html('')
         appendcontent(id, deploy, deploytype);
     };
