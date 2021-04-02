@@ -27,9 +27,11 @@ done
 [ "$FILE_PATH" ] || echoexit1 File path is not defined - use --help argument for details
 
 FILE_NAME=$(rev <<< ${FILE_PATH} | cut -d / -f 1 | rev)
-FILE_ID=$(curl -sF chat_id="${TG_GROUP}" -F document=@"${FILE_PATH}" https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument | jq -r .result.document.file_id)
+OUTPUT_JSON=$(curl -sF chat_id="${TG_GROUP}" -F document=@"${FILE_PATH}" https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument)
+FILE_ID=$(jq -r .result.document.file_id <<< "$OUTPUT_JSON")
+MESSAGE_ID=$(jq -r .result.message_id <<< "$OUTPUT_JSON")
 DOWNLOAD_LINK=https://${CLD_DOMAIN}/api/all/tcloud/${FILE_ID}/${FILE_NAME}
 echo $DOWNLOAD_LINK
 sleep 0.5s
-curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=markdown&text=\`Download link: ${DOWNLOAD_LINK}\`" &>/dev/null
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageCaption?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&caption=\`Download link:%0A${DOWNLOAD_LINK}\`" &>/dev/null
 
