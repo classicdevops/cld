@@ -33,3 +33,29 @@ def deploy_deploy_file(deploy, file):
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     return Response(bash('cat /var/cld/deploy/deploys/'+deploy+'/'+file), status=200, mimetype='text/plain')
+
+@app.route("/template/delete/<template>")
+def template_delete(template, file):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user_allowed_deploys = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json')
+    if template in user_allowed_deploys[0]:
+        bash('rm -f /var/cld/deploy/templates/'+template+'/* /var/cld/deploy/templates/'+template+'/*/* &>/dev/null ; rmdir /var/cld/deploy/templates/'+template)
+        return Response("Template deleted", status=200, mimetype='text/plain')
+    else:
+        return Response("Template not found", status=404, mimetype='text/plain')
+
+@app.route("/deploy/delete/<deploy>")
+def deploy_delete(deploy, file):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user_allowed_deploys = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json')
+    if deploy in user_allowed_deploys[1]:
+        bash('rm -f /var/cld/deploy/deploys/'+deploy+'/* /var/cld/deploy/deploys/'+deploy+'/*/* &>/dev/null ; rmdir /var/cld/deploy/deploys/'+deploy)
+        return Response("Deploy deleted", status=200, mimetype='text/plain')
+    else:
+        return Response("Deploy not found", status=404, mimetype='text/plain')

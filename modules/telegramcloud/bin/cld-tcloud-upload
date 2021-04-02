@@ -34,4 +34,3 @@ DOWNLOAD_LINK=https://${CLD_DOMAIN}/api/all/tcloud/${FILE_ID}/${FILE_NAME}
 echo $DOWNLOAD_LINK
 sleep 0.5s
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageCaption?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&caption=\`Download link:%0A${DOWNLOAD_LINK}\`" &>/dev/null
-
