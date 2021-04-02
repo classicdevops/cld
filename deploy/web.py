@@ -41,7 +41,7 @@ def template_delete(template):
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user_allowed_deploys = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json')
-    if template in user_allowed_deploys[0]:
+    if template in user_allowed_deploys[0]['content']:
         bash('rm -f /var/cld/deploy/templates/'+template+'/* /var/cld/deploy/templates/'+template+'/*/* &>/dev/null ; rmdir /var/cld/deploy/templates/'+template)
         return Response("Template deleted", status=200, mimetype='text/plain')
     else:
@@ -54,7 +54,7 @@ def deploy_delete(deploy):
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user_allowed_deploys = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json')
-    if deploy in user_allowed_deploys[1]:
+    if deploy in user_allowed_deploys[1]['content']:
         bash('rm -f /var/cld/deploy/deploys/'+deploy+'/* /var/cld/deploy/deploys/'+deploy+'/*/* &>/dev/null ; rmdir /var/cld/deploy/deploys/'+deploy)
         return Response("Deploy deleted", status=200, mimetype='text/plain')
     else:
