@@ -38,6 +38,9 @@ def bot_bash_stream(cmd, message):
     if cmd_file_size != prev_cmd_file_size:
       try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```'+os.linesep+bash('tail -c 4090 /var/cld/tmp/bot_cmd_'+cmdid)+os.linesep+'```', parse_mode='Markdown')
       except: pass
+    elif cmd_file_size == 0:
+      try: bot.edit_message_text(chat_id=openmessage.chat.id, message_id=openmessage.message_id, text='```command returned null output```', parse_mode='Markdown')
+      except: pass
     bash('rm -f /var/cld/tmp/bot_cmd_'+cmdid+' /var/cld/tmp/bot_cmd_'+cmdid+'_end')
     return print('Command '+cmd+' completed', flush=True)
 
