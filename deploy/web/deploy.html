@@ -82,7 +82,11 @@
       return new Promise((resolve) => setTimeout(resolve, time));
     }
     function appendtab(id, deploy, deploytype) {
-        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')">⟳</button>' + deploy + '</a></li>'
+        $('#hostTab').append('<li class="nav-item" id="' + id + '-li">\
+            <a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false">\
+            <button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button>\
+            <button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')">⟳</button>' + deploy + '\
+            </a></li>'
         );
     }
     function appendfilecontent(id, deploy, filename) {
@@ -126,11 +130,8 @@
         $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
-        if (deploytype == "deploys") {
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--deploy='+deploy+'\')" style="width: 10%; min-width: 100px;">Run deploy</button><br><br>')
-        } else if (deploytype == "templates") {
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--template='+deploy+'\')" style="width: 10%; min-width: 100px;">Create deploy</button><br><br>')
-        }
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 100px;">Run '+deploytypestr+'</button><br><br>')
+        $('#'+id+'-accordion').append('<button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 100px;">Delete '+deploytypestr+'</button><br><br>')
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
@@ -154,6 +155,15 @@
         sleep(250).then(() => {
         console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
+        });
+    }
+    function deletedeploy(id, deploytype, deployname) {
+        $.ajax({type : 'GET', url: "/"+deploytype+"/delete/"+deployname, dataType : 'text',
+            success: function (data) {
+                document.getElementById(id+'-li').remove();
+                document.getElementById(id).remove();
+                document.getElementById(deploytype+'-'+deployname).remove();
+            }
         });
     }
     function newtab(deploy, deploytype) {
@@ -215,7 +225,7 @@
                         {% for deploy_dict in deploys %}
                             <li><span>type: {{ deploy_dict['type'] }}</span></li>
                             {% for deploy in deploy_dict['content'] %}
-                            <li><a onclick='newtab("{{ deploy }}", "{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
+                            <li id="{{ deploy_dict['type'] }}-{{ deploy }}"><a onclick='newtab("{{ deploy }}", "{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
                             {% endfor %}
                         {% endfor %}
                     </ul>
