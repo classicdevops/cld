@@ -51,6 +51,14 @@ border-radius: 4px;
     border-radius: 4px;
 }
 
+.aceinit {
+position: absolute;
+top: 0;
+right: 0;
+bottom: 0;
+left: 0;
+}
+
 li span a {
     color: gray !important;
     padding-left: 0px !important;
