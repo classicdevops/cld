@@ -213,12 +213,12 @@
         document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
         });
     }
-    function deletedeploy(id, deploytype, deployname) {
+    function deletedeploy(id, deploytype, deploy) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy, dataType : 'text',
             success: function (data) {
                 document.getElementById(id+'-li').remove();
                 document.getElementById(id).remove();
-                document.getElementById(deploytype+'-'+deployname).remove();
+                document.getElementById(deploytype+'-'+deploy).remove();
             }
         });
     }
