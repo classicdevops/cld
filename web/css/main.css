@@ -54,9 +54,9 @@ border-radius: 4px;
 
 .ace_editor {
     border: 1px solid lightgray;
-    margin: auto;
+    margin: 0;
     height: 200px;
-    width: 80%;
+    width: 100%%;
 }
 .scrollmargin {
     height: 80px;
