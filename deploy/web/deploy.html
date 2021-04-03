@@ -171,8 +171,8 @@
         });
     }
     function savedeploy(id){
-        $('#'+id+'-form').submit(function (e, id) {
-
+        $('#'+id+'-form').submit(function (e) {
+        console.log(id);
         e.preventDefault();
 
         $.ajax({
