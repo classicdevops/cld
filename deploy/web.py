@@ -34,31 +34,22 @@ def deploy_deploy_file(deploy, file):
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     return Response(bash('cat /var/cld/deploy/deploys/'+deploy+'/'+file), status=200, mimetype='text/plain')
 
-@app.route("/template/delete/<template>")
-def template_delete(template):
+@app.route("/deploy/delete/<deploytype>/<deploy>")
+def deploy_delete(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
-    if template in user_allowed_deploys[0]['content']:
-        bash('rm -f /var/cld/deploy/templates/'+template+'/* /var/cld/deploy/templates/'+template+'/*/* &>/dev/null ; rmdir /var/cld/deploy/templates/'+template)
-        return Response("Template deleted", status=200, mimetype='text/plain')
+    if deploytype == "templates":
+        deploys = user_allowed_deploys[0]['content']
+    elif deploytype == "deploys":
+        deploys = user_allowed_deploys[1]['content']
+    if deploy in deploys:
+        bash('rm -f /var/cld/deploy/'+deploytype+'/'+deploy+'/* /var/cld/deploy/'+deploytype+'/'+deploy+'/*/* &>/dev/null ; rmdir /var/cld/deploy/'+deploytype+'/'+deploy)
+        return Response(deploytype[:-1].capitalize()+" deleted", status=200, mimetype='text/plain')
     else:
-        return Response("Template not found", status=404, mimetype='text/plain')
-
-@app.route("/deploy/delete/<deploy>")
-def deploy_delete(deploy):
-  if 'username' in session:
-    user = session['username']
-    checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
-    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
-    if deploy in user_allowed_deploys[1]['content']:
-        bash('rm -f /var/cld/deploy/deploys/'+deploy+'/* /var/cld/deploy/deploys/'+deploy+'/*/* &>/dev/null ; rmdir /var/cld/deploy/deploys/'+deploy)
-        return Response("Deploy deleted", status=200, mimetype='text/plain')
-    else:
-        return Response("Deploy not found", status=404, mimetype='text/plain')
+        return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
 
 @app.route("/deploy/save/<deploytype>/<deploy>", methods=['POST'])
 def deploy_save(deploytype, deploy):

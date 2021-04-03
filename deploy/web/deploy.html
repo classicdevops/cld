@@ -158,7 +158,7 @@
         $('#'+id+'-accordion').append('\
             <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save deploy</button>  \
             <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
-            <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
+            <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytype+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
@@ -214,11 +214,11 @@
         });
     }
     function deletedeploy(id, deploytype, deployname) {
-        $.ajax({type : 'GET', url: "/"+deploytype+"/delete/"+deployname, dataType : 'text',
+        $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy, dataType : 'text',
             success: function (data) {
                 document.getElementById(id+'-li').remove();
                 document.getElementById(id).remove();
-                document.getElementById(deploytype+'s-'+deployname).remove();
+                document.getElementById(deploytype+'-'+deployname).remove();
             }
         });
     }
