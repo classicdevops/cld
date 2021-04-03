@@ -61,7 +61,7 @@ def deploy_delete(deploy):
         return Response("Deploy not found", status=404, mimetype='text/plain')
 
 @app.route("/deploy/save/<deploytype>/<deploy>", methods=['POST'])
-def deploy_save(deploy):
+def deploy_save(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
