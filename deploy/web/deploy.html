@@ -172,13 +172,10 @@
         });
     }
     function savedeploy(id, deploy, deploytype) {
-        $('#'+id+'-form')[0].submit(function(event){
-            event.preventDefault();
-            var form_data = new FormData(this); //Creates new FormData objectm.serialize() //Creates new FormData object
             $.ajax({
                 url : '/deploy/save/'+deploytype+'/'+deploy,
                 type: "POST",
-                data : form_data,
+                data : $('#'+id+'-form').serialize(),
                 cache: false,
                 processData:false,
                 success: function (id) {
@@ -192,7 +189,7 @@
                     console.log('An error occurred.');
                     }
             })
-        });
+
     }
     function appendframe(id, deploy) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
