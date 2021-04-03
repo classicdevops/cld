@@ -103,7 +103,7 @@
             }
         });
     }
-    function appendfilecontentrec(id, deploy, objfiles, itter) {
+    function appendfilecontentrec(id, deploy, deploytype, objfiles, itter) {
         if (itter < objfiles.length) {
             if (itter < 1) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
             var filename = objfiles[itter]
@@ -141,7 +141,7 @@
                    $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
                 });
                 itter++;
-                appendfilecontentrec(id, deploy, objfiles, itter);
+                appendfilecontentrec(id, deploy, deploytype, objfiles, itter);
                 }
             });
         }
@@ -163,7 +163,7 @@
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
-            appendfilecontentrec(id, deploy, objfiles, 0);
+            appendfilecontentrec(id, deploy, deploytype, objfiles, 0);
                 // for (i in obj) {
                 //     var filename = obj[i]
                 //     appendfilecontent(id, deploy, filename)
