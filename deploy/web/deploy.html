@@ -116,10 +116,18 @@
                     </div>\
                     <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'" style="position: relative;">\
                         <div class="panel-body" style="height: 55%;">\
-                    <div id="'+objfiles[itter]+id+'" class="aceinit">'+filecontent+'</div>\
+                    <pre id="'+objfiles[itter]+id+'">'+filecontent+'</pre>\
                     </div></div></div>');
-                ace.edit(objfiles[itter]+id).setTheme("ace/theme/monokai");
-                ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
+                ace.edit(objfiles[itter]+id, {
+                    theme: "ace/theme/monokai",
+                    mode: "ace/mode/sh",
+                    maxLines: 30,
+                    wrap: true,
+                    autoScrollEditorIntoView: true
+                });
+                // ace.edit(objfiles[itter]+id).setTheme("ace/theme/monokai");
+                // ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
+                // ace.edit(objfiles[itter]+id).session.setUseWrapMode(true);
                 itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
