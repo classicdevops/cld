@@ -172,29 +172,25 @@
         });
     }
     function savedeploy(id) {
-        var frm = $('#'+id+'-form');
-        frm.submit(function (e) {
-        console.log(id);
-        e.preventDefault();
-
-        $.ajax({
-            type: frm.attr('method'),
-            url: frm.attr('action'),
-            data: frm.serialize(),
-            success: function (data) {
+        $('#'+id+'-form').submit(function(event){
+            event.preventDefault(); //prevent default action 
+            var post_url = $(this).attr("action"); //get form action url
+            var request_method = $(this).attr("method"); //get form GET/POST method
+            var form_data = new FormData(this); //Creates new FormData object
+            $.ajax({
+                url : post_url,
+                type: request_method,
+                data : form_data,
+                contentType: false,
+                cache: false,
+                processData:false
+            }).done(function(response){ //
                 $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
-                sleep(1000).then(() => {
-                $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
-                });
-                console.log('Submission was successful.');
-                console.log(data);
-            },
-            error: function (data) {
-                console.log('An error occurred.');
-                console.log(data);
-            }
+                    sleep(1000).then(() => {
+                    $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
+                    });
+            });
         });
-    });
     }
     function appendframe(id, deploy) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
