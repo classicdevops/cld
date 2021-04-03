@@ -73,6 +73,7 @@ def deploy_save(deploytype, deploy):
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
         deployfiles = dict(request.form)
+        print("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, flush=True)
         for deployfile in deployfiles:
             f = open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w")
             f.write(deployfiles[deployfile])
