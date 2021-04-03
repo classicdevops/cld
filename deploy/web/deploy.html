@@ -172,7 +172,7 @@
         });
     }
     function savedeploy(id) {
-        $('#'+id+'-form').submit(function(event){
+        $('#'+id+'-form')[0].submit(function(event){
             var post_url = $(this).attr("action"); //get form action url
             var request_method = $(this).attr("method"); //get form GET/POST method
             var form_data = new FormData(this); //Creates new FormData object
