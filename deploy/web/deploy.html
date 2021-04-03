@@ -171,7 +171,7 @@
         });
     }
     function savedeploy(id){
-        $('#'+id+'-form').submit(function (e) {
+        $('#'+id+'-form').submit(function (e, id) {
 
         e.preventDefault();
 
@@ -192,6 +192,7 @@
                 console.log(data);
             },
         });
+    };
     }
     function appendframe(id, deploy) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
