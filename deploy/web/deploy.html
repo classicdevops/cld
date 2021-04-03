@@ -156,7 +156,7 @@
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         $('#'+id+'-accordion').append('\
-            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploytype+'\', \''+deploy+'\')" id="'+id+'-form-button">Save deploy</button>  \
+            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\')" id="'+id+'-form-button">Save deploy</button>  \
             <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
             <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;" method="POST" action="/deploy/save/'+deploytype+'/'+deploy+'"></form>')
@@ -171,23 +171,30 @@
             }
         });
     }
-    function savedeploy(id, deploytype, deploy){
-        $('#'+id+'-form').ajaxForm({
-        url: '/deploy/'+deploytype+'/'+deploy,
-        type: 'post',
-        success: function (data) {
-                        $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
-                        sleep(1000).then(() => {
-                        $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
-                        });
-                        console.log('Submission was successful.');
-                        console.log(data);
-                    },
-                    error: function (data) {
-                        console.log('An error occurred.');
-                        console.log(data);
-                    }
-    })
+    function savedeploy(id) {
+        var frm = $('#'+id+'-form');
+        frm.submit(function (e) {
+        console.log(id);
+        e.preventDefault();
+
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
+                sleep(1000).then(() => {
+                $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
+                });
+                console.log('Submission was successful.');
+                console.log(data);
+            },
+            error: function (data) {
+                console.log('An error occurred.');
+                console.log(data);
+            }
+        });
+    });
     }
     function appendframe(id, deploy) {
         $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
