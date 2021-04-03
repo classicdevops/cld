@@ -106,20 +106,21 @@
     function appendfilecontentrec(id, deploy, objfiles, itter) {
         if (itter < objfiles.length) {
             if (itter < 1) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
-            $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
+            var filename = objfiles[itter]
+            $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+filename, dataType : 'text',
                 success: function (filecontent) {
                 $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'">\
                     <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
                       <h4 class="panel-title">\
                         <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'">\
-                                file: '+objfiles[itter]+'</a>\
+                                file: '+filename+'</a>\
                         </h4>\
                     </div>\
                     <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'">\
                         <div class="panel-body aceinit">\
-                    <pre id="'+objfiles[itter]+id+'">'+filecontent+'\n</pre>\
+                    <pre id="'+filename+id+'">'+filecontent+'\n</pre>\
                     </div></div></div>');
-                ace.edit(objfiles[itter]+id, {
+                ace.edit(filename+id, {
                     theme: "ace/theme/monokai",
                     keyboardHandler: "ace/keyboard/sublime",
                     foldStyle: "markbeginend",
@@ -129,15 +130,15 @@
                     wrap: true,
                     autoScrollEditorIntoView: true
                 });
-                // ace.edit(objfiles[itter]+id).setTheme("ace/theme/monokai");
-                // ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
-                // ace.edit(objfiles[itter]+id).session.setUseWrapMode(true);
+                // ace.edit(filename+id).setTheme("ace/theme/monokai");
+                // ace.edit(filename+id).session.setMode("ace/mode/sh");
+                // ace.edit(filename+id).session.setUseWrapMode(true);
                 var editor = {}
-                var editor[objfiles[itter]+id] = ace.edit(objfiles[itter]+id);
-                $('#'+id+'-form').append('<textarea name="'+objfiles[itter]+'" id="textarea'+objfiles[itter]+id+'"></textarea>')
-                $('#textarea'+objfiles[itter]+id).val(editor[objfiles[itter]+id].getSession().getValue());
-                editor[objfiles[itter]+id].getSession().on('change', function () {
-                   $('#textarea'+objfiles[itter]+id).val(editor[objfiles[itter]+id].getSession().getValue());
+                var editor[filename+id] = ace.edit(filename+id);
+                $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
+                $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+                editor[filename+id].getSession().on('change', function () {
+                   $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
                 });
                 itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
