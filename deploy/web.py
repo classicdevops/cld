@@ -74,7 +74,7 @@ def deploy_save(deploytype, deploy):
     if deploy in deploys:
         deployfiles = dict(request.form)
         for deployfile in deployfiles:
-            f = open("/var/cld/deploy/"+deploytype+"/"+deploy, "w")
+            f = open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w")
             f.write(deployfiles[deployfile])
             f.close()
             print(deployfile, flush=True)
