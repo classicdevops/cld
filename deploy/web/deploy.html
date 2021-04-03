@@ -133,6 +133,11 @@
                 // ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
                 // ace.edit(objfiles[itter]+id).session.setUseWrapMode(true);
                 itter++;
+                $('#'+id+'-form').append('<textarea name="'+objfiles[itter]+'" id="textarea'+objfiles[itter]+id+'"></textarea>')
+                ace.edit(objfiles[itter]+id).getSession().on('change', function () {
+                   $('#textarea'+objfiles[itter]+id).val(editor.getSession().getValue());
+                });
+                ace.edit(objfiles[itter]+id).val(editor.getSession().getValue());
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
             });
@@ -149,6 +154,7 @@
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  ')
         $('#'+id+'-accordion').append('<button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
+        $('#'+id+'-accordion').append('<form id="'id+'-form"></form>')
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
