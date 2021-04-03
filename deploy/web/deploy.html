@@ -173,11 +173,12 @@
     }
     function savedeploy(id, deploy, deploytype) {
         $('#'+id+'-form')[0].submit(function(event){
-            var form_data = new FormData(this);
+            event.preventDefault();
+            var form_data = new FormData(this); //Creates new FormData objectm.serialize() //Creates new FormData object
             $.ajax({
                 url : '/deploy/save/'+deploytype+'/'+deploy,
-                type: "POST"
-                data: form_data,
+                type: "POST",
+                data : form_data,
                 cache: false,
                 processData:false,
                 success: function (id) {
