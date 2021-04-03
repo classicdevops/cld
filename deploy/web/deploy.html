@@ -170,7 +170,7 @@
             }
         });
     }
-    function savedeploy(id){
+    function savedeploy(id, deploytype, deploy){
         var frm = $('#'+id+'-form');
         frm.submit(function (e) {
         console.log(id);
@@ -191,7 +191,7 @@
             error: function (data) {
                 console.log('An error occurred.');
                 console.log(data);
-            },
+            }
         });
     });
     }
