@@ -135,7 +135,7 @@
                 // ace.edit(filename+id).session.setUseWrapMode(true);
                 var editor = [];
                 editor[ filename+id ] = ace.edit(filename+id);
-                $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'" style="display: none;"></textarea>')
+                $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
                 $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
                 editor[filename+id].getSession().on('change', function () {
                    $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
