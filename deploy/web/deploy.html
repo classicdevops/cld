@@ -178,14 +178,14 @@
                 data : $('#'+id+'-form').serialize(),
                 cache: false,
                 processData:false,
-                success: function (id) {
+                success: function (data) {
                     $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
                     sleep(1000).then(() => {
                     $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
                     });
                     console.log('Submission was successful.');
                     },
-                error: function (id) {
+                error: function (data) {
                     console.log('An error occurred.');
                     }
             })
