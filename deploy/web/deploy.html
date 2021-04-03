@@ -132,12 +132,12 @@
                 // ace.edit(objfiles[itter]+id).setTheme("ace/theme/monokai");
                 // ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
                 // ace.edit(objfiles[itter]+id).session.setUseWrapMode(true);
-                itter++;
                 $('#'+id+'-form').append('<textarea name="'+objfiles[itter]+'" id="textarea'+objfiles[itter]+id+'"></textarea>')
                 ace.edit(objfiles[itter]+id).getSession().on('change', function () {
                    $('#textarea'+objfiles[itter]+id).val(ace.edit(objfiles[itter]+id).getSession().getValue());
                 });
-                ace.edit(objfiles[itter]+id).val(ace.edit(objfiles[itter]+id).getSession().getValue());
+                $('#textarea'+objfiles[itter]+id).val(ace.edit(objfiles[itter]+id).getSession().getValue());
+                itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
             });
