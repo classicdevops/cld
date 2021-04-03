@@ -72,7 +72,7 @@ def deploy_save(deploytype, deploy):
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        print(str(request.form)+" "str(dir(request.form)), flush=True)
+        print(str(request.form)+" "+str(dir(request.form)), flush=True)
         return Response(deploytype[:-1].capitalize()+" saved", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
