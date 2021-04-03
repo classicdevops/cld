@@ -74,7 +74,7 @@ def deploy_save(deploytype, deploy):
     if deploy in deploys:
         deployfiles = dict(request.form)
         for deployfile in deployfiles:
-            print(str(deployfile), flush=True)
+            print(str(deployfiles[deployfile]), flush=True)
         return Response(deploytype[:-1].capitalize()+" saved", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
