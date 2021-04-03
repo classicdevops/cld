@@ -156,7 +156,7 @@
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         $('#'+id+'-accordion').append('\
-            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save deploy</button>  \
+            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save '+deploytypestr+'</button>  \
             <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
             <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytype+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
