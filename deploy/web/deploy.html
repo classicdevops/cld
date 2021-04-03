@@ -133,7 +133,7 @@
                 // ace.edit(filename+id).setTheme("ace/theme/monokai");
                 // ace.edit(filename+id).session.setMode("ace/mode/sh");
                 // ace.edit(filename+id).session.setUseWrapMode(true);
-                var editor = {}
+                var editor = [];
                 var editor[filename+id] = ace.edit(filename+id);
                 $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
                 $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
