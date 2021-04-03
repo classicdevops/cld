@@ -74,6 +74,9 @@ def deploy_save(deploytype, deploy):
     if deploy in deploys:
         deployfiles = dict(request.form)
         for deployfile in deployfiles:
+            f = open("/var/cld/deploy/"+deploytype+"/"+deploy, "w")
+            f.write(deployfiles[deployfile])
+            f.close()
             print(deployfile, flush=True)
             print(str(deployfiles[deployfile]), flush=True)
         return Response(deploytype[:-1].capitalize()+" saved", status=200, mimetype='text/plain')
