@@ -60,7 +60,7 @@ def deploy_delete(deploy):
     else:
         return Response("Deploy not found", status=404, mimetype='text/plain')
 
-@app.route("/deploy/save/<deploytype>/<deploy>")
+@app.route("/deploy/save/<deploytype>/<deploy>", methods=['POST'])
 def deploy_save(deploy):
   if 'username' in session:
     user = session['username']
