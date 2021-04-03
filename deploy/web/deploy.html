@@ -173,7 +173,7 @@
     }
     function savedeploy(id, deploy, deploytype) {
         $('#'+id+'-form')[0].submit(function(event){
-            var form_data = $(this)serialize();
+            var form_data = $(this).serialize();
             $.ajax({
                 url : '/deploy/save/'+deploytype+'/'+deploy,
                 type: "POST"
