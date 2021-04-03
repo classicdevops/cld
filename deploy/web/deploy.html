@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
     <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/agate.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/highlight.min.js"></script>
+    <script src="https://ace.c9.io/build/src/ace.js" type="text/javascript" charset="utf-8"></script>
     <style type="text/css">
     /* This is not a zero-length file! */
     </style>
@@ -115,14 +116,26 @@
                     </div>\
                     <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'">\
                         <div class="panel-body" style="padding: 0;">\
-                    <pre style="padding: 0px; margin: 0px; border: 0; border-radius: 0 0 4px 4px;"><code class="hljs bash">'+filecontent+'</code></pre></div></div></div>');
-                hljs.highlightAll();
+                    <div id="'+objfiles[itter]+id+'">'+filecontent+'</div>\
+                    </div></div></div>');
+                    (function(){
+                    let style = `<style type="text/css" media="screen">
+                    #`+objfiles[itter]+id+` { 
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    }
+                    </style>`;
+                    document.head.insertAdjacentHTML("beforeend", style);
+                    })();
+                ace.edit(objfiles[itter]+id).setTheme("ace/theme/monokai");
+                ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
                 itter++;
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
             });
-        } else {
-            hljs.highlightAll();
         }
     }
     function appendcontent(id, deploy, deploytype) {
