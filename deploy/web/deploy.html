@@ -156,10 +156,10 @@
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         $('#'+id+'-accordion').append('\
-            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\')" id="'+id+'-form-button">Save deploy</button>  \
+            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')" id="'+id+'-form-button">Save deploy</button>  \
             <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
             <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
-        $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;" method="POST" action="/deploy/save/'+deploytype+'/'+deploy+'"></form>')
+        $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
             var objfiles = JSON.parse(files);
@@ -171,16 +171,13 @@
             }
         });
     }
-    function savedeploy(id) {
+    function savedeploy(id, deploy, deploytype) {
         $('#'+id+'-form')[0].submit(function(event){
-            event.stopImmediatePropagation();
-            var form = $(this);
-            var post_url = form.attr("action"); //get form action url
-            var request_method = form.attr("method"); //get form GET/POST method
-            var form_data = form.serialize() //Creates new FormData object
+            var post_url = '/deploy/save/'+deploytype+'/'+deploy
+            var form_data = new FormData(this); //Creates new FormData objectm.serialize() //Creates new FormData object
             $.ajax({
                 url : post_url,
-                type: request_method,
+                type: "POST"
                 data : form_data,
                 cache: false,
                 processData:false,
