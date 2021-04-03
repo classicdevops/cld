@@ -172,8 +172,8 @@
         });
     }
     function savedeploy(id) {
-        $('#'+id+'-form')[0].submit(function(e){
-            e.preventDefault(event);
+        $('#'+id+'-form')[0].submit(function(event){
+            event.stopImmediatePropagation();
             var form = $(this);
             var post_url = form.attr("action"); //get form action url
             var request_method = form.attr("method"); //get form GET/POST method
