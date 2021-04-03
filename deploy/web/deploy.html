@@ -156,9 +156,8 @@
         deploytypestr = deploytype.slice(0, -1);
         $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
         $('#'+id+'-accordion').append('<button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
-            <button type="submit" class="btn btn-light bt mb-2 ">Save deploy</button>  \
+            <button type="submit" class="btn btn-primary bt mb-2 ">Save deploy</button>  \
             <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
-        $('#'+id+'-accordion').append('<button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;" method="POST" action="/deploy/save/'+deploytype+'/'+deploy+'"></form>')
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
