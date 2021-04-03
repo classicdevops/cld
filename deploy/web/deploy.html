@@ -180,7 +180,7 @@
                 processData:false,
                 success: function (data) {
                     $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
-                    sleep(1000).then(() => {
+                    sleep(500).then(() => {
                     $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
                     });
                     console.log('Submission was successful.');
