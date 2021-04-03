@@ -104,7 +104,7 @@
     }
     function appendfilecontentrec(id, deploy, objfiles, itter) {
         if (itter < objfiles.length) {
-            if (itter > 0) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
+            if (itter < 999) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
                 $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'">\
