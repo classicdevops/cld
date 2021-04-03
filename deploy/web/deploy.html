@@ -135,9 +135,9 @@
                 itter++;
                 $('#'+id+'-form').append('<textarea name="'+objfiles[itter]+'" id="textarea'+objfiles[itter]+id+'"></textarea>')
                 ace.edit(objfiles[itter]+id).getSession().on('change', function () {
-                   $('#textarea'+objfiles[itter]+id).val(editor.getSession().getValue());
+                   $('#textarea'+objfiles[itter]+id).val(ace.edit(objfiles[itter]+id).getSession().getValue());
                 });
-                ace.edit(objfiles[itter]+id).val(editor.getSession().getValue());
+                ace.edit(objfiles[itter]+id).val(ace.edit(objfiles[itter]+id).getSession().getValue());
                 appendfilecontentrec(id, deploy, objfiles, itter);
                 }
             });
