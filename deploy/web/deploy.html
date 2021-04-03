@@ -172,13 +172,14 @@
     }
     function savedeploy(id){
         $('#'+id+'-form').submit(function (e) {
+        var frm = $('#'+id+'-form');
         console.log(id);
         e.preventDefault();
 
         $.ajax({
-            type: $('#'+id+'-form').attr('method'),
-            url: $('#'+id+'-form').attr('action'),
-            data: $('#'+id+'-form').serialize(),
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
             success: function (data) {
                 $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
                 sleep(1000).then(() => {
