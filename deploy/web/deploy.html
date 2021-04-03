@@ -104,7 +104,7 @@
     }
     function appendfilecontentrec(id, deploy, objfiles, itter) {
         if (itter < objfiles.length) {
-            if (itter < 999) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
+            if (itter < 1) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
             $.ajax({type : 'GET', url: "/deploy/deploys/"+deploy+"/"+objfiles[itter], dataType : 'text',
                 success: function (filecontent) {
                 $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'">\
@@ -114,7 +114,7 @@
                                 file: '+objfiles[itter]+'</a>\
                         </h4>\
                     </div>\
-                    <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'" style="position: relative;">\
+                    <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'">\
                         <div class="panel-body aceinit">\
                     <pre id="'+objfiles[itter]+id+'">'+filecontent+'</pre>\
                     </div></div></div>');
@@ -122,6 +122,7 @@
                     theme: "ace/theme/monokai",
                     mode: "ace/mode/sh",
                     maxLines: 30,
+                    minLines: 2,
                     wrap: true,
                     autoScrollEditorIntoView: true
                 });
