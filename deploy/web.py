@@ -59,3 +59,20 @@ def deploy_delete(deploy):
         return Response("Deploy deleted", status=200, mimetype='text/plain')
     else:
         return Response("Deploy not found", status=404, mimetype='text/plain')
+
+@app.route("/deploy/save/<deploytype>/<deploy>")
+def deploy_save(deploy):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+    if deploytype == "templates":
+        deploys = user_allowed_deploys[0]['content']
+    elif deploytype == "deploys":
+        deploys = user_allowed_deploys[1]['content']
+    if deploy in deploys:
+        print(str(request.data), flush=True)
+        return Response(deploytype[:-1].capitalize()" saved", status=200, mimetype='text/plain')
+    else:
+        return Response(deploytype[:-1].capitalize()" not found", status=404, mimetype='text/plain')
