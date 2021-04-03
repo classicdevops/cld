@@ -116,13 +116,14 @@
                     </div>\
                     <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'">\
                         <div class="panel-body aceinit">\
-                    <pre id="'+objfiles[itter]+id+'">'+filecontent+'</pre>\
+                    <pre id="'+objfiles[itter]+id+'">'+filecontent+'\
+                    </pre>\
                     </div></div></div>');
                 ace.edit(objfiles[itter]+id, {
                     theme: "ace/theme/monokai",
                     mode: "ace/mode/sh",
                     maxLines: 30,
-                    minLines: 2,
+                    minLines: 5,
                     wrap: true,
                     autoScrollEditorIntoView: true
                 });
