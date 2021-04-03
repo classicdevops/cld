@@ -159,9 +159,6 @@
             <button type="submit" class="btn btn-light bt mb-2 ">Save deploy</button>  \
             <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
         $('#'+id+'-accordion').append('<button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytypestr+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button><br><br>')
-        \
-        <button type="submit" class="btn btn-light bt mb-2 ">Save deploy</button>\
-
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;" method="POST" action="/deploy/save/'+deploytype+'/'+deploy+'"></form>')
         $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy, dataType : 'text',
             success: function (files) {
