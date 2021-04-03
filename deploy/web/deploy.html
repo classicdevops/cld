@@ -133,7 +133,7 @@
                 // ace.edit(objfiles[itter]+id).session.setMode("ace/mode/sh");
                 // ace.edit(objfiles[itter]+id).session.setUseWrapMode(true);
                 var editor = {}
-                var editor[objfiles[itter]+id] = ace.edit("objfiles[itter]+id");
+                var editor[objfiles[itter]+id] = ace.edit(objfiles[itter]+id);
                 $('#'+id+'-form').append('<textarea name="'+objfiles[itter]+'" id="textarea'+objfiles[itter]+id+'"></textarea>')
                 $('#textarea'+objfiles[itter]+id).val(editor[objfiles[itter]+id].getSession().getValue());
                 editor[objfiles[itter]+id].getSession().on('change', function () {
