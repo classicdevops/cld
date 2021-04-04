@@ -35,7 +35,7 @@ def deploy_deploy_file(deploytype, deploy, file):
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
 
 @app.route("/deploy/<deploytype>/<deploy>/files")
-def deploy_deploy_file(deploytype, deploy, file):
+def deploy_deploy_files(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
