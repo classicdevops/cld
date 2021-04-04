@@ -11,7 +11,7 @@ def deploy_index():
     return render_template('modules/deploy/deploy.html', username=user, deploys=deploys)
 
 @app.route("/deploy/<deploytype>/<deploy>/files")
-def deploy_deploy_files(deploytype, deploy):
+def deploy_files(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
@@ -25,7 +25,7 @@ def deploy_deploy_files(deploytype, deploy):
         deploy_file_list = bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+deploytype+'/'+deploy+') ; for CLD_FILE in vars script clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')
         deploy_file_dict = {}
         for deploy_file in deploy_file_list:
-            deploy_file_dict[deploy_file] = bash('cat /var/cld/deploy/'+deploytype+'/'+deploy+'/'+deploy_file+' | tr -d "\r"')
+            deploy_file_dict[deploy_file] = open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+deploy_file, 'r').read()
         return Response(json.dumps(deploy_file_dict), status=200, mimetype='application/json')
 
 @app.route("/deploy/<deploytype>/<deploy>/<file>")
