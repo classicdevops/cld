@@ -92,6 +92,15 @@ border-radius: 4px;
   margin-right: -1px;
 }
 
+.form-inline {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 .input-group-text {
   display: -ms-flexbox;
   display: flex;
