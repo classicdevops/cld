@@ -97,12 +97,13 @@
     }
     function appendfilecontent(id, deploy, deploytype, filecontent, filename) {
         if (filename == "vars") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
-        $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'">\
+        $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'" id="panel'+filename+id'">\
             <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
               <h4 class="panel-title">\
                 <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'">\
                         file: '+filename+'</a>\
                 </h4>\
+                <button class="btn btn-danger deploy_del_btn_file" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filename+'\')"">delete</button>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\
@@ -125,6 +126,14 @@
         $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         editor[filename+id].getSession().on('change', function () {
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+        });
+    }
+    function deletedeployfile(id, deploytype, deploy, filename) {
+        $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
+            success: function (data) {
+                document.getElementById("panel"+filename+id).remove();
+                document.getElementById("textarea"+filename+id).remove();
+            }
         });
     }
     function appendcontent(id, deploy, deploytype) {
