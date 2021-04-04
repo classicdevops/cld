@@ -126,49 +126,6 @@
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
     }
-    function appendfilecontentrec(id, deploy, deploytype, objfiles, itter) {
-        if (itter < 0) {
-            if (itter < 1) { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
-            var filename = objfiles[itter]
-            $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy+"/"+filename, dataType : 'text',
-                success: function (filecontent) {
-                $('#'+id+'-accordion').append('<div class="panel panel-default'+collapsed+'">\
-                    <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
-                      <h4 class="panel-title">\
-                        <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+itter+'">\
-                                file: '+filename+'</a>\
-                        </h4>\
-                    </div>\
-                    <div id="collapse'+id+itter+'" class="panel-collapse collapse'+toggle+'">\
-                        <div class="panel-body aceinit">\
-                    <pre id="'+filename+id+'">'+filecontent+'\n</pre>\
-                    </div></div></div>');
-                ace.edit(filename+id, {
-                    theme: "ace/theme/monokai",
-                    keyboardHandler: "ace/keyboard/sublime",
-                    foldStyle: "markbeginend",
-                    mode: "ace/mode/sh",
-                    maxLines: 30,
-                    minLines: 5,
-                    wrap: true,
-                    autoScrollEditorIntoView: true
-                });
-                // ace.edit(filename+id).setTheme("ace/theme/monokai");
-                // ace.edit(filename+id).session.setMode("ace/mode/sh");
-                // ace.edit(filename+id).session.setUseWrapMode(true);
-                var editor = [];
-                editor[ filename+id ] = ace.edit(filename+id);
-                $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
-                $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
-                editor[filename+id].getSession().on('change', function () {
-                   $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
-                });
-                itter++;
-                appendfilecontentrec(id, deploy, deploytype, objfiles, itter);
-                }
-            });
-        }
-    }
     function appendcontent(id, deploy, deploytype) {
         String.prototype.capitalize = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
