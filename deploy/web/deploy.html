@@ -118,12 +118,13 @@
             wrap: true,
             autoScrollEditorIntoView: true
         });
-        editor = ace.edit(filename+id);
-        editor.renderer.setScrollMargin(10, 10, 10, 0);
+        var editor = [];
+        editor[filename+id] = ace.edit(filename+id);
+        editor[filename+id].renderer.setScrollMargin(10, 10, 0, 0);
         $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
-        $('#textarea'+filename+id).val(editor.getSession().getValue());
-        editor.getSession().on('change', function () {
-           $('#textarea'+filename+id).val(editor.getSession().getValue());
+        $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+        editor[filename+id].getSession().on('change', function () {
+           $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
     }
     function appendcontent(id, deploy, deploytype) {
