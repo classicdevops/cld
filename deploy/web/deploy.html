@@ -95,7 +95,8 @@
         $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatedeploytab(\''+id+'\', \''+util+'\')">⟳</button>' + util + '</a></li>'
         );
     }
-    function appendfilecontent(id, deploy, deploytype, filecontent, filename) {
+    function appendfilecontent(id, deploy, deploytype, filecontent, filenamestr) {
+        var filename = filenamestr.replace(' ', '_')
         if (filename == "vars") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
         $('#'+id+'-accordion').append('<div id="panel'+filename+id+'" class="panel panel-default'+collapsed+'">\
             <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
