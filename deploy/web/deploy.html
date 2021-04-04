@@ -116,11 +116,11 @@
             maxLines: 30,
             minLines: 5,
             wrap: true,
-            autoScrollEditorIntoView: true,
-            scrollMargin: 10 10 10 10
+            autoScrollEditorIntoView: true
         });
         var editor = [];
         editor[ filename+id ] = ace.edit(filename+id);
+        [filename+id].renderer.setScrollMargin(0, 10, 10, 0);
         $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
         $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         editor[filename+id].getSession().on('change', function () {
