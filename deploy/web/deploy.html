@@ -104,7 +104,7 @@
                 <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'">\
                         file: '+filenamestr+'</a>\
                 </h4>\
-                <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filename+'\')">✖</button>\
+                <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\
@@ -132,8 +132,8 @@
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
             success: function (data) {
-                document.getElementById("panel"+filename+id).remove();
-                document.getElementById("textarea"+filename+id).remove();
+                document.getElementById("panel"+filename.replace(' ', '_')+id).remove();
+                document.getElementById("textarea"+filename.replace(' ', '_')+id).remove();
             }
         });
     }
