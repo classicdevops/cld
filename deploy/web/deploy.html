@@ -102,7 +102,7 @@
             <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
               <h4 class="panel-title">\
                 <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'">\
-                        file: '+filename+'</a>\
+                        file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filename+'\')">✖</button>\
             </div>\
@@ -123,7 +123,7 @@
         var editor = [];
         editor[filename+id] = ace.edit(filename+id);
         editor[filename+id].renderer.setScrollMargin(10, 15, 0, 0);
-        $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
+        $('#'+id+'-form').append('<textarea name="'+filenamestr+'" id="textarea'+filename+id+'"></textarea>')
         $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         editor[filename+id].getSession().on('change', function () {
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
