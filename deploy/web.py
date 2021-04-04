@@ -76,9 +76,7 @@ def deploy_save(deploytype, deploy):
         deployfiles = dict(request.form)
         print("/var/cld/deploy/"+deploytype+"/"+deploy+"/", flush=True)
         for deployfile in deployfiles:
-            f = open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w")
-            f.write(deployfiles[deployfile])
-            f.close()
+            open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w").write(deployfiles[deployfile])
             print(deployfile, flush=True)
             print(str(deployfiles[deployfile]), flush=True)
         return Response(deploytype[:-1].capitalize()+" saved", status=200, mimetype='text/plain')
