@@ -56,7 +56,7 @@ def deploy_delete_file(deploytype, deploy, file):
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        bash('rm -f /var/cld/deploy/'+deploytype+'/'+deploy+'/'+file)
+        os.remove('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+file)
         return Response("File: "+file+" deleted", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
@@ -74,11 +74,8 @@ def deploy_save(deploytype, deploy):
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
         deployfiles = dict(request.form)
-        print("/var/cld/deploy/"+deploytype+"/"+deploy+"/", flush=True)
         for deployfile in deployfiles:
             open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w").write(deployfiles[deployfile])
-            print(deployfile, flush=True)
-            print(str(deployfiles[deployfile]), flush=True)
         return Response(deploytype[:-1].capitalize()+" saved", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
