@@ -154,7 +154,9 @@
             success: function (objfiles) {
             // appendfilecontentrec(id, deploy, deploytype, objfiles, 0);
                 for (filename in objfiles) {
-                    appendfilecontent(id, deploy, deploytype, objfiles[filename], filename)
+                    if (filename != ""){
+                        appendfilecontent(id, deploy, deploytype, objfiles[filename], filename)
+                    }
                 }
             }
         });
