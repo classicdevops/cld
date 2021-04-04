@@ -120,7 +120,7 @@
         });
         var editor = [];
         editor[filename+id] = ace.edit(filename+id);
-        editor[filename+id].renderer.setScrollMargin(10, 10, 0, 0);
+        editor[filename+id].renderer.setScrollMargin(10, 15, 0, 0);
         $('#'+id+'-form').append('<textarea name="'+filename+'" id="textarea'+filename+id+'"></textarea>')
         $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         editor[filename+id].getSession().on('change', function () {
