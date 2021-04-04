@@ -53,9 +53,9 @@ border-radius: 4px;
 
 .dpl_del_file_btn {
     float: right;
-    margin-top: -20;
-    margin-right: -10;
-    padding: 0 4;
+    margin-top: -20px;
+    margin-right: -10px;
+    padding: 0px 4px;
 }
 
 .ace_editor {
@@ -65,14 +65,15 @@ border-radius: 4px;
     height: 200px;
     width: 100%;
 }
+
 .scrollmargin {
     height: 80px;
     text-align: center;
 }
 
 .aceinit {
-margin: -1px;
-padding: 0px;
+    margin: -1px;
+    padding: 0px;
 }
 
 li span a {
