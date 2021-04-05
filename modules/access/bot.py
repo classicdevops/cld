@@ -14,5 +14,5 @@ def cmd_myip(message):
     cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myipbot '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip))
     last_message = bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown', disable_web_page_preview='true')
     open("/var/cld/modules/access/data/myip_token_chats", "a").write(cmdoutput.split('=')[1]+"_"+str(last_message.message_id)+"_"+str(message.chat.id)+"\n")
-    #sleep(60)
-    #bot.delete_message(last_message.chat.id, last_message.message_id)
+    sleep(60)
+    bot.delete_message(last_message.chat.id, last_message.message_id)
