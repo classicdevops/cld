@@ -18,14 +18,19 @@ source /var/cld/bin/include/cldfuncs
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 TOKEN_SET=$(grep "${2}" /var/cld/modules/access/data/myip_tokens)
 [ "$TOKEN_SET" ] || { echo 403 ; exit 1 ; }
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 TOKEN=$(cut -d _ -f 1 <<< ${TOKEN_SET})
 USERID=$(cut -d _ -f 2 <<< ${TOKEN_SET})
 USERNAME=$(cut -d _ -f 3 <<< ${TOKEN_SET})
+CHAT_SET=$(grep "${2}" /var/cld/modules/access/data/myip_token_chats)
+MESSAGE_ID=$(cut -d _ -f 2 <<< ${CHAT_SET})
+TG_GROUP=$(cut -d _ -f 3 <<< ${CHAT_SET})
 IP=${1}
 grep -q "${USERID}" /var/cld/modules/access/data/myips \
 && { sed -i "s#.*${USERID}.*#${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private IP ${IP} successfully updated for user ${USERNAME}" ; } \
 || { echo "${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myips ; echo "private IP ${IP} successfully added to access list for user ${USERNAME}" ; }
-sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessage?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`ip added\`" &>/dev/null
+sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens /var/cld/modules/access/data/myip_token_chats &>/dev/null
 {
 { grep -v "^#\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | sort -u > /var/cld/api/accesslist 2>/dev/null ;
 { cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts ; systemctl reload squid ; } ;
