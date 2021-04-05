@@ -29,7 +29,7 @@ IP=${1}
 grep -q "${USERID}" /var/cld/modules/access/data/myips \
 && { sed -i "s#.*${USERID}.*#${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private IP ${IP} successfully updated for user ${USERNAME}" ; } \
 || { echo "${IP}_${USERID}_${USERNAME}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myips ; echo "private IP ${IP} successfully added to access list for user ${USERNAME}" ; }
-curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessage?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`ip added\`" &>/dev/null
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessage?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`ip added - token cleared\`" &>/dev/null
 sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens /var/cld/modules/access/data/myip_token_chats &>/dev/null
 {
 { grep -v "^#\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | sort -u > /var/cld/api/accesslist 2>/dev/null ;
