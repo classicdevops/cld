@@ -63,21 +63,21 @@ def cmd_passwd(message):
     password = ''
     for c in range(passlen):
        password += random.choice(chars)
-    bot.send_message(message.chat.id, password)
+    return bot.send_message(message.chat.id, password)
 
 @bot.message_handler(commands=["wazzup"])
 def cmd_wazzup(message):
     keyboard = types.InlineKeyboardMarkup()
     callback_button = types.InlineKeyboardButton(text="WAZZZUUUP!", callback_data="wazup")
     keyboard.add(callback_button)
-    bot.send_message(message.chat.id, "wazzup?", reply_markup=keyboard)
+    return bot.send_message(message.chat.id, "wazzup?", reply_markup=keyboard)
 
 @bot.callback_query_handler(lambda query: query.data == "wazup")
 def wazzup_callback(query):
     chat_id=query.message.chat.id
     message_id=query.message.message_id
     bot.edit_message_text(chat_id=query.message.chat.id, message_id=query.message.message_id, text="WAZZZUUUP!")
-    bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
+    return bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
 
 # @bot.callback_query_handler(func=lambda call: True)
 # def callback_inline(call):
@@ -96,7 +96,7 @@ def cmd_getid(message):
       message_chat_id = str(message.chat.id)
     except:
       pass
-    bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
+    return bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
 def allowmodule(cldmodule):
   return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').strip().split('\n'))
@@ -140,7 +140,7 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     except:
         pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
-    bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args, message)
+    return bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args, message)
     # cmdoutput = bash("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+" | tr -d '\`' | awk -v F='\`' '{print F\$0F}'")
     # bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
