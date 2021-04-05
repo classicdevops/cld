@@ -22,7 +22,7 @@ def deploy_files(deploytype, deploy):
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        deploy_file_list = bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+deploytype+'/'+deploy+') ; for CLD_FILE in vars script clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')
+        deploy_file_list = bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+deploytype+'/'+deploy+') ; for CLD_FILE in script vars clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')
         deploy_file_dict = {}
         for deploy_file in deploy_file_list:
             deploy_file_dict[deploy_file] = open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+deploy_file, 'r').read()

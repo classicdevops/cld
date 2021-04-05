@@ -95,7 +95,7 @@
     }
     function appendfilecontent(id, deploy, deploytype, filecontent, filenamestr) {
         var filename = filenamestr.replace(' ', '_')
-        if (filename == "vars") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
+        if (filename == "script") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
         $('#'+id+'-accordion').append('<div id="panel'+filename+id+'" class="panel panel-default'+collapsed+'">\
             <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
               <h4 class="panel-title">\
