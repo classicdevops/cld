@@ -10,9 +10,14 @@ EOL
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 
-chattr -i /var/cld
 systemctl stop cld
+systemctl stop cron &>/dev/null
+systemctl stop crond &>/dev/null
+while $(ps axfu | grep -v grep | grep -q cld-accesslistdeploy); do sleep 1s; done
+chattr -i /var/cld
 cd /var/cld && git pull --force
 [ -e "/var/cld/tmp" ] || mkdir -p /var/cld/tmp &>/dev/null
 /var/cld/bin/cld-initpasswd
 systemctl start cld
+systemctl start cron &>/dev/null
+systemctl start crond &>/dev/null
