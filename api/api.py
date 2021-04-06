@@ -47,10 +47,6 @@ def bashstream(cmd, format="html"):
     yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+os.linesep+line.decode('utf8')+os.linesep+"EOHTML"+os.linesep+")"))
   yield ''.join(addclosetag)
 
-telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
-
-app = Flask(__name__)
-
 def remoteaddr():
   if request.headers.getlist("X-Forwarded-For"):
     remote_addr = request.headers.getlist("X-Forwarded-For")[0]
@@ -89,6 +85,10 @@ def checkpermswhiteip(cldmodule, cldutility, token, remoteaddr):
 
 def userbytoken(token):
   return bash('grep ":'+token+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
+
+cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
+telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
+app = Flask(__name__)
 
 cldm={}
 for apifile in bash("ls /var/cld/{cm,deploy}/api.py /var/cld/modules/*/api.py").split('\n'):

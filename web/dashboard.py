@@ -35,8 +35,6 @@ def stream_file(filepath, chunksize=8192):
       else:
         break
 
-cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
-
 def check_pid(pid):
   try:
     os.kill(pid, 0)
@@ -107,6 +105,7 @@ def checkpermswhiteip(cldmodule, cldutility, user, remoteaddr):
   else:
     return ["denied", "DENIED"]
 
+cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
