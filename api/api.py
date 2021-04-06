@@ -13,13 +13,13 @@ from urllib.request import urlopen
 import os
 
 def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8')
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
-ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1').strip()
+ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1')
 if ansifiltercheck == "0":
-  outputinterpreter = bash('which ansifilter').strip()
+  outputinterpreter = bash('which ansifilter')
 else:
-  outputinterpreter = bash('which cat').strip()
+  outputinterpreter = bash('which cat')
   print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
 
 def stream_file(filepath, chunksize=8192):
@@ -47,7 +47,7 @@ def bashstream(cmd, format="html"):
     yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+os.linesep+line.decode('utf8')+os.linesep+"EOHTML"+os.linesep+")"))
   yield ''.join(addclosetag)
 
-telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' | head -c -1''')
+telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 
 app = Flask(__name__)
 
@@ -61,16 +61,11 @@ def remoteaddr():
 def accesslist():
   return bash('cat /var/cld/api/accesslist').split('\n')
 
-try:
-  tokenlist = set(line.strip() for line in open('/var/cld/modules/access/data/api_tokenlist'))
-except:
-  pass
-
 def allowmoduleusers(cldmodule):
-  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
+  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def allowutilityusers(cldutility):
-  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
+  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def checkperms(cldmodule, cldutility, token):
   token=re.match("[A-z0-9_.-]+", token)[0]
@@ -92,9 +87,12 @@ def checkpermswhiteip(cldmodule, cldutility, token, remoteaddr):
   else:
     return ["denied", "DENIED"]
 
+def userbytoken(token):
+  return bash('grep ":'+token+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
+
 cldm={}
-for apifile in bash("ls /var/cld/modules/*/api.py").strip().split('\n'):
-  cldmodule=bash('echo '+apifile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
+for apifile in bash("ls /var/cld/modules/*/api.py").split('\n'):
+  cldmodule=bash('echo '+apifile+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule)
   exec(open(apifile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
@@ -109,7 +107,7 @@ cat << EOL
 def cmd_${CLD_UTIL//[.-]/_}():
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", request.args['token'], remoteaddr()) 
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+    user = userbytoken(token)
     if ansifiltercheck == "0": output = 'html'
     else: output = 'plain'
     try: output = str(re.match('^[a-z]+$', request.args['output']).string)
