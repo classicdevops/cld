@@ -171,5 +171,5 @@ do
 done
 }
 
-[ "$REPOUPDATE" ] && source <(echo "update-templates-from-repo ; exit 0")
+[ "$REPOUPDATE" ] && { update-templates-from-repo ; exit 0 ; }
 [ "$DEPLOY" ] && create-deploy || create-template
