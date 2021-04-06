@@ -68,6 +68,9 @@
 }
 
 </style>
+<script>
+var userapitoken = "{{ userapitoken }}";
+</script>
     <script>
     function idgen() {
         var length = 8,
@@ -103,6 +106,7 @@
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
+                <div style="float: right;margin: -19px 15px 0px 0px;">don\'t share token: <div class="prein" onclick="console.log('test')" style="cursor: text;">https://devcld.classicdeploy.com/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?token='+userapitoken+'</div></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\
