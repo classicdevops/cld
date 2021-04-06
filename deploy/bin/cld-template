@@ -47,7 +47,7 @@ read TEMPLATE
 done
 fi
 
-[ "$TEMPLATE" ] || source <(echo 'echo template not defined ; exit 1')
+[ "$TEMPLATE" ] || { echo template not defined ; exit 1 ; }
 
 test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
 
