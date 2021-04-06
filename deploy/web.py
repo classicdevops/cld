@@ -7,8 +7,9 @@ def deploy_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    userapitoken = apitokenbyuser(user)
     deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
-    return render_template('modules/deploy/deploy.html', username=user, deploys=deploys)
+    return render_template('modules/deploy/deploy.html', username=user, deploys=deploys, cld_domain=cld_domain, userapitoken=userapitoken)
 
 @app.route("/deploy/<deploytype>/<deploy>/files")
 def deploy_files(deploytype, deploy):
