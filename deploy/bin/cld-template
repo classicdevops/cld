@@ -107,6 +107,7 @@ ls /var/cld/deploy/deploys/${DEPLOY_NAME}/* | cat
 
 create-template()
 {
+[ -d /var/cld/deploy/templates/${TEMPLATE} ] && { echo Template ${TEMPLATE} exist ; exit 1 ; }
 mkdir -p /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
 
 test "$DESCRIPTION" || DESCRIPTION=0
@@ -172,23 +173,5 @@ done
 }
 
 [ "$REPOUPDATE" ] && { update-templates-from-repo ; exit 0 ; }
-
-if [ "$DEPLOY" == "" ]
-then
-START_ARRAY=("Create template" "Create deploy")
-echo "Run action from:"
-select START_CASE in "${START_ARRAY[@]}"
-do
-[ "$START_CASE" == "New deploy" ] && CREATE_NEW=1 && break
-[ "$START_CASE" == "Existing deploy" ] && FROM_DEPLOYS=1 && break
-[ "$START_CASE" == "Existing template" ] && FROM_TEMPLATES=1 && break
-done
-elif [ "$DEPLOY" ]
-then
-FROM_DEPLOYS=1
-elif [ "$TEMPLATE" ]
-then
-FROM_TEMPLATES=1
-fi
 
 [ "$DEPLOY" ] && create-deploy || create-template
