@@ -25,9 +25,9 @@ HELP_ARGS=$(cat << 'EOL'
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-templatename --template=templatename #CLI
-cld-templatename --deploy=deployname #CLI
-cld-templatename --repoupdate  
+cld-template --template=templatename #CLI
+cld-template --deploy=deployname #CLI
+cld-template --repoupdate  
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -99,7 +99,7 @@ ASYNC="${ASYNC}"
 NEXT_DEPLOY="${NEXT_DEPLOY}"
 NEXT_DEPLOY_WAIT="${NEXT_DEPLOY_WAIT}"
 NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
-DEBUG=${DEBUG}
+DEBUG="${DEBUG}"
 CRON="${CRON}"
 EOVARS
 ls /var/cld/deploy/deploys/${DEPLOY_NAME}/* | cat
@@ -172,4 +172,23 @@ done
 }
 
 [ "$REPOUPDATE" ] && { update-templates-from-repo ; exit 0 ; }
+
+if [ "$DEPLOY" == "" ]
+then
+START_ARRAY=("Create template" "Create deploy")
+echo "Run action from:"
+select START_CASE in "${START_ARRAY[@]}"
+do
+[ "$START_CASE" == "New deploy" ] && CREATE_NEW=1 && break
+[ "$START_CASE" == "Existing deploy" ] && FROM_DEPLOYS=1 && break
+[ "$START_CASE" == "Existing template" ] && FROM_TEMPLATES=1 && break
+done
+elif [ "$DEPLOY" ]
+then
+FROM_DEPLOYS=1
+elif [ "$TEMPLATE" ]
+then
+FROM_TEMPLATES=1
+fi
+
 [ "$DEPLOY" ] && create-deploy || create-template
