@@ -120,8 +120,9 @@ test "$CUSTOM_BACKUP" || CUSTOM_BACKUP=0
 test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_backup_script
 test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_restore_script
 
-test "$TEST" || TEST=0
-test "${TEST}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/test_script
+# test "$TEST" || TEST=0
+# test "${TEST}" == 1 && 
+touch /var/cld/deploy/templates/${TEMPLATE}/test_script
 
 [ "$TIMEOUT" ] || TIMEOUT=600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
