@@ -117,7 +117,10 @@ CRON="${CRON}"
 EOVARS
 fi
 
-if [ "$DEPLOY" == "" -a "$RUN" != "1" -a "$FROM_TEMPLATES" == "1" -a "$TEMPLATE" = "" ]
+if [ "$DEPLOY" == "" -a "$FROM_TEMPLATES" == "1" ]
+then
+
+if  [ "$TEMPLATE" = "" ]
 then
 echo "Please choose template:"
 echo
@@ -127,6 +130,7 @@ do
 [ "$TEMPLATE_SELECT" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
 [ "$TEMPLATE_SELECT" ] && break
 done
+fi
 
 [ -d /var/cld/deploy/deploys/${TEMPLATE} ] && DEPLOY_EXIST=1
 DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
