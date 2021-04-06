@@ -1,6 +1,7 @@
 import hashlib
 @app.route("/deploy/<deploytype>/<deploy>/<file>")
 def deploy_get_file(deploytype, deploy, file):
+    apihash = request.args['hash']
     for line in open('/var/cld/creds/passwd').read().strip().split('\n'):
       token = line.split(':')[2]
       chechhash = hashlib.md5(str(deploytype+deploy+file+token).encode('utf-8')).hexdigest()
