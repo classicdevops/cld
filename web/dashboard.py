@@ -81,7 +81,7 @@ def userisadmin(user):
     return False
 
 def apitokenbyuser(user):
-  return bash('grep "^'+user+':" /var/cld/creds/passwd | cut -d : -f 2 | head -1')
+  return bash('grep "^'+user+':" /var/cld/creds/passwd | cut -d : -f 3 | head -1')
 
 def checkperms(cldmodule, cldutility, user):
   user=re.match("[A-z0-9_.-]+", user)[0]
