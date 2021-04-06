@@ -91,7 +91,7 @@ def userbytoken(token):
   return bash('grep ":'+token+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
 
 cldm={}
-for apifile in bash("ls /var/cld/modules/*/api.py").split('\n'):
+for apifile in bash("ls /var/cld/{cm,deploy}/api.py /var/cld/modules/*/api.py").split('\n'):
   cldmodule=bash('echo '+apifile+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule)

@@ -35,7 +35,7 @@ def stream_file(filepath, chunksize=8192):
       else:
         break
 
-cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''').strip()
+cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 
 def check_pid(pid):
   try:
@@ -56,28 +56,28 @@ def accesslist():
   return bash("cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq").split('\n')
 
 def allowmoduleusers(cldmodule):
-  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
+  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def allowutilityusers(cldutility):
-  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').strip().split('\n'))
+  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def usermodules(user):
-  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').strip().split(',')
+  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').split(',')
   if "ALL" in modules:
-    return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').strip().split('\n')
+    return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   else:
     return bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2)"''').split('\n')
 
 def usertools(user):
-  tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').strip().split(','))
+  tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').split(','))
   if "ALL" in tools:
-    return set(bash('find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include | rev | cut -d / -f 1 | rev').strip().split('\n'))
+    return set(bash('find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include | rev | cut -d / -f 1 | rev').split('\n'))
   else:
     return tools
 
 def userisadmin(user):
   user=re.match("[A-z0-9_.-]+", user)[0]
-  if bash('''awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2-''').strip() == "ALL:ALL":
+  if bash('''awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2-''') == "ALL:ALL":
     return True
   else:
     return False
@@ -95,7 +95,7 @@ def checkpermswhiteip(cldmodule, cldutility, user, remoteaddr):
   user=re.match("[A-z0-9_.-]+", user)[0]
   cldmodule=str(cldmodule)
   cldutility=str(cldutility)
-  if cldutility == 'bash' and remoteaddr in accesslist() and user in bash("awk -F ':' '{print $1}' /var/cld/creds/passwd").strip().split(','):
+  if cldutility == 'bash' and remoteaddr in accesslist() and user in bash("awk -F ':' '{print $1}' /var/cld/creds/passwd").split(','):
     return ["granted", user]
   elif user in allowmoduleusers(cldmodule) and remoteaddr in accesslist():
     return ["granted", user]
@@ -160,11 +160,11 @@ EOL
 done
 '''))
 
-ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1').strip()
+ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1')
 if ansifiltercheck == "0":
-  outputinterpreter = bash('which ansifilter').strip() + ' -Hf'
+  outputinterpreter = bash('which ansifilter') + ' -Hf'
 else:
-  outputinterpreter = bash('which cat').strip()
+  outputinterpreter = bash('which cat')
   print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
 
 #generate webapi endpoints for each CLD tool
@@ -260,7 +260,7 @@ def getfile(instance):
     checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
-    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance).strip())[0]['clouds'][0]
+    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance))[0]['clouds'][0]
     filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.args['filepath']).string)
     mountpath = '/home/'+user+'/mnt/'+instance
     fullfilepath = mountpath+filepath
@@ -281,7 +281,7 @@ def uploadfile(instance):
     checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
-    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance).strip())[0]['clouds'][0]
+    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance))[0]['clouds'][0]
     try: filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.form['filepath']).string)
     except: filepath = '/tmp'
     mountpath = '/home/'+user+'/mnt/'+instance
@@ -545,7 +545,7 @@ def toolkit():
   if 'username' in session:
     username = session['username']
     cld_tools = json.loads(bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld-modules --json'))
-    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev''').strip().split('\n')
+    utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev''').split('\n')
     return render_template('html/toolkit.html', username=username, utils=utils, cld_tools=cld_tools)
 
 @app.route('/admin')
@@ -617,21 +617,21 @@ def group():
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+group+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
       groupfuncs = bash('grep -qs "1" /var/cld/access/groups/'+group+'/funcs && echo -n "custom" || echo -n "default"').replace('\n', '')
       groupusers = bash('echo -n $(grep -l "'+group+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
-      cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+group+'/clouds | wc -l').strip()
+      cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+group+'/clouds | wc -l')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype+";"+groupfuncs)
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype', 'groupfuncs']
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
     allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(/var/cld/bin/cld --groups='+request.args['name']+' --list)').strip().split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(/var/cld/bin/cld --groups='+request.args['name']+' --list)').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
-    groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/access/groups/default/default_funcvars').strip()
-    groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/access/groups/default/default_functerm').strip()
-    groupfuncmount = bash('cat /var/cld/access/groups/'+group+'/funcmount || cat /var/cld/access/groups/default/default_funcmount').strip()
-    groupfuncumount = bash('cat /var/cld/access/groups/'+group+'/funcumount || cat /var/cld/access/groups/default/default_funcumount').strip()
-    groupfuncdeploy = bash('cat /var/cld/access/groups/'+group+'/funcdeploy || cat /var/cld/access/groups/default/default_funcdeploy').strip()
-    groupfuncdeploynotty = bash('cat /var/cld/access/groups/'+group+'/funcdeploynotty || cat /var/cld/access/groups/default/default_funcdeploynotty').strip()
+    groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/access/groups/default/default_funcvars')
+    groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/access/groups/default/default_functerm')
+    groupfuncmount = bash('cat /var/cld/access/groups/'+group+'/funcmount || cat /var/cld/access/groups/default/default_funcmount')
+    groupfuncumount = bash('cat /var/cld/access/groups/'+group+'/funcumount || cat /var/cld/access/groups/default/default_funcumount')
+    groupfuncdeploy = bash('cat /var/cld/access/groups/'+group+'/funcdeploy || cat /var/cld/access/groups/default/default_funcdeploy')
+    groupfuncdeploynotty = bash('cat /var/cld/access/groups/'+group+'/funcdeploynotty || cat /var/cld/access/groups/default/default_funcdeploynotty')
     return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount, groupfuncdeploy=groupfuncdeploy, groupfuncdeploynotty=groupfuncdeploynotty)
 
 @app.route('/adduser', methods=['POST'])
@@ -865,8 +865,8 @@ def addcloud():
 def profile():
   if 'username' in session:
     username = session['username']
-    clouds=bash('sudo -u '+username+' sudo /var/cld/bin/cld --list').strip()
-    perms=bash('grep "^'+username+':" /var/cld/creds/passwd').strip().split(':')
+    clouds=bash('sudo -u '+username+' sudo /var/cld/bin/cld --list')
+    perms=bash('grep "^'+username+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
 
 @app.route('/devops')
