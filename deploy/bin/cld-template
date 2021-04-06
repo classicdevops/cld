@@ -38,6 +38,14 @@ echo $OPTS | grep -q  '^\--deploy' && DEPLOY=1
 echo $OPTS | grep -q  '^\--repoupdate' && REPOUPDATE=1
 done
 
+if [ "$TEMPLATE" == "" ]
+then
+while ! [[ "$TEMPLATE" =~  [A-Za-z0-9-]+ ]]
+do
+echo "Please enter the template name using only A-Z a-z 0-9 - symbols"
+read TEMPLATE
+done
+
 [ "$TEMPLATE" ] || source <(echo 'echo template not defined ; exit 1')
 
 test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
@@ -111,8 +119,9 @@ test "$CUSTOM_BACKUP" || CUSTOM_BACKUP=0
 test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_backup_script
 test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_restore_script
 
-test "$TEST" || TEST=0
-test "${TEST}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/test_script
+# test "$TEST" || TEST=0
+# test "${TEST}" == 1 && 
+touch /var/cld/deploy/templates/${TEMPLATE}/test_script
 
 [ "$TIMEOUT" ] || TIMEOUT=600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
