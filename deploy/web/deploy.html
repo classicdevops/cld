@@ -13,6 +13,8 @@
     <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
     <style type="text/css">
     /* This is not a zero-length file! */
     </style>
@@ -107,7 +109,7 @@ var userapitoken = "{{ userapitoken }}";
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
-                <div style="float: right;margin: -19px 15px 0px 0px;">don\'t share token: <div class="prein" onclick="console.log("test")" style="cursor: text;">https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?token='+userapitoken+'</div></div>\
+                <div style="float: right;margin: -19px 15px 0px 0px;">don\'t share token: <div class="prein" onclick="console.log("test")" style="cursor: text;">https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploy+deploytype+filenamestr+userapitoken).toString();+'</div></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\

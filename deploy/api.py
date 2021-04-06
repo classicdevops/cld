@@ -1,6 +1,15 @@
+import hashlib
 @app.route("/deploy/<deploytype>/<deploy>/<file>")
 def deploy_get_file(deploytype, deploy, file):
-    checkresult = checkpermswhiteip(cldmodule, "NONE", request.args['token'],  remoteaddr()) 
+    for line in open('/var/cld/creds/passwd').read().strip().split('\n'):
+      token = line.split(':')[2]
+      chechhash = hashlib.md5(str(deploytype+deploy+file+token).encode('utf-8')).hexdigest()
+      if chechhash == apihash:
+        user = line.split(':')[0]
+        break
+      else:
+        return Response("403", status=403, mimetype='application/json')
+    checkresult = checkpermswhiteip(cldmodule, "NONE", token,  remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user = userbytoken(checkresult[1])
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
