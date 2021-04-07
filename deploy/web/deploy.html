@@ -109,7 +109,7 @@ var userapitoken = "{{ userapitoken }}";
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
-                <div style="float: right;margin: -19px 15px 0px 0px;">direct link: <div class="prelink" onclick="console.log(\'test\')">https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'</div></div>\
+                <div style="float: right;margin: -19px 15px 0px 0px;">direct link: <div class="prelink">https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'</div></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\
@@ -286,13 +286,13 @@ var userapitoken = "{{ userapitoken }}";
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
     <script type="text/javascript">
+    $(".prelink").click(function(e){
+    e.preventDefault();
+    });
     $(document).ready(function() {
         $('[data-toggle=offcanvas]').click(function() {
             $('.row-offcanvas').toggleClass('active');
         });
-    });
-    $(".prelink").click(function(e){
-    e.preventDefault();
     });
     </script>
 </head>
