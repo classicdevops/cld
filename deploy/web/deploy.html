@@ -197,6 +197,7 @@ var userapitoken = "{{ userapitoken }}";
                     $('#'+id+'-form-button').addClass('btn-danger').removeClass('btn-primary');
                     sleep(500).then(() => {
                     $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-danger');
+                    });
                     console.log('An error occurred while saving deploy');
                     }
             })
