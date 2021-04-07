@@ -172,7 +172,7 @@ var userapitoken = "{{ userapitoken }}";
             }
         });
     }
-    function createfile(id, deploytype, deploy) {
+    function createfile(id, deploy, deploytype) {
         var filename = document.getElementById(id+'-inputfilename').value;
         appendfilecontent(id, deploy, deploytype, '', filename)
     }
