@@ -4,12 +4,12 @@ def deploy_get_file(deploytype, deploy, file):
     apihash = request.args['hash']
     for line in open('/var/cld/creds/passwd').read().strip().split('\n'):
       token = line.split(':')[2]
-      chechhash = hashlib.md5(str(deploytype+deploy+file+token).encode('utf-8')).hexdigest()
-      if chechhash == apihash:
+      checkhash = hashlib.md5(str(deploytype+deploy+file+token).encode('utf-8')).hexdigest()
+      if checkhash == apihash:
         user = line.split(':')[0]
         break
       else:
-        return Response("403", status=403, mimetype='application/json')
+        return Response("404", status=404, mimetype='application/json')
     checkresult = checkpermswhiteip(cldmodule, "NONE", token,  remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user = userbytoken(checkresult[1])
