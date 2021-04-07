@@ -9,8 +9,8 @@ def deploy_get_file(deploytype, deploy, file):
       if checkhash == apihash:
         user = line.split(':')[0]
         break
-      else:
-        return Response("404", status=404, mimetype='application/json')
+    try: user
+    except: return Response("404", status=404, mimetype='application/json')
     checkresult = checkpermswhiteip(cldmodule, "NONE", token,  remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user = userbytoken(checkresult[1])
