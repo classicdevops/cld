@@ -73,9 +73,6 @@
 <script>
 var cld_domain = "{{ cld_domain }}";
 var userapitoken = "{{ userapitoken }}";
-$(".prelink").click(function(e){
-    e.preventDefault();
-});
 </script>
     <script>
     function idgen() {
@@ -293,6 +290,9 @@ $(".prelink").click(function(e){
         $('[data-toggle=offcanvas]').click(function() {
             $('.row-offcanvas').toggleClass('active');
         });
+    });
+    $(".prelink").click(function(e){
+    e.preventDefault();
     });
     </script>
 </head>
