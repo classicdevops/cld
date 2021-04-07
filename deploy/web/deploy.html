@@ -77,7 +77,7 @@
     var cld_domain = "{{ cld_domain }}";
     var userapitoken = "{{ userapitoken }}";
     $(".prelink").click(function(e){
-    e.nativeEvent.stopImmediatePropagation();
+    e.originalEvent.stopPropagation();
     });
 </script>
     <script>
