@@ -143,9 +143,6 @@
         });
         var stopClickEventPropagation = function (e) {e.stopPropagation()};
         $('.prelink').off('click', stopClickEventPropagation).on('click', stopClickEventPropagation);
-        // $(".prelink").click(function(e){
-        //     e.stopPropagation();
-        // });
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
