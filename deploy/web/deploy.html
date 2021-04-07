@@ -286,10 +286,10 @@ var userapitoken = "{{ userapitoken }}";
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
     <script type="text/javascript">
-    $(".prelink").click(function(e){
-    e.preventDefault();
-    });
     $(document).ready(function() {
+        $(".prelink").click(function(e){
+         e.preventDefault();
+        });
         $('[data-toggle=offcanvas]').click(function() {
             $('.row-offcanvas').toggleClass('active');
         });
