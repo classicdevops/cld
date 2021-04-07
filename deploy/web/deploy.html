@@ -141,6 +141,9 @@
         editor[filename+id].getSession().on('change', function () {
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
+        $(".prelink").click(function(e){
+            e.stopPropagation();
+        });
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
