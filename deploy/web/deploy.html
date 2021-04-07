@@ -188,10 +188,13 @@ var userapitoken = "{{ userapitoken }}";
                     sleep(500).then(() => {
                     $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
                     });
-                    console.log('Submission was successful.');
+                    console.log('Deploy saved');
                     },
                 error: function (data) {
-                    console.log('An error occurred.');
+                    $('#'+id+'-form-button').addClass('btn-danger').removeClass('btn-primary');
+                    sleep(500).then(() => {
+                    $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-danger');
+                    console.log('An error occurred while saving deploy');
                     }
             })
 
@@ -287,9 +290,6 @@ var userapitoken = "{{ userapitoken }}";
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
     <script type="text/javascript">
     $(document).ready(function() {
-        $(".prelink").click(function(e){
-         e.preventDefault();
-        });
         $('[data-toggle=offcanvas]').click(function() {
             $('.row-offcanvas').toggleClass('active');
         });
