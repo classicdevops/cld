@@ -74,8 +74,11 @@
 
 </style>
 <script>
-var cld_domain = "{{ cld_domain }}";
-var userapitoken = "{{ userapitoken }}";
+    var cld_domain = "{{ cld_domain }}";
+    var userapitoken = "{{ userapitoken }}";
+    $(".prelink").click(function(e){
+    e.preventDefault();
+    });
 </script>
     <script>
     function idgen() {
