@@ -144,7 +144,7 @@
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
         var stopClickEventPropagation = function (e) {e.stopPropagation()};
-        $('#linktext'+id+filename).on('click', stopClickEventPropagation);
+        $('#link'+id+filename).on('click', stopClickEventPropagation);
         // $('#link'+id+filename).on('click', $('#link'+id+filename)[0].select());
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
