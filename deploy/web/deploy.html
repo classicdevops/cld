@@ -145,7 +145,7 @@
         });
         var stopClickEventPropagation = function (e) {e.stopPropagation()};
         $('#linktext'+id+filename).on('click', stopClickEventPropagation);
-        $('#link'+id+filename).on('click', $('#link'+id+filename)[0].select());
+        // $('#link'+id+filename).on('click', $('#link'+id+filename)[0].select());
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
