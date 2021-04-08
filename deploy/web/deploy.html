@@ -115,7 +115,7 @@
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
-                <div style="float: right;margin: -19px 15px -20px 0px;">direct link: \
+                <div id="linktext'+id+filename+'" style="float: right;margin: -19px 15px -20px 0px;">direct link: \
                 <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'" readonly></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
@@ -144,7 +144,8 @@
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
         var stopClickEventPropagation = function (e) {e.stopPropagation()};
-        $('#link'+id+filename).on('click', stopClickEventPropagation).on('click', $('#link'+id+filename)[0].select());
+        $('#linktext'+id+filename).on('click', stopClickEventPropagation);
+        $('#link'+id+filename).on('click', $('#link'+id+filename)[0].select());
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
