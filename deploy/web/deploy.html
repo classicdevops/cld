@@ -144,7 +144,7 @@
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
         var stopClickEventPropagation = function (e) {e.stopPropagation()};
-        $('#link'+id+filename).on('click', stopClickEventPropagation).on('click', $('#link'+id+filename)[0].select());
+        $('#link'+id+filename).on('click', stopClickEventPropagation).on('focus', $('#link'+id+filename)[0].select());
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
