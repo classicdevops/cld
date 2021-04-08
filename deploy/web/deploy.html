@@ -115,12 +115,14 @@
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
-                <div style="float: right;margin: -19px 15px 0px 0px;">direct link: <div class="prelink">https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'</div></div>\
+                <div style="float: right;margin: -19px 15px 0px 0px;">direct link: \
+                <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'" readonly></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\
             <pre id="'+filename+id+'">'+filecontent+'</pre>\
             </div></div></div>');
+        $('#link'+id+filename).style.width = (($('#link'+id+filename).value.length) * 6.25) + 'px';
         ace.edit(filename+id, {
             theme: "ace/theme/monokai",
             keyboardHandler: "ace/keyboard/sublime",
