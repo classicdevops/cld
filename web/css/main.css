@@ -56,7 +56,6 @@ border-radius: 4px;
     padding-left: 5px;
     padding-right: 5px;
     margin: 0 0 10px;
-    font-size: 13px;
     line-height: 1.42857143;
     color: #333;
     word-break: break-all;
@@ -73,7 +72,7 @@ border-radius: 4px;
 .dpl_del_file_btn {
     float: right;
     margin-top: -20px;
-    margin-right: -10px;
+    margin-right: -8px;
     padding: 0px 4px;
 }
 
