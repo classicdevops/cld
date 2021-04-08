@@ -70,12 +70,6 @@ border-radius: 4px;
     font-size: small;
 }
 
-.panel-default>.panel-heading {
-    color: #333;
-    background-color: ghostwhite;
-    border-color: #ddd;
-}
-
 .dpl_del_file_btn {
     float: right;
     margin-top: -20px;
