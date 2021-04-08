@@ -115,8 +115,8 @@
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
-                <div id="linktext'+id+filename+'" style="float: right;margin: -19px 15px -20px 0px;">direct link: \
-                <input id="link'+id+filename+'" class="prelink" onclick="this.select();" value="https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'" readonly></div>\
+                <div style="float: right;margin: -19px 15px -20px 0px;">direct link: \
+                <input id="link'+id+filename+'" class="prelink" onclick="this.select();document.execCommand(\"copy\");" value="https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'" readonly></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                 <div class="panel-body aceinit">\
@@ -145,7 +145,6 @@
         });
         var stopClickEventPropagation = function (e) {e.stopPropagation()};
         $('#link'+id+filename).on('click', stopClickEventPropagation);
-        // $('#link'+id+filename).on('click', $('#link'+id+filename)[0].select());
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
