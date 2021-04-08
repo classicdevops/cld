@@ -66,6 +66,8 @@ border-radius: 4px;
     border: 1px solid #ccc;
     border-radius: 4px;
     cursor: text;
+    font-family: monospace;
+    font-size: small;
 }
 
 .dpl_del_file_btn {
