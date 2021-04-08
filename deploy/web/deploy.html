@@ -143,7 +143,7 @@
         editor[filename+id].getSession().on('change', function () {
            $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
         });
-        $('#link'+id+filename).on('click', stopClickEventPropagation).on('click', $('#link'+id+filename)[0].select());
+        $('#link'+id+filename).on('click', stopClickEventPropagation).on('click', this.select());
     }
     function deletedeployfile(id, deploytype, deploy, filename) {
         $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
