@@ -61,13 +61,19 @@ border-radius: 4px;
     color: #333;
     word-break: break-all;
     word-wrap: break-word;
-    background-color: ghostwhite;
+    background-color: white;
     white-space: pre-wrap;
     border: 1px solid #ccc;
     border-radius: 4px;
     cursor: text;
     font-family: monospace;
     font-size: small;
+}
+
+.panel-default>.panel-heading {
+    color: #333;
+    background-color: ghostwhite;
+    border-color: #ddd;
 }
 
 .dpl_del_file_btn {
