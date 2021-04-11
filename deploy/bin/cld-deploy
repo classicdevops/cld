@@ -206,7 +206,6 @@ then
 fi
 
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && BACKUP_LIST="$(cat /var/cld/deploy/deploys/${DEPLOY}/backup_list 2>/dev/null)"
-[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined" 
 
 [ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
 [ "$CLOUDS" == "" -a "$RUN" == "1" ] && echoexit1 "CLOUDS is not defined"
