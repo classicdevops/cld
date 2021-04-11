@@ -99,10 +99,10 @@ def cmd_getid(message):
     return bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
 def allowmodule(cldmodule):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').strip().split('\n'))
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').split('\n'))
 
 def allowutility(cldutility):
-  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').strip().split('\n'))
+  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').split('\n'))
 
 def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
   user_id_str=str(user_id)
@@ -116,7 +116,7 @@ def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
     return ["denied", "DENIED"]
 
 cldm={}
-for botfile in bash("ls /var/cld/modules/*/bot.py").strip().split('\n'):
+for botfile in bash("ls /var/cld/modules/*/bot.py").split('\n'):
   cldmodule=bash('echo '+botfile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
   cldm[cldmodule]=cldmodule
   print(cldmodule)
