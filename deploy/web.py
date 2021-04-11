@@ -26,7 +26,7 @@ def deploy_files(deploytype, deploy):
         deploy_file_list = bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+deploytype+'/'+deploy+') ; for CLD_FILE in script vars clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')
         deploy_file_dict = {}
         for deploy_file in deploy_file_list:
-            deploy_file_dict[deploy_file] = open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+deploy_file, 'r', encoding='utf8').read()
+            deploy_file_dict[deploy_file] = open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+deploy_file, 'r').read()
         return Response(json.dumps(deploy_file_dict), status=200, mimetype='application/json')
 
 @app.route("/deploy/<deploytype>/<deploy>/<file>")
@@ -76,7 +76,7 @@ def deploy_save(deploytype, deploy):
     if deploy in deploys:
         deployfiles = dict(request.form)
         for deployfile in deployfiles:
-            open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w", encoding='utf8', newline='\n').write(str(deployfiles[deployfile].encode("UTF-8")))
+            open("/var/cld/deploy/"+deploytype+"/"+deploy+"/"+deployfile, "w", newline='\n').write(deployfiles[deployfile].decode('utf8').replace('\r', ''))
         return Response(deploytype[:-1].capitalize()+" saved", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
