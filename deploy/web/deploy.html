@@ -198,13 +198,13 @@
                                 </tr>\
                             </thead>\
                             <tbody>')
-                    for (action in actions) {
+                    for (i in actions) {
                             $('#'+id+'-accordion').append('\
                                 <tr>\
-                                <td>'+action["action"]+'</td>\
-                                <td>'+action["clouds"]+'</td>\
-                                <td>'+action["tests"]+'</td>\
-                                <td>'+action["status"]+'</td>\
+                                <td>'+actions[i]["action"]+'</td>\
+                                <td>'+actions[i]["clouds"]+'</td>\
+                                <td>'+actions[i]["tests"]+'</td>\
+                                <td>'+actions[i]["status"]+'</td>\
                                 </tr>')
                     }
                     $('#'+id+'-accordion').append('</tbody>\
