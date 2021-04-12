@@ -113,4 +113,5 @@ def actions(deploy):
         actions_dict[itter]["action"] = action
         actions_dict[itter]["clouds"] = action_content[0]
         actions_dict[itter]["tests"] = action_content[1]
+        itter += 1
     return Response(json.dumps(actions_dict), status=200, mimetype='application/json')
