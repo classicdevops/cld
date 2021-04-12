@@ -105,11 +105,12 @@ def actions(deploy):
     checkresult = checkpermswhiteip(cldmodule, 'cld-action', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     actions = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy).split('\n')
-    actions_dict = {}
+    actions_dict = []
+    itter = 0
     for action in actions:
         action_content = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy+' --action='+action).split('\n')
-        actions_dict[action] = {}
-        actions_dict[action]["prefix"] = action
-        actions_dict[action]["clouds"] = action_content[0]
-        actions_dict[action]["tests"] = action_content[1]
+        actions_dict[itter] = {}
+        actions_dict[itter]["action"] = action
+        actions_dict[itter]["clouds"] = action_content[0]
+        actions_dict[itter]["tests"] = action_content[1]
     return Response(json.dumps(actions_dict), status=200, mimetype='application/json')
