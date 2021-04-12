@@ -1,6 +1,34 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Tool under development
+Information action tool
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--deploy=deploy_name                Name of deploy
+--action=action_prefix              Action prefix
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-action
+cld-action --deploy=deployname
 EOL
 )
 source /var/cld/bin/include/cldfuncs
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
+echo $OPTS | grep -q  '\--action=' && ACTION=$(echo $OPTS | cut -d '=' -f 2)
+done
+
+if [ "$DEPLOY" != "" -a "$ACTION" != "" ]
+then
+ls /var/cld/deploy/actions/${DEPLOY}/${ACTION}/deploy_log/ | wc -w
+cat /var/cld/deploy/actions/${DEPLOY}/${ACTION}/test_log/status_log | cut -d ' ' -f 1 2>/dev/null | grep '/' || echo -
+elif [ "$DEPLOY" ]
+then
+ls /var/cld/deploy/actions/${DEPLOY}/* -d | rev | cut -d / -f 1 | rev
+else
+ls /var/cld/deploy/actions/
+fi
+
