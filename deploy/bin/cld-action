@@ -25,6 +25,7 @@ if [ "$DEPLOY" != "" -a "$ACTION" != "" ]
 then
 ls /var/cld/deploy/actions/${DEPLOY}/${ACTION}/deploy_log/ | wc -w
 cat /var/cld/deploy/actions/${DEPLOY}/${ACTION}/test_log/status_log | cut -d ' ' -f 1 2>/dev/null | grep '/' || echo -
+grep -q "DONE=1" /var/cld/deploy/actions/${DEPLOY}/${ACTION}/vars && echo done || echo running
 elif [ "$DEPLOY" ]
 then
 ls /var/cld/deploy/actions/${DEPLOY}/* -d | rev | cut -d / -f 1 | rev
