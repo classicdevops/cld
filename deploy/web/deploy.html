@@ -188,16 +188,27 @@
         if (deploytype == "deploys") {
             $.ajax({type : 'GET', url: "/deploy/action/"+deploy, dataType : 'json',
                 success: function (actions) {
-                    $('#'+id+'-accordion').append('<br><br><table style="font-weight: 300;width:100%;" id="'+id+'-table" class="table table-striped" cellspacing="0" width="100%">\
-                            <thead>\
-                                <tr style="cursor: pointer;">\
-                                <td>Action</td>\
-                                <td>Instances</td>\
-                                <td>Tests</td>\
-                                <td>Status</td>\
-                                </tr>\
-                            </thead>\
-                            <tbody id="'+id+'-table-tbody"></tbody></table>')
+                    expanded = "false" ; collapsed = " collapsed" ; toggle = "" ;
+                    $('#'+id+'-accordion').append('<div id="panel-actions-'+id+'" class="panel panel-default'+collapsed+'">\
+                    <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse-actions-'+id+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
+                      <h4 class="panel-title">\
+                        <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse-actions-'+id+'">Actions</a>\
+                        </h4>\
+                    </div>\
+                    <div id="collapse-actions-'+id+'" class="panel-collapse collapse'+toggle+'">\
+                    <div>\
+                    <br><br><table style="font-weight: 300;width:100%;" id="'+id+'-table" class="table table-striped" cellspacing="0" width="100%">\
+                    <thead>\
+                        <tr style="cursor: pointer;">\
+                        <td>Action</td>\
+                        <td>Instances</td>\
+                        <td>Tests</td>\
+                        <td>Status</td>\
+                        </tr>\
+                    </thead>\
+                    <tbody id="'+id+'-table-tbody"></tbody></table>\
+                    </div>\
+                    </div></div>');
                     for (i in actions) {
                             $('#'+id+'-table-tbody').append('\
                                 <tr>\
