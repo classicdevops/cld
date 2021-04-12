@@ -97,3 +97,19 @@ def deploy_delete(deploytype, deploy):
         return Response(deploytype[:-1].capitalize()+" deleted", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
+
+@app.route("/deploy/action/<deploy>")
+def actions(deploy):
+  if 'username' in session:
+    user = session['username']
+    checkresult = checkpermswhiteip(cldmodule, 'cld-action', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    actions = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy).split('\n')
+    actions_dict = {}
+    for action in actions:
+        action_content = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy+' --action='+action).split('\n')
+        actions_dict[action] = {}
+        actions_dict[action]["prefix"] = action
+        actions_dict[action]["clouds"] = action_content[0]
+        actions_dict[action]["tests"] = action_content[1]
+    return Response(json.dumps(actions_dict), status=200, mimetype='application/json')
