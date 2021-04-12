@@ -188,7 +188,7 @@
         if (deploytype == "deploys") {
             $.ajax({type : 'GET', url: "/deploy/action/"+deploy, dataType : 'json',
                 success: function (actions) {
-                    $('#'+id+'-accordion').append('<table style="font-weight: 300;width:100%;" id="'+id+'table" class="table table-striped" cellspacing="0" width="100%">\
+                    $('#'+id+'-accordion').append('<table style="font-weight: 300;width:100%;" id="'+id+'-table" class="table table-striped" cellspacing="0" width="100%">\
                             <thead>\
                                 <tr style="cursor: pointer;">\
                                 <td>Action</td>\
@@ -197,9 +197,9 @@
                                 <td>Status</td>\
                                 </tr>\
                             </thead>\
-                            <tbody></table>')
+                            <tbody id="'+id+'-table-tbody"></tbody></table>')
                     for (i in actions) {
-                            $('#'+id+'-table').append('\
+                            $('#'+id+'-table-tbody').append('\
                                 <tr>\
                                 <td>'+actions[i]["action"]+'</td>\
                                 <td>'+actions[i]["clouds"]+'</td>\
