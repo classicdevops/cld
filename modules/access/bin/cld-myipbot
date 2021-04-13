@@ -27,7 +27,7 @@ https://${CLD_DOMAIN}/api/all/myipinit?token=${TOKEN}")
 echo ${3} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || exit 0
 grep -q ${1} /var/cld/bot/myips && (sed -i "s#.*${1}.*#${3}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private IP ${F}${3}${F} successfully updated for user ${B}${2}${B}") || (echo "${3}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/bot/myips ; echo "private IP ${F}${3}${F} successfully added to access list for user ${B}${2}${B}")
 {
-{ grep -v "^$\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | sort -u > /var/cld/api/accesslist 2>/dev/null ;
+{ grep -v "^$\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | egrep "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" | sort -u > /var/cld/api/accesslist 2>/dev/null ;
 { cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts ; systemctl reload squid ; } ;
 { cat /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/32;"}' > /etc/nginx/accesslist && systemctl reload nginx ; } ;
 ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || /var/cld/modules/access/bin/cld-accesslistdeploy &>/dev/null ;
