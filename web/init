@@ -212,6 +212,7 @@ server  {
     }
 
     location /api/all {
+    add_header Access-Control-Allow-Origin *;
     limit_req zone=apiall burst=5 nodelay;
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
