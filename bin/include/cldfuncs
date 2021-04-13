@@ -359,7 +359,7 @@ cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ123456
 
 cldhelp()
 {
-[ "$HELPYAML" ] && export YAMLCORRECTOR=' |'
+[ "$HELPYAML" = "1" ] && export YAMLCORRECTOR=' |'
 (
 source <(grep CLD_DOMAIN /var/cld/creds/creds)
 [ "$HELP_ONLY" ] || HELP_ONLY="CLI BOT API"
