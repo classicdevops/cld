@@ -167,7 +167,12 @@ if ansifiltercheck == "0":
   outputinterpreter = bash('which ansifilter') + ' -Hf'
 else:
   outputinterpreter = bash('which cat')
-  print("ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter")
+  print('''ansifilter IS NOT INSTALLED IN THE SYSTEM - API OUTPUT WILL NOT FILTERED - https://github.com/andre-simon/ansifilter
+  cd /usr/src
+  git clone https://github.com/andre-simon/ansifilter.git
+  cd ansifilter/
+  make install
+  ''')
 
 #generate webapi endpoints for each CLD tool
 exec(bash('''

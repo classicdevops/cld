@@ -108,7 +108,7 @@ def actions(deploy):
     actions_dict = []
     itter = 0
     for action in actions:
-        action_content = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy+' --action='+action).split('\n')
+        action_content = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy+' --action='+action+'  | ansifilter').split('\n')
         actions_dict.append({})
         actions_dict[itter]["action"] = action
         actions_dict[itter]["clouds"] = action_content[0]
