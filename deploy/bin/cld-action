@@ -28,7 +28,7 @@ cat /var/cld/deploy/actions/${DEPLOY}/${ACTION}/test_log/status_log | head -1 | 
 grep -qs "DONE=1" /var/cld/deploy/actions/${DEPLOY}/${ACTION}/vars && echo done || echo unfinished
 elif [ "$DEPLOY" ]
 then
-ls /var/cld/deploy/actions/${DEPLOY}/* -d | rev | cut -d / -f 1 | rev
+ls -t /var/cld/deploy/actions/${DEPLOY}/* -d | rev | cut -d / -f 1 | rev
 else
 ls /var/cld/deploy/actions/
 fi
