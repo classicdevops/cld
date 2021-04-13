@@ -359,23 +359,24 @@ cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ123456
 
 cldhelp()
 {
+[ "$HELPYAML" ] && export YAMLCORRECTOR=' |'
 (
 source <(grep CLD_DOMAIN /var/cld/creds/creds)
 [ "$HELP_ONLY" ] || HELP_ONLY="CLI BOT API"
-[ "$HELP_DESC" ] && (echo Description:
+[ "$HELP_DESC" ] && (echo Description:${YAMLCORRECTOR}
 echo "${HELP_DESC}" | awk '{print "     "$0}'
 echo)
-(echo Arguments:
+(echo Arguments:${YAMLCORRECTOR}
 [ "$HELP_ARGS" ] && awk '{print "     "$0}' <<< "${HELP_ARGS}"
 awk '{print "     "$0}' <<< "-h --help                Print this information"
 echo)
 [ "$HELP_EXAMPLES" ] && (
-echo Usage examples: 
+echo Usage examples:
 for METHOD in $HELP_ONLY
 do
-[ "${METHOD}" == "CLI" ] && echo "  CLI:"
-[ "${METHOD}" == "BOT" ] && echo "  BOT:"
-[ "${METHOD}" == "API" ] && echo "  API:"
+[ "${METHOD}" == "CLI" ] && echo "  CLI:${YAMLCORRECTOR}"
+[ "${METHOD}" == "BOT" ] && echo "  BOT:${YAMLCORRECTOR}"
+[ "${METHOD}" == "API" ] && echo "  API:${YAMLCORRECTOR}"
 (IFS=$'\n'
 for STRING in ${HELP_EXAMPLES}
 do
