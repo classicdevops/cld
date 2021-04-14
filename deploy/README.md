@@ -1,0 +1,7 @@
+Deploy bash scripts to servers in the system.
+The module structure consists of templates, deployments and actions. Each of these components makes it possible to compose tasks in an understandable way for subsequent execution on the servers of the system.
+
+- templates contain the deployment script itself, a test script, a list of files and folders for a preliminary backup, settings for the deployment process, the template can also contain custom backup and restaurant scripts (example)
+- a deployment is a script containing everything you need to launch an action, it can be created based on a template, or interactively during the first launch, in addition it includes - a list of servers, groups, or a name pattern (cli, api) (example)
+- actions contain the result of the deployment, including detailed logs (execution time and output of each command in terminal format as in manual line-by-line execution) for all servers, test results (example)
+- deployments can be used both for prompt mass installation of something, for example, salt agents, zabbix, or for urgent fixing, monitoring, launching, including the crown, and for full-fledged deployment of applications of any complexity from a template, it can also work in conjunction with a virtualization module, for directly fine-tuning the environment of a virtual machine, immediately after creation, scenarios with sequential execution of deployments are also possible
