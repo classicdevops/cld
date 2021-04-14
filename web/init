@@ -211,6 +211,15 @@ server  {
     proxy_set_header   X-Forwarded-Proto $real_scheme;
     }
 
+    location /documentation {
+    if ($real_scheme = http) {
+        return 301 https://$host$request_uri;
+    }
+    include accesslist;
+    deny all;
+    root /var/cld/doc/www;
+    }
+
     location /api/all {
     add_header Access-Control-Allow-Origin *;
     limit_req zone=apiall burst=5 nodelay;
