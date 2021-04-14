@@ -15,6 +15,6 @@ def doc_spec():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    if os.isfile('/var/cld/modules/doc/data/doc.json') != True:
+    if os.path.isfile('/var/cld/modules/doc/data/doc.json') != True:
     	bash('python3 /var/cld/modules/doc/doc.py &>/dev/null')
     return Response(open('/var/cld/modules/doc/data/doc.json', 'r').read(), status=403, mimetype='application/json')
