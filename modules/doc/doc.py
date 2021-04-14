@@ -75,4 +75,6 @@ for modulepath in modules:
       except:
         pass
 
-open('/var/cld/doc/www/openapi.json', 'w').write(json.dumps(initjson))
+if os.isdir('/var/cld/modules/doc/data') != True:
+  bash('mkdir -p /var/cld/modules/doc/data &>/dev/null')
+open('/var/cld/modules/doc/data/doc.json', 'w').write(json.dumps(initjson))

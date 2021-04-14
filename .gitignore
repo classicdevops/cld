@@ -24,6 +24,7 @@
 /modules/*
 !/modules/access/
 !/modules/blackcheck/
+!/modules/doc/
 !/modules/dns/
 !/modules/etcbackup/
 !/modules/wildcardssl/
