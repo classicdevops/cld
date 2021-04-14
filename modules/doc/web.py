@@ -17,4 +17,4 @@ def doc_spec():
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     if os.path.isfile('/var/cld/modules/doc/data/doc.json') != True:
     	bash('python3 /var/cld/modules/doc/doc.py &>/dev/null')
-    return Response(open('/var/cld/modules/doc/data/doc.json', 'r').read(), status=403, mimetype='application/json')
+    return Response(open('/var/cld/modules/doc/data/doc.json', 'r').read(), status=200, mimetype='application/json')
