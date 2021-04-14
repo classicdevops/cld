@@ -13,8 +13,8 @@ $3                            Third PATTERN filtering allowed clouds
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-cmclouds
-cld-cmclouds --json
+cld-cm
+cld-cm --json
 EOL
 )
 
