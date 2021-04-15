@@ -11,7 +11,7 @@ description = str('# Introduction\n'+open('/var/cld/README.md', 'r').read()).rep
 initjson['info']['title'] = title
 initjson['info']['description'] = description
 initjson['info']['x-logo'] = {}
-initjson['info']['x-logo']['url'] = '/img/cld-logo.svg'
+initjson['info']['x-logo']['url'] = '/img/cld_h.svg'
 initjson['info']['x-logo']['altText'] = 'ClassicDeploy logo'
 
 modules = bash("find /var/cld/ /var/cld/{cm,deploy} /var/cld/modules/*/ -maxdepth 1 -type d -name 'bin'").split('\n')
