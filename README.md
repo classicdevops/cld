@@ -35,7 +35,7 @@ The basis of the project is a centralized system of SSH access based on PAM:
 
 Thus, the main priorities of CLD are the safety of users and maintained servers, unprecedented transparency work of engineers, increasing the efficiency of personnel, as well as automation of processes and work scenarios.
 
-# Modular system
+# Modular concept
 The internal structure of the CLD includes a system of modules that allows you to significantly expand the basic functionality and provide the ability to quickly integrate with external services. Below is a list and brief description of several modules that are included in the CLD:
 - `access` - control access to network ports by allowed/denied address lists on all servers
 - `cm` - create/manage/migrate KVM to Proxmox Virtual Environment
@@ -67,15 +67,7 @@ RAM: `2` Gb
 Disk space: `20` Gb
 Direct white ip address
 
-Classic deploy should be installing on a *clean* OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
-The installation is starting with the command:
-``` bash
-bash -x <(wget -qO- "https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh")
-```
-
-During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules
-An example input will be provided for each type of data requested
-
+## Data required for interfaces and modules
 Before the installation process, you should prepare the following information:
 - For interfaces:
 	- `Web` - DNS name for WEB/API (cld.example.com)
@@ -85,5 +77,15 @@ Before the installation process, you should prepare the following information:
 	- `dns` - Requisites of access to your CloudFlare account (`login`, `api key`, `user ID`)
 	- `zabbix` - Zabbix access credentials (user, password, domain, link for zabbix api)
 	- `cm` - Api credentials of supported bare metal hosting providers OVH/Online.net/Hetzner
+
+## Quick start
+Classic deploy should be installing on a *clean* OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
+The installation is starting with the command:
+``` bash
+bash -x <(wget -qO- "https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh")
+```
+
+During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules
+An example input will be provided for each type of data requested
 
 Upon completion of the installation, a `password` for the `admin` user and a `link` to the `web interface` will be provided
