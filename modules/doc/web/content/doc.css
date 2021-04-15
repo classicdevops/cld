@@ -1,0 +1,69 @@
+      div.sc-hKwCoD.kOJmuK.api-info p {
+        display: none;
+      }
+      .sc-evcjBb.ifwede.operation-type.options {
+          background-color: rgb(39 108 166);
+          text-indent: -9999px;
+          line-height: 0;
+          visibility: hidden;
+      }
+      .sc-evcjBb.ifwede.operation-type.options:after {
+        background-color: rgb(39 108 166);
+        content: "bash";
+        text-indent: 0;
+        display: block;
+        line-height: 13px;
+        visibility: visible;
+        height: 13px;
+        vertical-align: middle;
+        border-radius: 3px;
+      }
+      .sc-kDThTU {
+          text-indent: -9999px;
+          line-height: 0;
+          visibility: hidden;
+      }
+      .sc-kDThTU:after {
+          content: "Usage examples";
+          text-indent: 0;
+          display: block;
+          line-height: 21px;
+          visibility: visible;
+      }
+      div.sc-FNZbm.kGBuQP {
+        display: none;
+      }
+      svg.sc-egiSv.jLlghG {
+        display: none !important;
+      }
+      svg.sc-egiSv.gREoao {
+        display: none !important;
+      }
+      span.sc-bQtJOP.hYbsHv.http-verb.options {
+                text-indent: -9999px;
+                line-height: 0;
+                visibility: hidden;
+      }
+      span.sc-bQtJOP.hYbsHv.http-verb.options:after {
+            content: "bash";
+            text-indent: 0;
+            display: block;
+            line-height: 26px;
+            visibility: visible;
+            font-size: 0.929em;
+            line-height: 20px;
+            background-color: rgb(39 108 166);
+            color: rgb(255, 255, 255);
+            padding: 3px 10px;
+            text-transform: uppercase;
+            font-family: Montserrat, sans-serif;
+            margin: 0px;
+      }
+      pre {
+          font-size: 13px !important;
+          line-height: normal !important;
+          word-wrap: break-word !important;
+          white-space: pre-wrap !important;
+          border: 1px solid #276ca6ba !important;
+          border-radius: 4px !important;
+      }
