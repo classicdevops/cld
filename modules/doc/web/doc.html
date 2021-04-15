@@ -78,8 +78,16 @@ span.sc-bQtJOP.hYbsHv.http-verb.options:after {
     </style>
   </head>
   <body>
-    <redoc spec-url='/doc/doc.json'></redoc>
+    <redoc></redoc>
     <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
-
+    <script>Redoc.init('/doc/doc.json', {
+theme: {
+    logo: {
+      Height: '80px'
+      Width: '200px'
+    }
+  }
+})
+</script>
   </body>
 </html>
