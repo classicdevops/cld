@@ -21,3 +21,4 @@ cd /var/cld && git pull --force
 systemctl start cld
 systemctl start cron &>/dev/null
 systemctl start crond &>/dev/null
+python3 /var/cld/modules/doc/doc.py
