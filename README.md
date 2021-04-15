@@ -11,10 +11,10 @@ The main components of the system are bash-based utilities, API, telegram bot an
 To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the cld access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
 
 ### Access validation factors for each interface:
-- CLI (PAM authorization, access module, access matrix and sudoers)
-- API (token/access module, white list at the nginx level, access matrix and sudoers)
-- Telegram bot (userid, permissions matrix and sudoers)
-- Web (cookie, access module, white list at the nginx level, access matrix and sudoers)
+- `CLI` - PAM authorization, access module, access matrix and sudoers
+- `API` - token/access module, white list at the nginx level, access matrix and sudoers
+- `Telegram bot` - userid, permissions matrix and sudoers
+- `Web` - cookie, access module, white list at the nginx level, access matrix and sudoers
 
 # Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
@@ -22,10 +22,10 @@ The basis of the project is a centralized system of SSH access based on PAM:
 - each user is authorized on the server to his PAM account
 - access to allowed servers is carried out using a single private SSH key or password
 - the list of servers allowed for connection to the user is determined both by specifying specific instances and according to the groups to which the user belongs
-- SSH-key and passwords, with the help of which authorization takes place on remote nodes - are not available to the user, respectively, this data is reliably protected and cannot be compromised -
+- SSH-key and passwords, with the help of which authorization takes place on remote nodes - are not available to the user, respectively, this data is reliably protected and cannot be compromised
 - access to the CLD management server (as well as to other nodes connected to the system) can be limited by the list of allowed ip addresses (whitelists)
 - the formation of lists of IP addresses allowed for access is carried out using the telegram bot using the API, or through the built-in CLI utility
-- in the process of working through the CLD, when connecting to the server, its root file system is mounted in ~/mnt/$instance, this provides file access to the user to any available server through a single SFTP connection, as well as transfer and synchronization of files between servers without the need to create new ones direct connections
+- in the process of working through the CLD, when connecting to the server, its root file system is mounted in `~/mnt/$instance`, this provides file access to the user to any available server through a single SFTP connection, as well as transfer and synchronization of files between servers without the need to create new ones direct connections
 - servers are divided into groups, available group types: manual and parsing
 - groups of type manual contain servers added manually
 - groups of the parsing type contain servers updated through an automatic parsing script that works via API, or in another way, for example, supported from aws, digitalocean, google cloud deployments, or parsing KVM/LXC containers of a group of available hypervisors
@@ -33,7 +33,7 @@ The basis of the project is a centralized system of SSH access based on PAM:
 - currently 2 roles are available, admin - unlimited access to all CLD components and modules, and user - customizable access to servers, server groups, utilities and modules.
 - the console output of all connections to the system's servers is logged into the session log, it is possible to track what the user performed, as well as what he saw in the console at any time in any session, the ability to view current sessions is also available, this allows you to see on the screen the same thing that he sees user, for example it can be useful for L3/L2 engineers to help L2/L1 engineers with technical questions.
 
-Thus, the main priorities of CLD are the safety of users and maintained servers, unprecedented transparency of the work of engineers, increasing the efficiency of personnel, as well as automation of processes and work scenarios.
+Thus, the main priorities of CLD are the safety of users and maintained servers, unprecedented transparency work of engineers, increasing the efficiency of personnel, as well as automation of processes and work scenarios.
 
 # Modular system
 The internal structure of the CLD includes a system of modules that allows you to significantly expand the basic functionality and provide the ability to quickly integrate with external services. Below is a list and brief description of several modules that are included in the CLD:
@@ -59,7 +59,7 @@ CLD framework script:
 - Can be set to cron, for example, to update groups of instances (centralized release and further renewal of certificates on balancers), as well as for monitoring/parsing and sequential start/restart of various services on groups of instances in complex systems with a regulated startup protocol)
 
 # Installation
-##### Recommended system requirements:
+## Recommended system requirements:
 Virtualization: `KVM`/`Bare metal`
 Supported OS: `Centos` 7/8, `Debian` 9/10
 CPU: `2` cores
