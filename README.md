@@ -61,7 +61,7 @@ CLD framework script:
 - Can be set to cron, for example, to update groups of instances (centralized release and further renewal of certificates on balancers), as well as for monitoring/parsing and sequential start/restart of various services on groups of instances in complex systems with a regulated startup protocol)
 
 # Installation
-## Recommended system requirements:
+### Recommended system requirements:
 Virtualization: `KVM`/`Bare metal`
 Supported OS: `Centos` 7/8, `Debian` 9/10
 CPU: `2` cores
@@ -69,7 +69,7 @@ RAM: `2` Gb
 Disk space: `20` Gb
 Direct white ip address
 
-## Data required for interfaces and modules
+### Data required for interfaces and modules
 Before the installation process, you should prepare the following information:
 - For interfaces:
 	- `Web` - DNS name for WEB/API (cld.example.com)
@@ -80,7 +80,7 @@ Before the installation process, you should prepare the following information:
 	- `dns` - Requisites of access to your CloudFlare account (`login`, `api key`, `user ID`)
 	- `zabbix` - Zabbix access credentials (user, password, domain, link for zabbix api)
 
-## Quick start
+### Quick start
 Classic deploy should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ``` bash
