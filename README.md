@@ -10,7 +10,7 @@ cld - сlassical architecture deployment and management system
 The main components of the system are bash-based utilities, API, telegram bot and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the cld access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
 
-### Access validation factors for each interface
+### Access validation factors for each interface:
 - CLI (PAM authorization, access module, access matrix and sudoers)
 - API (token/access module, white list at the nginx level, access matrix and sudoers)
 - Telegram bot (userid, permissions matrix and sudoers)
@@ -69,7 +69,9 @@ Direct white ip address
 
 Classic deploy should be installing on a *clean* OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
 The installation is starting with the command:
-`bash -x <(wget -qO- https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh)`
+``` bash
+bash -x <(wget -qO- "https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh")
+```
 
 During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules
 An example input will be provided for each type of data requested
