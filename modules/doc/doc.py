@@ -21,10 +21,14 @@ for modulepath in modules:
   module = modulepath.split('/')[-2]
   print('module: '+module)
   print('modulepath: '+modulepath)
-  if os.path.isfile(modulepath.replace('/bin', '/')+"README.md"):
-    module_desc = open(modulepath.replace('/bin', '/')+'README.md', 'r').read().replace('\n', '  \n')
+  if module == "cld":
+    if os.path.isfile(modulepath.replace('/bin', '/')+"CORE.md"):
+      module_desc = open(modulepath.replace('/bin', '/')+'CORE.md', 'r').read().replace('\n', '  \n')
   else:
-    module_desc = 'CLD third party module'
+    if os.path.isfile(modulepath.replace('/bin', '/')+"README.md"):
+      module_desc = open(modulepath.replace('/bin', '/')+'README.md', 'r').read().replace('\n', '  \n')
+    else:
+      module_desc = 'CLD third party module'
   initjson['tags'].append({})
   initjson['tags'][itter]['name'] = module
   initjson['tags'][itter]['description'] = module_desc
