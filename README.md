@@ -11,10 +11,10 @@ The main components of the system are bash-based utilities, API, telegram bot an
 To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the cld access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
 
 ## Access validation factors for each interface:
-- `CLI` - PAM authorization, access module, access matrix and sudoers
-- `API` - token/access module, white list at the nginx level, access matrix and sudoers
-- `Telegram bot` - userid, permissions matrix and sudoers
-- `Web` - cookie, access module, white list at the nginx level, access matrix and sudoers
+- *CLI* - `PAM authorization`, `access module`, `access matrix` and `sudoers`
+- *API* - `token/access module`, `white list` at the nginx level, `access matrix` and `sudoers`
+- *Telegram bot* - `userid`, `permissions matrix` and `sudoers`
+- *Web* - `cookie`, `access module`, `white list` at the nginx level, `access matrix` and `sudoers`
 
 # Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
@@ -74,9 +74,9 @@ Before the installation process, you should prepare the following information:
 	- `Chat bot` - Telegram bot token (Bot can be created via http://t.me/BotFather)
 
 - For modules:
+	- `cm` - Api credentials of supported bare metal hosting providers OVH/Online.net/Hetzner
 	- `dns` - Requisites of access to your CloudFlare account (`login`, `api key`, `user ID`)
 	- `zabbix` - Zabbix access credentials (user, password, domain, link for zabbix api)
-	- `cm` - Api credentials of supported bare metal hosting providers OVH/Online.net/Hetzner
 
 ## Quick start
 Classic deploy should be installing on a *clean* OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
