@@ -18,7 +18,7 @@ while $(ps axfu | grep -v grep | grep -q cld-accesslistdeploy); do sleep 1s; don
 chattr -i /var/cld
 cd /var/cld && git pull --force
 [ -e "/var/cld/tmp" ] || mkdir -p /var/cld/tmp &>/dev/null
-echo Update user rights accordint according access matrix /var/cld/creds/passwd
+echo Update user rights according access matrix /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd &>/dev/null
 echo Start services
 systemctl start cld
