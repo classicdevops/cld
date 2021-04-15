@@ -80,6 +80,7 @@ Before the installation process, you should prepare the following information:
 - For interfaces:
 	- `Web` - DNS name for WEB/API (cld.example.com)
 	- `Chat bot` - Telegram bot token (Bot can be created via http://t.me/BotFather)
+
 - For modules:
 	- `dns` - Requisites of access to your CloudFlare account (`login`, `api key`, `user ID`)
 	- `zabbix` - Zabbix access credentials (user, password, domain, link for zabbix api)
