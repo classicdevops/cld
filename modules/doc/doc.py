@@ -6,7 +6,7 @@ def bash(cmd):
 initjson = json.loads('''{"openapi":"3.0.0","info":{},"tags":[],"paths":{},"components":{"schemas":{},"examples":{}}}''')
 
 title = 'CLD documentation'
-description = str('# Introduction\n'+open('/var/cld/README.md', 'r').read()).replace('\n', '  \n')
+description = open('/var/cld/README.md', 'r').read().replace('\n', '  \n')
 
 initjson['info']['title'] = title
 initjson['info']['description'] = description

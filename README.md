@@ -1,14 +1,24 @@
+# Introduction
 cld - сlassical architecture deployment and management system
 
 - Secure, convenient and centralized access system from one point, it is not required to store the key of each user on each server, now there is only one key
 - Transparent and flexible deployment that is limited only by your imagination
 - Cloud maker platform - create and manage kvm virtual machines as easy as never before
 - Modular system for any functionality, but if this is not enough, you can create and integrate it with the system, support for third-party modules is included
-- Control as you like, cli, web, api or bots, wherever you are, anytime
+- Control as you like, CLI, web, API or chat bot, wherever you are, anytime
+
+The main components of the system are bash-based utilities, API, telegram bot and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
+To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the cld access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
+
+##### Access validation factors for each interface
+CLI (PAM authorization, access module, access matrix and sudoers)
+API (token/access module, white list at the nginx level, access matrix and sudoers)
+telegram bot (userid, permissions matrix and sudoers)
+Web (cookie, access module, white list at the nginx level, access matrix and sudoers)
 
 # Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
-- all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal telegram account id, as well as api token
+- all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal telegram account id, as well as API token
 - each user is authorized on the server to his PAM account
 - access to allowed servers is carried out using a single private SSH key or password
 - the list of servers allowed for connection to the user is determined both by specifying specific instances and according to the groups to which the user belongs
@@ -33,11 +43,11 @@ The internal structure of the CLD includes a system of modules that allows you t
 - `dns` - cloudflare integration and DNS management across multiple accounts
 - `etcbackup` - backup of server configurations
 
-The system is designed in such a way that the addition of new functional modules for any purpose occurs as quickly as possible due to unification and automatic code generation for api and telegram bot, already now in production on a number of projects up to 50 local modules are used that provide the most diverse functionality and automation, in including complex CI/CD.
-Access to modules via cli, bot telegrams, api and via the web interface is separately configured for each user.
+The system is designed in such a way that the addition of new functional modules for any purpose occurs as quickly as possible due to unification and automatic code generation for API and telegram bot, already now in production on a number of projects up to 50 local modules are used that provide the most diverse functionality and automation, in including complex CI/CD.
+Access to modules via CLI, bot telegrams, API and via the web interface is separately configured for each user.
 
 # Framework
-CLD is home to all your infrastructure scripts where they are always at hand
+`Classic deploy` is home to all your infrastructure scripts where they are always at hand
 CLD framework script:
 - Available through various CLI, API, Telegram bot, Web - in accordance with the access matrix and allowed address lists
 - Has a generated help for all interfaces from one or more variables specified at the beginning of the script (HELP_DESC, HELP_ARGS, HELP_EXAMPLES)
@@ -47,3 +57,30 @@ CLD framework script:
 - Works reliably and safely - due to unification and security features, there is no need for hardcode even with tight deadlines
 - The script can be in any language (including compiled one) - it will also be available through any interface (do not forget to write help available through the -h argument for access through the web interface)
 - Can be set to cron, for example, to update groups of instances (centralized release and further renewal of certificates on balancers), as well as for monitoring/parsing and sequential start/restart of various services on groups of instances in complex systems with a regulated startup protocol)
+
+# Installation
+##### Recommended system requirements:
+Virtualization: `KVM`/`Bare metal`
+Supported OS: `Centos` 7/8, `Debian` 9/10
+CPU: `2` cores
+RAM: `2` Gb
+Disk space: `20` Gb
+Direct white ip address
+
+Classic deploy should be installing on a *clean* OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
+The installation is starting with the command:
+`bash -x <(wget -qO- https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh)`
+
+During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules
+An example input will be provided for each type of data requested
+
+Before the installation process, you should prepare the following information:
+- For interfaces:
+	- `Web` - DNS name for WEB/API (cld.example.com)
+	- `Chat bot` - Telegram bot token (Bot can be created via http://t.me/BotFather)
+- For modules:
+	- `dns` - Requisites of access to your CloudFlare account (`login`, `api key`, `user ID`)
+	- `zabbix` - Zabbix access credentials (user, password, domain, link for zabbix api)
+	- `cm` - Api credentials of supported bare metal hosting providers OVH/Online.net/Hetzner
+
+Upon completion of the installation, a `password` for the `admin` user and a `link` to the `web interface` will be provided
