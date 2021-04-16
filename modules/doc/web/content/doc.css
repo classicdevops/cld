@@ -1,5 +1,11 @@
+::-webkit-scrollbar {width: 5px;}
+::-webkit-scrollbar-track {background: #000000;}
+::-webkit-scrollbar-thumb {background: #747473;}
+::-webkit-scrollbar-thumb:hover {background: #555;}
+
 pre.sc-jObXwK.sc-dPiKHq.euKCrk.ySWwV {
   line-height: inherit;
+  white-space: pre !important;
 }
 
 div.sc-hKwCoD.kOJmuK.api-info p {
