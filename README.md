@@ -76,9 +76,9 @@ Before the installation process, you should prepare the following information:
 	- `Chat bot` - Telegram bot token (Bot can be created via http://t.me/BotFather)
 
 - For modules:
-	- `cm` - Api credentials of supported bare metal hosting providers OVH/Online.net/Hetzner
-	- `dns` - Requisites of access to your CloudFlare account (`login`, `api key`, `user ID`)
-	- `zabbix` - Zabbix access credentials (user, password, domain, link for zabbix api)
+	- `cm` - API credentials of supported bare metal hosting providers `OVH`/`Online.net`/`Hetzner`
+	- `dns` - Credentianals of CloudFlare account (`login`, `API key`, `user ID`)
+	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `link for Zabbix API`)
 
 ### Quick start
 Classic deploy should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
@@ -90,4 +90,4 @@ bash -x <(wget -qO- "https://raw.githubusercontent.com/achendev/cld/master/setup
 During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules
 An example input will be provided for each type of data requested
 
-Upon completion of the installation, a `password` for the `admin` user and a `link` to the `web interface` will be provided
+Upon completion of the installation, a `password` for the `admin` user and a `link` to the `web interface` will be provided in console.

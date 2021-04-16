@@ -419,6 +419,7 @@ def connect():
     if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     else: cldmodule = "bash"
     print('cldmodule is: '+str(cldmodule), flush=True)
+    if cldmodule == "": return Response("403", status=403, mimetype='text/plain')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
