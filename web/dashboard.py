@@ -419,7 +419,6 @@ def connect():
     if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
     else: cldmodule = "bash"
     print('cldmodule is: '+str(cldmodule), flush=True)
-    if cldmodule == "": return Response("403", status=403, mimetype='text/plain')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     print('checkresult is: '+str(checkresult), flush=True)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
@@ -435,7 +434,8 @@ def connect():
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
-      return socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
+      socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
+      return socketio.emit("disconnect", namespace="/cld")
     join_room(socketid)
     room = socketid
     child_pid = None
