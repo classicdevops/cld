@@ -10,12 +10,6 @@ cld - сlassical architecture deployment and management system
 The main components of the system are bash-based utilities, API, telegram bot and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the cld access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
 
-## Access validation factors for each interface:
-- **CLI** - `PAM authorization`, `access module`, `access matrix` and `sudoers`
-- **API** - `token/access module`, `white list` at the nginx level, `access matrix` and `sudoers`
-- **Telegram bot** - `userid`, `permissions matrix` and `sudoers`
-- **Web** - `cookie`, `access module`, `white list` at the nginx level, `access matrix` and `sudoers`
-
 # Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
 - all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal telegram account id, as well as API token
@@ -34,6 +28,12 @@ The basis of the project is a centralized system of SSH access based on PAM:
   - **admin** - `unlimited access` to all CLD components and modules.
   - **user** - `customizable access` to servers, server groups, utilities and modules.
 - the console output of all connections to the system's servers is logged into the session log, it is possible to track what the user performed, as well as what he saw in the console at any time in any session, the ability to view current sessions is also available, this allows you to see on the screen the same thing that he sees user, for example it can be useful for L3/L2 engineers to help L2/L1 engineers with technical questions.
+
+## Access validation factors for each interface:
+- **CLI** - `PAM authorization`, `access module`, `access matrix` and `sudoers`
+- **API** - `token/access module`, `white list` at the nginx level, `access matrix` and `sudoers`
+- **Telegram bot** - `userid`, `permissions matrix` and `sudoers`
+- **Web** - `cookie`, `access module`, `white list` at the nginx level, `access matrix` and `sudoers`
 
 Thus, the main priorities of CLD are the safety of users and maintained servers, unprecedented transparency work of engineers, increasing the efficiency of personnel, as well as automation of processes and work scenarios.
 
