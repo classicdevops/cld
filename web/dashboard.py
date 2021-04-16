@@ -436,7 +436,7 @@ def connect():
     join_room(socketid)
     room = socketid
     if shellcmd == "": 
-      socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld", room=room sid=socketid)
+      socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld", room=room, sid=socketid)
       return socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
     child_pid = None
     (child_pid, fd) = pty.fork()
