@@ -434,8 +434,8 @@ def connect():
     if cldutility == 'bash': shellcmd = '/bin/bash'
     else: shellcmd = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d "'" -f 2 | tr -d "\n" ''')
     if shellcmd == "": 
-      socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld")
-      return socketio.emit("disconnect", namespace="/cld")
+      socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld", sid=socketid)
+      return socketio.emit("disconnect", namespace="/cld", sid=socketid)
     join_room(socketid)
     room = socketid
     child_pid = None
