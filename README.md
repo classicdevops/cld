@@ -71,11 +71,11 @@ Direct white ip address
 
 ### Data required for interfaces and modules
 Before the installation process, you should prepare the following information:
-- For interfaces:
+- For interfaces (to use tools through any available interfaces):
 	- `Web` - DNS name for WEB/API (cld.example.com)
 	- `Chat bot` - Telegram bot token (Bot can be created via http://t.me/BotFather)
 
-- For modules:
+- For modules (to use modules functionality like create/resize/migrate KVM, create/delete/update DNS records, etc):
 	- `cm` - API credentials of supported bare metal hosting providers `OVH`/`Online.net`/`Hetzner`
 	- `dns` - Credentianals of CloudFlare account (`login`, `API key`, `user ID`)
 	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `link for Zabbix API`)

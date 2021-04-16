@@ -438,28 +438,29 @@ def connect():
     if shellcmd == "": 
       socketio.emit("output", {"output": "Access denied: check request is correct and access rights for the user"}, namespace="/cld", room=room, sid=socketid)
       return socketio.emit("disconnect", namespace="/cld", room=room, sid=socketid)
-    child_pid = None
-    (child_pid, fd) = pty.fork()
-    time.sleep(0.05)
-    if child_pid == 0:
-      #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
-      subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args+" ; sleep 0.5s", shell=True, cwd=str('/home/'+user), executable='/bin/bash')
-    elif isinstance(child_pid, int):
-      app.config["shell"]["childpid"][socketid] = child_pid
-      try: subprocpid
-      except NameError: 
-        subprocpid = ''
-        count = 0
-      while subprocpid == '' and count != 30:
-        subprocpid = bash('ps axf -o pid,command | grep -v grep | sed "s/^ *//g" | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1').replace('\n', '')
-        count+=1
-        time.sleep(0.1)
-      app.config["shell"][socketid] = fd
-      app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
-      set_winsize(fd, 50, 50)
-      socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
-      print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
-      threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
+    else:
+      child_pid = None
+      (child_pid, fd) = pty.fork()
+      time.sleep(0.05)
+      if child_pid == 0:
+        #print("command is: TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args, flush=True)
+        subprocess.run("TERM=xterm /usr/bin/sudo -u "+user+" "+shellcmd+" "+cmd_args+" ; sleep 0.5s", shell=True, cwd=str('/home/'+user), executable='/bin/bash')
+      elif isinstance(child_pid, int):
+        app.config["shell"]["childpid"][socketid] = child_pid
+        try: subprocpid
+        except NameError: 
+          subprocpid = ''
+          count = 0
+        while subprocpid == '' and count != 30:
+          subprocpid = bash('ps axf -o pid,command | grep -v grep | sed "s/^ *//g" | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1').replace('\n', '')
+          count+=1
+          time.sleep(0.1)
+        app.config["shell"][socketid] = fd
+        app.config["shell"]["subprocpid"+socketid] = int(subprocpid)
+        set_winsize(fd, 50, 50)
+        socketio.start_background_task(read_and_forward_pty_output, socketid, fd, int(subprocpid), child_pid, room)
+        print(str(socketid), str(fd), str(subprocpid), str(child_pid), str(room), flush=True)
+        threading.Thread(target=keepalive_shell_session, args=(socketid, child_pid, room, int(subprocpid), fd)).start()
 
 #@app.after_request
 
