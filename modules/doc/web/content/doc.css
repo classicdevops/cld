@@ -1,3 +1,7 @@
+pre.sc-jObXwK.sc-dPiKHq.euKCrk.ySWwV {
+  line-height: inherit;
+}
+
 div.sc-hKwCoD.kOJmuK.api-info p {
   display: none;
 }
@@ -71,7 +75,7 @@ span.sc-bQtJOP.hYbsHv.http-verb.options:after {
 
 pre {
   font-size: 13px !important;
-  line-height: normal !important;
+  line-height: normal;
   word-wrap: break-word !important;
   white-space: pre-wrap !important;
   border: 1px solid #276ca6ba !important;
