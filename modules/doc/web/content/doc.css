@@ -1,7 +1,12 @@
-::-webkit-scrollbar {width: 5px;}
+::-webkit-scrollbar {width: 5px; height: 5px;}
 ::-webkit-scrollbar-track {background: #000000;}
 ::-webkit-scrollbar-thumb {background: #747473;}
 ::-webkit-scrollbar-thumb:hover {background: #555;}
+
+div.sc-cTApHj.fVRyQa {
+  padding: 5px 20px 20px 20px;
+  margin: 0px;
+}
 
 pre.sc-jObXwK.sc-dPiKHq.euKCrk.ySWwV {
   line-height: inherit;
@@ -85,6 +90,6 @@ pre {
   line-height: normal;
   word-wrap: break-word !important;
   white-space: pre-wrap !important;
-  border: 1px solid #276ca6ba !important;
-  border-radius: 4px !important;
+  border: 1px solid #ffffff2b !important;
+  border-radius: 2px !important;
 }
