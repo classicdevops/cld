@@ -362,7 +362,8 @@ cldhelp()
 [ "$HELPYAML" = "1" ] && export YAMLCORRECTOR=' |'
 (
 source <(grep CLD_DOMAIN /var/cld/creds/creds)
-[ "$HELP_ONLY" ] || HELP_ONLY="CLI BOT API"
+[ "$HELP_ONLY" ] || HELP_ONLY="CLI BOT API WEB"
+grep "CLI" <<< $HELP_ONLY | grep -q "WEB" || HELP_ONLY="${HELP_ONLY} WEB"
 [ "$HELP_DESC" ] && (echo Description:${YAMLCORRECTOR}
 echo "${HELP_DESC}" | awk '{print "     "$0}'
 echo)
@@ -374,9 +375,7 @@ echo)
 echo Usage examples:
 for METHOD in $HELP_ONLY
 do
-[ "${METHOD}" == "CLI" ] && echo "  CLI:${YAMLCORRECTOR}"
-[ "${METHOD}" == "BOT" ] && echo "  BOT:${YAMLCORRECTOR}"
-[ "${METHOD}" == "API" ] && echo "  API:${YAMLCORRECTOR}"
+[ "${METHOD}" ] && echo "  ${METHOD}:${YAMLCORRECTOR}"
 (IFS=$'\n'
 for STRING in ${HELP_EXAMPLES}
 do
@@ -393,6 +392,10 @@ elif [ "${METHOD}" == "API" ]
 then
 [ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "API" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
 [ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | sed 's#&args="$#"#g'
+elif [ "${METHOD}" == "WEB" ]
+then
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "WEB" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/tool/$(awk -F " " '{print $1}' <<< ${STRING})/$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/tool/$(awk -F " " '{print $1}' <<< ${STRING})/$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\"
 fi
 done)
 echo
