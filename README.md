@@ -90,9 +90,9 @@ The basis of the project is a centralized system of SSH access based on PAM:
 
 ## Access validation factors for each interface:
 - **CLI** - `PAM authorization`, `access module`, `access matrix` and `sudoers`
-- **API** - `token/access module`, `white list` at the nginx level, `access matrix` and `sudoers`
+- **API** - `token/access module`, `access list` at the nginx level, `access matrix` and `sudoers`
 - **Telegram bot** - `userid`, `permissions matrix` and `sudoers`
-- **Web** - `cookie`, `access module`, `white list` at the nginx level, `access matrix` and `sudoers`
+- **Web** - `cookie`, `access module`, `access list` at the nginx level, `access matrix` and `sudoers`
 
 Thus, the main priorities of CLD are the safety of users and maintained servers, unprecedented transparency work of engineers, increasing the efficiency of personnel, as well as automation of processes and work scenarios.
 
