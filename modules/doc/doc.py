@@ -15,7 +15,7 @@ initjson['info']['x-logo']['url'] = '/img/cld_h.svg'
 initjson['info']['x-logo']['href'] = '/'
 initjson['info']['x-logo']['altText'] = 'ClassicDeploy logo'
 
-modules = bash("find /var/cld/ /var/cld/{cm,deploy} /var/cld/modules/*/ -maxdepth 1 -type d -name 'bin'").split('\n')
+modules = bash("find /var/cld/ /var/cld/{cm,deploy} /var/cld/modules/*/ -maxdepth 1 -type d -name 'bin' -o -name 'README.md'").split('\n')
 
 itter = 0
 for modulepath in modules:
