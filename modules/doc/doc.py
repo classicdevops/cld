@@ -26,8 +26,8 @@ for modulepath in modules:
     if os.path.isfile(modulepath.replace('/bin', '/').replace('/README.md', '/')+"CORE.md"):
       module_desc = open(modulepath.replace('/bin', '/').replace('/README.md', '/')+'CORE.md', 'r').read().replace('\n', '  \n')
   else:
-    if os.path.isfile(modulepath.replace('/bin', '/')+"README.md"):
-      module_desc = open(modulepath.replace('/bin', '/')+'README.md', 'r').read().replace('\n', '  \n')
+    if os.path.isfile(modulepath.replace('/bin', '/').replace('/README.md', '/')+"README.md"):
+      module_desc = open(modulepath.replace('/bin', '/').replace('/README.md', '/')+'README.md', 'r').read().replace('\n', '  \n')
     else:
       module_desc = 'CLD third party module'
   initjson['tags'].append({})
