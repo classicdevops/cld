@@ -1,0 +1,2 @@
+Module for managing hosts checking the availability of web sites by url (periodic access to a remote server by domain), as well as monitoring and checking the validity of SSL certificates, domain expiration dates.
+- Templates and scripts for Zabbix server are in `/var/cld/modules/zabbixcontrol/zbx/`
