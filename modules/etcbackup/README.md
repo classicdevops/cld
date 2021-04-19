@@ -1,0 +1,1 @@
+The module is designed to backup configurations by archiving the `/etc` directory on all or selected instances to the network storage.
