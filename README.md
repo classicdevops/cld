@@ -17,7 +17,7 @@ The basis of the project is a centralized system of SSH access based on PAM:
 - access to allowed servers is carried out using a single private SSH key or password
 - the list of servers allowed for connection to the user is determined both by specifying specific instances and according to the groups to which the user belongs
 - SSH-key and passwords, with the help of which authorization takes place on remote nodes - are not available to the user, respectively, this data is reliably protected and cannot be compromised
-- access to the CLD management server (as well as to other nodes connected to the system) can be limited by the list of allowed ip addresses (whitelists)
+- access to the CLD management server (as well as to other nodes connected to the system) can be limited by the list of allowed ip addresses (access lists)
 - the formation of lists of IP addresses allowed for access is carried out using the telegram bot using the API, or through the built-in CLI utility
 - in the process of working through the CLD, when connecting to the server, its root file system is mounted in `~/mnt/$instance`, this provides file access to the user to any available server through a single SFTP connection, as well as transfer and synchronization of files between servers without the need to create new ones direct connections
 - servers are divided into groups, available group types: manual and parsing
@@ -126,7 +126,7 @@ Supported OS: `Centos` 7/8, `Debian` 9/10
 CPU: `2` cores
 RAM: `2` Gb
 Disk space: `20` Gb
-Direct white ip address
+Direct public ip address
 
 ### Data required for interfaces and modules
 Before the installation process, you should prepare the following information:
