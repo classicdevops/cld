@@ -11,7 +11,7 @@ description = open('/var/cld/README.md', 'r').read().replace('\n', '  \n')
 initjson['info']['title'] = title
 initjson['info']['description'] = description
 initjson['info']['x-logo'] = {}
-initjson['info']['x-logo']['url'] = '/img/cld_h.svg'
+initjson['info']['x-logo']['url'] = '/img/cld_v.svg'
 initjson['info']['x-logo']['href'] = '/'
 initjson['info']['x-logo']['altText'] = 'ClassicDeploy logo'
 
