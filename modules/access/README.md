@@ -1,0 +1,1 @@
+Module for `protect network ports` of servers, with the ability to `access only by allowed lists` of ip addresses, as well as `blocking all connections` to any of the servers using `prohibited lists` of ip addresses

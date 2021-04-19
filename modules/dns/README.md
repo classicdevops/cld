@@ -1,0 +1,1 @@
+The module allows you to quickly integrate and manage DNS zones of domains simultaneously in multiple CloudFlare (CF) accounts, back up DNS records of all domains, as well as track rps using the nginx log to enable “Under Attack” mode in CF
