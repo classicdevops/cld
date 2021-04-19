@@ -15,9 +15,9 @@ $3                       Third PATTERN filtering allowed instances
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld #CLI
-cld prod 1.2. #CLI
-cld --groups=gcloud prod --debug #CLI
+cld #CLI,WEB
+cld prod 1.2. #CLI,WEB
+cld --groups=gcloud prod --debug #CLI,WEB
 cld prod 1.2. --list 
 cld prod 1.2. --groups=default --list --json --beauty
 EOL

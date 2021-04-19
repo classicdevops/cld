@@ -16,7 +16,7 @@ cld-creds prod 1.2.
 cld-creds --groups=gcloud prod --debug
 EOL
 )
-HELP_ONLY="CLI"
+HELP_ONLY="CLI WEB"
 
 source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)

@@ -17,7 +17,7 @@ cldmount prod 1.2.
 cldmount prod 1.2.3.4_instance_22_root --groups=gcloud
 EOL
 )
-HELP_ONLY="CLI"
+HELP_ONLY="CLI WEB"
 source /var/cld/bin/include/cldfuncs
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
