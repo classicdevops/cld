@@ -23,7 +23,7 @@
 #modules
 /modules/*
 !/modules/access/
-!/modules/blackcheck/
+!/modules/spamcheck/
 !/modules/doc/
 !/modules/dns/
 !/modules/etcbackup/

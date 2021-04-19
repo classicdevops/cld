@@ -4,7 +4,7 @@ Utility to check all instances addresses if there is in spam lists
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-blackchecker
+cld-spamchecker
 EOL
 )
 
@@ -20,7 +20,7 @@ done
 source /var/cld/bin/include/cldfuncs
 [ "$SUDO_USER" ] || SUDO_USER=admin
 [ "$CLD_GROUPS" ] || CLD_GROUPS=default
-truncate -s 0 /tmp/blacklisted
+truncate -s 0 /tmp/spamlisted
 for VM in $(CLOUDS_USER_ALLOWED --group=${CLD_GROUPS} | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
   CLD_LOGS
@@ -43,6 +43,6 @@ do
       CLD_VARS=EXTERNAL_VARS
     fi
     $CLD_VARS
-    cld-blackcheck ${SRV} | grep blacklisted | xargs -I ^ echo $VMN - $SRV - ^ | cut -d '(' -f 1
+    cld-spamcheck ${SRV} | grep spamlisted | xargs -I ^ echo $VMN - $SRV - ^ | cut -d '(' -f 1
   fi
-done | tee -a /tmp/blacklisted
+done | tee -a /tmp/spamlisted
