@@ -65,7 +65,7 @@ for modulepath in modules:
       initjson['paths'][tool]['options']['responses'] = {}
       initjson['paths'][tool]['options']['operationId'] = tool
       initjson['paths'][tool]['options']['description'] = ''
-      try: initjson['paths'][tool]['options']['description'] += 'Description: <pre>'+tool_desc+'</pre>'
+      try: initjson['paths'][tool]['options']['description'] += 'Description:   \n'+tool_desc.replace('\n', '  \n')
       except: pass
       try: initjson['paths'][tool]['options']['description'] += 'Arguments: <pre>'+tool_args+'</pre>'
       except: pass
