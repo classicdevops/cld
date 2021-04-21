@@ -306,32 +306,6 @@ def uploadfile(instance):
     print(fullfilepath+'/'+filename, flush=True)
     return Response('File uploaded', status=200, mimetype='text/plain')
 
-def keepalive_shell_sessions():
-    print("keepalive_shell_sessions started", flush=True)
-    while True:
-        time.sleep(10)
-        try:
-          print('app.config["shell"]["childpid"] is: '+str(app.config["shell"]["childpid"]))
-          socketid_list = list(app.config["shell"]["clildpid"].keys())
-          print("socketid_list: "+str(socketid_list), flush=True)
-          for socketid in socket_list:
-              current_timestamp = int(time.time())
-              socket_timestamp = app.config["shell"]["keepalive"][socketid]
-              print
-              if current_timestamp > socket_timestamp:
-                  print("started terminating task for socket "+socketid, flush=True)
-                  socket_child_pid = app.config["shell"]["childpid"][socketid]
-                  room = socketid
-                  print("exit due "+socketid+" not connected", flush=True)
-                  socketio.emit("output", {"output": "Process exited"}, namespace="/cld", room=room)
-                  socketio.emit("disconnect", namespace="/cld", room=room)
-                  os.kill(socket_child_pid, 9)
-                  del app.config["shell"][socketid]
-                  del app.config["shell"]["childpid"][socketid]
-                  del app.config["shell"]["subprocpid"+socketid]
-        except:
-          pass
-
 def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
     app.config["shell"]["keepalive"][socketid] = int(time.time())+15
     print("keepalive_shell_session started for socketid: "+socketid, flush=True)
@@ -588,7 +562,7 @@ def admin():
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     return render_template('html/admin.html', username=username, users=users, groups=groups)
 
-@app.route('/user')
+@app.route('/admin/user')
 def user():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -612,7 +586,7 @@ def user():
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list)').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
-@app.route('/group')
+@app.route('/admin/group')
 def group():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -643,7 +617,7 @@ def group():
     groupfuncdeploynotty = bash('cat /var/cld/access/groups/'+group+'/funcdeploynotty || cat /var/cld/access/groups/default/default_funcdeploynotty')
     return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount, groupfuncdeploy=groupfuncdeploy, groupfuncdeploynotty=groupfuncdeploynotty)
 
-@app.route('/adduser', methods=['POST'])
+@app.route('/admin/adduser', methods=['POST'])
 def adduser():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -654,7 +628,7 @@ def adduser():
     bash('/var/cld/bin/cld-useradd '+newuser+' '+newpassword).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/deluser', methods=['GET'])
+@app.route('/admin//deluser', methods=['GET'])
 def deluser():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -664,7 +638,7 @@ def deluser():
     bash('/var/cld/bin/cld-userdel '+deluser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/addgroup', methods=['POST'])
+@app.route('/admin/addgroup', methods=['POST'])
 def addgroup():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -674,7 +648,7 @@ def addgroup():
     bash('/var/cld/bin/cld-groupadd '+newgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/delgroup', methods=['GET'])
+@app.route('/admin/delgroup', methods=['GET'])
 def delgroup():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -684,7 +658,7 @@ def delgroup():
     bash('/var/cld/bin/cld-groupdel '+delgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/enableuser', methods=['GET'])
+@app.route('/admin/enableuser', methods=['GET'])
 def enableuser():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -694,7 +668,7 @@ def enableuser():
     bash('passwd --unlock '+enableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/disableuser', methods=['GET'])
+@app.route('/admin//disableuser', methods=['GET'])
 def disableuser():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -704,7 +678,7 @@ def disableuser():
     bash('passwd --lock '+disableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/usergroups', methods=['GET','POST'])
+@app.route('/admin/usergroups', methods=['GET','POST'])
 def usergroups():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -719,7 +693,7 @@ def usergroups():
     groupsfile.close()
     return redirect('/admin', code=302)
 
-@app.route('/userclouds', methods=['GET','POST'])
+@app.route('/admin/userclouds', methods=['GET','POST'])
 def userclouds():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -735,7 +709,7 @@ def userclouds():
       usersfile.close()
     return redirect('/admin', code=302)
 
-@app.route('/groupusers', methods=['GET','POST'])
+@app.route('/admin/groupusers', methods=['GET','POST'])
 def groupusers():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -752,7 +726,7 @@ def groupusers():
         bash("sed -i '/"+group+"/d' /var/cld/access/users/"+denyuser+"/groups")
     return redirect('/admin', code=302)
 
-@app.route('/groupclouds', methods=['GET','POST'])
+@app.route('/admin/groupclouds', methods=['GET','POST'])
 def groupclouds():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -768,7 +742,7 @@ def groupclouds():
       groupsfile.close()
     return redirect('/admin', code=302)
 
-@app.route('/grouptype', methods=['GET','POST'])
+@app.route('/admin/grouptype', methods=['GET','POST'])
 def grouptype():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -789,7 +763,7 @@ def grouptype():
       bash('rm -f /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/access/groups/'+group+'/clouds ; mv -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; echo 0 > /var/cld/access/groups/'+group+'/type')
       return redirect('/admin', code=302)
 
-@app.route('/groupfuncs', methods=['GET','POST'])
+@app.route('/admin/groupfuncs', methods=['GET','POST'])
 def groupfuncs():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -877,272 +851,6 @@ def profile():
     clouds=bash('sudo -u '+username+' sudo /var/cld/bin/cld --list')
     perms=bash('grep "^'+username+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
-
-@app.route('/devops')
-def devops():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    templatelist = bash('ls /var/cld/devops/templates/ | cat').split('\n')[:-1]
-    templates = list()
-    for template in templatelist:
-      templatedesc = bash('cat /var/cld/devops/templates/'+template+'/description').replace('\n', ' ')
-      templatesync = bash('cat /var/cld/devops/templates/'+template+'/sync').replace('\n', '')
-      templatedebug = bash('cat /var/cld/devops/templates/'+template+'/debug').replace('\n', '')
-      templatebackup = bash('cat /var/cld/devops/templates/'+template+'/backup').replace('\n', '')
-      templates.append(template+";"+templatedesc+";"+templatesync+";"+templatebackup+";"+templatedebug)
-    init_template = ['name', 'description', 'sync', 'backup', 'debug']
-    for n, i in enumerate(templates):
-      templates[n] = {k:v for k,v in zip(init_template,templates[n].split(';'))}
-    deploylist = bash('ls -t /var/cld/devops/deploys/ | cat').split('\n')[:-1]
-    deploys = list()
-    for deploy in deploylist:
-      deploytemplate = bash('''echo '''+deploy+''' | awk -F _ '{print $1}' ''').replace('\n', '')
-      deploycloudcount = bash('wc -l /var/cld/devops/deploys/'+deploy+'/clouds | cut -d \  -f 1').replace('\n', '')
-      deploygroupcount = bash('wc -l /var/cld/devops/deploys/'+deploy+'/groups | cut -d \  -f 1').replace('\n', '')
-      deploysync = bash('cat /var/cld/devops/deploys/'+deploy+'/sync').replace('\n', ' ')
-      deploycron = bash('cat /var/cld/devops/deploys/'+deploy+'/cron').replace('\n', ' ')
-      deploydebug = bash('cat /var/cld/devops/deploys/'+deploy+'/debug').replace('\n', ' ')
-      deploybackup = bash('cat /var/cld/devops/deploys/'+deploy+'/backup').replace('\n', ' ')
-      deploycreated = bash('''stat /var/cld/devops/deploys/'''+deploy+''' | tr . ' ' | awk '/Modify/ {print $2" "$3}' ''').replace('\n', ' ')
-      deploys.append(deploy+";"+deploytemplate+";"+deploycloudcount+";"+deploygroupcount+";"+deploysync+";"+deploycron+";"+deploydebug+";"+deploybackup+";"+deploycreated)
-    init_deploy = ['name', 'template', 'cloudcount', 'groupcount', 'sync', 'cron', 'debug', 'backup', 'created']
-    for n, i in enumerate(deploys):
-      deploys[n] = {k:v for k,v in zip(init_deploy,deploys[n].split(';'))}
-    actionlist = bash('ls -t /var/cld/devops/actions/ | cat').split('\n')[:-1]
-    actions = list()
-    for action in actionlist:
-      actiondeploy = bash('''echo '''+action+''' | awk -F _ '{print $1"_"$2}' ''').replace('\n', '')
-      actioncloudcount = bash('wc -l /var/cld/devops/actions/'+action+'/clouds | cut -d \  -f 1').replace('\n', '')
-      actiongroupcount = bash('wc -l /var/cld/devops/actions/'+action+'/groups | cut -d \  -f 1').replace('\n', '')
-      actionsync = bash('cat /var/cld/devops/actions/'+action+'/sync').replace('\n', ' ')
-      actiondebug = bash('cat /var/cld/devops/actions/'+action+'/debug').replace('\n', ' ')
-      actionbackup = bash('cat /var/cld/devops/actions/'+action+'/backup').replace('\n', ' ')
-      actioncreated = bash('''stat /var/cld/devops/actions/'''+action+''' | tr . ' ' | awk '/Modify/ {print $2" "$3}' ''').replace('\n', ' ')
-      actiondone = bash('cat /var/cld/devops/actions/'+action+'/done').replace('\n', ' ')
-      actions.append(action+";"+actiondeploy+";"+actioncloudcount+";"+actiongroupcount+";"+actionsync+";"+actiondebug+";"+actionbackup+";"+actioncreated+";"+actiondone)
-    init_action = ['name', 'deploy', 'cloudcount', 'groupcount', 'sync', 'debug', 'backup', 'created', 'done']
-    for n, i in enumerate(actions):
-      actions[n] = {k:v for k,v in zip(init_action,actions[n].split(';'))}
-    return render_template('html/devops.html', username=username, templates=templates, deploys=deploys, actions=actions)
-
-@app.route('/devops/template')
-def devopstemplate():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    return render_template('html/devops/template.html', username=username)
-
-@app.route('/devops/templateadd')
-def devopstemplateadd():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    return render_template('html/devops/templateadd.html', username=username)
-
-@app.route('/devops/addtemplate', methods=['GET','POST'])
-def adddevopstemplate():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    templatename = request.form['templatename']
-    description = request.form['description']
-    cloudscript = request.form['cloudscript']
-    bash('mkdir /var/cld/devops/templates/'+templatename+' &>/dev/null')
-    bash('echo "'+description+'" > /var/cld/devops/templates/'+templatename+'/description')
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/script"+os.linesep+cloudscript+os.linesep+'EOPARSINGSCRIPT')
-    backupstate=''
-    try:
-      backupstate = request.form['backupstate']
-    except:
-      pass
-    if backupstate == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/backup')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/backup')
-    backupfilelist=''
-    try:
-      backupfilelist = request.form['backupfilelist']
-    except:
-      pass
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/backup_files"+os.linesep+backupfilelist+os.linesep+'EOPARSINGSCRIPT')
-    custombackupstate=''
-    try:
-      custombackupstate = request.form['custombackupstate']
-    except:
-      pass
-    try: 
-      custombackupscript = request.form['custombackupscript']
-    except:
-      pass
-    try: 
-      customrestorescript = request.form['customrestorescript']
-    except:
-      pass
-    if custombackupstate == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/custombackup')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/custom_backup_script"+os.linesep+custombackupscript+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/custom_restore_script"+os.linesep+customrestorescript+os.linesep+'EOPARSINGSCRIPT')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/custombackup')
-    sync=''
-    try:
-      sync = request.form['sync']
-    except:
-      pass
-    if sync == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/sync')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/sync')
-    debug=''
-    try:
-      debug = request.form['debug']
-    except:
-      pass
-    if debug == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/debug')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/debug')
-    cron=''
-    try: 
-      cron = request.form['cron']
-    except:
-      pass
-    try:  
-      crontime = request.form['crontime']
-    except:
-      pass
-    if cron == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/cron')
-      bash("echo '"+crontime+"' > /var/cld/devops/templates/"+templatename+"/cron_time")
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/cron')
-    return redirect('/devops', code=302)
-
-@app.route('/devops/deploy')
-def devopsdeploy():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    return render_template('html/devops/deploy.html', username=username)
-
-@app.route('/devops/deployadd')
-def devopsdeployadd():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    return render_template('html/devops/deployadd.html', username=username)
-
-@app.route('/devops/adddeploy', methods=['GET','POST'])
-def adddevopsdeploy():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    templatename = request.form['templatename']
-    description = request.form['description']
-    cloudscript = request.form['cloudscript']
-    bash('mkdir /var/cld/devops/templates/'+templatename+' &>/dev/null')
-    bash('echo "'+description+'" > /var/cld/devops/templates/'+templatename+'/description')
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/script"+os.linesep+cloudscript+os.linesep+'EOPARSINGSCRIPT')
-    backupstate=''
-    try:
-      backupstate = request.form['backupstate']
-    except:
-      pass
-    if backupstate == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/backup')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/backup')
-    backupfilelist=''
-    try:
-      backupfilelist = request.form['backupfilelist']
-    except:
-      pass
-    bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/backup_files"+os.linesep+backupfilelist+os.linesep+'EOPARSINGSCRIPT')
-    custombackupstate=''
-    try:
-      custombackupstate = request.form['custombackupstate']
-    except:
-      pass
-    try: 
-      custombackupscript = request.form['custombackupscript']
-    except:
-      pass
-    try: 
-      customrestorescript = request.form['customrestorescript']
-    except:
-      pass
-    if custombackupstate == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/custombackup')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/custom_backup_script"+os.linesep+custombackupscript+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/devops/templates/"+templatename+"/custom_restore_script"+os.linesep+customrestorescript+os.linesep+'EOPARSINGSCRIPT')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/custombackup')
-    sync=''
-    try:
-      sync = request.form['sync']
-    except:
-      pass
-    if sync == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/sync')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/sync')
-    debug=''
-    try:
-      debug = request.form['debug']
-    except:
-      pass
-    if debug == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/debug')
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/debug')
-    cron=''
-    try: 
-      cron = request.form['cron']
-    except:
-      pass
-    try:  
-      crontime = request.form['crontime']
-    except:
-      pass
-    if cron == 'on':
-      bash('echo 1 > /var/cld/devops/templates/'+templatename+'/cron')
-      bash("echo '"+crontime+"' > /var/cld/devops/templates/"+templatename+"/cron_time")
-    else:
-      bash('echo 0 > /var/cld/devops/templates/'+templatename+'/cron')
-    return redirect('/devops', code=302)
-
-@app.route('/devops/action')
-def devopsaction():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    return render_template('html/devops/action.html', username=username)
-
-@app.route('/devops/actionadd')
-def devopsactionadd():
-  if 'username' in session:
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    username = session['username']
-    return render_template('html/devops/actionadd.html', username=username)
 
 #Just easy direct pipeline for early dev version, will deleted in the future
 @app.route('/backendgitpull')
