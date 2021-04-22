@@ -180,7 +180,7 @@ Deploy no tty  function: <br>
 <script>
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 for (func in funcs) {
-        ace.edit(func, {
+        ace.edit(funcs[func]+'Pre', {
             theme: "ace/theme/monokai",
             keyboardHandler: "ace/keyboard/sublime",
             foldStyle: "markbeginend",
@@ -193,11 +193,11 @@ for (func in funcs) {
             highlightSelectedWord: true
         });
         var editor = [];
-        editor[func+'Pre'] = ace.edit(func+'Pre');
-        editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
-        $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
-        editor[func].getSession().on('change', function () {
-           $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+        editor[funcs[func]+'Pre'] = ace.edit(funcs[func]+'Pre');
+        editor[funcs[func]+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+        $('#'+funcs[func]+'Area').val(editor[funcs[func]+'Pre'].getSession().getValue());
+        editor[funcs[func]].getSession().on('change', function () {
+           $('#'+funcs[func]+'Area').val(editor[funcs[func]+'Pre'].getSession().getValue());
         });
 };
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
