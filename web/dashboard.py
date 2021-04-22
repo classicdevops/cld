@@ -710,13 +710,13 @@ def userclouds(name):
       usersfile.close()
     return Response('User clouds saved', status=200, mimetype='text/plain')
 
-@app.route('/admin/groupusers', methods=['GET','POST'])
-def groupusers():
+@app.route('/admin/groupusers/<name>', methods=['GET','POST'])
+def groupusers(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    group = request.args['name']
+    group = name
     users = ",".join(list(request.form.to_dict())).split(',')
     denyusers = [os.path.basename(name) for name in os.listdir("/var/cld/access/users/") if os.path.isdir('/var/cld/access/users/'+name) and name not in users]
     for user in users:
@@ -725,7 +725,7 @@ def groupusers():
     for denyuser in denyusers:
       if denyuser != '':
         bash("sed -i '/"+group+"/d' /var/cld/access/users/"+denyuser+"/groups")
-    return redirect('/admin', code=302)
+    return Response('Group users saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupclouds', methods=['GET','POST'])
 def groupclouds():
