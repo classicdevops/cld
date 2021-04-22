@@ -571,7 +571,7 @@ def user(name):
       return redirect('/', code=302)
     username = session['username']
     clduser = name
-    name = [str(name)]
+    name = [str(clduser)]
     users = list()
     for user in name:
       userid = bash('grep ^'+user+': /etc/passwd | cut -d : -f 3').replace('\n', '')
@@ -588,14 +588,15 @@ def user(name):
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+clduser+' sudo /var/cld/bin/cld --list)').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
-@app.route('/admin/group')
-def group():
+@app.route('/admin/group/<name>')
+def group(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
     username = session['username']
-    name = [str(request.args['name'])]
+    cldgroup = name
+    name = [str(cldgroup)]
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
     groups = list()
     for group in name:
@@ -608,8 +609,8 @@ def group():
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
-    allowedclouds = bash('/var/cld/bin/cld --groups='+request.args['name']+' --list').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(/var/cld/bin/cld --groups='+request.args['name']+' --list)').split('\n')
+    allowedclouds = bash('/var/cld/bin/cld --groups='+cldgroup+' --list').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(/var/cld/bin/cld --groups='+cldgroup+' --list)').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+group+'/parsingscript')
     groupfuncvars = bash('cat /var/cld/access/groups/'+group+'/funcvars || cat /var/cld/access/groups/default/default_funcvars')
     groupfuncterm = bash('cat /var/cld/access/groups/'+group+'/functerm || cat /var/cld/access/groups/default/default_functerm')
