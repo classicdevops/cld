@@ -107,7 +107,7 @@
         } 
     }
 </script>
-<form action="{{ url_for('userclouds', name=users[0].user) }}" id="userclouds" method="POST">
+<form id="userclouds">
   <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
     {% for cloud in allowedclouds %}
     <option value="{{ cloud }}">{{ cloud }}</option>
@@ -131,7 +131,7 @@
 </div>
   <br>
 <div class="clearfix"></div><br>
-  <button type="submit" class="btn btn-light bt mb-2" style="float: right" onclick="selectAll();" form="userclouds">Apply clouds</button>
+  <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply clouds</button>
 <br><br><br>
 <!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
 <input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->

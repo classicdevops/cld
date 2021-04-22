@@ -692,21 +692,20 @@ def usergroups(name):
     groupsfile.close()
     return Response('User groups saved', status=200, mimetype='text/plain')
 
-@app.route('/admin/userclouds', methods=['GET','POST'])
-def userclouds():
+@app.route('/admin/userclouds/<name>', methods=['GET','POST'])
+def userclouds(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    user = request.args['name']
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     if str(clouds) == "['([])']":
-      bash('truncate -s 0 /var/cld/access/users/'+user+'/clouds')
+      bash('truncate -s 0 /var/cld/access/users/'+name+'/clouds')
     else:
-      usersfile = open('/var/cld/access/users/'+user+'/clouds', 'w')
+      usersfile = open('/var/cld/access/users/'+name+'/clouds', 'w')
       usersfile.write("\n".join(clouds))
       usersfile.close()
-    return redirect('/admin', code=302)
+    return Response('User clouds saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupusers', methods=['GET','POST'])
 def groupusers():
