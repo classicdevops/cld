@@ -3,13 +3,10 @@
 ::-webkit-scrollbar-thumb {background: #747473;}
 ::-webkit-scrollbar-thumb:hover {background: #555;}
 
-.eYeXVI {
-    max-height: 60px;
-    width: 220px;
-}
-
 img.sc-dFtzdE.eYeXVI {
-  margin: 20px 0px 10px 0px;
+    margin: 20px 0px 10px 0px;
+    width: 220px;
+    padding: 0px;
 }
 
 div.sc-cTApHj.fVRyQa {
