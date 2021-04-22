@@ -678,13 +678,12 @@ def disableuser():
     bash('passwd --lock '+disableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/admin/usergroups', methods=['GET','POST'])
-def usergroups():
+@app.route('/admin/usergroups/<user>/', methods=['GET','POST'])
+def usergroups(user):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    user = request.args['name']
     groups = list(request.form.to_dict())
     # print(dir(request.form))
     # sys.stdout.flush()
