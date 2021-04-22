@@ -141,7 +141,7 @@ Parsing script: <br>
 <button id="grouptype-button" onclick="savedata('grouptype', '{{ url_for('grouptype', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply type</button>
 <br><br>
 {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
-<form action="{{ url_for('groupfuncs', name=groups[0].group) }}" id="groupfuncs" method="POST">
+<form id="groupfuncs">
 Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
 <textarea id="FuncVarsArea" name="groupfuncvars" style="display: none;"></textarea>
 <textarea id="FuncTermArea" name="groupfuncterm" style="display: none;"></textarea>
