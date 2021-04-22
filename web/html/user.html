@@ -18,7 +18,32 @@
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
     <script type="text/javascript" src="../js/tablesort.js"></script>
+<script>
+function savedata(id, url) {
+        $.ajax({
+            url : url,
+            type: "POST",
+            data : $('#'+id).serialize(),
+            cache: false,
+            processData:false,
+            success: function (data) {
+                $('#'+id+'-button').addClass('btn-success').removeClass('btn-light');
+                sleep(500).then(() => {
+                $('#'+id+'-button').addClass('btn-light').removeClass('btn-success');
+                });
+                console.log('Data saved');
+                },
+            error: function (data) {
+                $('#'+id+'-button').addClass('btn-danger').removeClass('btn-light');
+                sleep(500).then(() => {
+                $('#'+id+'-button').addClass('btn-light').removeClass('btn-danger');
+                });
+                console.log('An error occurred while saving data');
+                }
+        })
 
+}
+</script>
 </head>
 
 <body>
@@ -55,7 +80,7 @@
                 </table>
                 <div class="panel-body">
 <p>Groups:</p>
-                    <form action="{{ url_for('usergroups', name=users[0].user) }}" method="POST">
+                    <form action="{{ url_for('usergroups', name=users[0].user) }}" method="POST" id="usergroups">
 {% for group in allgroups %}
 {% if group in users[0].groups %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
 <div class="form-check form-check-inline">
@@ -63,7 +88,7 @@
   <label class="form-check-label">{{ group }}</label>
 </div>
 {% endfor %}
-<button type="submit" class="btn btn-light bt mb-2" style="float: right">Apply groups</button>
+<button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply groups</button>
 </form><br>
 <p>Clouds:</p>
 <div class="subject-info-box-1">
