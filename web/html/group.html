@@ -211,8 +211,8 @@ for (i in funcs) {
     aceactivate(funcs[i]);
 };
 
-function aceswitch(func) {
-if (document.getElementById('GroupFuncsCheckbox').checked) {
+function aceswitch(func, checkboxid) {
+if (document.getElementById(checkboxid).checked) {
 editor[func+'Pre'] = ace.edit(func+'Pre');
 editor[func+'Pre'].setOptions({
     readOnly: false,
@@ -231,15 +231,15 @@ editor[func+'Pre'].container.style.opacity=0.5
 }
 };
 
-// var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
-// for (i in funcs) {
-//     aceswitch(funcs[i])
-// }
+var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+for (i in funcs) {
+    aceswitch(funcs[i], 'GroupFuncsCheckbox')
+}
 
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 for (i in funcs) {
-    aceswitch(funcs[i])
+    aceswitch(funcs[i], 'GroupFuncsCheckbox')
 }
 });
 
