@@ -199,7 +199,7 @@ for (i in funcs) {
         editor[func+'Pre'] = ace.edit(func+'Pre');
         editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
         $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
-        editor[func].getSession().on('change', function () {
+        editor[func+'Pre'].getSession().on('change', function () {
            $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
         });
 };
