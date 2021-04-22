@@ -769,34 +769,20 @@ def groupfuncs(name):
       return redirect('/', code=302)
     group = name
     groupfuncs = ''
-    try:
-      groupfuncs = request.form['groupfuncs']
-    except:
-      pass
-    try:
-      groupfuncvars = request.form['groupfuncvars']
-    except:
-      pass
-    try:  
-      groupfuncterm = request.form['groupfuncterm']
-    except:
-      pass
-    try:  
-      groupfuncmount = request.form['groupfuncmount']
-    except:
-      pass
-    try:  
-      groupfuncumount = request.form['groupfuncumount']
-    except:
-      pass
-    try:  
-      groupfuncdeploy = request.form['groupfuncdeploy']
-    except:
-      pass
-    try:  
-      groupfuncdeploynotty = request.form['groupfuncdeploynotty']
-    except:
-      pass
+    try: groupfuncs = request.form['groupfuncs']
+    except: pass
+    try: groupfuncvars = request.form['groupfuncvars']
+    except: pass
+    try: groupfuncterm = request.form['groupfuncterm']
+    except: pass
+    try: groupfuncmount = request.form['groupfuncmount']
+    except: pass
+    try: groupfuncumount = request.form['groupfuncumount']
+    except: pass
+    try: groupfuncdeploy = request.form['groupfuncdeploy']
+    except: pass
+    try: groupfuncdeploynotty = request.form['groupfuncdeploynotty']
+    except: pass
     if groupfuncs == 'on':
       bash('echo 1 > /var/cld/access/groups/'+group+'/funcs')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcvars"+os.linesep+groupfuncvars+os.linesep+'EOPARSINGSCRIPT')
