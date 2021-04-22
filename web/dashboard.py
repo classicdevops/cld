@@ -761,13 +761,13 @@ def grouptype(name):
       bash('rm -f /var/cld/access/groups/'+group+'/clouds ; touch /var/cld/access/groups/'+group+'/clouds ; mv -f /var/cld/creds/'+group+'_list /var/cld/access/groups/'+group+'/clouds ; echo 0 > /var/cld/access/groups/'+group+'/type')
     return Response('Group type saved', status=200, mimetype='text/plain')
 
-@app.route('/admin/groupfuncs', methods=['GET','POST'])
+@app.route('/admin/groupfuncs/<name>', methods=['GET','POST'])
 def groupfuncs():
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    group = request.args['name']
+    group = name
     groupfuncs = ''
     try:
       groupfuncs = request.form['groupfuncs']
@@ -805,10 +805,9 @@ def groupfuncs():
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcumount"+os.linesep+groupfuncumount+os.linesep+'EOPARSINGSCRIPT')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcdeploy"+os.linesep+groupfuncdeploy+os.linesep+'EOPARSINGSCRIPT')
       bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+group+"/funcdeploynotty"+os.linesep+groupfuncdeploynotty+os.linesep+'EOPARSINGSCRIPT')
-      return redirect('/admin', code=302)
     else:
       bash('echo 0 > /var/cld/access/groups/'+group+'/funcs')
-      return redirect('/admin', code=302)
+    return Response('Group functions saved', status=200, mimetype='text/plain')
 
 @app.route('/cloudadd')
 def cloudadd():
