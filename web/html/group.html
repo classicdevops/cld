@@ -183,8 +183,22 @@ Deploy no tty  function: <br>
 <script>
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 var editor = [];
-function aceonchange(func)
+function aceactivate(func)
 {
+ace.edit(func+'Pre', {
+    theme: "ace/theme/monokai",
+    keyboardHandler: "ace/keyboard/sublime",
+    foldStyle: "markbeginend",
+    mode: "ace/mode/sh",
+    maxLines: 40,
+    minLines: 5,
+    wrap: true,
+    showPrintMargin: false,
+    autoScrollEditorIntoView: true,
+    highlightSelectedWord: true
+});
+editor[func+'Pre'] = ace.edit(func+'Pre');
+editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
 $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
 editor[func+'Pre'].getSession().on('change', function () {
    $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
@@ -192,23 +206,7 @@ editor[func+'Pre'].getSession().on('change', function () {
 }
 for (i in funcs) {
         func = funcs[i]
-        ace.edit(func+'Pre', {
-            theme: "ace/theme/monokai",
-            keyboardHandler: "ace/keyboard/sublime",
-            foldStyle: "markbeginend",
-            mode: "ace/mode/sh",
-            maxLines: 40,
-            minLines: 5,
-            wrap: true,
-            showPrintMargin: false,
-            autoScrollEditorIntoView: true,
-            highlightSelectedWord: true
-        });
-        editor[func+'Pre'] = ace.edit(func+'Pre');
-        editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
-};
-for (i in funcs) {
-aceonchange(funcs[i]);
+        aceactivate(funcs[i]);
 };
 // document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 //     var FuncVarsArea = document.getElementById('FuncVarsArea')
