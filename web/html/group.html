@@ -181,8 +181,10 @@ Deploy no tty  function: <br>
 <br>
 <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
 <script>
+
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 var editor = [];
+
 function aceactivate(func)
 {
 ace.edit(func+'Pre', {
@@ -204,48 +206,32 @@ editor[func+'Pre'].getSession().on('change', function () {
    $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
 });
 }
+
 for (i in funcs) {
-        func = funcs[i]
-        aceactivate(funcs[i]);
+    aceactivate(funcs[i]);
 };
-// document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
-//     var FuncVarsArea = document.getElementById('FuncVarsArea')
-//     var FuncTermArea = document.getElementById('FuncTermArea')
-//     var FuncMountArea = document.getElementById('FuncMountArea')
-//     var FuncUmountArea = document.getElementById('FuncUmountArea')
-//     var FuncDeployArea = document.getElementById('FuncDeployArea')
-//     var FuncDeploynottyArea = document.getElementById('FuncDeploynottyArea')
-//     FuncVarsArea.disabled = !FuncVarsArea.disabled
-//     FuncTermArea.disabled = !FuncTermArea.disabled
-//     FuncMountArea.disabled = !FuncMountArea.disabled
-//     FuncUmountArea.disabled = !FuncUmountArea.disabled
-//     FuncDeployArea.disabled = !FuncDeployArea.disabled
-//     FuncDeploynottyArea.disabled = !FuncDeploynottyArea.disabled
-// });
-//     $('#FuncVarsArea').keyup(function(){
-//     $(this).height(100);
-//     $(this).height(this.scrollHeight);
-// });
-//     $('#FuncTermArea').keyup(function(){
-//     $(this).height(100);
-//     $(this).height(this.scrollHeight);
-// });
-//     $('#FuncMountArea').keyup(function(){
-//     $(this).height(100);
-//     $(this).height(this.scrollHeight);
-// });
-//     $('#FuncUnountArea').keyup(function(){
-//     $(this).height(100);
-//     $(this).height(this.scrollHeight);
-// });
-//     $('#FuncDeployArea').keyup(function(){
-//     $(this).height(100);
-//     $(this).height(this.scrollHeight);
-// });
-//     $('#FuncDeploynottyArea').keyup(function(){
-//     $(this).height(100);
-//     $(this).height(this.scrollHeight);
-// });
+
+function aceswitch(func) {
+if (document.getElementById('GroupFuncsCheckbox').checked) {
+editor[func+'Pre'] = ace.edit(func+'Pre');
+editor[func+'Pre'].container.style.pointerEvents="none"
+editor[func+'Pre'].container.style.opacity=0.5 // or use svg filter to make it gray
+editor[func+'Pre'].renderer.setStyle("disabled", true)
+} else {
+editor[func+'Pre'] = ace.edit(func+'Pre');
+editor[func+'Pre'].container.style.pointerEvents="text"
+editor[func+'Pre'].container.style.opacity=1
+editor[func+'Pre'].renderer.setStyle("disabled", falce)
+}
+};
+
+document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
+var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+for (i in funcs) {
+    aceswitch(func[i])
+}
+});
+
 </script>
 <br><br><br><br>
 <a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
