@@ -220,7 +220,12 @@ editor[func+'Pre'].container.style.opacity=0.5
 }
 };
 
-var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+aceswitch('Script', 'GroupTypeCheckbox')
+document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
+aceswitch('Script', 'GroupTypeCheckbox')
+});
+
+var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 for (i in funcs) {
     aceswitch(funcs[i], 'GroupFuncsCheckbox')
 }
