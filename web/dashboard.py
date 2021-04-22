@@ -562,14 +562,14 @@ def admin():
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     return render_template('html/admin.html', username=username, users=users, groups=groups)
 
-@app.route('/admin/user')
-def user():
+@app.route('/admin/user/<name>')
+def user(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
     username = session['username']
-    name = [str(request.args['name'])]
+    name = [name]
     users = list()
     for user in name:
       userid = bash('grep ^'+user+': /etc/passwd | cut -d : -f 3').replace('\n', '')
