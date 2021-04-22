@@ -1,5 +1,5 @@
 import hashlib
-@app.route("/note/<note>/<file>")
+@app.route("/all/note/<note>/<file>")
 def note_get_file(note, file):
     apihash = request.args['hash']
     for line in open('/var/cld/creds/passwd').read().strip().split('\n'):
