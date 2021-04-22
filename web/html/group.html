@@ -215,16 +215,6 @@ function aceswitch(func) {
 if (document.getElementById('GroupFuncsCheckbox').checked) {
 editor[func+'Pre'] = ace.edit(func+'Pre');
 editor[func+'Pre'].setOptions({
-    readOnly: true,
-    highlightActiveLine: false,
-    highlightGutterLine: false
-})
-editor[func+'Pre'].container.style.pointerEvents="none"
-editor[func+'Pre'].container.style.opacity=0.5 // or use svg filter to make it gray
-editor[func+'Pre'].renderer.setStyle("disabled", true)
-} else {
-editor[func+'Pre'] = ace.edit(func+'Pre');
-editor[func+'Pre'].setOptions({
     readOnly: false,
     highlightActiveLine: true,
     highlightGutterLine: true
@@ -232,8 +222,23 @@ editor[func+'Pre'].setOptions({
 editor[func+'Pre'].container.style.pointerEvents="text"
 editor[func+'Pre'].container.style.opacity=1
 editor[func+'Pre'].renderer.setStyle("disabled", false)
+} else {
+editor[func+'Pre'] = ace.edit(func+'Pre');
+editor[func+'Pre'].setOptions({
+    readOnly: true,
+    highlightActiveLine: false,
+    highlightGutterLine: false
+})
+editor[func+'Pre'].container.style.pointerEvents="none"
+editor[func+'Pre'].container.style.opacity=0.5 // or use svg filter to make it gray
+editor[func+'Pre'].renderer.setStyle("disabled", true)
 }
 };
+
+var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+for (i in funcs) {
+    aceswitch(funcs[i])
+}
 
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
