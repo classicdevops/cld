@@ -172,7 +172,7 @@
             <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
             <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytype+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button>\
             <form style="display: -webkit-inline-box;margin-left: 5;" onsubmit="createfile(\''+id+'\', \''+deploy+'\', \''+deploytype+'\');return false;">\
-            <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;" required>\
+            <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;padding-top: 3;" required>\
             <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>\
             <br><br>')
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')

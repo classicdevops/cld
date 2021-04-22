@@ -166,7 +166,7 @@
             <button type="button" class="btn btn-primary" onclick="savenote(\''+id+'\', \''+note+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save note</button>  \
             <button type="button" class="btn btn-danger" onclick="deletenote(\''+id+'\', \''+note+'\')" style="width: 10%; min-width: 120px;">Delete note</button>\
             <form style="display: -webkit-inline-box;margin-left: 5;" onsubmit="createfile(\''+id+'\', \''+note+'\');return false;">\
-            <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;" required>\
+            <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;padding-top: 3;" required>\
             <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>\
             <br><br>')
         $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
@@ -287,7 +287,7 @@
                     <div class="tab-content" id="hostTabContent">
                         <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">Security script storage<br><br>
                         <form style="display: -webkit-inline-box;" onsubmit="newtab(document.getElementById('inputnotename').value);return false;">
-                            <input type="text" class="form-control" id="inputnotename" placeholder="New note name" style="width: 50%;" required="">
+                            <input type="text" class="form-control" id="inputnotename" placeholder="New note name" style="width: 50%;padding-top: 3;" required="">
                             <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>
                     </div>
                     </div>
