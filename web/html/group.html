@@ -183,6 +183,13 @@ Deploy no tty  function: <br>
 <script>
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 var editor = [];
+function aceonchange(func)
+{
+$('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+editor[func+'Pre'].getSession().on('change', function () {
+   $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+});
+}
 for (i in funcs) {
         func = funcs[i]
         ace.edit(func+'Pre', {
@@ -201,11 +208,7 @@ for (i in funcs) {
         editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
 };
 for (i in funcs) {
-        func = funcs[i]
-        $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
-        editor[func+'Pre'].getSession().on('change', function () {
-           $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
-        });
+aceonchange(funcs[i]);
 };
 // document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 //     var FuncVarsArea = document.getElementById('FuncVarsArea')
