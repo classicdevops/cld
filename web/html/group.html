@@ -129,13 +129,11 @@
   <button id="groupclouds-button" onclick="selectAll();savedata('groupclouds', '{{ url_for('groupclouds', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
 <br><br>
 {% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
-<form action="{{ url_for('grouptype', name=groups[0].group) }}" id="grouptype" method="POST">
+<form id="grouptype">
 Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
 Parsing script: <br>
 <textarea{{typestatus}} id="ScriptArea" name="parsingscript" class="form-control" rows="4" style="resize: none">{{parsingscript}}</textarea>
 <br>
-<button type="submit" class="btn btn-primary bt mb-2" style="float: right" form="grouptype">Apply type</button>
-
 <script>
 document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
     var textArea = document.getElementById('ScriptArea')
@@ -149,6 +147,7 @@ document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function
 });
 </script>
 </form>
+<button id="grouptype-button" onclick="savedata('grouptype', '{{ url_for('grouptype', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply type</button>
 <br><br>
 {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
 <form action="{{ url_for('groupfuncs', name=groups[0].group) }}" id="groupfuncs" method="POST">
