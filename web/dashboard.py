@@ -668,7 +668,7 @@ def enableuser():
     bash('passwd --unlock '+enableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/admin//disableuser', methods=['GET'])
+@app.route('/admin/disableuser', methods=['GET'])
 def disableuser():
   if 'username' in session:
     if userisadmin(session['username']) != True:
@@ -690,7 +690,7 @@ def usergroups(name):
     groupsfile = open('/var/cld/access/users/'+name+'/groups', 'w')
     groupsfile.write("\n".join(groups))
     groupsfile.close()
-    return redirect('/admin', code=302)
+    return Response('User groups saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/userclouds', methods=['GET','POST'])
 def userclouds():
