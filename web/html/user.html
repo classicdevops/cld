@@ -88,8 +88,9 @@ function savedata(id, url) {
   <label class="form-check-label">{{ group }}</label>
 </div>
 {% endfor %}
+</form>
 <button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply groups</button>
-</form><br>
+<br>
 <p>Clouds:</p>
 <div class="subject-info-box-1">
     <script type="text/javascript">
