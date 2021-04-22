@@ -92,7 +92,7 @@
 </div>
 {% endfor %}
 </form>
-<button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', user=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply groups</button>
+<button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply groups</button>
 <br>
 <p>Clouds:</p>
 <div class="subject-info-box-1">
