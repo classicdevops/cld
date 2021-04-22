@@ -152,25 +152,54 @@ document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function
 {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
 <form action="{{ url_for('groupfuncs', name=groups[0].group) }}" id="groupfuncs" method="POST">
 Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
-Define variables: <br>
-<textarea{{funcstatus}} id="FuncVarsArea" name="groupfuncvars" class="form-control" rows="4" style="resize: none">{{groupfuncvars}}</textarea>
+<textarea{{funcstatus}} id="FuncVarsArea" name="groupfuncvars" class="form-control" rows="4" style="display: none">{{groupfuncvars}}</textarea>
+<textarea{{funcstatus}} id="FuncTermArea" name="groupfuncterm" class="form-control" rows="4" style="display: none">{{groupfuncterm}}</textarea>
+<textarea{{funcstatus}} id="FuncMountArea" name="groupfuncmount" class="form-control" rows="4" style="display: none">{{groupfuncmount}}</textarea>
+<textarea{{funcstatus}} id="FuncUmountArea" name="groupfuncumount" class="form-control" rows="4" style="display: none">{{groupfuncumount}}</textarea>
+<textarea{{funcstatus}} id="FuncDeployArea" name="groupfuncdeploy" class="form-control" rows="4" style="display: none">{{groupfuncdeploy}}</textarea>
+<textarea{{funcstatus}} id="FuncDeploynottyArea" name="groupfuncdeploynotty" class="form-control" rows="4" style="display: none">{{groupfuncdeploynotty}}</textarea>
+</form>
+<pre id="FuncVarsPre">{{groupfuncvars}}</pre>
 <br>
 Terminal  function: <br>
-<textarea{{funcstatus}} id="FuncTermArea" name="groupfuncterm" class="form-control" rows="4" style="resize: none">{{groupfuncterm}}</textarea>
+<pre id="FuncTermPre">{{groupfuncterm}}</pre>
 <br>
 Mount  function: <br>
-<textarea{{funcstatus}} id="FuncMountArea" name="groupfuncmount" class="form-control" rows="4" style="resize: none">{{groupfuncmount}}</textarea>
+<pre id="FuncMountPre">{{groupfuncmount}}</pre>
 <br>
 Umount  function: <br>
-<textarea{{funcstatus}} id="FuncUmountArea" name="groupfuncumount" class="form-control" rows="4" style="resize: none">{{groupfuncumount}}</textarea>
+<pre id="FuncUmountPre">{{groupfuncumount}}</pre>
 <br>
 Deploy  function: <br>
-<textarea{{funcstatus}} id="FuncDeployArea" name="groupfuncdeploy" class="form-control" rows="4" style="resize: none">{{groupfuncdeploy}}</textarea>
+<pre id="FuncDeployPre">{{groupfuncdeploy}}</pre>
 <br>
 Deploy no tty  function: <br>
-<textarea{{funcstatus}} id="FuncDeploynottyArea" name="groupfuncdeploynotty" class="form-control" rows="4" style="resize: none">{{groupfuncdeploynotty}}</textarea>
+<pre id="FuncDeploynottyPre">{{groupfuncdeploynotty}}</pre>
 <br>
+<button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
 <script>
+var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+for (func in funcs) {
+        ace.edit(func, {
+            theme: "ace/theme/monokai",
+            keyboardHandler: "ace/keyboard/sublime",
+            foldStyle: "markbeginend",
+            mode: "ace/mode/sh",
+            maxLines: 40,
+            minLines: 5,
+            wrap: true,
+            showPrintMargin: false,
+            autoScrollEditorIntoView: true,
+            highlightSelectedWord: true
+        });
+        var editor = [];
+        editor[func+'Pre'] = ace.edit(func+'Pre');
+        editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+        $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+        editor[func].getSession().on('change', function () {
+           $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+        });
+};
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
     var FuncVarsArea = document.getElementById('FuncVarsArea')
     var FuncTermArea = document.getElementById('FuncTermArea')
@@ -185,8 +214,6 @@ document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', functio
     FuncDeployArea.disabled = !FuncDeployArea.disabled
     FuncDeploynottyArea.disabled = !FuncDeploynottyArea.disabled
 });
-</script>
-<script>
     $('#FuncVarsArea').keyup(function(){
     $(this).height(100);
     $(this).height(this.scrollHeight);
@@ -212,10 +239,8 @@ document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', functio
     $(this).height(this.scrollHeight);
 });
 </script>
-</form>
-<button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
-<br><br><br>
-  <br><a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
+<br><br><br><br>
+<a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
 <!-- </form> -->
 </div>
 </div>
@@ -226,7 +251,7 @@ document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', functio
 <!--/.container-->
 </div>
 <!--/.page-container-->
-    <script type="text/javascript">
+<script type="text/javascript">
 (function () {
     $('#btnRight').click(function (e) {
         var selectedOpts = $('#lstBox1 option:selected');
