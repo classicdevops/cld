@@ -134,21 +134,10 @@
 <form id="grouptype">
 Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
 Parsing script: <br>
-<textarea{{typestatus}} id="ScriptArea" name="parsingscript" class="form-control" rows="4" style="resize: none">{{parsingscript}}</textarea>
-<br>
-<script>
-document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
-    var textArea = document.getElementById('ScriptArea')
-    textArea.disabled = !textArea.disabled
-});
-</script>
-<script>
-    $('#ScriptArea').keyup(function(){
-    $(this).height(100);
-    $(this).height(this.scrollHeight);
-});
-</script>
+<textarea id="ScriptArea" name="parsingscript"></textarea>
 </form>
+<pre id="ScriptPre">{{parsingscript}}</pre>
+<br>
 <button id="grouptype-button" onclick="savedata('grouptype', '{{ url_for('grouptype', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply type</button>
 <br><br>
 {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
@@ -182,7 +171,7 @@ Deploy no tty  function: <br>
 <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
 <script>
 
-var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 var editor = [];
 
 function aceactivate(func)
@@ -231,13 +220,13 @@ editor[func+'Pre'].container.style.opacity=0.5
 }
 };
 
-var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 for (i in funcs) {
     aceswitch(funcs[i], 'GroupFuncsCheckbox')
 }
 
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
-var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 for (i in funcs) {
     aceswitch(funcs[i], 'GroupFuncsCheckbox')
 }
