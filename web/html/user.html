@@ -30,16 +30,16 @@
                 cache: false,
                 processData:false,
                 success: function (data) {
-                    $('#'+id+'-button').addClass('btn-success').removeClass('btn-light');
+                    $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
                     sleep(500).then(() => {
-                    $('#'+id+'-button').addClass('btn-light').removeClass('btn-success');
+                    $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
                     });
                     console.log('Data saved');
                     },
                 error: function (data) {
-                    $('#'+id+'-button').addClass('btn-danger').removeClass('btn-light');
+                    $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
                     sleep(500).then(() => {
-                    $('#'+id+'-button').addClass('btn-light').removeClass('btn-danger');
+                    $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
                     });
                     console.log('An error occurred while saving data');
                     }
@@ -92,7 +92,7 @@
 </div>
 {% endfor %}
 </form>
-<button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply groups</button>
+<button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply groups</button>
 <br><br>
 <p>Clouds:</p>
 <div class="subject-info-box-1">
@@ -131,7 +131,7 @@
 </div>
   <br>
 <div class="clearfix"></div><br>
-  <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-light bt mb-2" style="float: right">Apply clouds</button>
+  <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
 <br><br><br>
 <!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
 <input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
