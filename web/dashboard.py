@@ -531,8 +531,8 @@ def toolkit():
     utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev''').split('\n')
     return render_template('html/toolkit.html', username=username, utils=utils, cld_tools=cld_tools)
 
-@app.route('/admin')
 @app.route('/admin/')
+@app.route('/admin')
 def admin():
   if 'username' in session:
     username = session['username']
