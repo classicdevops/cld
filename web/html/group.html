@@ -181,6 +181,7 @@ Deploy no tty  function: <br>
 <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
 <script>
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+var editor = [];
 for (func in funcs) {
         ace.edit(funcs[func]+'Pre', {
             theme: "ace/theme/monokai",
@@ -194,7 +195,6 @@ for (func in funcs) {
             autoScrollEditorIntoView: true,
             highlightSelectedWord: true
         });
-        var editor = [];
         editor[funcs[func]+'Pre'] = ace.edit(funcs[func]+'Pre');
         editor[funcs[func]+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
         $('#'+funcs[func]+'Area').val(editor[funcs[func]+'Pre'].getSession().getValue());
