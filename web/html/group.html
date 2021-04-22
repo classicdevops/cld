@@ -219,9 +219,7 @@ editor[func+'Pre'].setOptions({
     highlightActiveLine: true,
     highlightGutterLine: true
 })
-editor[func+'Pre'].container.style.pointerEvents="text"
 editor[func+'Pre'].container.style.opacity=1
-editor[func+'Pre'].renderer.setStyle("disabled", false)
 } else {
 editor[func+'Pre'] = ace.edit(func+'Pre');
 editor[func+'Pre'].setOptions({
@@ -229,9 +227,7 @@ editor[func+'Pre'].setOptions({
     highlightActiveLine: false,
     highlightGutterLine: false
 })
-editor[func+'Pre'].container.style.pointerEvents="none"
 editor[func+'Pre'].container.style.opacity=0.5
-editor[func+'Pre'].renderer.setStyle("disabled", true)
 }
 };
 
