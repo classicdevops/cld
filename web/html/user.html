@@ -10,39 +10,42 @@
     <link href="../css/main.css" rel="stylesheet">
     <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
-    <style type="text/css">
-    /* This is not a zero-length file! */
-    </style>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
+        <style type="text/css">
+        /* This is not a zero-length file! */
+        </style>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
     <script type="text/javascript" src="../js/tablesort.js"></script>
 <script>
-function savedata(id, url) {
-        $.ajax({
-            url : url,
-            type: "POST",
-            data : $('#'+id).serialize(),
-            cache: false,
-            processData:false,
-            success: function (data) {
-                $('#'+id+'-button').addClass('btn-success').removeClass('btn-light');
-                sleep(500).then(() => {
-                $('#'+id+'-button').addClass('btn-light').removeClass('btn-success');
-                });
-                console.log('Data saved');
-                },
-            error: function (data) {
-                $('#'+id+'-button').addClass('btn-danger').removeClass('btn-light');
-                sleep(500).then(() => {
-                $('#'+id+'-button').addClass('btn-light').removeClass('btn-danger');
-                });
-                console.log('An error occurred while saving data');
-                }
-        })
+    function sleep (time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+    function savedata(id, url) {
+            $.ajax({
+                url : url,
+                type: "POST",
+                data : $('#'+id).serialize(),
+                cache: false,
+                processData:false,
+                success: function (data) {
+                    $('#'+id+'-button').addClass('btn-success').removeClass('btn-light');
+                    sleep(500).then(() => {
+                    $('#'+id+'-button').addClass('btn-light').removeClass('btn-success');
+                    });
+                    console.log('Data saved');
+                    },
+                error: function (data) {
+                    $('#'+id+'-button').addClass('btn-danger').removeClass('btn-light');
+                    sleep(500).then(() => {
+                    $('#'+id+'-button').addClass('btn-light').removeClass('btn-danger');
+                    });
+                    console.log('An error occurred while saving data');
+                    }
+            })
 
-}
+    }
 </script>
 </head>
 
