@@ -238,7 +238,7 @@ editor[func+'Pre'].renderer.setStyle("disabled", false)
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 for (i in funcs) {
-    aceswitch(func[i])
+    aceswitch(funcs[i])
 }
 });
 
