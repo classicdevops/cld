@@ -762,7 +762,7 @@ def grouptype(name):
     return Response('Group type saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupfuncs/<name>', methods=['GET','POST'])
-def groupfuncs():
+def groupfuncs(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
