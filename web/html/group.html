@@ -184,7 +184,7 @@ Deploy no tty  function: <br>
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
 var editor = [];
 for (i in funcs) {
-        var func = funcs[i]
+        func = funcs[i]
         ace.edit(func+'Pre', {
             theme: "ace/theme/monokai",
             keyboardHandler: "ace/keyboard/sublime",
@@ -199,12 +199,13 @@ for (i in funcs) {
         });
         editor[func+'Pre'] = ace.edit(func+'Pre');
         editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+};
 for (i in funcs) {
-        var func = funcs[i]
+        func = funcs[i]
+        $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
         editor[func+'Pre'].getSession().on('change', function () {
            $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
         });
-        $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
 };
 // document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 //     var FuncVarsArea = document.getElementById('FuncVarsArea')
