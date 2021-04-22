@@ -1,0 +1,360 @@
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>cld web - note storage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/main.css" rel="stylesheet">
+    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+    <style type="text/css">
+    /* This is not a zero-length file! */
+    </style>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+#searchInput {
+    background-position: 10px 12px;
+    background-repeat: no-repeat;
+    width: 95%;
+    font-size: 14px;
+    padding: 5px 10px 5px 10px;
+    border: 1px solid #1e88e5;
+    margin-bottom: 12px;
+}
+
+#ServerListUl {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#ServerListUl li a {
+    border: 1px solid #1e88e5;
+    margin: 0px;
+    background-color: white;
+    padding: 0px;
+    padding-left: 4px;
+    text-decoration: none;
+    display: block;
+    font-size: 14;
+    color: lightslategray;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-bottom-width: 0;
+}
+
+#ServerListUl li a:hover:not(.header) {
+  background-color: #eee;
+}
+
+#ServerListUl li span {
+    color: gray;
+    font-size: small;
+    font-weight: bold;
+    font-variant-caps: petite-caps;
+}
+
+#ServerListUl li span:hover:not(.header) {
+  background-color: #eee;
+}
+
+</style>
+<script>
+    var cld_domain = "{{ cld_domain }}";
+    var userapitoken = "{{ userapitoken }}";
+    $(".prelink").click(function(e){
+    e.stopPropagation();
+    });
+</script>
+    <script>
+    function idgen() {
+        var length = 8,
+            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            retVal = "";
+        for (var i = 0, n = charset.length; i < length; ++i) {
+            retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return retVal;
+    }
+    function sleep (time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+    function appendtab(id, note) {
+        $('#hostTab').append('<li class="nav-item" id="' + id + '-li">\
+            <a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false">\
+            <button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button>\
+            <button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+note+'\')">⟳</button>' + note + '\
+            </a></li>'
+        );
+    }
+    function appendfilecontent(id, note, filecontent, filenamestr) {
+        var filename = filenamestr.replace(' ', '_')
+        if (filename == "script") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
+        $('#'+id+'-accordion').append('<div id="panel'+filename+id+'" class="panel panel-default'+collapsed+'">\
+            <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
+              <h4 class="panel-title">\
+                <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'">\
+                        file: '+filenamestr+'</a>\
+                </h4>\
+                <button class="btn btn-danger dpl_del_file_btn" onclick="deletenotefile(\''+id+'\', \''+note+'\', \''+filenamestr+'\')">✖</button>\
+                <div style="float: right;margin: -19px 15px -20px 0px;">direct link: \
+                <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/all/note/'+note+'/'+filenamestr+'?hash='+CryptoJS.MD5(note+filenamestr+userapitoken).toString()+'" readonly></div>\
+            </div>\
+            <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
+                <div class="panel-body aceinit">\
+            <pre id="'+filename+id+'">'+filecontent+'</pre>\
+            </div></div></div>');
+        $('#link'+id+filename)[0].style.width = (($('#link'+id+filename)[0].value.length) * 5.63) + 'px';
+        ace.edit(filename+id, {
+            theme: "ace/theme/monokai",
+            keyboardHandler: "ace/keyboard/sublime",
+            foldStyle: "markbeginend",
+            mode: "ace/mode/sh",
+            maxLines: 40,
+            minLines: 5,
+            wrap: true,
+            showPrintMargin: false,
+            autoScrollEditorIntoView: true,
+            highlightSelectedWord: true
+        });
+        var editor = [];
+        editor[filename+id] = ace.edit(filename+id);
+        editor[filename+id].renderer.setScrollMargin(10, 15, 0, 0);
+        $('#'+id+'-form').append('<textarea name="'+filenamestr+'" id="textarea'+filename+id+'"></textarea>')
+        $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+        editor[filename+id].getSession().on('change', function () {
+           $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+        });
+        var stopClickEventPropagation = function (e) {
+            e.stopPropagation();
+            e.target.select();
+            document.execCommand('copy');
+        };
+        $('#link'+id+filename).on('click', stopClickEventPropagation);
+    }
+    function deletenotefile(id, note, filename) {
+        $.ajax({type : 'GET', url: '/note/delete/'+note+'/'+filename, dataType : 'text',
+            success: function (data) {
+                document.getElementById("panel"+filename.replace(' ', '_')+id).remove();
+                document.getElementById("textarea"+filename.replace(' ', '_')+id).remove();
+            }
+        });
+    }
+    function appendcontent(id, note) {
+        String.prototype.capitalize = function() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
+        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+        document.getElementById(id + "-tab").click();
+        $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
+        $('#'+id+'-accordion').append('Note: '+note+'<br><br>')
+        $('#'+id+'-accordion').append('\
+            <button type="button" class="btn btn-primary" onclick="savenote(\''+id+'\', \''+note+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save note</button>  \
+            <button type="button" class="btn btn-danger" onclick="deletenote(\''+id+'\', \''+note+'\')" style="width: 10%; min-width: 120px;">Delete note</button>\
+            <form style="display: -webkit-inline-box;margin-left: 5;" onsubmit="createfile(\''+id+'\', \''+note+'\');return false;">\
+            <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;" required>\
+            <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>\
+            <br><br>')
+        $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
+        $.ajax({type : 'GET', url: "/note/"+note+"/files", dataType : 'json',
+            success: function (objfiles) {
+                for (filename in objfiles) {
+                    if (filename != ""){
+                        appendfilecontent(id, note, objfiles[filename], filename)
+                    }
+                }
+            }
+        });
+    }
+    function createfile(id, note) {
+        var filename = document.getElementById(id+'-inputfilename').value;
+        appendfilecontent(id, note, '', filename)
+    }
+    function savenote(id, note) {
+            $.ajax({
+                url : '/note/save/'+note,
+                type: "POST",
+                data : $('#'+id+'-form').serialize(),
+                cache: false,
+                processData:false,
+                success: function (data) {
+                    $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
+                    sleep(500).then(() => {
+                    $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
+                    });
+                    console.log('Note saved');
+                    },
+                error: function (data) {
+                    $('#'+id+'-form-button').addClass('btn-danger').removeClass('btn-primary');
+                    sleep(500).then(() => {
+                    $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-danger');
+                    });
+                    console.log('An error occurred while saving note');
+                    }
+            })
+
+    }
+    function openutil(id, util) {
+        var args = document.getElementById(id+'-arg').value;
+        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/'+args+'"></iframe>');
+        sleep(250).then(() => {
+        console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
+        document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
+        });
+    }
+    function deletenote(id, note) {
+        $.ajax({type : 'GET', url: '/note/delete/'+note, dataType : 'text',
+            success: function (data) {
+                document.getElementById(id+'-li').remove();
+                document.getElementById(id).remove();
+                document.getElementById(note).remove();
+            }
+        });
+    }
+    function newtab(note) {
+        var id = idgen();
+        appendtab(id, note);
+        appendcontent(id, note);
+    };
+    function updatetab(id, note) {
+        $('#'+id).html('')
+        appendcontent(id, note);
+    };
+    </script>
+    <script>
+    function search() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("ServerListUl");
+        li = ul.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('[data-toggle=offcanvas]').click(function() {
+            $('.row-offcanvas').toggleClass('active');
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <div class="page-container">
+        <!-- top navbar -->
+{% include 'html/include/navbar-term.html' %}
+        <div class="container term">
+            <div class="row row-offcanvas row-offcanvas-left">
+                <!-- sidebar -->
+                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 15%;">
+                    <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
+                    <ul class="nav" id="ServerListUl">
+                            {% for note in notes %}
+                            <li id="{{ note }}"><a onclick='newtab("{{ note }}")' class="nav-link active" id="{{ note }}-link" data-toggle="tab" href="#{{ note }}">{{ note }}</a></li>
+                            {% endfor %}
+                    </ul>
+                </div>
+                <!-- main area -->
+                <div class="col-xs-12 col-sm-9" style="width: 85%;">
+                    <ul class="nav nav-tabs" id="hostTab" role="tablist">
+                        <li class="nav-item active">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" aria-expanded="true">Home</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="hostTabContent">
+                        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">Security script storage</div>
+                    </div>
+                </div><!-- /.col-xs-12 main -->
+            </div>
+            <!--/.row-->
+        </div>
+        <!--/.container-->
+    </div>
+    <!--/.page-container-->
+    <style>
+    .ad {
+        position: absolute;
+        bottom: 70px;
+        right: 48px;
+        z-index: 992;
+        background-color: white;
+        position: fixed;
+        width: 155px;
+        padding: 1px;
+    }
+
+    .ad-btn-hide {
+        position: absolute;
+        top: -10px;
+        left: -12px;
+        background: #fefefe;
+        background: rgba(240, 240, 240, 0.9);
+        border: 0;
+        border-radius: 26px;
+        cursor: pointer;
+        padding: 2px;
+        height: 25px;
+        width: 25px;
+        font-size: 14px;
+        vertical-align: top;
+        outline: 0;
+    }
+
+    .carbon-img {
+        float: left;
+        padding: 10px;
+    }
+
+    .carbon-text {
+        color: #888;
+        display: inline-block;
+        font-family: Verdana;
+        font-size: 11px;
+        font-weight: 400;
+        height: 60px;
+        margin-left: 9px;
+        width: 142px;
+        padding-top: 10px;
+    }
+
+    .carbon-text:hover {
+        color: #666;
+    }
+
+    .carbon-poweredby {
+        color: #6A6A6A;
+        float: left;
+        font-family: Verdana;
+        font-size: 11px;
+        font-weight: 400;
+        margin-left: 10px;
+        margin-top: 13px;
+        text-align: center;
+    }
+    </style>
+</body>
+
+</html>

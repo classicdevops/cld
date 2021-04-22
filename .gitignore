@@ -26,8 +26,8 @@
 !/modules/spamcheck/
 !/modules/doc/
 !/modules/dns/
+!/modules/note/
 !/modules/etcbackup/
-!/modules/wildcardssl/
 !/modules/telegramcloud/
 !/modules/zabbixcontrol/
 
