@@ -102,7 +102,7 @@
         } 
     }
 </script>
-<form action="{{ url_for('groupclouds', name=groups[0].group) }}" id="groupclouds" method="POST">
+<form id="groupclouds">
   <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
     {% for cloud in allowedclouds %}
     <option value="{{ cloud }}">{{ cloud }}</option>
@@ -126,7 +126,7 @@
 </div>
   <br>
 <div class="clearfix"></div><br>
-  <button type="submit" class="btn btn-primary bt mb-2" style="float: right" onclick="selectAll();" form="groupclouds">Apply clouds</button>
+  <button id="groupclouds-button" onclick="selectAll();savedata('groupclouds', '{{ url_for('groupclouds', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
 <br><br>
 {% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
 <form action="{{ url_for('grouptype', name=groups[0].group) }}" id="grouptype" method="POST">
