@@ -103,7 +103,7 @@
     }
     function appendfilecontent(id, note, filecontent, filenamestr) {
         var filename = filenamestr.replace(' ', '_')
-        if (filename == "script") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
+        expanded = "true" ; collapsed = "" ; toggle = " in" ;
         $('#'+id+'-accordion').append('<div id="panel'+filename+id+'" class="panel panel-default'+collapsed+'">\
             <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
               <h4 class="panel-title">\
