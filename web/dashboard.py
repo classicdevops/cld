@@ -678,7 +678,7 @@ def disableuser():
     bash('passwd --lock '+disableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/admin/usergroups/<name>/', methods=['GET','POST'])
+@app.route('/admin/usergroups/<name>', methods=['GET','POST'])
 def usergroups(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
