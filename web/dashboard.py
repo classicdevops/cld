@@ -569,9 +569,9 @@ def user(name):
       session.pop('username', None)
       return redirect('/', code=302)
     username = session['username']
-    name = [name]
+    listname = [name]
     users = list()
-    for user in name:
+    for user in listname:
       userid = bash('grep ^'+user+': /etc/passwd | cut -d : -f 3').replace('\n', '')
       role = bash('cat /var/cld/access/users/'+user+'/role').replace('\n', '')
       groups = bash('echo -n $(cat /var/cld/access/users/'+user+'/groups)').replace(' ', ',')
@@ -581,9 +581,9 @@ def user(name):
     init_list = ['userid', 'user', 'role', 'groups', 'status', 'lastlogin']
     for n, i in enumerate(users):
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
-    allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
+    allgroups = [os.path.basename(listname) for listname in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+listname)]
     allowedclouds = bash('sudo -u '+request.args['name']+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+request.args['name']+' sudo /var/cld/bin/cld --list)').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+name+' sudo /var/cld/bin/cld --list)').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
 @app.route('/admin/group')
