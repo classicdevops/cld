@@ -563,7 +563,7 @@ def admin():
     return render_template('html/admin.html', username=username, users=users, groups=groups)
 
 @app.route('/admin/user/<name>')
-def user():
+def user(name):
   if 'username' in session:
     if userisadmin(session['username']) != True:
       session.pop('username', None)
