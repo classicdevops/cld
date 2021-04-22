@@ -154,12 +154,12 @@ document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function
 {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
 <form action="{{ url_for('groupfuncs', name=groups[0].group) }}" id="groupfuncs" method="POST">
 Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
-<textarea id="FuncVarsArea" name="groupfuncvars" class="form-control" rows="4" style="display: none">{{groupfuncvars}}</textarea>
-<textarea id="FuncTermArea" name="groupfuncterm" class="form-control" rows="4" style="display: none">{{groupfuncterm}}</textarea>
-<textarea id="FuncMountArea" name="groupfuncmount" class="form-control" rows="4" style="display: none">{{groupfuncmount}}</textarea>
-<textarea id="FuncUmountArea" name="groupfuncumount" class="form-control" rows="4" style="display: none">{{groupfuncumount}}</textarea>
-<textarea id="FuncDeployArea" name="groupfuncdeploy" class="form-control" rows="4" style="display: none">{{groupfuncdeploy}}</textarea>
-<textarea id="FuncDeploynottyArea" name="groupfuncdeploynotty" class="form-control" rows="4" style="display: none">{{groupfuncdeploynotty}}</textarea>
+<textarea id="FuncVarsArea" name="groupfuncvars"></textarea>
+<textarea id="FuncTermArea" name="groupfuncterm"></textarea>
+<textarea id="FuncMountArea" name="groupfuncmount"></textarea>
+<textarea id="FuncUmountArea" name="groupfuncumount"></textarea>
+<textarea id="FuncDeployArea" name="groupfuncdeploy"></textarea>
+<textarea id="FuncDeploynottyArea" name="groupfuncdeploynotty"></textarea>
 </form>
 Define variables: <br>
 <pre id="FuncVarsPre">{{groupfuncvars}}</pre>
