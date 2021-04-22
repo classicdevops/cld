@@ -532,6 +532,7 @@ def toolkit():
     return render_template('html/toolkit.html', username=username, utils=utils, cld_tools=cld_tools)
 
 @app.route('/admin')
+@app.route('/admin/')
 def admin():
   if 'username' in session:
     username = session['username']
@@ -629,7 +630,7 @@ def adduser():
     bash('/var/cld/bin/cld-useradd '+newuser+' '+newpassword).replace('\n', ' ')
     return redirect('/admin', code=302)
 
-@app.route('/admin//deluser', methods=['GET'])
+@app.route('/admin/deluser', methods=['GET'])
 def deluser():
   if 'username' in session:
     if userisadmin(session['username']) != True:
