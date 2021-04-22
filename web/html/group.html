@@ -230,15 +230,15 @@ editor[func+'Pre'].setOptions({
     highlightGutterLine: false
 })
 editor[func+'Pre'].container.style.pointerEvents="none"
-editor[func+'Pre'].container.style.opacity=0.5 // or use svg filter to make it gray
+editor[func+'Pre'].container.style.opacity=0.5
 editor[func+'Pre'].renderer.setStyle("disabled", true)
 }
 };
 
-var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
-for (i in funcs) {
-    aceswitch(funcs[i])
-}
+// var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+// for (i in funcs) {
+//     aceswitch(funcs[i])
+// }
 
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
 var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
