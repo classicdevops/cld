@@ -1,0 +1,27 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Recursive filtering search around files in notes
+Output is list of matched files
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1-$20                              Patterns for recursive filtering
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-note watch mysql process
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+itter=1
+source <(for ARG in ${@:1}
+do
+if [ "$itter" = "1" ]
+then
+echo -n grep -i "$ARG" /var/cld/modules/note/data/ -Rl
+else
+echo -n ' |' xargs -I ^ grep -li "$ARG" ^
+fi
+let itter++
+done)
