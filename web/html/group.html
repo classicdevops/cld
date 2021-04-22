@@ -170,8 +170,6 @@ Deploy  function: <br>
 Deploy no tty  function: <br>
 <textarea{{funcstatus}} id="FuncDeploynottyArea" name="groupfuncdeploynotty" class="form-control" rows="4" style="resize: none">{{groupfuncdeploynotty}}</textarea>
 <br>
-<button type="submit" class="btn btn-primary bt mb-2" style="float: right" form="groupfuncs">Apply functions</button>
-
 <script>
 document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
     var FuncVarsArea = document.getElementById('FuncVarsArea')
@@ -215,6 +213,7 @@ document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', functio
 });
 </script>
 </form>
+<button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
 <br><br><br>
   <br><a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
 <!-- </form> -->
