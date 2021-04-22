@@ -582,7 +582,7 @@ def user(name):
     for n, i in enumerate(users):
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
     allgroups = [os.path.basename(listname) for listname in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+listname)]
-    allowedclouds = bash('sudo -u '+request.args['name']+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
+    allowedclouds = bash('sudo -u '+name+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+name+' sudo /var/cld/bin/cld --list)').split('\n')
     return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds)
 
