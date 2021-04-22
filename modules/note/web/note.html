@@ -111,7 +111,7 @@
                         file: '+filenamestr+'</a>\
                 </h4>\
                 <button class="btn btn-danger dpl_del_file_btn" onclick="deletenotefile(\''+id+'\', \''+note+'\', \''+filenamestr+'\')">✖</button>\
-                <div style="float: right;margin: -19px 15px -20px 0px;">direct link: \
+                <div style="float: right;margin: -17px 15px -20px 0px;">\
                 <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/all/note/'+note+'/'+filenamestr+'?hash='+CryptoJS.MD5(note+filenamestr+userapitoken).toString()+'" readonly></div>\
             </div>\
             <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
