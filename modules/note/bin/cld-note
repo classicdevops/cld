@@ -27,6 +27,7 @@ CUT_ARG=' | cut -d / -f7'
 [ "$JSON" == "1" ] && JSON_ARG=$(cat << 'EOL'
  | jq -R -s -c 'split("\n")[:-1]'
 EOL
+)
 [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG=' | jq . -C'
 [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG=' | jq .'
 
