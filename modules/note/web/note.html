@@ -181,7 +181,8 @@
         });
     }
     function createfile(id, note) {
-        var filename = document.getElementById(id+'-inputfilename').value;
+        var filename = document.getElementById(id+'-inputfilename').value.replaceAll(' ', '_');
+        if (filename == "") { var filename = "script" };
         appendfilecontent(id, note, '', filename)
     }
     function savenote(id, note) {
