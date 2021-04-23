@@ -404,7 +404,14 @@ done
 ) | awk -v f="$F" -v b="$B" '{print f$0f}'
 exit 0
 }
+
+version()
+{
+cd /var/cld && git log -1 ${BASH_SOURCE[0]} | head -1 | cut -d ' ' -f 2 | head -c 7
+}
+
 for OPTS in ${@:1}
 do
 [[ "$OPTS" =~ ^(-h|--help)$ ]] && cldhelp
+[[ "$OPTS" =~ ^(-v|--version)$ ]] && version
 done
