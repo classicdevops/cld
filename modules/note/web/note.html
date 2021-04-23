@@ -303,7 +303,9 @@
     {
         $.ajax({
             type : 'GET', 
-            url: '/api/note' : 'json',  data: { 
+            url: '/api/note',
+            dataType: 'json',
+            data: { 
                 token: userapitoken, 
                 args: '--json '+patterns
               },
