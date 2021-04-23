@@ -298,6 +298,37 @@
         <!--/.container-->
     </div>
     <!--/.page-container-->
+    <script>
+    function recursivesearch(patterns)
+    {
+        $.ajax({
+            type : 'GET', 
+            url: '/api/note' : 'json',  data: { 
+                token: userapitoken, 
+                args: '--json '+patterns
+              },
+            success: function (objfiles) {
+                $('#ServerListUl').html('')
+                for (note in objfiles) {
+                    if (note != ""){
+                        $('#ServerListUl').append('\
+    <li id="'+objfiles[note]+'">\
+    <a onclick="newtab(&quot;'+objfiles[note]+'&quot;)" class="nav-link active" id="'+objfiles[note]+'-link" data-toggle="tab" href="#'+objfiles[note]+'">'+objfiles[note]+'</a>\
+    </li>\
+                            ')
+
+                        appendfilecontent(id, note, objfiles[note], note)
+                    }
+                }
+            }
+        });
+    };
+    document.querySelector("#addLinks").addEventListener("keyup", event => {
+        if(event.key !== "Enter") return;
+        document.querySelector("#linkadd").click();
+        event.preventDefault();
+    });
+    </script>
     <style>
     .ad {
         position: absolute;
