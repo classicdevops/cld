@@ -109,7 +109,8 @@ Access to modules via CLI, bot telegram, API and via the web interface is separa
 
 # Framework
 `ClassicDeploy` is home to all your infrastructure scripts where they are always at hand
-CLD framework script:
+
+CLD framework script is:
 - Available through various CLI, API, Telegram bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
 - Has a generated help for all interfaces from one or more variables specified at the beginning of the script (`HELP_DESC`, `HELP_ARGS`, `HELP_EXAMPLES`)
 - Safely shared separately or as part of the entire module for any user (including telegram user or telegram chat)
