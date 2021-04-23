@@ -110,13 +110,13 @@ Access to modules via CLI, bot telegram, API and via the web interface is separa
 # Framework
 `ClassicDeploy` is home to all your infrastructure scripts where they are always at hand
 CLD framework script:
-- Available through various CLI, API, Telegram bot, Web - in accordance with the access matrix and allowed address lists
-- Has a generated help for all interfaces from one or more variables specified at the beginning of the script (HELP_DESC, HELP_ARGS, HELP_EXAMPLES)
+- Available through various CLI, API, Telegram bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
+- Has a generated help for all interfaces from one or more variables specified at the beginning of the script (`HELP_DESC`, `HELP_ARGS`, `HELP_EXAMPLES`)
 - Safely shared separately or as part of the entire module for any user (including telegram user or telegram chat)
 - Easily used in API for example for build/deployment in the pipeline (API works in stream mode - new lines are displayed in the response as they are executed)
 - Over time, new scripts of local modules are developed faster and faster using a similar structure and framework functions
 - Works reliably and safely - due to unification and security features, there is no need for hardcode even with tight deadlines
-- The script can be in any language (including compiled one) - it will also be available through any interface (do not forget to write help available through the -h argument for access through the web interface)
+- The script can be in any language (including compiled ones) - it will also be available through any interface (do not forget to write help available through the -h argument for access through the web interface)
 - Can be set to cron, for example, to update groups of instances (centralized release and further renewal of certificates on balancers), as well as for monitoring/parsing and sequential start/restart of various services on groups of instances in complex systems with a regulated startup protocol)
 
 # Installation
