@@ -18,7 +18,10 @@ def deploy_files(deploytype, deploy):
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     if os.path.exists('/var/cld/deploy/'+deploytype+'/'+deploy) != True:
-        bash('mkdir -p /var/cld/deploy/'+deploytype+'/'+deploy+'; touch /var/cld/deploy/'+deploytype+'/'+deploy+'/{vars,script,clouds,test_script}')
+        if deploytype == "templates":
+            bash('/var/cld/deploy/bin/cld-template --template='+deploy)
+        elif deploytype == "deploys":
+            bash('/var/cld/deploy/bin/cld-template --template='+deploy+' ; /var/cld/deploy/bin/cld-template --template='+deploy+' --deploy='+deploy)
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
