@@ -307,7 +307,8 @@
             dataType: 'json',
             data: { 
                 token: userapitoken, 
-                args: '--json '+patterns
+                args: '--json '+patterns,
+                output: 'plain'
               },
             success: function (objfiles) {
                 $('#ServerListUl').html('')
