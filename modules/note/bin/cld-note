@@ -32,7 +32,7 @@ EOL
 [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG=' | jq .'
 
 itter=1
-source <(for ARG in ${@:1}
+source <(for ARG in $(echo ${@:1} | tr ' ' '\n' | grep -v '^\-')
 do
 if [ "$itter" = "1" ]
 then
