@@ -44,4 +44,4 @@ else
 echo -n ' |' xargs -I ^ grep -lim 1 "$ARG" ^
 fi
 let itter++
-done) | source (echo -n ${CUT_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
+done) | source <(echo -n ${CUT_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
