@@ -105,14 +105,14 @@ The internal structure of the CLD includes a system of modules that allows you t
 - `etcbackup` - backup of server configurations
 
 The system is designed in such a way that the addition of new functional modules for any purpose occurs as quickly as possible due to unification and automatic code generation for API and telegram bot, already now in production on a number of projects up to 50 local modules are used that provide the most diverse functionality and automation, in including complex CI/CD.
-Access to modules via CLI, bot telegrams, API and via the web interface is separately configured for each user.
+Access to modules via CLI, bot telegram, API and via the web interface is separately configured for each user.
 
 # Framework
 `Classic deploy` is home to all your infrastructure scripts where they are always at hand
 CLD framework script:
 - Available through various CLI, API, Telegram bot, Web - in accordance with the access matrix and allowed address lists
 - Has a generated help for all interfaces from one or more variables specified at the beginning of the script (HELP_DESC, HELP_ARGS, HELP_EXAMPLES)
-- Safely shared separately or as part of the entire module for any user (including user telegrams or chat telegrams)
+- Safely shared separately or as part of the entire module for any user (including telegram user or telegram chat)
 - Easily used in API for example for build/deployment in the pipeline (API works in stream mode - new lines are displayed in the response as they are executed)
 - Over time, new scripts of local modules are developed faster and faster using a similar structure and framework functions
 - Works reliably and safely - due to unification and security features, there is no need for hardcode even with tight deadlines

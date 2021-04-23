@@ -12,5 +12,5 @@ Main functions and features:
 - migration of KVM between hypervisors in interactive and direct modes (zfs), (other filesystems through shared network storage)
 - centralized KVM server management functionality (start, stop reset, destroy)
 - support for api OVH, Hetzner, Online.net (ordering ip addresses, migrating ip addresses between services, creating MAC)
-- daily check of KVM backups on hypervisors, clear report in telegrams or by email.
+- daily check of KVM backups on hypervisors, clear report in telegram or by email.
 - scripts for deploying hypervisors (debian 9, debian 10), full OS configuration, network configuration, network storages
