@@ -372,7 +372,14 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="hostTabContent">
-                        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">Classic deploy</div>
+                        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">Classic deploy
+                        <form style="display: -webkit-inline-box;" onsubmit="newtab(document.getElementById('inputtemplatename').value.replaceAll(' ', '_'), 'templates');return false;">
+                            <input type="text" class="form-control" id="inputtemplatename" placeholder="New template name" style="width: 55%;padding-top: 3;" required="">
+                            <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>
+                        <form style="display: -webkit-inline-box;" onsubmit="newtab(document.getElementById('inputdeployname').value.replaceAll(' ', '_'), 'deploys');return false;">
+                            <input type="text" class="form-control" id="inputdeployname" placeholder="New deploy name" style="width: 55%;padding-top: 3;" required="">
+                            <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>
+                        </div>
                     </div>
                 </div><!-- /.col-xs-12 main -->
             </div>
