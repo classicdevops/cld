@@ -108,7 +108,7 @@ The system is designed in such a way that the addition of new functional modules
 Access to modules via CLI, bot telegram, API and via the web interface is separately configured for each user.
 
 # Framework
-`Classic deploy` is home to all your infrastructure scripts where they are always at hand
+`ClassicDeploy` is home to all your infrastructure scripts where they are always at hand
 CLD framework script:
 - Available through various CLI, API, Telegram bot, Web - in accordance with the access matrix and allowed address lists
 - Has a generated help for all interfaces from one or more variables specified at the beginning of the script (HELP_DESC, HELP_ARGS, HELP_EXAMPLES)
@@ -140,7 +140,7 @@ Before the installation process, you should prepare the following information:
 	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `link for Zabbix API`)
 
 ### Quick start
-Classic deploy should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
+ClassicDeploy should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ```bash
 bash -x <(wget -qO- "https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh")
