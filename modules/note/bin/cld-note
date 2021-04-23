@@ -22,6 +22,8 @@ echo $OPTS | grep -q  '^\--json' && JSON=1
 echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
+CUT_ARG=' | cut -d / -f7'
+
 [ "$JSON" == "1" ] && JSON_ARG=$(cat << 'EOL'
  | jq -R -s -c 'split("\n")[:-1]'
 EOL
@@ -42,4 +44,4 @@ else
 echo -n ' |' xargs -I ^ grep -lim 1 "$ARG" ^
 fi
 let itter++
-done) | cut -d / -f7
+done) | source (echo -n ${CUT_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
