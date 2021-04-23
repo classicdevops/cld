@@ -243,7 +243,7 @@ SECOND_PART=$(tail -n +$((${LAST_LINE}+1)) <<< "${IPTABLES_STATE6}")
 ip6tables-restore << EOACCESS
 $FIRST_PART
 $(
-for BLACK_IP in $BLACK_IPS
+for BLACK_IP in $BLACK_IPS6
 do
 echo "-I INPUT -s ${BLACK_IP}/128 -j DROP -m comment --comment cldaccessv6"
 done
@@ -254,7 +254,7 @@ do
 echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6"
 done
 
-for IP in $ALLOWED_IPS
+for IP in $ALLOWED_IPS6
 do
 echo "-A INPUT -s ${IP}/128 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6"
 done
@@ -267,12 +267,12 @@ EOACCESS
 else
 source <(
 ip6tables-save | grep -v conntrack | grep -q ESTABLISHED || ip6tables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccessv6
-ip6tables-save | grep -v "$(echo $ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "${BLACK_IPS}" | grep -v "/128 -j DROP" | ip6tables-restore
+ip6tables-save | grep -v "$(echo $ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "${BLACK_IPS6}" | grep -v "/128 -j DROP" | ip6tables-restore
 for LOCAL_NET in $LOCAL_NETS
 do
 echo "ip6tables -A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6"
 done
-for IP in $ALLOWED_IPS
+for IP in $ALLOWED_IPS6
 do
 cat << EOL
 ip6tables -A INPUT -s ${IP}/128 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6
@@ -282,7 +282,7 @@ cat << EOL
 ip6tables -A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccessv6
 ip6tables -A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccessv6
 EOL
-for BLACK_IP in $BLACK_IPS
+for BLACK_IP in $BLACK_IPS6
 do
 cat << EOL
 ip6tables -I INPUT -s ${BLACK_IP}/128 -j DROP -m comment --comment cldaccessv6
