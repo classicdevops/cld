@@ -411,7 +411,7 @@ TOOL="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
 cd /var/cld && \
 GIT_DATA=$(git log -1 --date=format:'%F' ${TOOL})
 cat << EOL
-$(basename ${TOOL}) - $(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -2 | tail -1 | tr -s ' ' | cut -d ' ' -f 2) (C) Aleksandr Chendev
+$(basename ${TOOL}) - $(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2) (C) Aleksandr Chendev
 Released under the 2-Clause BSD License. 
 
 EOL
