@@ -271,7 +271,7 @@
             <div class="row row-offcanvas row-offcanvas-left">
                 <!-- sidebar -->
                 <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 15%;">
-                    <input type="text" id="searchInput" onkeyup="search()" placeholder="[Enter] search in content" title="Type in a name">
+                    <input type="text" id="searchInput" onkeyup="search()" placeholder="[Enter] - search in content" title="Type in a name">
                     <ul class="nav" id="ServerListUl">
                             {% for note in notes %}
                             <li id="{{ note }}"><a onclick='newtab("{{ note }}")' class="nav-link active" id="{{ note }}-link" data-toggle="tab" href="#{{ note }}">{{ note }}</a></li>
