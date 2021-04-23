@@ -407,9 +407,10 @@ exit 0
 
 version()
 {
+TOOL="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
 cd /var/cld && \
 cat << EOL
-$(basename ${BASH_SOURCE[1]}) - $(git log -1 ${BASH_SOURCE[1]} | head -1 | cut -d ' ' -f 2 | head -c 7) (C) Aleksandr Chendev
+$(basename ${TOOL}) - $(git log -1 ${TOOL} | head -1 | cut -d ' ' -f 2 | head -c 7) (C) Aleksandr Chendev
 Released under the 2-Clause BSD License. 
 EOL
 exit 0
