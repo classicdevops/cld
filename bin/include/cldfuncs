@@ -370,6 +370,7 @@ echo)
 (echo Arguments:${YAMLCORRECTOR}
 [ "$HELP_ARGS" ] && awk '{print "     "$0}' <<< "${HELP_ARGS}"
 awk '{print "     "$0}' <<< "-h --help                Print this information"
+awk '{print "     "$0}' <<< "-v --version             Print tool version"
 echo)
 [ "$HELP_EXAMPLES" ] && (
 echo Usage examples:
