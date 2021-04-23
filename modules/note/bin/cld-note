@@ -31,15 +31,19 @@ EOL
 [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG=' | jq . -C'
 [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG=' | jq .'
 
+ARG_LIST=$(echo ${@:1} | tr ' ' '\n' | grep -v '^\-')
+[ "$ARG_LIST" ] || ARG_LIST='.'
+
 itter=1
 source <(for ARG in $(echo ${@:1} | tr ' ' '\n' | grep -v '^\-')
 do
 if [ "$itter" = "1" ]
 then
-echo -n grep -i "$ARG" /var/cld/modules/note/data/ -Rl
+echo -n grep -Rlim 1 "$ARG" /var/cld/modules/note/data/ 
 else
-echo -n ' |' xargs -I ^ grep -li "$ARG" ^
+echo -n ' |' xargs -I ^ grep -lim 1 "$ARG" ^
 fi
 let itter++
 done
-echo -n ${CUT_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
+echo -n ${CUT_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG}
+)
