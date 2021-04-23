@@ -1,5 +1,5 @@
 # Introduction
-cld - сlassical architecture deployment and management system
+CLD - сlassical architecture deployment and management system
 
 - Secure, convenient and centralized access system from one point, it is not required to store the key of each user on each server, now there is only one key
 - Transparent and flexible deployment that is limited only by your imagination
@@ -8,7 +8,7 @@ cld - сlassical architecture deployment and management system
 - Control as you like, CLI, web, API or chat bot, wherever you are, anytime
 
 The main components of the system are bash-based utilities, API, telegram bot and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
-To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the cld access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
+To access any tool, two (sometimes three) factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access rights matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, bot, web), excluding direct access to their content as well as to the entire application directory.
 
 # Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
