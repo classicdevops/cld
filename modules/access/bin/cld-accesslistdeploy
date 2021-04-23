@@ -59,10 +59,15 @@ cat > /etc/hosts.localnets.tmp << 'EOHOSTSLOCALS'
 $(cat /var/cld/creds/local_nets 2>/dev/null)
 EOHOSTSLOCALS
 
+cat > /etc/hosts.localnets6.tmp << 'EOHOSTSLOCALS'
+$(cat /var/cld/creds/local_nets6 2>/dev/null)
+EOHOSTSLOCALS
+
 unalias mv &>/dev/null
 mv /etc/hosts.allow.tmp /etc/hosts.allow
 mv /etc/hosts.ports.tmp /etc/hosts.ports
 mv /etc/hosts.localnets.tmp /etc/hosts.localnets
+mv /etc/hosts.localnets6.tmp /etc/hosts.localnets6
 EOACCESSLIST
 )
 
