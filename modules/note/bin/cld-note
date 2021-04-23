@@ -23,7 +23,6 @@ echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
 done
 
 CUT_ARG=' | cut -d / -f7'
-JSON_ARG=' | jq -R -s -c 'split("\n")[:-1]''
 
 [ "$JSON" == "1" ] && JSON_ARG=$(cat << 'EOL'
  | jq -R -s -c 'split("\n")[:-1]'
