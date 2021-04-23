@@ -35,7 +35,7 @@ ARG_LIST=$(echo ${@:1} | tr ' ' '\n' | grep -v '^\-')
 [ "$ARG_LIST" ] || ARG_LIST='.'
 
 itter=1
-source <(for ARG in $(echo ${@:1} | tr ' ' '\n' | grep -v '^\-')
+source <(for ARG in ${ARG_LIST}
 do
 if [ "$itter" = "1" ]
 then
