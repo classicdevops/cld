@@ -31,7 +31,6 @@ The basis of the project is a centralized system of SSH access based on PAM:
 
 # Interfaces:
 - **CLI**  
-
   The main interface for working with the CLD system, many main scripts have support for working in an interactive mode designed to work through the CLI
   - CLI launch is validated by user aliases in `~/.bashrc`
   - Each alias contains sudo launch
@@ -39,7 +38,6 @@ The basis of the project is a centralized system of SSH access based on PAM:
   - When a module is enabled for a user, all the utilities of the module are added to the aliases and `/etc/sudoers` of this user
 
 - **API**  
-
   Interface for accessing non-interactive tools via Web API:
   - The interface code is written in `Python`, using the `Flask` framework
   - Request example: `https://cld.example.com/api/${TOOL}?token=${USER_TOKEN}&args=${ARGUMENTS}`
@@ -62,7 +60,6 @@ The basis of the project is a centralized system of SSH access based on PAM:
     - The number of requests for location `/api/all/` has a limit of `60 requests per minute`
 
 - **Bot**  
-
   Telegram chat bot interface for executing utilities in non-interactive mode:
   - Interface code in `Python`, using the `pytelegrambotapi` module as a basis
   - When sending a command to the chat/bot, it is directly executed with the passed arguments
@@ -77,7 +74,6 @@ The basis of the project is a centralized system of SSH access based on PAM:
   - To share individual modules/utilities for a whole chat, you need to create a separate user in the CLD and assign it the chat id of this group
 
 - **Web**  
-
   Auxiliary interface for working with the system
   - The interface code is written in `Python` using the `Flask` framework as well as the `SocketIO` module
   - Provides many system management functions
