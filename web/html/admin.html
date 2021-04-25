@@ -237,7 +237,7 @@
             </script>
 
             {% for file in files %}
-            {% set fileid = file.replace('/', '_') %}
+            {% set fileid = file.replace('/', '_').replace('.', '_') %}
             <form id="{{ fileid }}">
             <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
             <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
