@@ -243,7 +243,7 @@
             <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
             </form>
             file:<br>
-            <pre id="{{ fileid }}Pre">{{ files['file'] }}</pre>
+            <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
             <br>
             <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right">Save file</button>
             <script>
