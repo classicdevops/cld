@@ -7,3 +7,33 @@
 <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
 <script type="text/javascript" src="/js/tablesort.js"></script>
+<script>
+   function idgen() {
+     var length = 8,
+         charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+         retVal = "";
+     for (var i = 0, n = charset.length; i < length; ++i) {
+         retVal += charset.charAt(Math.floor(Math.random() * n));
+     }
+     return retVal;
+   }
+   function sleep(time) {
+   return new Promise((resolve) => setTimeout(resolve, time));
+   }
+   function search() {
+     var input, filter, ul, li, a, i, txtValue;
+     input = document.getElementById("searchInput");
+     filter = input.value.toUpperCase();
+     ul = document.getElementById("ServerListUl");
+     li = ul.getElementsByTagName("li");
+     for (i = 0; i < li.length; i++) {
+         a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
+         txtValue = a.textContent || a.innerText;
+         if (txtValue.toUpperCase().indexOf(filter) > -1) {
+             li[i].style.display = "";
+         } else {
+             li[i].style.display = "none";
+         }
+     }
+   }
+</script>
