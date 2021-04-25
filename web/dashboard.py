@@ -567,6 +567,18 @@ def admin():
       files[file] = open(file).read()
     return render_template('html/admin.html', username=username, users=users, groups=groups, files=files)
 
+
+@app.route('/admin/savefile', methods=['POST'])
+def adminsavefile():
+  if 'username' in session:
+    if userisadmin(session['username']) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
+    file = request.form['file']
+    content = request.form['content']
+    open(file, "w", newline='\n').write(content.replace('\r', ''))
+    return Response("file "+file+" saved", status=200, mimetype='text/plain')
+
 @app.route('/admin/user/<name>')
 def user(name):
   if 'username' in session:
@@ -692,11 +704,7 @@ def usergroups(name):
       session.pop('username', None)
       return redirect('/', code=302)
     groups = list(request.form.to_dict())
-    # print(dir(request.form))
-    # sys.stdout.flush()
-    groupsfile = open('/var/cld/access/users/'+name+'/groups', 'w')
-    groupsfile.write("\n".join(groups))
-    groupsfile.close()
+    open('/var/cld/access/users/'+name+'/groups', 'w').write("\n".join(groups))
     return Response('User groups saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/userclouds/<name>', methods=['GET','POST'])

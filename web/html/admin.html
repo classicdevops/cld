@@ -173,6 +173,83 @@
                         </div>
     </div>
   </div>
+<div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="false" style="cursor:pointer;">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+        Configuration</a>
+      </h4>
+    </div>
+    <div id="collapse3" class="panel-collapse collapse">
+        <div class="panel-body">
+            <script>
+            var editor = [];
+            function aceactivate(file)
+            {
+            ace.edit(file+'Pre', {
+                theme: "ace/theme/monokai",
+                keyboardHandler: "ace/keyboard/sublime",
+                foldStyle: "markbeginend",
+                mode: "ace/mode/autohotkey",
+                maxLines: 40,
+                minLines: 5,
+                wrap: true,
+                showPrintMargin: false,
+                autoScrollEditorIntoView: true,
+                highlightSelectedWord: true
+            });
+            editor[file+'Pre'] = ace.edit(file+'Pre');
+            editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+            $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+            editor[file+'Pre'].getSession().on('change', function () {
+               $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+            });
+            }
+            function sleep (time) {
+              return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            function savefile(id, url) {
+                    $.ajax({
+                        url : url,
+                        type: "POST",
+                        data : $('#'+id).serialize(),
+                        cache: false,
+                        processData:false,
+                        success: function (data) {
+                            $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                            sleep(500).then(() => {
+                            $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                            });
+                            console.log('File saved');
+                            },
+                        error: function (data) {
+                            $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                            sleep(500).then(() => {
+                            $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                            });
+                            console.log('An error occurred while saving data');
+                            }
+                    })
+
+            }
+            </script>
+
+            {% for file in files %}
+            <form id="{{ file }}">
+            <textarea id="{{ file }}Name" name="file" style="display: none;">{{ file }}</textarea>
+            <textarea id="{{ file }}Area" name="content" style="display: none;"></textarea>
+            </form>
+            file:<br>
+            <pre id="{{ file }}Pre">{{ files['file'] }}</pre>
+            <br>
+            <button id="{{ file }}-button" onclick="savefile('{{ file }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right">Save file</button>
+            <script>
+                aceactivate('{{ file }}')
+            </script>
+            {% endfor %}
+        </div>
+    </div>
+  </div>
 </div>
 
             <!--/.row-->
