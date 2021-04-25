@@ -237,16 +237,17 @@
             </script>
 
             {% for file in files %}
-            <form id="{{ file }}">
-            <textarea id="{{ file }}Name" name="file" style="display: none;">{{ file }}</textarea>
-            <textarea id="{{ file }}Area" name="content" style="display: none;"></textarea>
+            {% set fileid = file.replace('/', '_') %}
+            <form id="{{ fileid }}">
+            <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
+            <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
             </form>
             file:<br>
-            <pre id="{{ file }}Pre">{{ files['file'] }}</pre>
+            <pre id="{{ fileid }}Pre">{{ files['file'] }}</pre>
             <br>
-            <button id="{{ file }}-button" onclick="savefile('{{ file }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right">Save file</button>
+            <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right">Save file</button>
             <script>
-                aceactivate('{{ file }}')
+                aceactivate('{{ fileid }}')
             </script>
             {% endfor %}
         </div>
