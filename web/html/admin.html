@@ -242,10 +242,10 @@
             <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
             <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
             </form>
-            file: {{ file }}<br>
+            file: <div class="prein">{{ file }}</div><br>
             <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
             <br>
-            <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right">Save {{ file }}</button><br>
+            <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right">Save {{ file }}</button><br><br>
             <script>
                 aceactivate('{{ fileid }}')
             </script>
