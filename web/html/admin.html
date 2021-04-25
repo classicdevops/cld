@@ -244,7 +244,6 @@
             </form>
             file: <div class="prein">{{ file }}</div><br>
             <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
-            <br>
             <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button><br><br>
             <script>
                 aceactivate('{{ fileid }}')
