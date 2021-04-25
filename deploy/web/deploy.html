@@ -1,456 +1,319 @@
 <html lang="en">
-
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <title>cld web - classic deploy</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/main.css" rel="stylesheet">
-    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <style type="text/css">
-    /* This is not a zero-length file! */
-    </style>
-    <style>
-* {
-  box-sizing: border-box;
-}
-
-#searchInput {
-    background-position: 10px 12px;
-    background-repeat: no-repeat;
-    width: 95%;
-    font-size: 14px;
-    padding: 5px 10px 5px 10px;
-    border: 1px solid #1e88e5;
-    margin-bottom: 12px;
-}
-
-#ServerListUl {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#ServerListUl li a {
-    border: 1px solid #1e88e5;
-    margin: 0px;
-    background-color: white;
-    padding: 0px;
-    padding-left: 4px;
-    text-decoration: none;
-    display: block;
-    font-size: 14;
-    color: lightslategray;
-    border-right-width: 0;
-    border-left-width: 0;
-    border-bottom-width: 0;
-}
-
-#ServerListUl li a:hover:not(.header) {
-  background-color: #eee;
-}
-
-#ServerListUl li span {
-    color: gray;
-    font-size: small;
-    font-weight: bold;
-    font-variant-caps: petite-caps;
-}
-
-#ServerListUl li span:hover:not(.header) {
-  background-color: #eee;
-}
-
-</style>
-<script>
-    var cld_domain = "{{ cld_domain }}";
-    var userapitoken = "{{ userapitoken }}";
-    $(".prelink").click(function(e){
-    e.stopPropagation();
-    });
-</script>
-    <script>
-    function idgen() {
-        var length = 8,
-            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-            retVal = "";
-        for (var i = 0, n = charset.length; i < length; ++i) {
-            retVal += charset.charAt(Math.floor(Math.random() * n));
-        }
-        return retVal;
-    }
-    function sleep (time) {
-      return new Promise((resolve) => setTimeout(resolve, time));
-    }
-    function appendtab(id, deploy, deploytype) {
-        $('#hostTab').append('<li class="nav-item" id="' + id + '-li">\
-            <a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false">\
-            <button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button>\
-            <button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')">⟳</button>' + deploy + '\
-            </a></li>'
-        );
-    }
-    function appenddeploytab(id, util) {
-        $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatedeploytab(\''+id+'\', \''+util+'\')">⟳</button>' + util + '</a></li>'
-        );
-    }
-    function appendfilecontent(id, deploy, deploytype, filecontent, filenamestr) {
-        var filename = filenamestr.replace(' ', '_')
-        if (filename == "script") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
-        $('#'+id+'-accordion').append('<div id="panel'+filename+id+'" class="panel panel-default'+collapsed+'">\
-            <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
-              <h4 class="panel-title">\
-                <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'">\
-                        file: '+filenamestr+'</a>\
-                </h4>\
-                <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
-                <div style="float: right;margin: -17px 15px -20px 0px;">\
-                <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'" readonly></div>\
-            </div>\
-            <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
-                <div class="panel-body aceinit">\
-            <pre id="'+filename+id+'">'+filecontent+'</pre>\
-            </div></div></div>');
-        $('#link'+id+filename)[0].style.width = (($('#link'+id+filename)[0].value.length) * 5.63) + 'px';
-        ace.edit(filename+id, {
-            theme: "ace/theme/monokai",
-            keyboardHandler: "ace/keyboard/sublime",
-            foldStyle: "markbeginend",
-            mode: "ace/mode/sh",
-            maxLines: 40,
-            minLines: 5,
-            wrap: true,
-            showPrintMargin: false,
-            autoScrollEditorIntoView: true,
-            highlightSelectedWord: true
-        });
-        var editor = [];
-        editor[filename+id] = ace.edit(filename+id);
-        editor[filename+id].renderer.setScrollMargin(10, 15, 0, 0);
-        $('#'+id+'-form').append('<textarea name="'+filenamestr+'" id="textarea'+filename+id+'"></textarea>')
-        $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
-        editor[filename+id].getSession().on('change', function () {
-           $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
-        });
-        var stopClickEventPropagation = function (e) {
-            e.stopPropagation();
-            e.target.select();
-            document.execCommand('copy');
-        };
-        $('#link'+id+filename).on('click', stopClickEventPropagation);
-    }
-    function deletedeployfile(id, deploytype, deploy, filename) {
-        $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
-            success: function (data) {
-                document.getElementById("panel"+filename.replace(' ', '_')+id).remove();
-                document.getElementById("textarea"+filename.replace(' ', '_')+id).remove();
-            }
-        });
-    }
-    function appendcontent(id, deploy, deploytype) {
-        String.prototype.capitalize = function() {
-            return this.charAt(0).toUpperCase() + this.slice(1);
-        }
-        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
-        document.getElementById(id + "-tab").click();
-        $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
-        deploytypestr = deploytype.slice(0, -1);
-        $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
-        $('#'+id+'-accordion').append('\
-            <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save '+deploytypestr+'</button>  \
-            <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
-            <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytype+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button>\
-            <form style="display: -webkit-inline-box;margin-left: 5;" onsubmit="createfile(\''+id+'\', \''+deploy+'\', \''+deploytype+'\');return false;">\
-            <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;padding-top: 3;" required>\
-            <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>\
-            <br><br>')
-        $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
-        $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy+"/files", dataType : 'json',
-            success: function (objfiles) {
-                for (filename in objfiles) {
-                    if (filename != ""){
-                        appendfilecontent(id, deploy, deploytype, objfiles[filename], filename)
-                    }
-                }
-            }
-        });
-        if (deploytype == "deploys") {
-            $.ajax({type : 'GET', url: "/deploy/action/"+deploy, dataType : 'json',
-                success: function (actions) {
-                    expanded = "false" ; collapsed = " collapsed" ; toggle = "" ;
-                    $('#'+id+'-accordion').append('<div id="panel-actions-'+id+'" class="panel panel-default'+collapsed+'">\
-                    <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse-actions-'+id+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
-                      <h4 class="panel-title">\
-                        <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse-actions-'+id+'">Actions</a>\
-                        </h4>\
-                    </div>\
-                    <div id="collapse-actions-'+id+'" class="panel-collapse collapse'+toggle+'">\
-                    <div>\
-                    <table style="font-weight: 300;width:100%;" id="'+id+'-table" class="table table-striped" cellspacing="0" width="100%">\
-                    <thead>\
-                        <tr style="cursor: pointer;">\
-                        <td>Action</td>\
-                        <td>Instances</td>\
-                        <td>Tests</td>\
-                        <td>Status</td>\
-                        </tr>\
-                    </thead>\
-                    <tbody id="'+id+'-table-tbody"></tbody></table>\
-                    </div>\
-                    </div></div>');
-                    for (i in actions) {
-                            $('#'+id+'-table-tbody').append('\
-                                <tr>\
-                                <td>'+actions[i]["action"]+'</td>\
-                                <td>'+actions[i]["clouds"]+'</td>\
-                                <td>'+actions[i]["tests"]+'</td>\
-                                <td>'+actions[i]["status"]+'</td>\
-                                </tr>')
-                    }
-                }
-            }); 
-        }
-    }
-    function createfile(id, deploy, deploytype) {
-        var filename = document.getElementById(id+'-inputfilename').value;
-        appendfilecontent(id, deploy, deploytype, '', filename)
-    }
-    function savedeploy(id, deploy, deploytype) {
-            $.ajax({
-                url : '/deploy/save/'+deploytype+'/'+deploy,
-                type: "POST",
-                data : $('#'+id+'-form').serialize(),
-                cache: false,
-                processData:false,
-                success: function (data) {
-                    $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
-                    sleep(500).then(() => {
-                    $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
-                    });
-                    console.log('Deploy saved');
-                    },
-                error: function (data) {
-                    $('#'+id+'-form-button').addClass('btn-danger').removeClass('btn-primary');
-                    sleep(500).then(() => {
-                    $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-danger');
-                    });
-                    console.log('An error occurred while saving deploy');
-                    }
-            })
-
-    }
-    function appendframe(id, deploy) {
-        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
-        document.getElementById(id + "-tab").click();
-        sleep(250).then(() => {
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+deploy+'/"></iframe>');
-        });
-    }
-    function rundeploy(id, args) {
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/'+args+'"></iframe>');
-        sleep(250).then(() => {
-        console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
-        document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
-        });
-    }
-    function openutil(id, util) {
-        var args = document.getElementById(id+'-arg').value;
-        $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/'+args+'"></iframe>');
-        sleep(250).then(() => {
-        console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
-        document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
-        });
-    }
-    function deletedeploy(id, deploytype, deploy) {
-        $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy, dataType : 'text',
-            success: function (data) {
-                document.getElementById(id+'-li').remove();
-                document.getElementById(id).remove();
-                document.getElementById(deploytype+'-'+deploy).remove();
-            }
-        });
-    }
-    function newtab(deploy, deploytype) {
-        var id = idgen();
-        appendtab(id, deploy, deploytype);
-        appendcontent(id, deploy, deploytype);
-    };
-    function newdeploytab(util) {
-        var id = idgen();
-        appenddeploytab(id, util);
-        appenddeploycontent(id, util);
-    };
-    function appendform(id, util) {
-        $('#'+id).append('<form onsubmit="openutil(\''+id+'\', \''+util+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+util+'\')" style="width: 10%;">Run</button>        </form>')
-    }
-    function appenddeploycontent(id, util) {
-        $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
-        document.getElementById(id + "-tab").click();
-        appendform(id, util);
-        $.ajax({type : 'GET', url: "/help/"+util, dataType : 'text',
-            success: function (data) {
-            $('#'+id).append('<pre>'+data+'</pre>')
-            }
-        });
-    }
-    function newdirecttab(deploy) {
-        var id = idgen();
-        appendtab(id, deploy);
-        appendframe(id, deploy);
-    };
-    function updatetab(id, deploy, deploytype) {
-        $('#'+id).html('')
-        appendcontent(id, deploy, deploytype);
-    };
-    function updatedeploytab(id, deploy, deploytype) {
-        $('#'+id).html('')
-        appenddeploycontent(id, deploy, deploytype);
-    };
-    </script>
-    <script>
-    function search() {
-        var input, filter, ul, li, a, i, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        ul = document.getElementById("ServerListUl");
-        li = ul.getElementsByTagName("li");
-        for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
-            txtValue = a.textContent || a.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                li[i].style.display = "";
-            } else {
-                li[i].style.display = "none";
-            }
-        }
-    }
-    </script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $('[data-toggle=offcanvas]').click(function() {
-            $('.row-offcanvas').toggleClass('active');
-        });
-    });
-    </script>
-</head>
-
-<body>
-    <div class="page-container">
-        <!-- top navbar -->
-{% include 'html/include/navbar-term.html' %}
-        <div class="container term">
+   <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <meta charset="utf-8">
+      <title>cld web - classic deploy</title>
+      {% include 'html/include/head.html' %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+      <style>
+         #ServerListUl li a {
+         border: 1px solid #1e88e5;
+         margin-top: -1px;
+         background-color: white;
+         padding: 2px;
+         text-decoration: none;
+         color: black;
+         display: block;
+         font-size: 12;
+         color: lightslategray;
+         border-right-width: 0;
+         border-left-width: 0;
+         border-bottom-width: 0;
+         }
+      </style>
+      <script>
+         var cld_domain = "{{ cld_domain }}";
+         var userapitoken = "{{ userapitoken }}";
+         $(".prelink").click(function(e){
+         e.stopPropagation();
+         });
+      </script>
+      <script>
+         function appendtab(id, deploy, deploytype) {
+             $('#hostTab').append('<li class="nav-item" id="' + id + '-li">\
+                 <a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false">\
+                 <button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button>\
+                 <button class="refreshtab" type="button" onclick="updatetab(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')">⟳</button>' + deploy + '\
+                 </a></li>'
+             );
+         }
+         function appenddeploytab(id, util) {
+             $('#hostTab').append('<li class="nav-item" id="' + id + '-li"><a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false"><button class="closetab" type="button" onclick="document.getElementById(\'' + id + '-li\').remove();document.getElementById(\'' + id + '\').remove();">×</button><button class="refreshtab" type="button" onclick="updatedeploytab(\''+id+'\', \''+util+'\')">⟳</button>' + util + '</a></li>'
+             );
+         }
+         function appendfilecontent(id, deploy, deploytype, filecontent, filenamestr) {
+             var filename = filenamestr.replace(' ', '_')
+             if (filename == "script") { expanded = "true" ; collapsed = "" ; toggle = " in" ; } else { expanded = "false" ; collapsed = " collapsed" ; toggle = "" ; };
+             $('#'+id+'-accordion').append('<div id="panel'+filename+id+'" class="panel panel-default'+collapsed+'">\
+                 <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
+                   <h4 class="panel-title">\
+                     <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse'+id+filename+'">\
+                             file: '+filenamestr+'</a>\
+                     </h4>\
+                     <button class="btn btn-danger dpl_del_file_btn" onclick="deletedeployfile(\''+id+'\', \''+deploytype+'\', \''+deploy+'\', \''+filenamestr+'\')">✖</button>\
+                     <div style="float: right;margin: -17px 15px -20px 0px;">\
+                     <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/deploy/'+deploytype+'/'+deploy+'/'+filenamestr+'?hash='+CryptoJS.MD5(deploytype+deploy+filenamestr+userapitoken).toString()+'" readonly></div>\
+                 </div>\
+                 <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
+                     <div class="panel-body aceinit">\
+                 <pre id="'+filename+id+'">'+filecontent+'</pre>\
+                 </div></div></div>');
+             $('#link'+id+filename)[0].style.width = (($('#link'+id+filename)[0].value.length) * 5.63) + 'px';
+             ace.edit(filename+id, {
+                 theme: "ace/theme/monokai",
+                 keyboardHandler: "ace/keyboard/sublime",
+                 foldStyle: "markbeginend",
+                 mode: "ace/mode/sh",
+                 maxLines: 40,
+                 minLines: 5,
+                 wrap: true,
+                 showPrintMargin: false,
+                 autoScrollEditorIntoView: true,
+                 highlightSelectedWord: true
+             });
+             var editor = [];
+             editor[filename+id] = ace.edit(filename+id);
+             editor[filename+id].renderer.setScrollMargin(10, 15, 0, 0);
+             $('#'+id+'-form').append('<textarea name="'+filenamestr+'" id="textarea'+filename+id+'"></textarea>')
+             $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+             editor[filename+id].getSession().on('change', function () {
+                $('#textarea'+filename+id).val(editor[filename+id].getSession().getValue());
+             });
+             var stopClickEventPropagation = function (e) {
+                 e.stopPropagation();
+                 e.target.select();
+                 document.execCommand('copy');
+             };
+             $('#link'+id+filename).on('click', stopClickEventPropagation);
+         }
+         function deletedeployfile(id, deploytype, deploy, filename) {
+             $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy+'/'+filename, dataType : 'text',
+                 success: function (data) {
+                     document.getElementById("panel"+filename.replace(' ', '_')+id).remove();
+                     document.getElementById("textarea"+filename.replace(' ', '_')+id).remove();
+                 }
+             });
+         }
+         function appendcontent(id, deploy, deploytype) {
+             String.prototype.capitalize = function() {
+                 return this.charAt(0).toUpperCase() + this.slice(1);
+             }
+             $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+             document.getElementById(id + "-tab").click();
+             $('#'+id).append('<div class="panel-group" id="'+id+'-accordion"></div>')
+             deploytypestr = deploytype.slice(0, -1);
+             $('#'+id+'-accordion').append(deploytypestr.capitalize()+': '+deploy+'<br><br>')
+             $('#'+id+'-accordion').append('\
+                 <button type="button" class="btn btn-primary" onclick="savedeploy(\''+id+'\', \''+deploy+'\', \''+deploytype+'\')" id="'+id+'-form-button" style="width: 10%; min-width: 120px;">Save '+deploytypestr+'</button>  \
+                 <button type="button" class="btn btn-primary" onclick="rundeploy(\''+id+'\', \'--'+deploytypestr+'='+deploy+'\')" style="width: 10%; min-width: 120px;">Run '+deploytypestr+'</button>  \
+                 <button type="button" class="btn btn-danger" onclick="deletedeploy(\''+id+'\', \''+deploytype+'\', \''+deploy+'\')" style="width: 10%; min-width: 120px;">Delete '+deploytypestr+'</button>\
+                 <form style="display: -webkit-inline-box;margin-left: 5;" onsubmit="createfile(\''+id+'\', \''+deploy+'\', \''+deploytype+'\');return false;">\
+                 <input type="text" class="form-control" id="'+id+'-inputfilename" placeholder="New file name" style="width: 45%;padding-top: 3;" required>\
+                 <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>\
+                 <br><br>')
+             $('#'+id+'-accordion').append('<form id="'+id+'-form" style="display: none;"></form>')
+             $.ajax({type : 'GET', url: "/deploy/"+deploytype+"/"+deploy+"/files", dataType : 'json',
+                 success: function (objfiles) {
+                     for (filename in objfiles) {
+                         if (filename != ""){
+                             appendfilecontent(id, deploy, deploytype, objfiles[filename], filename)
+                         }
+                     }
+                 }
+             });
+             if (deploytype == "deploys") {
+                 $.ajax({type : 'GET', url: "/deploy/action/"+deploy, dataType : 'json',
+                     success: function (actions) {
+                         expanded = "false" ; collapsed = " collapsed" ; toggle = "" ;
+                         $('#'+id+'-accordion').append('<div id="panel-actions-'+id+'" class="panel panel-default'+collapsed+'">\
+                         <div class="panel-heading" data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse-actions-'+id+'" aria-expanded="'+expanded+'" style="cursor:pointer;">\
+                           <h4 class="panel-title">\
+                             <a data-toggle="collapse" data-parent="#'+id+'-accordion" href="#collapse-actions-'+id+'">Actions</a>\
+                             </h4>\
+                         </div>\
+                         <div id="collapse-actions-'+id+'" class="panel-collapse collapse'+toggle+'">\
+                         <div>\
+                         <table style="font-weight: 300;width:100%;" id="'+id+'-table" class="table table-striped" cellspacing="0" width="100%">\
+                         <thead>\
+                             <tr style="cursor: pointer;">\
+                             <td>Action</td>\
+                             <td>Instances</td>\
+                             <td>Tests</td>\
+                             <td>Status</td>\
+                             </tr>\
+                         </thead>\
+                         <tbody id="'+id+'-table-tbody"></tbody></table>\
+                         </div>\
+                         </div></div>');
+                         for (i in actions) {
+                                 $('#'+id+'-table-tbody').append('\
+                                     <tr>\
+                                     <td>'+actions[i]["action"]+'</td>\
+                                     <td>'+actions[i]["clouds"]+'</td>\
+                                     <td>'+actions[i]["tests"]+'</td>\
+                                     <td>'+actions[i]["status"]+'</td>\
+                                     </tr>')
+                         }
+                     }
+                 }); 
+             }
+         }
+         function createfile(id, deploy, deploytype) {
+             var filename = document.getElementById(id+'-inputfilename').value;
+             appendfilecontent(id, deploy, deploytype, '', filename)
+         }
+         function savedeploy(id, deploy, deploytype) {
+                 $.ajax({
+                     url : '/deploy/save/'+deploytype+'/'+deploy,
+                     type: "POST",
+                     data : $('#'+id+'-form').serialize(),
+                     cache: false,
+                     processData:false,
+                     success: function (data) {
+                         $('#'+id+'-form-button').addClass('btn-success').removeClass('btn-primary');
+                         sleep(500).then(() => {
+                         $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-success');
+                         });
+                         console.log('Deploy saved');
+                         },
+                     error: function (data) {
+                         $('#'+id+'-form-button').addClass('btn-danger').removeClass('btn-primary');
+                         sleep(500).then(() => {
+                         $('#'+id+'-form-button').addClass('btn-primary').removeClass('btn-danger');
+                         });
+                         console.log('An error occurred while saving deploy');
+                         }
+                 })
+         
+         }
+         function appendframe(id, deploy) {
+             $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+             document.getElementById(id + "-tab").click();
+             sleep(250).then(() => {
+             $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+deploy+'/"></iframe>');
+             });
+         }
+         function rundeploy(id, args) {
+             $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/cld-deploy/'+args+'"></iframe>');
+             sleep(250).then(() => {
+             console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
+             document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
+             });
+         }
+         function openutil(id, util) {
+             var args = document.getElementById(id+'-arg').value;
+             $('#'+id).html('<iframe id="frame-' + id + '" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="/tool/'+util+'/'+args+'"></iframe>');
+             sleep(250).then(() => {
+             console.log("document.getElementById('frame-"+id+"').contentWindow.document.getElementsByClassName('xterm-cursor-layer')[0].click();")
+             document.getElementById('frame-' + id).contentDocument.querySelector('.xterm-helper-textarea').focus();
+             });
+         }
+         function deletedeploy(id, deploytype, deploy) {
+             $.ajax({type : 'GET', url: '/deploy/delete/'+deploytype+'/'+deploy, dataType : 'text',
+                 success: function (data) {
+                     document.getElementById(id+'-li').remove();
+                     document.getElementById(id).remove();
+                     document.getElementById(deploytype+'-'+deploy).remove();
+                 }
+             });
+         }
+         function newtab(deploy, deploytype) {
+             var id = idgen();
+             appendtab(id, deploy, deploytype);
+             appendcontent(id, deploy, deploytype);
+         };
+         function newdeploytab(util) {
+             var id = idgen();
+             appenddeploytab(id, util);
+             appenddeploycontent(id, util);
+         };
+         function appendform(id, util) {
+             $('#'+id).append('<form onsubmit="openutil(\''+id+'\', \''+util+'\')">        <div class="form-group">          <label for="Arguments">Tool arguments:</label>          <input type="text" class="form-control" id="'+id+'-arg" placeholder="--arg1=value1 --arg2=value2 --debug">        </div>        <button type="button" class="btn btn-primary" onclick="openutil(\''+id+'\', \''+util+'\')" style="width: 10%;">Run</button>        </form>')
+         }
+         function appenddeploycontent(id, util) {
+             $('#hostTabContent').append('<div class="tab-pane fade" id="' + id + '" role="tabpanel" aria-labelledby="' + id + '-tab"></div>');
+             document.getElementById(id + "-tab").click();
+             appendform(id, util);
+             $.ajax({type : 'GET', url: "/help/"+util, dataType : 'text',
+                 success: function (data) {
+                 $('#'+id).append('<pre>'+data+'</pre>')
+                 }
+             });
+         }
+         function newdirecttab(deploy) {
+             var id = idgen();
+             appendtab(id, deploy);
+             appendframe(id, deploy);
+         };
+         function updatetab(id, deploy, deploytype) {
+             $('#'+id).html('')
+             appendcontent(id, deploy, deploytype);
+         };
+         function updatedeploytab(id, deploy, deploytype) {
+             $('#'+id).html('')
+             appenddeploycontent(id, deploy, deploytype);
+         };
+      </script>
+      <script type="text/javascript">
+         $(document).ready(function() {
+             $('[data-toggle=offcanvas]').click(function() {
+                 $('.row-offcanvas').toggleClass('active');
+             });
+         });
+      </script>
+   </head>
+   <body>
+      <div class="page-container">
+         <!-- top navbar -->
+         {% include 'html/include/navbar-term.html' %}
+         <div class="container term">
             <div class="row row-offcanvas row-offcanvas-left">
-                <!-- sidebar -->
-                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 15%;">
-                    <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
-                    <ul class="nav" id="ServerListUl">
-                        <li><a onclick='newdirecttab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
-                        {% for deploy_dict in deploys %}
-                            <li id="{{ deploy_dict['type'] }}"><span><a onclick='newdeploytab("cld-{{ deploy_dict['type'][:-1] }}")' class="nav-link active" id="{{ deploy_dict['type'][:-1] }}-link" data-toggle="tab" href="#{{ deploy_dict['type'][:-1] }}">type: {{ deploy_dict['type'] }}</a></span></li>
-                            {% for deploy in deploy_dict['content'] %}
-                            <li id="{{ deploy_dict['type'] }}-{{ deploy }}"><a onclick='newtab("{{ deploy }}", "{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
-                            {% endfor %}
-                        {% endfor %}
-                    </ul>
-                </div>
-                <!-- main area -->
-                <div class="col-xs-12 col-sm-9" style="width: 85%;">
-                    <ul class="nav nav-tabs" id="hostTab" role="tablist">
-                        <li class="nav-item active">
-                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" aria-expanded="true">Home</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="hostTabContent">
-                        <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">Classic deploy<br><br><br>
-                            Create template<br>
+               <!-- sidebar -->
+               <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 15%;">
+                  <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for names.." title="Type in a name">
+                  <ul class="nav" id="ServerListUl">
+                     <li><a onclick='newdirecttab("bash")' class="nav-link active" id="bash-link" data-toggle="tab" href="#bash">classicdeploy terminal</a></li>
+                     {% for deploy_dict in deploys %}
+                     <li id="{{ deploy_dict['type'] }}"><span><a onclick='newdeploytab("cld-{{ deploy_dict['type'][:-1] }}")' class="nav-link active" id="{{ deploy_dict['type'][:-1] }}-link" data-toggle="tab" href="#{{ deploy_dict['type'][:-1] }}">type: {{ deploy_dict['type'] }}</a></span></li>
+                     {% for deploy in deploy_dict['content'] %}
+                     <li id="{{ deploy_dict['type'] }}-{{ deploy }}"><a onclick='newtab("{{ deploy }}", "{{ deploy_dict['type'] }}")' class="nav-link active" id="{{ deploy }}-link" data-toggle="tab" href="#{{ deploy }}">{{ deploy }}</a></li>
+                     {% endfor %}
+                     {% endfor %}
+                  </ul>
+               </div>
+               <!-- main area -->
+               <div class="col-xs-12 col-sm-9" style="width: 85%;">
+                  <ul class="nav nav-tabs" id="hostTab" role="tablist">
+                     <li class="nav-item active">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" aria-expanded="true">Home</a>
+                     </li>
+                  </ul>
+                  <div class="tab-content" id="hostTabContent">
+                     <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        Classic deploy<br><br><br>
+                        Create template<br>
                         <form style="display: -webkit-inline-box;" onsubmit="newtab(document.getElementById('inputtemplatename').value.replaceAll(' ', '_'), 'templates');return false;">
-                            <input type="text" class="form-control" id="inputtemplatename" placeholder="New template name" style="width: 60%;padding-top: 3;" required="">
-                            <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form><br><br>
-                            Create deploy<br>
+                           <input type="text" class="form-control" id="inputtemplatename" placeholder="New template name" style="width: 60%;padding-top: 3;" required="">
+                           <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                        </form>
+                        <br><br>
+                        Create deploy<br>
                         <form style="display: -webkit-inline-box;" onsubmit="newtab(document.getElementById('inputdeployname').value.replaceAll(' ', '_'), 'deploys');return false;">
-                            <input type="text" class="form-control" id="inputdeployname" placeholder="New deploy name" style="width: 60%;padding-top: 3;" required="">
-                            <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button></form>
-                        </div>
-                    </div>
-                </div><!-- /.col-xs-12 main -->
+                           <input type="text" class="form-control" id="inputdeployname" placeholder="New deploy name" style="width: 60%;padding-top: 3;" required="">
+                           <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+               <!-- /.col-xs-12 main -->
             </div>
             <!--/.row-->
-        </div>
-        <!--/.container-->
-    </div>
-    <!--/.page-container-->
-    <style>
-    .ad {
-        position: absolute;
-        bottom: 70px;
-        right: 48px;
-        z-index: 992;
-        background-color: white;
-        position: fixed;
-        width: 155px;
-        padding: 1px;
-    }
-
-    .ad-btn-hide {
-        position: absolute;
-        top: -10px;
-        left: -12px;
-        background: #fefefe;
-        background: rgba(240, 240, 240, 0.9);
-        border: 0;
-        border-radius: 26px;
-        cursor: pointer;
-        padding: 2px;
-        height: 25px;
-        width: 25px;
-        font-size: 14px;
-        vertical-align: top;
-        outline: 0;
-    }
-
-    .carbon-img {
-        float: left;
-        padding: 10px;
-    }
-
-    .carbon-text {
-        color: #888;
-        display: inline-block;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        height: 60px;
-        margin-left: 9px;
-        width: 142px;
-        padding-top: 10px;
-    }
-
-    .carbon-text:hover {
-        color: #666;
-    }
-
-    .carbon-poweredby {
-        color: #6A6A6A;
-        float: left;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        margin-left: 10px;
-        margin-top: 13px;
-        text-align: center;
-    }
-    </style>
-</body>
-
+         </div>
+         <!--/.container-->
+      </div>
+      <!--/.page-container-->
+   </body>
 </html>
