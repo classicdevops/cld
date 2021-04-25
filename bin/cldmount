@@ -36,10 +36,9 @@ do
   if [ "$VM" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
-    $CLD_MOUNT
+    $CLD_MOUNT && echo "Inctance filesystem mounted to $LOCALMOUNTPATH"
   fi
   break
 done
