@@ -36,21 +36,20 @@ border-radius: 4px;
 }
 
 .prefile {
-    display: inline;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin: 0 0 10px;
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 -2 0;
     line-height: 1.42857143;
     color: #333;
     word-break: break-all;
     word-wrap: break-word;
     background-color: #f5f5f5;
-    white-space: pre-wrap;
     border: 1px solid #ccc;
     border-radius: 4px;
+    line-height: 0.5;
+    font-size: 13px;
+    font-weight: 700;
     font-family: monospace;
-    font-weight: 600;
-    font-size: 12pt;
 }
 
 .prein {
