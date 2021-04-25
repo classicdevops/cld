@@ -1,27 +1,9 @@
 <html lang="en">
-
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
+  <head>
     <title>cld web - admin - user</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/main.css" rel="stylesheet">
-    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
-        <style type="text/css">
-        /* This is not a zero-length file! */
-        </style>
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <script type="text/javascript" src="/js/tablesort.js"></script>
-<script>
-    function sleep (time) {
-      return new Promise((resolve) => setTimeout(resolve, time));
-    }
+    {% include 'html/include/head.html' %}
+  </head>
+  <script>
     function savedata(id, url) {
             $.ajax({
                 url : url,
@@ -44,152 +26,148 @@
                     console.log('An error occurred while saving data');
                     }
             })
-
+    
     }
-</script>
-</head>
-
-<body>
+  </script>
+  <body>
     <div class="page-container">
-        <!-- top navbar -->
-{% include 'html/include/navbar.html' %}
-        <div class="container">
-            <div class="panel-body">
-                <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
-                    <thead>
-                        <tr style="cursor: pointer;">
-                            <td>#</td>
-                            <td style="width: 35%%">User</td>
-                            <td>Role</td>
-                            <td>Groups</td>
-                            <td>Last login</td>
-                            <td style="width: 92;">Status</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        {% if user.status == '1' %}{% set status = 'Active' %}{% set style = 'success' %}{% set link = url_for('disableuser', name=users[0].user) %}{% elif user.status == '0' %}{% set status = 'Deactivated' %}{% set style = 'warning' %}{% set link = url_for('enableuser', name=users[0].user) %}{% else %}{% set status = 'Undefined' %}{% set statusstyle = 'success' %}{% endif %}
-                        {% if user.role == '1' %}{% set role = 'Administrator' %}{% elif user.role == '0' %}{% set role = 'Member' %}{% else %}{% set role = 'Undefined' %}{% endif %}
-                        <tr>
-                            <td>{{ user.userid }}</td>
-                            <td><a href="{{ url_for('user', name=user.user) }}">{{ user.user }}</a></td>
-                            <td>{{ role }}</td>
-                            <td>{{ user.groups }}</td>
-                            <td>{{ user.lastlogin }}</td>
-                            <td> <a href="{{ link }}" class="btn-sm btn-{{ style }}" data-toggle="tooltip" '="" data-original-title="" title="">{{ status }}</a></td>
-                </tr>
+      <!-- top navbar -->
+      {% include 'html/include/navbar.html' %}
+      <div class="container">
+        <div class="panel-body">
+          <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr style="cursor: pointer;">
+                <td>#</td>
+                <td style="width: 35%%">User</td>
+                <td>Role</td>
+                <td>Groups</td>
+                <td>Last login</td>
+                <td style="width: 92;">Status</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              {% if user.status == '1' %}{% set status = 'Active' %}{% set style = 'success' %}{% set link = url_for('disableuser', name=users[0].user) %}{% elif user.status == '0' %}{% set status = 'Deactivated' %}{% set style = 'warning' %}{% set link = url_for('enableuser', name=users[0].user) %}{% else %}{% set status = 'Undefined' %}{% set statusstyle = 'success' %}{% endif %}
+              {% if user.role == '1' %}{% set role = 'Administrator' %}{% elif user.role == '0' %}{% set role = 'Member' %}{% else %}{% set role = 'Undefined' %}{% endif %}
+              <tr>
+                <td>{{ user.userid }}</td>
+                <td><a href="{{ url_for('user', name=user.user) }}">{{ user.user }}</a></td>
+                <td>{{ role }}</td>
+                <td>{{ user.groups }}</td>
+                <td>{{ user.lastlogin }}</td>
+                <td> <a href="{{ link }}" class="btn-sm btn-{{ style }}" data-toggle="tooltip" '="" data-original-title="" title="">{{ status }}</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="panel-body">
+            <p>Groups:</p>
+            <form id="usergroups" style="margin: 0px;">
+              {% for group in allgroups %}
+              {% if group in users[0].groups %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="{{ group }}"{{ boxstatus }}>
+                <label class="form-check-label">{{ group }}</label>
+              </div>
+              {% endfor %}
+            </form>
+            <button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply groups</button>
+            <br><br>
+            <p>Clouds:</p>
+            <div class="subject-info-box-1">
+              <script type="text/javascript">
+                function selectAll() 
+                { 
+                    selectBox = document.getElementById("lstBox1");
+                
+                    for (var i = 0; i < selectBox.options.length; i++) 
+                    { 
+                         selectBox.options[i].selected = true; 
+                    } 
+                }
+              </script>
+              <form id="userclouds">
+                <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
+                  {% for cloud in allowedclouds %}
+                  <option value="{{ cloud }}">{{ cloud }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </div>
+            <div class="subject-info-arrows text-center">
+              <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
+              <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
+              <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
+              <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
+            </div>
+            <div class="subject-info-box-2">
+              <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
+                {% for cloud in disallowedclouds %}
+                <option value="{{ cloud }}">{{ cloud }}</option>
                 {% endfor %}
-                </tbody>
-                </table>
-                <div class="panel-body">
-<p>Groups:</p>
-<form id="usergroups" style="margin: 0px;">
-{% for group in allgroups %}
-{% if group in users[0].groups %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="checkbox" name="{{ group }}"{{ boxstatus }}>
-  <label class="form-check-label">{{ group }}</label>
-</div>
-{% endfor %}
-</form>
-<button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply groups</button>
-<br><br>
-<p>Clouds:</p>
-<div class="subject-info-box-1">
+              </select>
+            </div>
+            <br>
+            <div class="clearfix"></div>
+            <br>
+            <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
+            <br><br><br>
+            <!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
+              <input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
+            <br><a href="{{ url_for('deluser', name=users[0].user) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete user</button></a>
+            <!-- </form> -->
+          </div>
+        </div>
+        <!-- sidebar -->
+        <!--/.row-->
+      </div>
+      <!--/.container-->
+    </div>
+    <!--/.page-container-->
     <script type="text/javascript">
-    function selectAll() 
-    { 
-        selectBox = document.getElementById("lstBox1");
-
-        for (var i = 0; i < selectBox.options.length; i++) 
-        { 
-             selectBox.options[i].selected = true; 
-        } 
-    }
-</script>
-<form id="userclouds">
-  <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
-    {% for cloud in allowedclouds %}
-    <option value="{{ cloud }}">{{ cloud }}</option>
-    {% endfor %}
-  </select>
-</form>
-</div>
-<div class="subject-info-arrows text-center">
-  <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
-  <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
-  <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
-  <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
-</div>
-<div class="subject-info-box-2">
-  <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
-    {% for cloud in disallowedclouds %}
-    <option value="{{ cloud }}">{{ cloud }}</option>
-    {% endfor %}
-  </select>
-
-</div>
-  <br>
-<div class="clearfix"></div><br>
-  <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
-<br><br><br>
-<!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
-<input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
-  <br><a href="{{ url_for('deluser', name=users[0].user) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete user</button></a>
-<!-- </form> -->
-</div>
-</div>
-<!-- sidebar -->
-
-<!--/.row-->
-</div>
-<!--/.container-->
-</div>
-<!--/.page-container-->
-    <script type="text/javascript">
-(function () {
-    $('#btnRight').click(function (e) {
-        var selectedOpts = $('#lstBox1 option:selected');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox2').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-    $('#btnAllRight').click(function (e) {
-        var selectedOpts = $('#lstBox1 option');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox2').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-    $('#btnLeft').click(function (e) {
-        var selectedOpts = $('#lstBox2 option:selected');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox1').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-    $('#btnAllLeft').click(function (e) {
-        var selectedOpts = $('#lstBox2 option');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox1').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-}(jQuery));
-</script>
-</body>
-
+      (function () {
+          $('#btnRight').click(function (e) {
+              var selectedOpts = $('#lstBox1 option:selected');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox2').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+          $('#btnAllRight').click(function (e) {
+              var selectedOpts = $('#lstBox1 option');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox2').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+          $('#btnLeft').click(function (e) {
+              var selectedOpts = $('#lstBox2 option:selected');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox1').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+          $('#btnAllLeft').click(function (e) {
+              var selectedOpts = $('#lstBox2 option');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox1').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+      }(jQuery));
+    </script>
+  </body>
 </html>

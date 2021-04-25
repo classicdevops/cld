@@ -1,29 +1,11 @@
 <html lang="en">
-
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
+  <head>
     <title>cld web - admin - group</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/main.css" rel="stylesheet">
-    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
-    <style type="text/css">
-    /* This is not a zero-length file! */
-    </style>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <script type="text/javascript" src="/js/tablesort.js"></script>
+    {% include 'html/include/head.html' %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
-    <script>
-    function sleep (time) {
-      return new Promise((resolve) => setTimeout(resolve, time));
-    }
+  </head>
+  <script>
     function savedata(id, url) {
             $.ajax({
                 url : url,
@@ -46,254 +28,248 @@
                     console.log('An error occurred while saving data');
                     }
             })
-
+    
     }
-    </script>
-</head>
-
-<body>
+  </script>
+  <body>
     <div class="page-container">
-        <!-- top navbar -->
-{% include 'html/include/navbar.html' %}
-        <div class="container">
-            <div class="panel-body">
-                            <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
-                                <thead>
-                                    <tr style="cursor: pointer;">
-                                        <td>Name</td>
-                                        <td style="width: 35%%">Group users</td>
-                                        <td>Cloud count</td>
-                                        <td>Type</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for group in groups %}
-
-                                    <tr>
-                                        <td><a href="{{ url_for('group', name=group.group) }}">{{ group.group }}</a></td>
-                                        <td>{{ group.groupusers }}</td>
-                                        <td>{{ group.cloudcount }}</td>
-                                        <td>{{ group.grouptype }}</td>
-                    </tr>
-                    {% endfor %}
-                                </tbody>
-                            </table>
-                <div class="panel-body">
-<p>{{ groups[0].group }} users:</p>
-<form id="groupusers" style="margin: 0px;">
-{% for user in allusers %}
-{% if user in groups[0].groupusers %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="checkbox" name="{{ user }}"{{ boxstatus }}>
-  <label class="form-check-label">{{ user }}</label>
-</div>
-{% endfor %}
-</form>
-<button id="groupusers-button" onclick="savedata('groupusers', '{{ url_for('groupusers', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply users</button>
-<br><br>
-<p>{{ groups[0].group }} clouds:</p>
-<div class="subject-info-box-1">
+      <!-- top navbar -->
+      {% include 'html/include/navbar.html' %}
+      <div class="container">
+        <div class="panel-body">
+          <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+            <thead>
+              <tr style="cursor: pointer;">
+                <td>Name</td>
+                <td style="width: 35%%">Group users</td>
+                <td>Cloud count</td>
+                <td>Type</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for group in groups %}
+              <tr>
+                <td><a href="{{ url_for('group', name=group.group) }}">{{ group.group }}</a></td>
+                <td>{{ group.groupusers }}</td>
+                <td>{{ group.cloudcount }}</td>
+                <td>{{ group.grouptype }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="panel-body">
+            <p>{{ groups[0].group }} users:</p>
+            <form id="groupusers" style="margin: 0px;">
+              {% for user in allusers %}
+              {% if user in groups[0].groupusers %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="{{ user }}"{{ boxstatus }}>
+                <label class="form-check-label">{{ user }}</label>
+              </div>
+              {% endfor %}
+            </form>
+            <button id="groupusers-button" onclick="savedata('groupusers', '{{ url_for('groupusers', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply users</button>
+            <br><br>
+            <p>{{ groups[0].group }} clouds:</p>
+            <div class="subject-info-box-1">
+              <script type="text/javascript">
+                function selectAll() 
+                { 
+                    selectBox = document.getElementById("lstBox1");
+                
+                    for (var i = 0; i < selectBox.options.length; i++) 
+                    { 
+                         selectBox.options[i].selected = true; 
+                    } 
+                }
+              </script>
+              <form id="groupclouds">
+                <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
+                  {% for cloud in allowedclouds %}
+                  <option value="{{ cloud }}">{{ cloud }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </div>
+            <div class="subject-info-arrows text-center">
+              <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
+              <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
+              <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
+              <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
+            </div>
+            <div class="subject-info-box-2">
+              <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
+                {% for cloud in disallowedclouds %}
+                <option value="{{ cloud }}">{{ cloud }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <br>
+            <div class="clearfix"></div>
+            <br>
+            <button id="groupclouds-button" onclick="selectAll();savedata('groupclouds', '{{ url_for('groupclouds', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
+            <br><br>
+            {% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
+            <form id="grouptype">
+              Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
+              <textarea id="ScriptArea" name="parsingscript" style="display: none;"></textarea>
+            </form>
+            Parsing script:
+            <pre id="ScriptPre">{{parsingscript}}</pre>
+            <br>
+            <button id="grouptype-button" onclick="savedata('grouptype', '{{ url_for('grouptype', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply type</button>
+            <br><br>
+            {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
+            <form id="groupfuncs">
+              Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
+              <textarea id="FuncVarsArea" name="groupfuncvars" style="display: none;"></textarea>
+              <textarea id="FuncTermArea" name="groupfuncterm" style="display: none;"></textarea>
+              <textarea id="FuncMountArea" name="groupfuncmount" style="display: none;"></textarea>
+              <textarea id="FuncUmountArea" name="groupfuncumount" style="display: none;"></textarea>
+              <textarea id="FuncDeployArea" name="groupfuncdeploy" style="display: none;"></textarea>
+              <textarea id="FuncDeploynottyArea" name="groupfuncdeploynotty" style="display: none;"></textarea>
+            </form>
+            Define variables: <br>
+            <pre id="FuncVarsPre">{{groupfuncvars}}</pre>
+            <br>
+            Terminal  function: <br>
+            <pre id="FuncTermPre">{{groupfuncterm}}</pre>
+            <br>
+            Mount  function: <br>
+            <pre id="FuncMountPre">{{groupfuncmount}}</pre>
+            <br>
+            Umount  function: <br>
+            <pre id="FuncUmountPre">{{groupfuncumount}}</pre>
+            <br>
+            Deploy  function: <br>
+            <pre id="FuncDeployPre">{{groupfuncdeploy}}</pre>
+            <br>
+            Deploy no tty  function: <br>
+            <pre id="FuncDeploynottyPre">{{groupfuncdeploynotty}}</pre>
+            <br>
+            <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
+            <script>
+              var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+              var editor = [];
+              
+              function aceactivate(func)
+              {
+              ace.edit(func+'Pre', {
+                  theme: "ace/theme/monokai",
+                  keyboardHandler: "ace/keyboard/sublime",
+                  foldStyle: "markbeginend",
+                  mode: "ace/mode/sh",
+                  maxLines: 40,
+                  minLines: 5,
+                  wrap: true,
+                  showPrintMargin: false,
+                  autoScrollEditorIntoView: true,
+                  highlightSelectedWord: true
+              });
+              editor[func+'Pre'] = ace.edit(func+'Pre');
+              editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+              $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+              editor[func+'Pre'].getSession().on('change', function () {
+                 $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
+              });
+              }
+              
+              for (i in funcs) {
+                  aceactivate(funcs[i]);
+              };
+              
+              function aceswitch(func, checkboxid) {
+              if (document.getElementById(checkboxid).checked) {
+              editor[func+'Pre'] = ace.edit(func+'Pre');
+              editor[func+'Pre'].setOptions({
+                  readOnly: false,
+                  highlightActiveLine: true,
+                  highlightGutterLine: true
+              })
+              editor[func+'Pre'].container.style.opacity=1
+              } else {
+              editor[func+'Pre'] = ace.edit(func+'Pre');
+              editor[func+'Pre'].setOptions({
+                  readOnly: true,
+                  highlightActiveLine: false,
+                  highlightGutterLine: false
+              })
+              editor[func+'Pre'].container.style.opacity=0.5
+              }
+              };
+              
+              aceswitch('Script', 'GroupTypeCheckbox')
+              document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
+              aceswitch('Script', 'GroupTypeCheckbox')
+              });
+              
+              var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+              for (i in funcs) {
+                  aceswitch(funcs[i], 'GroupFuncsCheckbox')
+              }
+              
+              document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
+              var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
+              for (i in funcs) {
+                  aceswitch(funcs[i], 'GroupFuncsCheckbox')
+              }
+              });
+              
+            </script>
+            <br><br><br><br>
+            <a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
+            <!-- </form> -->
+          </div>
+        </div>
+        <!-- sidebar -->
+        <!--/.row-->
+      </div>
+      <!--/.container-->
+    </div>
+    <!--/.page-container-->
     <script type="text/javascript">
-    function selectAll() 
-    { 
-        selectBox = document.getElementById("lstBox1");
-
-        for (var i = 0; i < selectBox.options.length; i++) 
-        { 
-             selectBox.options[i].selected = true; 
-        } 
-    }
-</script>
-<form id="groupclouds">
-  <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
-    {% for cloud in allowedclouds %}
-    <option value="{{ cloud }}">{{ cloud }}</option>
-    {% endfor %}
-  </select>
-</form>
-</div>
-<div class="subject-info-arrows text-center">
-  <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
-  <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
-  <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
-  <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
-</div>
-<div class="subject-info-box-2">
-  <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
-    {% for cloud in disallowedclouds %}
-    <option value="{{ cloud }}">{{ cloud }}</option>
-    {% endfor %}
-  </select>
-
-</div>
-  <br>
-<div class="clearfix"></div><br>
-  <button id="groupclouds-button" onclick="selectAll();savedata('groupclouds', '{{ url_for('groupclouds', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
-<br><br>
-{% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
-<form id="grouptype">
-Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
-<textarea id="ScriptArea" name="parsingscript" style="display: none;"></textarea>
-</form>
-Parsing script:
-<pre id="ScriptPre">{{parsingscript}}</pre>
-<br>
-<button id="grouptype-button" onclick="savedata('grouptype', '{{ url_for('grouptype', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply type</button>
-<br><br>
-{% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
-<form id="groupfuncs">
-Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
-<textarea id="FuncVarsArea" name="groupfuncvars" style="display: none;"></textarea>
-<textarea id="FuncTermArea" name="groupfuncterm" style="display: none;"></textarea>
-<textarea id="FuncMountArea" name="groupfuncmount" style="display: none;"></textarea>
-<textarea id="FuncUmountArea" name="groupfuncumount" style="display: none;"></textarea>
-<textarea id="FuncDeployArea" name="groupfuncdeploy" style="display: none;"></textarea>
-<textarea id="FuncDeploynottyArea" name="groupfuncdeploynotty" style="display: none;"></textarea>
-</form>
-Define variables: <br>
-<pre id="FuncVarsPre">{{groupfuncvars}}</pre>
-<br>
-Terminal  function: <br>
-<pre id="FuncTermPre">{{groupfuncterm}}</pre>
-<br>
-Mount  function: <br>
-<pre id="FuncMountPre">{{groupfuncmount}}</pre>
-<br>
-Umount  function: <br>
-<pre id="FuncUmountPre">{{groupfuncumount}}</pre>
-<br>
-Deploy  function: <br>
-<pre id="FuncDeployPre">{{groupfuncdeploy}}</pre>
-<br>
-Deploy no tty  function: <br>
-<pre id="FuncDeploynottyPre">{{groupfuncdeploynotty}}</pre>
-<br>
-<button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
-<script>
-
-var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
-var editor = [];
-
-function aceactivate(func)
-{
-ace.edit(func+'Pre', {
-    theme: "ace/theme/monokai",
-    keyboardHandler: "ace/keyboard/sublime",
-    foldStyle: "markbeginend",
-    mode: "ace/mode/sh",
-    maxLines: 40,
-    minLines: 5,
-    wrap: true,
-    showPrintMargin: false,
-    autoScrollEditorIntoView: true,
-    highlightSelectedWord: true
-});
-editor[func+'Pre'] = ace.edit(func+'Pre');
-editor[func+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
-$('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
-editor[func+'Pre'].getSession().on('change', function () {
-   $('#'+func+'Area').val(editor[func+'Pre'].getSession().getValue());
-});
-}
-
-for (i in funcs) {
-    aceactivate(funcs[i]);
-};
-
-function aceswitch(func, checkboxid) {
-if (document.getElementById(checkboxid).checked) {
-editor[func+'Pre'] = ace.edit(func+'Pre');
-editor[func+'Pre'].setOptions({
-    readOnly: false,
-    highlightActiveLine: true,
-    highlightGutterLine: true
-})
-editor[func+'Pre'].container.style.opacity=1
-} else {
-editor[func+'Pre'] = ace.edit(func+'Pre');
-editor[func+'Pre'].setOptions({
-    readOnly: true,
-    highlightActiveLine: false,
-    highlightGutterLine: false
-})
-editor[func+'Pre'].container.style.opacity=0.5
-}
-};
-
-aceswitch('Script', 'GroupTypeCheckbox')
-document.getElementById('GroupTypeCheckbox').addEventListener( 'click', function(){
-aceswitch('Script', 'GroupTypeCheckbox')
-});
-
-var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
-for (i in funcs) {
-    aceswitch(funcs[i], 'GroupFuncsCheckbox')
-}
-
-document.getElementById('GroupFuncsCheckbox').addEventListener( 'click', function(){
-var funcs = ['FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
-for (i in funcs) {
-    aceswitch(funcs[i], 'GroupFuncsCheckbox')
-}
-});
-
-</script>
-<br><br><br><br>
-<a href="{{ url_for('delgroup', name=groups[0].group) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete group</button></a>
-<!-- </form> -->
-</div>
-</div>
-<!-- sidebar -->
-
-<!--/.row-->
-</div>
-<!--/.container-->
-</div>
-<!--/.page-container-->
-<script type="text/javascript">
-(function () {
-    $('#btnRight').click(function (e) {
-        var selectedOpts = $('#lstBox1 option:selected');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox2').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-    $('#btnAllRight').click(function (e) {
-        var selectedOpts = $('#lstBox1 option');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox2').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-    $('#btnLeft').click(function (e) {
-        var selectedOpts = $('#lstBox2 option:selected');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox1').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-    $('#btnAllLeft').click(function (e) {
-        var selectedOpts = $('#lstBox2 option');
-        if (selectedOpts.length == 0) {
-            alert("Nothing to move.");
-            e.preventDefault();
-        }
-        $('#lstBox1').append($(selectedOpts).clone());
-        $(selectedOpts).remove();
-        e.preventDefault();
-    });
-}(jQuery));
-</script>
-</body>
-
+      (function () {
+          $('#btnRight').click(function (e) {
+              var selectedOpts = $('#lstBox1 option:selected');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox2').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+          $('#btnAllRight').click(function (e) {
+              var selectedOpts = $('#lstBox1 option');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox2').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+          $('#btnLeft').click(function (e) {
+              var selectedOpts = $('#lstBox2 option:selected');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox1').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+          $('#btnAllLeft').click(function (e) {
+              var selectedOpts = $('#lstBox2 option');
+              if (selectedOpts.length == 0) {
+                  alert("Nothing to move.");
+                  e.preventDefault();
+              }
+              $('#lstBox1').append($(selectedOpts).clone());
+              $(selectedOpts).remove();
+              e.preventDefault();
+          });
+      }(jQuery));
+    </script>
+  </body>
 </html>
