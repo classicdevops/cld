@@ -1,179 +1,100 @@
 <html lang="en">
-
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
+  <head>
     <title>cld web - profile</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/main.css" rel="stylesheet">
-    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
-    <style type="text/css">
-    /* This is not a zero-length file! */
-    </style>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <style>
-        .ad {
-        position: absolute;
-        bottom: 70px;
-        right: 48px;
-        z-index: 992;
-        background-color: white;
-        position: fixed;
-        width: 155px;
-        padding: 1px;
-    }
-
-    .ad-btn-hide {
-        position: absolute;
-        top: -10px;
-        left: -12px;
-        background: #fefefe;
-        background: rgba(240, 240, 240, 0.9);
-        border: 0;
-        border-radius: 26px;
-        cursor: pointer;
-        padding: 2px;
-        height: 25px;
-        width: 25px;
-        font-size: 14px;
-        vertical-align: top;
-        outline: 0;
-    }
-
-    .carbon-img {
-        float: left;
-        padding: 10px;
-    }
-
-    .carbon-text {
-        color: #888;
-        display: inline-block;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        height: 60px;
-        margin-left: 9px;
-        width: 142px;
-        padding-top: 10px;
-    }
-
-    .carbon-text:hover {
-        color: #666;
-    }
-
-    .carbon-poweredby {
-        color: #6A6A6A;
-        float: left;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        margin-left: 10px;
-        margin-top: 13px;
-        text-align: center;
-    }
-    </style>
-</head>
-
-<body>
+    {% include 'html/include/head.html' %}
+  </head>
+  <body>
     <div class="page-container">
-        <!-- top navbar -->
-{% include 'html/include/navbar.html' %}
-        <div class="container">
-            <!-- sidebar -->
-            <div class="panel-group" id="accordion" style="padding-top: 25;">
-                <div class="panel panel-default">
-                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="true" style="cursor:pointer;">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                                Clouds</a>
-                        </h4>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse">
-                        <div class="panel-body"><pre>{{clouds}}</pre></div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" style="cursor:pointer;">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-                                Profile</a>
-                        </h4>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                            <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
-                            <thead>
-                                <tr style="cursor: pointer;">
-                                    <td style="width: 35%%">User</td>
-                                    <td>Telegram ID</td>
-                                    <td>Api token</td>
-                                    <td>Modules</td>
-                                    <td>Tools</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{{ perms[0] }}</td>
-                                    <td>{{ perms[1] }}</td>
-                                    <td>{{ perms[2] }}</td>
-                                    <td>{{ perms[3] }}</td>
-                                    <td>{{ perms[4] }}</td>
-                                </tr>
-                            </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" style="cursor:pointer;">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-                                Password</a>
-                        </h4>
-                    </div>
-                    <div id="collapse3" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <form class="pure-form">
-                            <fieldset>
-                            <legend>Change password</legend>
-
-                            <input type="password" placeholder="New password" id="password" required>
-                            <input type="password" placeholder="Confirm Password" id="confirm_password" required>
-
-                            <button type="submit" class="pure-button pure-button-primary">Change</button>
-                            </fieldset>
-                            </form>
-    <script>
-    var password = document.getElementById("password");
-    var confirm_password = document.getElementById("confirm_password");
-
-    function validatePassword(){
-      if(password.value != confirm_password.value) {
-        confirm_password.setCustomValidity("Passwords Don't Match");
-      } else {
-        confirm_password.setCustomValidity('');
-      }
-    }
-
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
-    </script>
-                        </div>
-                    </div>
-                </div>
+      <!-- top navbar -->
+      {% include 'html/include/navbar.html' %}
+      <div class="container">
+        <!-- sidebar -->
+        <div class="panel-group" id="accordion" style="padding-top: 25;">
+          <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="true" style="cursor:pointer;">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                Clouds</a>
+              </h4>
             </div>
-            <!--/.row-->
+            <div id="collapse1" class="panel-collapse collapse">
+              <div class="panel-body">
+                <pre>{{clouds}}</pre>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" style="cursor:pointer;">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                Profile</a>
+              </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <table style="font-weight: 300;width:100%;" id="opened" class="table table-striped" cellspacing="0" width="100%">
+                  <thead>
+                    <tr style="cursor: pointer;">
+                      <td style="width: 35%%">User</td>
+                      <td>Telegram ID</td>
+                      <td>Api token</td>
+                      <td>Modules</td>
+                      <td>Tools</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ perms[0] }}</td>
+                      <td>{{ perms[1] }}</td>
+                      <td>{{ perms[2] }}</td>
+                      <td>{{ perms[3] }}</td>
+                      <td>{{ perms[4] }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" style="cursor:pointer;">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                Password</a>
+              </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse">
+              <div class="panel-body">
+                <form class="pure-form">
+                  <fieldset>
+                    <legend>Change password</legend>
+                    <input type="password" placeholder="New password" id="password" required>
+                    <input type="password" placeholder="Confirm Password" id="confirm_password" required>
+                    <button type="submit" class="pure-button pure-button-primary">Change</button>
+                  </fieldset>
+                </form>
+                <script>
+                  var password = document.getElementById("password");
+                  var confirm_password = document.getElementById("confirm_password");
+                  
+                  function validatePassword(){
+                    if(password.value != confirm_password.value) {
+                      confirm_password.setCustomValidity("Passwords Don't Match");
+                    } else {
+                      confirm_password.setCustomValidity('');
+                    }
+                  }
+                  
+                  password.onchange = validatePassword;
+                  confirm_password.onkeyup = validatePassword;
+                </script>
+              </div>
+            </div>
+          </div>
         </div>
-        <!--/.container-->
+        <!--/.row-->
+      </div>
+      <!--/.container-->
     </div>
     <!--/.page-container-->
-</body>
-
+  </body>
 </html>
