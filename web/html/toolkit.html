@@ -17,33 +17,6 @@
          border-left-width: 0;
          border-bottom-width: 0;
          }
-         /*#searchInput {
-         background-position: 10px 12px;
-         background-repeat: no-repeat;
-         width: 95%;
-         font-size: 14px;
-         padding: 5px 10px 5px 10px;
-         border: 1px solid #1e88e5;
-         margin-bottom: 12px;
-         }
-         #ServerListUl {
-         list-style-type: none;
-         padding: 0;
-         margin: 0;
-         }
-         #ServerListUl li a:hover:not(.header) {
-         background-color: #eee;
-         }
-         #ServerListUl li span {
-         color: gray;
-         font-size: small;
-         font-weight: bold;
-         font-variant-caps: petite-caps;
-         }
-         #ServerListUl li span:hover:not(.header) {
-         background-color: #eee;
-         }
-         */
       </style>
       <script>
          function appendtab(id, util) {
@@ -93,27 +66,6 @@
              appendcontent(id, util);
          };
       </script>
-      <script>
-         function search() {
-             var input, filter, ul, li, a, i, txtValue;
-             input = document.getElementById("searchInput");
-             filter = input.value.toUpperCase();
-             ul = document.getElementById("ServerListUl");
-             li = ul.getElementsByTagName("li");
-             for (i = 0; i < li.length; i++) {
-                 a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
-                 txtValue = a.textContent || a.innerText;
-                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                     li[i].style.display = "";
-                 } else {
-                     li[i].style.display = "none";
-                 }
-             }
-         }
-      </script>
-      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-      <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
       <script type="text/javascript">
          $(document).ready(function() {
              $('[data-toggle=offcanvas]').click(function() {
