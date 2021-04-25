@@ -1,5 +1,5 @@
 # Introduction
-CLD - сlassical architecture deployment and management system
+CLD - сlassical architecture management system
 
 - Secure, convenient and centralized access system from one point, it is not required to store the key of each user on each server, now there is only one key
 - Transparent and flexible deployment that is limited only by your imagination
