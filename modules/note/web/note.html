@@ -1,78 +1,29 @@
 <html lang="en">
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
     <title>cld web - note storage</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../css/main.css" rel="stylesheet">
-    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <style type="text/css">
-    /* This is not a zero-length file! */
-    </style>
-    <style>
-* {
-  box-sizing: border-box;
-}
-
-#searchInput {
-    background-position: 10px 12px;
-    background-repeat: no-repeat;
-    width: 95%;
-    font-size: 14px;
-    padding: 5px 5px 5px 8px;
-    border: 1px solid #1e88e5;
-    margin-bottom: 12px;
-}
-
-#ServerListUl {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#ServerListUl li a {
-    border: 1px solid #1e88e5;
-    margin: 0px;
-    background-color: white;
-    padding: 0px;
-    padding-left: 4px;
-    text-decoration: none;
-    display: block;
-    font-size: 14;
-    color: lightslategray;
-    border-right-width: 0;
-    border-left-width: 0;
-    border-bottom-width: 0;
-}
-
-#ServerListUl li a:hover:not(.header) {
-  background-color: #eee;
-}
-
-#ServerListUl li span {
-    color: gray;
-    font-size: small;
-    font-weight: bold;
-    font-variant-caps: petite-caps;
-}
-
-#ServerListUl li span:hover:not(.header) {
-  background-color: #eee;
-}
-
-</style>
+      <title>cld web - classic deploy</title>
+      {% include 'html/include/head.html' %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+      <style>
+        #ServerListUl li a {
+            border: 1px solid #1e88e5;
+            margin: 0px;
+            background-color: white;
+            padding: 0px;
+            padding-left: 4px;
+            text-decoration: none;
+            display: block;
+            font-size: 14;
+            color: lightslategray;
+            border-right-width: 0;
+            border-left-width: 0;
+            border-bottom-width: 0;
+        }
+      </style>
 <script>
     var cld_domain = "{{ cld_domain }}";
     var userapitoken = "{{ userapitoken }}";
@@ -81,18 +32,6 @@
     });
 </script>
     <script>
-    function idgen() {
-        var length = 8,
-            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-            retVal = "";
-        for (var i = 0, n = charset.length; i < length; ++i) {
-            retVal += charset.charAt(Math.floor(Math.random() * n));
-        }
-        return retVal;
-    }
-    function sleep (time) {
-      return new Promise((resolve) => setTimeout(resolve, time));
-    }
     function appendtab(id, note) {
         $('#hostTab').append('<li class="nav-item" id="' + id + '-li">\
             <a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false">\
@@ -331,67 +270,6 @@
         event.preventDefault();
     });
     </script>
-    <style>
-    .ad {
-        position: absolute;
-        bottom: 70px;
-        right: 48px;
-        z-index: 992;
-        background-color: white;
-        position: fixed;
-        width: 155px;
-        padding: 1px;
-    }
-
-    .ad-btn-hide {
-        position: absolute;
-        top: -10px;
-        left: -12px;
-        background: #fefefe;
-        background: rgba(240, 240, 240, 0.9);
-        border: 0;
-        border-radius: 26px;
-        cursor: pointer;
-        padding: 2px;
-        height: 25px;
-        width: 25px;
-        font-size: 14px;
-        vertical-align: top;
-        outline: 0;
-    }
-
-    .carbon-img {
-        float: left;
-        padding: 10px;
-    }
-
-    .carbon-text {
-        color: #888;
-        display: inline-block;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        height: 60px;
-        margin-left: 9px;
-        width: 142px;
-        padding-top: 10px;
-    }
-
-    .carbon-text:hover {
-        color: #666;
-    }
-
-    .carbon-poweredby {
-        color: #6A6A6A;
-        float: left;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        margin-left: 10px;
-        margin-top: 13px;
-        text-align: center;
-    }
-    </style>
 </body>
 
 </html>
