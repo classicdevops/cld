@@ -4,6 +4,20 @@
     <title>cld web - cloud manager</title>
       {% include 'html/include/head.html' %}
     <style>
+#ServerListUl li a {
+    border: 1px solid #1e88e5;
+    margin-top: -1px;
+    background-color: white;
+    padding: 2px;
+    text-decoration: none;
+    color: black;
+    display: block;
+    font-size: 12;
+    color: lightslategray;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-bottom-width: 0;
+}
 /** {
   box-sizing: border-box;
 }
@@ -22,21 +36,6 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
-}
-
-#ServerListUl li a {
-    border: 1px solid #1e88e5;
-    margin-top: -1px;
-    background-color: white;
-    padding: 2px;
-    text-decoration: none;
-    color: black;
-    display: block;
-    font-size: 12;
-    color: lightslategray;
-    border-right-width: 0;
-    border-left-width: 0;
-    border-bottom-width: 0;
 }
 
 #ServerListUl li a:hover:not(.header) {
