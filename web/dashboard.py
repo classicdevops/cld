@@ -564,6 +564,8 @@ def admin():
     file_list = ['/var/cld/creds/passwd', '/etc/cron.d/cld', '/var/cld/creds/creds', '/var/cld/creds/creds', '/var/cld/creds/protected_ports', '/var/cld/creds/local_nets']
     files = {}
     for file in file_list:
+      if os.path.exists(file) != True:
+        bash('touch '+file)
       files[file] = open(file).read()
     return render_template('html/admin.html', username=username, users=users, groups=groups, files=files)
 
