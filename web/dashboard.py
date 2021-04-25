@@ -561,7 +561,11 @@ def admin():
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
-    return render_template('html/admin.html', username=username, users=users, groups=groups)
+    file_list = ['/var/cld/creds/passwd', '/etc/cron.d/cld', '/var/cld/creds/creds', '/var/cld/creds/creds', '/var/cld/creds/protected_ports', '/var/cld/creds/local_nets']
+    files = {}
+    for file in file_list:
+      files[file] = open(file).read()
+    return render_template('html/admin.html', username=username, users=users, groups=groups, files=files)
 
 @app.route('/admin/user/<name>')
 def user(name):
