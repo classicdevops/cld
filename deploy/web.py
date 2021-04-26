@@ -8,8 +8,7 @@ def deploy_index():
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     userapitoken = apitokenbyuser(user)
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+    deploys = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     return render_template('modules/deploy/deploy.html', username=user, deploys=deploys, cld_domain=cld_domain, userapitoken=userapitoken)
 
 @app.route("/deploy/<deploytype>/<deploy>/files")
@@ -18,21 +17,18 @@ def deploy_files(deploytype, deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
-    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     if os.path.exists('/var/cld/deploy/'+deploytype+'/'+deploy) != True:
         if deploytype == "templates":
-            bash('/var/cld/deploy/bin/cld-template --template='+deploy)
+            bash('/var/cld/deploy/bin/cld-template --template='+vld(deploy))
         elif deploytype == "deploys":
-            bash('/var/cld/deploy/bin/cld-template --template='+deploy+' ; /var/cld/deploy/bin/cld-template --template='+deploy+' --deploy='+deploy)
-    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+            bash('/var/cld/deploy/bin/cld-template --template='+vld(deploy)+' ; /var/cld/deploy/bin/cld-template --template='+vld(deploy)+' --deploy='+vld(deploy))
+    user_allowed_deploys = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        deploy_file_list = bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+deploytype+'/'+deploy+') ; for CLD_FILE in script vars clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')
+        deploy_file_list = bash('{ DEPLOY_FILES=$(ls /var/cld/deploy/'+vld(deploytype)+'/'+vld(deploy)+') ; for CLD_FILE in script vars clouds ; do grep -s "^$CLD_FILE" <<< "$DEPLOY_FILES" ; done ; grep -v "^vars\|^script\|^clouds" <<< "$DEPLOY_FILES" ; }').split('\n')
         deploy_file_dict = {}
         for deploy_file in deploy_file_list:
             deploy_file_dict[deploy_file] = open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+deploy_file, 'r').read()
@@ -44,17 +40,13 @@ def deploy_get_file(deploytype, deploy, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    file = str(re.match('^[A-z0-9.,@=/_ -]+', file)[0])
-    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
-    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
-    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+    user_allowed_deploys = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        return Response(open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+file).read(), status=200, mimetype='text/plain')
+        return Response(bash('cat /var/cld/deploy/'+vld(deploytype)+'/'+vld(deploy)+'/'+vld(file)), status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
 
@@ -64,11 +56,7 @@ def deploy_delete_file(deploytype, deploy, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    file = str(re.match('^[A-z0-9.,@=/_ -]+', file)[0])
-    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
-    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
-    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+    user_allowed_deploys = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
     elif deploytype == "deploys":
@@ -84,11 +72,8 @@ def deploy_save(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
-    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+    user_allowed_deploys = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
     elif deploytype == "deploys":
@@ -107,16 +92,13 @@ def deploy_delete(deploytype, deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
-    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
-    user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
+    user_allowed_deploys = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        bash('rm -f /var/cld/deploy/'+deploytype+'/'+deploy+'/* /var/cld/deploy/'+deploytype+'/'+deploy+'/*/* &>/dev/null ; rmdir /var/cld/deploy/'+deploytype+'/'+deploy)
+        bash('rm -f /var/cld/deploy/'+vld(deploytype)+'/'+vld(deploy)+'/* /var/cld/deploy/'+vld(deploytype)+'/'+vld(deploy)+'/*/* &>/dev/null ; rmdir /var/cld/deploy/'+vld(deploytype)+'/'+vld(deploy))
         return Response(deploytype[:-1].capitalize()+" deleted", status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
@@ -127,13 +109,11 @@ def actions(deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'cld-action', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
-    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
-    actions = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy).split('\n')
+    actions = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+vld(deploy)).split('\n')
     actions_dict = []
     itter = 0
     for action in actions:
-        action_content = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy+' --action='+action+'  | ansifilter').split('\n')
+        action_content = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+vld(deploy)+' --action='+vld(action)+'  | ansifilter').split('\n')
         actions_dict.append({})
         actions_dict[itter]["action"] = action
         actions_dict[itter]["clouds"] = action_content[0]
