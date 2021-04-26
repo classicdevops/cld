@@ -31,7 +31,7 @@ def stream_file(filepath, chunksize=8192):
       else:
         break
 
-def bashstream(cmd, format="html"):
+def bashstream(cmd, format="plain"):
   addopentag = ""
   addclosetag = ""
   outputargs = ""
