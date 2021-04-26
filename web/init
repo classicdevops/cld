@@ -231,6 +231,7 @@ server  {
 EOL
 touch /etc/nginx/accesslist /etc/nginx/deny.conf
 systemctl restart nginx
+systemctl enable nginx &>/dev/null
 
 for LOOP_FUNC in funcvars_VARS functerm_TERMINAL funcmount_MOUNT funcumount_UMOUNT funcdeploy_DEPLOY funcdeploynotty_DEPLOY_NOTTY
     do
