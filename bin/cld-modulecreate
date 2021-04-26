@@ -276,5 +276,5 @@ echo Update documentation
 python3 /var/cld/modules/doc/doc.py &>/dev/null
 echo
 echo "Module ${MODULE_NAME} is ready"
-echo "Restarting systemd cld service - it can take up to 15 seconds"
+echo "Restarting systemd cld services - it can take up to 15 seconds"
 systemctl restart cld
