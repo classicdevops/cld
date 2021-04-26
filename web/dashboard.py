@@ -643,7 +643,13 @@ def group(name):
     groupfuncumount = bash('cat /var/cld/access/groups/'+group+'/funcumount || cat /var/cld/access/groups/default/default_funcumount')
     groupfuncdeploy = bash('cat /var/cld/access/groups/'+group+'/funcdeploy || cat /var/cld/access/groups/default/default_funcdeploy')
     groupfuncdeploynotty = bash('cat /var/cld/access/groups/'+group+'/funcdeploynotty || cat /var/cld/access/groups/default/default_funcdeploynotty')
-    return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount, groupfuncdeploy=groupfuncdeploy, groupfuncdeploynotty=groupfuncdeploynotty)
+    file_list = ['/var/cld/access/groups/'+cldgroup+'/clouds']
+    files = {}
+    for file in file_list:
+      if os.path.exists(file) != True:
+        bash('touch '+file)
+      files[file] = open(file).read()
+    return render_template('html/group.html', username=username, allusers=allusers, groups=groups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, parsingscript=parsingscript, groupfuncvars=groupfuncvars, groupfuncterm=groupfuncterm, groupfuncmount=groupfuncmount, groupfuncumount=groupfuncumount, groupfuncdeploy=groupfuncdeploy, groupfuncdeploynotty=groupfuncdeploynotty, files=files)
 
 @app.route('/admin/adduser', methods=['POST'])
 def adduser():
