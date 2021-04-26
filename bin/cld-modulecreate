@@ -10,7 +10,7 @@ EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-modulecreate
-cld-modulecreate --name=modulename --desc="module description"
+cld-modulecreate --name=modulename --desc=Short_description
 EOL
 )
 
@@ -22,7 +22,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--name=' && MODULE_NAME="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--desc' && MODULE_DESC="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--desc' && MODULE_DESC="$(echo $OPTS | cut -d '=' -f 2 | tr -d '_' ' ')"
 done
 
 if [ "$MODULE_NAME" == "" ]
