@@ -53,7 +53,7 @@ def note_save(note):
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     if os.path.isdir('/var/cld/modules/note/data/'+note) != True:
-      bash('mkdir -p /var/cld/modules/note/data/'+note)
+        os.makedirs('/var/cld/modules/note/data/'+note, mode = 0o700, exist_ok=True)
     notefiles = dict(request.form)
     for notefile in notefiles:
         open("/var/cld/modules/note/data/"+note+"/"+notefile, "w", newline='\n').write(notefiles[notefile].replace('\r', ''))
