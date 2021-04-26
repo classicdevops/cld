@@ -165,7 +165,7 @@
                         </form>
                         <div class="prefile">{{ file }}</div>
                         <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
-                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button><br><br>
+                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="float: right;">Save {{ file }}</button><br><br>
                         <script>
                            acefileactivate('{{ fileid }}')
                         </script>
@@ -213,7 +213,7 @@
             Deploy no tty  function: <br>
             <pre id="FuncDeploynottyPre">{{groupfuncdeploynotty}}</pre>
             <br>
-            <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply functions</button>
+            <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" `>Apply functions</button>
             <script>
               var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
               // var editor = [];
