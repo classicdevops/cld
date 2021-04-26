@@ -20,6 +20,8 @@ cld-accesslistdeploy --groups=default,prod,hypervisors --allowedgroups=default
 EOL
 )
 source /var/cld/bin/include/cldfuncs
+grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
+init-load-constants CLD_IP\|1.2.3.4
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
