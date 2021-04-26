@@ -15,6 +15,9 @@ import os
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
+def vld(cld_variable):
+  return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
+
 ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1')
 if ansifiltercheck == "0":
   outputinterpreter = bash('which ansifilter')
@@ -58,10 +61,10 @@ def accesslist():
   return bash('cat /var/cld/api/accesslist').split('\n')
 
 def allowmoduleusers(cldmodule):
-  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').split('\n'))
+  return set(bash('''awk -F ":" '{print $3":"$4}' /var/cld/creds/passwd | grep "'''+vld(cldmodule)+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def allowutilityusers(cldutility):
-  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').split('\n'))
+  return set(bash('''awk -F ":" '{print $3":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def checkperms(cldmodule, cldutility, token):
   token=re.match("[A-z0-9_.-]+", token)[0]
@@ -84,7 +87,7 @@ def checkpermswhiteip(cldmodule, cldutility, token, remoteaddr):
     return ["denied", "DENIED"]
 
 def userbytoken(token):
-  return bash('grep ":'+token+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
+  return bash('grep ":'+vld(token)+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
 
 cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
@@ -92,7 +95,7 @@ app = Flask(__name__)
 
 cldm={}
 for apifile in bash("ls /var/cld/{cm,deploy}/api.py /var/cld/modules/*/api.py").split('\n'):
-  cldmodule=bash('echo '+apifile+' | rev | cut -d / -f 2 | rev')
+  cldmodule=bash('echo '+vld(apifile)+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule)
   exec(open(apifile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
@@ -119,8 +122,8 @@ def cmd_${CLD_UTIL//[.-]/_}():
       if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
     except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
-    #cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg)
-    return Response(bashstream('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, output), status=200, mimetype='text/'+output)
+    #cmdoutput = bash('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+bg)
+    return Response(bashstream('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+bg, output), status=200, mimetype='text/'+output)
 
 EOL
 done

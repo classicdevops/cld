@@ -18,7 +18,6 @@ import select
 import termios
 import struct
 import fcntl
-import shlex
 import threading
 import json
 from engineio.payload import Payload

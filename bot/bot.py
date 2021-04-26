@@ -13,6 +13,9 @@ types = telebot.types
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
+def vld(cld_variable):
+  return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
+
 def bot_bash_stream(cmd, message):
     openmessage = bot.send_message(message.chat.id, '`initializing`', parse_mode='Markdown', disable_web_page_preview='true')
     if os.path.exists('/var/cld/tmp') != True: bash('chattr -i /var/cld ; mkdir /var/cld/tmp ; chattr +i /var/cld')
@@ -79,15 +82,6 @@ def wazzup_callback(query):
     bot.edit_message_text(chat_id=query.message.chat.id, message_id=query.message.message_id, text="WAZZZUUUP!")
     return bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
 
-# @bot.callback_query_handler(func=lambda call: True)
-# def callback_inline(call):
-#     chat_id=call.message.chat.id
-#     message_id=call.message.message_id
-#     if call.message:
-#        if call.data == "wazup":
-#             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="WAZZZUUUP!")
-#             bot.send_document(chat_id, 'CgADAgADrAEAAlTmaEtekoBhNWqh5QI')
-
 # getid
 @bot.message_handler(commands=["getid"])
 def cmd_getid(message):
@@ -99,10 +93,10 @@ def cmd_getid(message):
     return bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
 def allowmodule(cldmodule):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').split('\n'))
+  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+vld(cldmodule)+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').split('\n'))
 
 def allowutility(cldutility):
-  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').split('\n'))
+  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1''').split('\n'))
 
 def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
   user_id_str=str(user_id)
@@ -117,7 +111,7 @@ def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
 
 cldm={}
 for botfile in bash("ls /var/cld/modules/*/bot.py").split('\n'):
-  cldmodule=bash('echo '+botfile+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
+  cldmodule=bash('echo '+vld(botfile)+' | rev | cut -d / -f 2 | rev | tr -d "\n"')
   cldm[cldmodule]=cldmodule
   print(cldmodule)
   exec(open(botfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
@@ -140,8 +134,8 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     except:
         pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
-    return bot_bash_stream("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args, message)
-    # cmdoutput = bash("sudo -u "+user+" sudo FROM=BOT ${CLD_FILE} "+cmd_args+" | tr -d '\`' | awk -v F='\`' '{print F\$0F}'")
+    return bot_bash_stream("sudo -u "+user+" sudo FROM=BOT "+vld('${CLD_FILE}')+"" "+cmd_args, message)
+    # cmdoutput = bash("sudo -u "+user+" sudo FROM=BOT '+vld("${CLD_FILE}")+' "+cmd_args+" | tr -d '\`' | awk -v F='\`' '{print F\$0F}'")
     # bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown')
 
 EOL
