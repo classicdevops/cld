@@ -55,6 +55,20 @@ else
 mkdir -p /var/cld/modules/${MODULE_NAME}/{bin,web,data}
 fi
 
+cat > /var/cld/modules/${MODULE_NAME}/README.md << EOREADME
+### ${MODULE_NAME^}
+${MODULE_DESC}
+
+- Markdown demo point
+- Yet \`one\`
+  - Another \*\*one\*\*
+
+\`\`\`bash
+usage example of "cld-${MODULE_NAME}-tool"
+\`\`\`
+EOREADME
+chmod 600 /var/cld/modules/${MODULE_NAME}/web.py
+
 cat > /var/cld/modules/${MODULE_NAME}/web.py << EOWEB
 webmodule["${MODULE_NAME}"] = {}
 webmodule["${MODULE_NAME}"]["homename"] = "${MODULE_NAME^}"
@@ -265,6 +279,7 @@ Files created:
 /var/cld/modules/${MODULE_NAME}/api.py
 /var/cld/modules/${MODULE_NAME}/bot.py
 /var/cld/modules/${MODULE_NAME}/web.py
+/var/cld/modules/${MODULE_NAME}/README.md
 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
 /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
 EOL
