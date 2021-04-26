@@ -604,7 +604,7 @@ def user(name):
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     allowedclouds = bash('sudo -u '+clduser+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+clduser+' sudo /var/cld/bin/cld --list)').split('\n')
-    bash('if [ -d "/home/'+clduser+'/.ssh" ]; then mkdir -p /home/'+clduser+'/.ssh ; chown -R '+clduser+': /home/'+clduser+'/.ssh ; chmod 700 /home/'+clduser+'/.ssh; fi')
+    bash('if ! [ -d "/home/'+clduser+'/.ssh" ]; then mkdir -p /home/'+clduser+'/.ssh ; chown -R '+clduser+': /home/'+clduser+'/.ssh ; chmod 700 /home/'+clduser+'/.ssh; fi')
     file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/groups', '/home/'+clduser+'/.ssh/authorized_keys']
     files = {}
     for file in file_list:
