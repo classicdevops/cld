@@ -170,11 +170,7 @@
                            acefileactivate('{{ fileid }}')
                         </script>
                         {% endfor %}
-<br><br>
-
-
-
-
+<br>
             {% if groups[0].grouptype == 'manual' %}{% set typestatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set typestatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
             <form id="grouptype">
               Parsing group <input type="checkbox" id="GroupTypeCheckbox" name="grouptype"{{typeboxstatus}}> <br><br>
