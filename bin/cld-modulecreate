@@ -38,7 +38,7 @@ fi
 
 if [ "$MODULE_DESC" == "" ]
 then
-while ! [[ "$MODULE_DESC" =~  ^[A-z0-9- ]{3,61}$ ]]
+while ! [[ "$MODULE_DESC" =~  ^[A-z0-9 - ]{3,61}$ ]]
 do
 echo "Please enter the short DESCRIPTION for new module using only 'a-z 0-9' symbols
 Example: somename"
