@@ -251,7 +251,7 @@ def tool(cldutility, args=None):
       cldfile = '/bin/bash'
     if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+vld(cldfile)+' | cut -d / -f 3 | rev | tr -d "\n"')
     else: cldmodule = "bash"
-    if os.exists(cldfile) != True:
+    if os.path.exists(cldfile) != True:
       return Response('File not exist', status=403, mimetype='text/plain')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
