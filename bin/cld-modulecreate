@@ -267,3 +267,4 @@ python3 /var/cld/modules/doc/doc.py &>/dev/null
 
 echo "Module ${MODULE_NAME} created"
 echo "Restarting systemd cld service"
+systemctl restart cld
