@@ -112,7 +112,73 @@
             <div class="clearfix"></div>
             <br>
             <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
-            <br><br><br>
+            <br><br>
+
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+                        <script>
+                           var editor = [];
+                           function aceactivate(file)
+                           {
+                           ace.edit(file+'Pre', {
+                               theme: "ace/theme/monokai",
+                               keyboardHandler: "ace/keyboard/sublime",
+                               foldStyle: "markbeginend",
+                               mode: "ace/mode/autohotkey",
+                               maxLines: 40,
+                               minLines: 5,
+                               wrap: true,
+                               showPrintMargin: false,
+                               autoScrollEditorIntoView: true,
+                               highlightSelectedWord: true
+                           });
+                           editor[file+'Pre'] = ace.edit(file+'Pre');
+                           editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+                           $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+                           editor[file+'Pre'].getSession().on('change', function () {
+                              $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+                           });
+                           }
+                           function savefile(id, url) {
+                                   $.ajax({
+                                       url : url,
+                                       type: "POST",
+                                       data : $('#'+id).serialize(),
+                                       cache: false,
+                                       processData:false,
+                                       success: function (data) {
+                                           $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                                           sleep(500).then(() => {
+                                           $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                                           });
+                                           console.log('File saved');
+                                           },
+                                       error: function (data) {
+                                           $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                                           sleep(500).then(() => {
+                                           $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                                           });
+                                           console.log('An error occurred while saving data');
+                                           }
+                                   })
+                           
+                           }
+                        </script>
+                        {% for file in files %}
+                        {% set fileid = file.replace('/', '_').replace('.', '_') %}
+                        <form id="{{ fileid }}">
+                           <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
+                           <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                        </form>
+                        <div class="prefile">{{ file }}</div>
+                        <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
+                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button><br><br>
+                        <script>
+                           aceactivate('{{ fileid }}')
+                        </script>
+                        {% endfor %}
+
+            <br><br>
             <!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
               <input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
             <br><a href="{{ url_for('deluser', name=users[0].user) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete user</button></a>
