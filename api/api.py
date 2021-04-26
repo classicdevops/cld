@@ -108,8 +108,7 @@ def cmd_${CLD_UTIL//[.-]/_}():
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", request.args['token'], remoteaddr()) 
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user = userbytoken(request.args['token'])
-    if ansifiltercheck == "0": output = 'html'
-    else: output = 'plain'
+    output = 'plain'
     try: output = str(re.match('^[a-z]+$', request.args['output']).string)
     except: pass
     cmd_args = ''
