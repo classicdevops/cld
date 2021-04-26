@@ -61,7 +61,7 @@ ${MODULE_DESC}
 
 - Markdown demo point
 - Yet \`one\`
-  - Another \*\*one\*\*
+  - Another **one**
 
 \`\`\`bash
 usage example of "cld-${MODULE_NAME}-tool"
