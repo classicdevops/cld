@@ -1,0 +1,259 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Interactive tool for create new CLD demo/template module
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--name=modulename             Name of new module
+--desc="module description"   Module description in two/three words
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-modulecrete
+cld-modulecrete --name=modulename --desc="module description"
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--name=' && MODULE_NAME="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--desc' && MODULE_DESC="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+if [ "$MODULE_NAME" == "" ]
+then
+while ! [[ "$MODULE_NAME" =~  ^[a-z0-9]{3,61}$ ]]
+do
+echo "Please enter new CLD MODULE name using only 'a-z 0-9' symbols
+Example: somename"
+echo -n '#? '; read MODULE_NAME
+echo
+done
+fi
+
+if [ "$MODULE_DESC" == "" ]
+then
+while ! [[ "$MODULE_DESC" =~  ^[A-z0-9 -]{3,61}$ ]]
+do
+echo "Please enter the short DESCRIPTION for new module using only 'a-z 0-9' symbols
+Example: somename"
+echo -n '#? '; read MODULE_DESC
+echo
+done
+fi
+
+if [ -d "/var/cld/modules/${MODULE_NAME}" ]
+then
+echo Module $CLD_MODULE already exist - exit
+exit 1
+else
+mkdir -p /var/cld/modules/${MODULE_NAME}/{bin,web,data}
+fi
+
+cat > /var/cld/modules/${MODULE_NAME}/web.py << EOWEB
+webmodule["access"] = {}
+webmodule["access"]["homename"] = "${MODULE_NAME^}"
+webmodule["access"]["desc"] = "${MODULE_DESC}"
+@app.route("/${MODULE_NAME}")
+def ${MODULE_NAME}_index():
+  if 'username' in session:
+    if userisadmin(session['username']) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
+    user = session['username']
+    checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    file_list = bash(ls /var/cld/modules/${MODULE_NAME}/data/*).split('\n')
+    files = {}
+    for file in file_list:
+      if os.path.exists(file) != True:
+        bash('touch '+vld(file))
+      files[file] = open(file).read()
+    return render_template('modules/access/access.html', username=user, files=files)
+EOWEB
+chmod 600 /var/cld/modules/${MODULE_NAME}/web.py
+
+cat > /var/cld/modules/${MODULE_NAME}/api.py << EOBOT
+@app.route('/${MODULE_NAME}test')
+def cmd_cld_${MODULE_NAME}_test():
+    checkresult = checkpermswhiteip("${MODULE_NAME}", "NONE", request.args['token'], remoteaddr())
+    if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = userbytoken(request.args['token'])
+    output = 'plain'
+    try: output = str(re.match('^[a-z]+$', request.args['output']).string)
+    except: pass
+    cmd_args = ''
+    try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
+    except: pass
+    bg = ''
+    try:
+      if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
+    except: pass
+    return Response(bashstream('echo Print some test arguments to demostrate custom api endpoint: '+cmd_args+bg, output), status=200, mimetype='text/'+output)
+EOBOT
+chmod 600 /var/cld/modules/${MODULE_NAME}/api.py
+
+cat > /var/cld/modules/${MODULE_NAME}/bot.py << EOBOT
+@bot.message_handler(commands=["${MODULE_NAME}test"])
+def cmd_cld_${MODULE_NAME}_test(message):
+    checkresult = checkperms("deploy", "NONE", message.from_user.id, message.chat.id, message.from_user.username)
+    if checkresult[0] != "granted": return
+    user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\n"')
+    cmd_args=''
+    try:
+        for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
+        cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', cmd_args).string)
+    except:
+        pass
+    print('sudo -u '+user+' sudo FROM=BOT /var/cld/deploy/bin/cld-${MODULE_NAME}test '+cmd_args, flush=True)
+    return bot_bash_stream('echo Print some test arguments to demostrate custom bot command: '+cmd_args, message)
+
+EOBOT
+chmod 600 /var/cld/modules/${MODULE_NAME}/bot.py
+
+cat > /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool << 'EOTOOL'
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Small script to demonstrate one of the many use cases
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--filter=pattern                  Instances filtering patterng
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-MODULE_NAME-tool
+cld-MODULE_NAME-tool --filter=pattern
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q '^\--filter=\|^\-filter=' && PATTERN=$(echo $OPTS | cut -d '=' -f 2)
+done
+
+echo Async date demo parsing started at:
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" ${PATTERN})
+do
+echo $VM | cut -d _ -f -2 | sed 's#_# - #g'
+{
+CLD_LOGS 1>&2
+INSTANCE_GROUP_FUNCS 1>&2
+$CLD_VARS 1>&2
+$CLD_DEPLOY_NOTTY << EOSSH | tee -a /var/cld/modules/MODULE_NAME/data/$VM 1>&2
+date
+EOSSH
+} &
+done
+wait
+echo Done
+echo
+
+echo Sync date demo parsing started at:
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" ${PATTERN})
+do
+echo $VM | cut -d _ -f -2 | sed 's#_# - #g'
+CLD_LOGS 1>&2
+INSTANCE_GROUP_FUNCS 1>&2
+$CLD_VARS 1>&2
+$CLD_DEPLOY_NOTTY << EOSSH | tee -a /var/cld/modules/MODULE_NAME/data/$VM 1>&2
+date
+EOSSH
+done
+echo Done
+EOTOOL
+sed -i 's#MODULE_NAME#'${MODULE_NAME}'#g' /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
+chmod 700 /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
+
+cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
+<html lang="en">
+   <head>
+      <title>cld web - MODULE_NAME</title>
+      {% include 'html/include/head.html' %}
+   </head>
+   <body>
+      <div class="page-container">
+         {% include 'html/include/navbar.html' %}
+         <div class="container"><br><br>
+           <h4 class="panel-title">
+              Demo web page of module MODULE_NAME
+           </h4>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+              <script>
+                 var editor = [];
+                 function aceactivate(file)
+                 {
+                 ace.edit(file+'Pre', {
+                     theme: "ace/theme/monokai",
+                     keyboardHandler: "ace/keyboard/sublime",
+                     foldStyle: "markbeginend",
+                     mode: "ace/mode/sh",
+                     maxLines: 40,
+                     minLines: 5,
+                     wrap: true,
+                     showPrintMargin: false,
+                     autoScrollEditorIntoView: true,
+                     highlightSelectedWord: true
+                 });
+                 editor[file+'Pre'] = ace.edit(file+'Pre');
+                 editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+                 $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+                 editor[file+'Pre'].getSession().on('change', function () {
+                    $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+                 });
+                 }
+                 function sleep (time) {
+                   return new Promise((resolve) => setTimeout(resolve, time));
+                 }
+                 function savefile(id, url) {
+                         $.ajax({
+                             url : url,
+                             type: "POST",
+                             data : $('#'+id).serialize(),
+                             cache: false,
+                             processData:false,
+                             success: function (data) {
+                                 $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                                 sleep(500).then(() => {
+                                 $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                                 });
+                                 console.log('File saved');
+                                 },
+                             error: function (data) {
+                                 $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                                 sleep(500).then(() => {
+                                 $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                                 });
+                                 console.log('An error occurred while saving data');
+                                 }
+                         })
+                 
+                 }
+              </script>
+              {% for file in files %}
+              {% set fileid = file.replace('/', '_').replace('.', '_') %}
+              <form id="{{ fileid }}">
+                 <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
+                 <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+              </form>
+              <div class="prefile">{{ file }}</div>
+              <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
+              <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button><br><br>
+              <script>
+                 aceactivate('{{ fileid }}')
+              </script>
+              {% endfor %}
+         </div>
+      </div>
+   </body>
+</html>
+EOHTML
+sed -i 's#MODULE_NAME#'${MODULE_NAME}'#g' /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
+chmod 600 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
