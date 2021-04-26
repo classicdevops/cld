@@ -17,8 +17,7 @@ def note_files(note):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    note = str(re.match('^[A-z0-9.,@=/_ -]+', note)[0])
-    note_file_list = bash('ls /var/cld/modules/note/data/'+note).split('\n')
+    note_file_list = bash('ls /var/cld/modules/note/data/'+vld(note)).split('\n')
     note_file_dict = {}
     for note_file in note_file_list:
         note_file_dict[note_file] = open('/var/cld/modules/note/data/'+note+'/'+note_file, 'r').read()
@@ -30,10 +29,8 @@ def note_get_file(note, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    note = str(re.match('^[A-z0-9.,@=/_ -]+', note)[0])
-    file = str(re.match('^[A-z0-9.,@=/_ -]+', file)[0])
     if os.path.isfile('/var/cld/modules/note/data/'+note+'/'+file):
-        return Response(bash('cat /var/cld/modules/note/data/'+note+'/'+file), status=200, mimetype='text/plain')
+        return Response(bash('cat /var/cld/modules/note/data/'+vld(note)+'/'+vld(file)), status=200, mimetype='text/plain')
     else:
         return Response("Note not found", status=404, mimetype='text/plain')
 
@@ -68,9 +65,8 @@ def note_delete(note):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    note = str(re.match('^[A-z0-9.,@=/_ -]+', note)[0])
     if os.path.isdir('/var/cld/modules/note/data/'+note):
-        bash('rm -f /var/cld/modules/note/data/'+note+'/* /var/cld/modules/note/data/'+note+'/*/* &>/dev/null ; rmdir /var/cld/modules/note/data/'+note)
+        bash('rm -f /var/cld/modules/note/data/'+vld(note)+'/* /var/cld/modules/note/data/'+vld(note)+'/*/* &>/dev/null ; rmdir /var/cld/modules/note/data/'+vld(note))
         return Response("Note deleted", status=200, mimetype='text/plain')
     else:
         return Response("Note not found", status=404, mimetype='text/plain')
