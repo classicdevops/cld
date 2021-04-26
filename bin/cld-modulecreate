@@ -22,7 +22,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--name=' && MODULE_NAME="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--desc' && MODULE_DESC="$(echo $OPTS | cut -d '=' -f 2 | tr -d '_' ' ')"
+echo $OPTS | grep -q  '^\--desc' && MODULE_DESC="$(echo $OPTS | cut -d '=' -f 2 | tr '_' ' ')"
 done
 
 if [ "$MODULE_NAME" == "" ]
