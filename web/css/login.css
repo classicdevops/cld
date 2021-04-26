@@ -174,8 +174,8 @@ input[type=text]:placeholder {
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
-  -webkit-animation-duration: 0.7s;
-  animation-duration: 0.7s;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
@@ -221,9 +221,9 @@ input[type=text]:placeholder {
   -moz-animation-fill-mode:forwards;
   animation-fill-mode:forwards;
 
-  -webkit-animation-duration:0.7s;
-  -moz-animation-duration:0.7s;
-  animation-duration:0.7s;
+  -webkit-animation-duration:0.5s;
+  -moz-animation-duration:0.5s;
+  animation-duration:0.5s;
 }
 
 .fadeIn.first {
