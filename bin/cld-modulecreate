@@ -68,7 +68,7 @@ def ${MODULE_NAME}_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    file_list = bash(ls /var/cld/modules/${MODULE_NAME}/data/*).split('\n')
+    file_list = bash('ls /var/cld/modules/${MODULE_NAME}/data/*').split('\n')
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
@@ -257,3 +257,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
 EOHTML
 sed -i 's#MODULE_NAME#'${MODULE_NAME}'#g' /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
 chmod 600 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
+
+touch /var/cld/modules/${MODULE_NAME}/data/demofile
+
+echo "Module ${MODULE_NAME} created - you need restart CLD(systemctl restart cld) before using demo Web/API/Bot module options"
