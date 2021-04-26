@@ -41,7 +41,7 @@ then
 while ! [[ "$MODULE_DESC" =~  ^[A-Za-z0-9\ -]{3,61}$ ]]
 do
 echo "Please enter the two/three words DESCRIPTION for new module using only 'A-z 0-9' symbols
-Example: Some words"
+Example: Short description"
 echo -n '#? '; read MODULE_DESC
 echo
 done
