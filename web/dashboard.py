@@ -326,7 +326,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               try: socketio.close_room(room)
               except: print("socketio.close_room exception", flush=True)
               if check_pid(subprocpid) == True:
-                bash('kill -9 '+vld(subprocpid))
+                bash('kill -9 '+str(subprocpid))
               return #bash('kill -9 '+str(child_pid))
         except:
           pass
@@ -429,7 +429,7 @@ def connect():
           subprocpid = ''
           count = 0
         while subprocpid == '' and count != 30:
-          subprocpid = bash('ps axf -o pid,command | grep -v grep | sed "s/^ *//g" | grep -A1 "^'+vld(child_pid)+' " | cut -d " " -f 1 | tail -1').replace('\n', '')
+          subprocpid = bash('ps axf -o pid,command | grep -v grep | sed "s/^ *//g" | grep -A1 "^'+str(child_pid)+' " | cut -d " " -f 1 | tail -1').replace('\n', '')
           count+=1
           time.sleep(0.1)
         app.config["shell"][socketid] = fd
