@@ -259,6 +259,11 @@ sed -i 's#MODULE_NAME#'${MODULE_NAME}'#g' /var/cld/modules/${MODULE_NAME}/web/${
 chmod 600 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
 
 touch /var/cld/modules/${MODULE_NAME}/data/demofile
-/var/cld/bin/cld-initpasswd &>/dev/null
 
-echo "Module ${MODULE_NAME} created - you need restart CLD(systemctl restart cld) before using demo Web/API/Bot module options"
+echo Update users rights according access matrix /var/cld/creds/passwd
+/var/cld/bin/cld-initpasswd &>/dev/null
+echo Update documentation
+python3 /var/cld/modules/doc/doc.py &>/dev/null
+
+echo "Module ${MODULE_NAME} created"
+echo "Restarting systemd cld service"
