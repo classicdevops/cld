@@ -8,6 +8,7 @@ def deploy_index():
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     userapitoken = apitokenbyuser(user)
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
     deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     return render_template('modules/deploy/deploy.html', username=user, deploys=deploys, cld_domain=cld_domain, userapitoken=userapitoken)
 
@@ -17,6 +18,9 @@ def deploy_files(deploytype, deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
+    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
+    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     if os.path.exists('/var/cld/deploy/'+deploytype+'/'+deploy) != True:
         if deploytype == "templates":
             bash('/var/cld/deploy/bin/cld-template --template='+deploy)
@@ -40,13 +44,17 @@ def deploy_get_file(deploytype, deploy, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
+    file = str(re.match('^[A-z0-9.,@=/_ -]+', file)[0])
+    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
+    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
     elif deploytype == "deploys":
         deploys = user_allowed_deploys[1]['content']
     if deploy in deploys:
-        return Response(bash('cat /var/cld/deploy/'+deploytype+'/'+deploy+'/'+file), status=200, mimetype='text/plain')
+        return Response(open('/var/cld/deploy/'+deploytype+'/'+deploy+'/'+file).read(), status=200, mimetype='text/plain')
     else:
         return Response(deploytype[:-1].capitalize()+" not found", status=404, mimetype='text/plain')
 
@@ -56,6 +64,10 @@ def deploy_delete_file(deploytype, deploy, file):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
+    file = str(re.match('^[A-z0-9.,@=/_ -]+', file)[0])
+    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
+    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
@@ -72,6 +84,9 @@ def deploy_save(deploytype, deploy):
   if 'username' in session:
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
+    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
+    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
@@ -92,6 +107,9 @@ def deploy_delete(deploytype, deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
+    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
+    deploytype = str(re.match('^[A-z0-9.,@=/_ -]+', deploytype)[0])
     user_allowed_deploys = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-deploy --list --json'))
     if deploytype == "templates":
         deploys = user_allowed_deploys[0]['content']
@@ -109,6 +127,8 @@ def actions(deploy):
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'cld-action', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
+    user = str(re.match('^[A-z0-9.,@=/_ -]+', user)[0])
+    deploy = str(re.match('^[A-z0-9.,@=/_ -]+', deploy)[0])
     actions = bash('sudo -u '+user+' sudo FROM=CLI /var/cld/deploy/bin/cld-action --deploy='+deploy).split('\n')
     actions_dict = []
     itter = 0

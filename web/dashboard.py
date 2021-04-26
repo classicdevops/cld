@@ -26,6 +26,9 @@ from engineio.payload import Payload
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
+def vld(cld_variable):
+  return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
+
 def stream_file(filepath, chunksize=8192):
   with open(filepath, "rb") as f:
     while True:
@@ -54,37 +57,35 @@ def accesslist():
   return bash("cat /var/cld/modules/access/data/myips /var/cld/modules/access/data/enabledips | cut -d _ -f 1 | uniq").split('\n')
 
 def allowmoduleusers(cldmodule):
-  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+cldmodule+'''\|ALL" | cut -d : -f 1''').split('\n'))
+  return set(bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "'''+vld(cldmodule)+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def allowutilityusers(cldutility):
-  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+cldutility+'''\|ALL" | cut -d : -f 1''').split('\n'))
+  return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def usermodules(user):
-  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').split(',')
+  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
   if "ALL" in modules:
     return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   else:
     return bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')"''').split('\n')
 
 def usertools(user):
-  tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2''').split(','))
+  tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(','))
   if "ALL" in tools:
     return set(bash('find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include | rev | cut -d / -f 1 | rev').split('\n'))
   else:
     return tools
 
 def userisadmin(user):
-  user=re.match("[A-z0-9_.-]+", user)[0]
-  if bash('''awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2-''') == "ALL:ALL":
+  if bash('''awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2-''') == "ALL:ALL":
     return True
   else:
     return False
 
 def apitokenbyuser(user):
-  return bash('grep "^'+user+':" /var/cld/creds/passwd | cut -d : -f 3 | head -1')
+  return bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 3 | head -1')
 
 def checkperms(cldmodule, cldutility, user):
-  user=re.match("[A-z0-9_.-]+", user)[0]
   cldmodule=str(cldmodule)
   cldutility=str(cldutility)
   if user in allowmoduleusers(cldmodule) or user in allowutilityusers(cldutility):
@@ -94,8 +95,8 @@ def checkperms(cldmodule, cldutility, user):
 
 def checkpermswhiteip(cldmodule, cldutility, user, remoteaddr):
   user=re.match("[A-z0-9_.-]+", user)[0]
-  cldmodule=str(cldmodule)
-  cldutility=str(cldutility)
+  cldmodule=str(re.match("[A-z0-9_.-]+", cldmodule)[0])
+  cldutility=str(re.match("[A-z0-9_.-]+", cldutility)[0])
   if cldutility == 'bash' and remoteaddr in accesslist() and user in bash("awk -F ':' '{print $1}' /var/cld/creds/passwd").split(','):
     return ["granted", user]
   elif user in allowmoduleusers(cldmodule) and remoteaddr in accesslist():
@@ -124,7 +125,7 @@ webmodule = {}
 #include code from web.py of modules
 cldm={}
 for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
-  cldmodule=bash('echo '+webfile+' | rev | cut -d / -f 2 | rev')
+  cldmodule=bash('echo '+vld(webfile)+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule, flush=True)
   exec(open(webfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
@@ -154,7 +155,7 @@ def help_${CLD_UTIL//[.-]/_}():
     checkresult = checkpermswhiteip("${CLD_MODULE}", "${CLD_UTIL}", user, remoteaddr()) 
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} --help', flush=True)
-    cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} --help')
+    cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=API '+vld("${CLD_FILE}")+' --help')
     resp = Response(cmdoutput, status=200, mimetype='application/json')
     return resp
 
@@ -197,12 +198,12 @@ def webapi_${CLD_UTIL//[.-]/_}(args=None):
     try:
       if request.args['output'] == 'html':
         print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} '+cmd_args+' | '+outputinterpreter, flush=True)
-        cmdoutput = bash('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+' | '+outputinterpreter)
+        cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+' | '+outputinterpreter)
         return Response('<pre>'+cmdoutput+'</pre>', status=200, mimetype='text/html')
     except:
       pass
     print('sudo -u '+user+' sudo FROM=CLI ${CLD_FILE} '+cmd_args, flush=True)
-    cmdoutput = bash('sudo -u '+user+' sudo FROM=WEB ${CLD_FILE} '+cmd_args)
+    cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=WEB '+vld("${CLD_FILE}")+' '+cmd_args)
     return Response(cmdoutput, status=200, mimetype='text/plain')
 
 EOL
@@ -224,7 +225,7 @@ def cldx(args):
     user = session['username']
     cldutility = 'cldx'
     cldfile = "/var/cld/bin/cldx"
-    cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    cldmodule = bash('rev <<< '+vld(cldfile)+' | cut -d / -f 3 | rev | tr -d "\n"')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
@@ -243,12 +244,15 @@ def cldx(args):
 def tool(cldutility, args=None):
   if 'username' in session:
     user = session['username']
+    cldutility = str(re.match('^[A-z0-9.,@=/_ -]+', cldutility)[0])
     if cldutility != 'bash':
-      cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
+      cldfile = bash('''grep ' '''+vld(cldutility)+'''=' /home/'''+vld(user)+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
     else:
       cldfile = '/bin/bash'
-    if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+cldfile+' | cut -d / -f 3 | rev | tr -d "\n"')
+    if cldfile != '/bin/bash': cldmodule = bash('rev <<< '+vld(cldfile)+' | cut -d / -f 3 | rev | tr -d "\n"')
     else: cldmodule = "bash"
+    if os.exists(cldfile) != True:
+      return Response('File not exist', status=403, mimetype='text/plain')
     checkresult = checkpermswhiteip(cldmodule, cldutility, user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     try: cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', args).string)
@@ -268,13 +272,13 @@ def getfile(instance):
     checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
-    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance))[0]['clouds'][0]
+    instance = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --json '+vld(instance)))[0]['clouds'][0]
     filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.args['filepath']).string)
     mountpath = '/home/'+user+'/mnt/'+instance
     fullfilepath = mountpath+filepath
     filename = os.path.basename(filepath)
     if os.path.ismount(mountpath) != True:
-      bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cldxmount '+instance)
+      bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cldxmount '+vld(instance))
       time.sleep(3)
     if os.path.ismount(mountpath) != True:
       return Response('Instance directory mount failed', status=403, mimetype='text/plain')
@@ -289,7 +293,7 @@ def uploadfile(instance):
     checkresult = checkpermswhiteip('NONE', 'cldxmount', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     instance = str(re.match('^[A-z0-9.,@=/_-]+$', instance).string)
-    instance = json.loads(bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cld --list --json '+instance))[0]['clouds'][0]
+    instance = json.loads(bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --json '+vld(instance)))[0]['clouds'][0]
     try: filepath = str(re.match('^/[A-z0-9.,@=/_-]+$', request.form['filepath']).string)
     except: filepath = '/tmp'
     mountpath = '/home/'+user+'/mnt/'+instance
@@ -297,7 +301,7 @@ def uploadfile(instance):
     filename = secure_filename(file.filename)
     fullfilepath = mountpath+filepath
     if os.path.ismount(mountpath) != True:
-      bash('sudo -u '+user+' sudo FROM=CLI /var/cld/bin/cldxmount '+instance)
+      bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cldxmount '+vld(instance))
       time.sleep(3)
     if os.path.ismount(mountpath) != True:
       return Response('Instance directory mount failed', status=403, mimetype='text/plain')
@@ -324,7 +328,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
               try: socketio.close_room(room)
               except: print("socketio.close_room exception", flush=True)
               if check_pid(subprocpid) == True:
-                bash('kill -9 '+str(subprocpid))
+                bash('kill -9 '+vld(subprocpid))
               return #bash('kill -9 '+str(child_pid))
         except:
           pass
@@ -332,7 +336,7 @@ def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
 def read_and_forward_pty_output(socketid, sessfd, subprocpid, child_pid, room):
     max_read_bytes = 1024 * 20
     if check_pid(subprocpid) != True:
-      print(bash('ps axfu | grep '+str(subprocpid)), flush=True)
+      print(bash('ps axfu | grep '+vld(subprocpid)), flush=True)
     while True:
       socketio.sleep(0.05)
       if check_pid(subprocpid) != True:
@@ -386,6 +390,7 @@ def connect():
    elif 'username' in session:
     user = session['username']
     cldutility=request.args.get('cldutility')
+    cldutility = str(re.match('^[A-z0-9.,@=/_ -]+', cldutility)[0])
     if cldutility != 'bash':
       cldfile = bash('''grep ' '''+cldutility+'''=' /home/'''+user+'''/.bashrc | cut -d ' ' -f 4 | tr -d "'"''').replace('\n', '')
     else:
@@ -507,7 +512,7 @@ def login():
     except:
       pass
   if 'username' in session:
-      username = session['username']
+      username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
       return 'Logged in as ' + username + '<br>' + \
       "<b><a href = '/logout'>click here to log out</a></b>"
   return render_template('html/login.html') 
@@ -520,14 +525,14 @@ def logout():
 @app.route('/terminal')
 def terminal():
   if 'username' in session:
-    username = session['username']
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
     cld_instances = json.loads(bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld --list --json'))
     return render_template('html/terminal.html', username=username, cld_instances=cld_instances)
 
 @app.route('/toolkit')
 def toolkit():
   if 'username' in session:
-    username = session['username']
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
     cld_tools = json.loads(bash('sudo -u '+username+' sudo FROM=CLI /var/cld/bin/cld-modules --json'))
     utils = bash('''grep alias /home/'''+username+'''/.bashrc | grep -v "^#" | cut -d "'" -f 2 | cut -d ' ' -f 3 | rev | cut -d / -f 1 | rev''').split('\n')
     return render_template('html/toolkit.html', username=username, utils=utils, cld_tools=cld_tools)
@@ -536,7 +541,7 @@ def toolkit():
 @app.route('/admin')
 def admin():
   if 'username' in session:
-    username = session['username']
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
@@ -588,8 +593,8 @@ def user(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    username = session['username']
-    clduser = name
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
+    clduser = str(re.match('^[A-z0-9.,@=/_ -]+$', name).string)
     name = [str(clduser)]
     users = list()
     for user in name:
@@ -620,8 +625,8 @@ def group(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    username = session['username']
-    cldgroup = name
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
+    cldgroup = str(re.match('^[A-z0-9.,@=/_ -]+$', name).string)
     name = [str(cldgroup)]
     grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
     groups = list()
@@ -658,8 +663,8 @@ def adduser():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    newuser = request.form['newuser']
-    newpassword = request.form['newpass']
+    newuser = str(re.match('^[A-z0-9.,@=/_ -]+$', request.form['newuser']).string)
+    newpassword = str(re.match('^[A-z0-9.,@=/_ -]+$', request.form['newpass']).string)
     bash('/var/cld/bin/cld-useradd '+newuser+' '+newpassword).replace('\n', ' ')
     return redirect('/admin', code=302)
 
@@ -669,7 +674,7 @@ def deluser():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    deluser = request.args['name']
+    deluser = str(re.match('^[A-z0-9.,@=/_ -]+$', request.args['name']).string)
     bash('/var/cld/bin/cld-userdel '+deluser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
@@ -679,7 +684,7 @@ def addgroup():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    newgroup = request.form['newgroup']
+    newgroup = str(re.match('^[A-z0-9.,@=/_ -]+$', request.form['newgroup']).string)
     bash('/var/cld/bin/cld-groupadd '+newgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
 
@@ -689,7 +694,7 @@ def delgroup():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    delgroup = request.args['name']
+    delgroup = str(re.match('^[A-z0-9.,@=/_ -]+$', request.args['name']).string)
     bash('/var/cld/bin/cld-groupdel '+delgroup).replace('\n', ' ')
     return redirect('/admin', code=302)
 
@@ -699,7 +704,7 @@ def enableuser():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    enableuser = request.args['name']
+    enableuser = str(re.match('^[A-z0-9.,@=/_ -]+$', request.args['name']).string)
     bash('passwd --unlock '+enableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
@@ -709,7 +714,7 @@ def disableuser():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    disableuser = request.args['name']
+    disableuser = str(re.match('^[A-z0-9.,@=/_ -]+$', request.args['name']).string)
     bash('passwd --lock '+disableuser).replace('\n', ' ')
     return redirect('/admin', code=302)
 
@@ -719,6 +724,7 @@ def usergroups(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
+    name = str(re.match('^[A-z0-9.,@=/_ -]+$', name).string)
     groups = list(request.form.to_dict())
     open('/var/cld/access/users/'+name+'/groups', 'w').write("\n".join(groups))
     return Response('User groups saved', status=200, mimetype='text/plain')
@@ -729,13 +735,12 @@ def userclouds(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
+    name = str(re.match('^[A-z0-9.,@=/_ -]+$', name).string)
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     if str(clouds) == "['([])']":
       bash('truncate -s 0 /var/cld/access/users/'+name+'/clouds')
     else:
-      usersfile = open('/var/cld/access/users/'+name+'/clouds', 'w')
-      usersfile.write("\n".join(clouds))
-      usersfile.close()
+      open('/var/cld/access/users/'+name+'/clouds', 'w').write("\n".join(clouds))
     return Response('User clouds saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupusers/<name>', methods=['GET','POST'])
@@ -744,11 +749,12 @@ def groupusers(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    group = name
+    group = str(re.match('^[A-z0-9.,@=/_ -]+$', name).string)
     users = ",".join(list(request.form.to_dict())).split(',')
     denyusers = [os.path.basename(name) for name in os.listdir("/var/cld/access/users/") if os.path.isdir('/var/cld/access/users/'+name) and name not in users]
     for user in users:
       if user != '':
+        user = str(re.match('^[A-z0-9.,@=/_ -]+$', user).string)
         bash('grep '+group+' /var/cld/access/users/'+user+'/groups || echo -e "\n'+group+'" >> /var/cld/access/users/'+user+'/groups')
     for denyuser in denyusers:
       if denyuser != '':
@@ -829,7 +835,7 @@ def cloudadd():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    username = session['username']
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
     groups = bash('''source <(awk '{print "grep -q 0 /var/cld/access/groups/"$1"/type && echo "$1}' /var/cld/access/users/'''+username+'''/groups) 2>/dev/null''').split('\n')[:-1]
     return render_template('html/cloudadd.html', username=username, groups=groups)
 
@@ -839,7 +845,7 @@ def addcloud():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    username = session['username']
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
     cloudname = request.form['cloudname']
     cloudip = request.form['cloudip']
     cloudport = request.form['cloudport']
@@ -858,7 +864,7 @@ def addcloud():
 @app.route('/profile')
 def profile():
   if 'username' in session:
-    username = session['username']
+    username = str(re.match('^[A-z0-9.,@=/_ -]+$', session['username']).string)
     clouds=bash('sudo -u '+username+' sudo /var/cld/bin/cld --list')
     perms=bash('grep "^'+username+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
