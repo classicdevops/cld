@@ -9,8 +9,8 @@ HELP_ARGS=$(cat << 'EOL'
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-modulecrete
-cld-modulecrete --name=modulename --desc="module description"
+cld-modulecreate
+cld-modulecreate --name=modulename --desc="module description"
 EOL
 )
 
