@@ -260,11 +260,21 @@ chmod 600 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
 
 touch /var/cld/modules/${MODULE_NAME}/data/demofile
 
+cat << EOL
+Files created:
+/var/cld/modules/${MODULE_NAME}/api.py
+/var/cld/modules/${MODULE_NAME}/bot.py
+/var/cld/modules/${MODULE_NAME}/web.py
+/var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
+/var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
+EOL
+echo
 echo Update users rights according access matrix /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd &>/dev/null
+echo
 echo Update documentation
 python3 /var/cld/modules/doc/doc.py &>/dev/null
-
-echo "Module ${MODULE_NAME} created"
-echo "Restarting systemd cld service"
+echo
+echo "Module ${MODULE_NAME} is ready"
+echo "Restarting systemd cld service - it can take up to 15 seconds"
 systemctl restart cld
