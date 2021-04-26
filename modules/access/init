@@ -1,6 +1,7 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
-init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
+grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo ${CLD_IP} >> /var/cld/creds/creds ; }
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com CLD_IP\|1.2.3.4
 
 if grep -q "^MIKROTIK=" /var/cld/creds/creds
 then
