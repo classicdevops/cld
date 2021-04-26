@@ -171,6 +171,7 @@ else:
   cd /usr/src
   git clone https://github.com/andre-simon/ansifilter.git
   cd ansifilter/
+  make
   make install
   ''')
 
