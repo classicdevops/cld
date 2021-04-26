@@ -17,67 +17,6 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
-    <style>
-        .ad {
-        position: absolute;
-        bottom: 70px;
-        right: 48px;
-        z-index: 992;
-        background-color: white;
-        position: fixed;
-        width: 155px;
-        padding: 1px;
-    }
-
-    .ad-btn-hide {
-        position: absolute;
-        top: -10px;
-        left: -12px;
-        background: #fefefe;
-        background: rgba(240, 240, 240, 0.9);
-        border: 0;
-        border-radius: 26px;
-        cursor: pointer;
-        padding: 2px;
-        height: 25px;
-        width: 25px;
-        font-size: 14px;
-        vertical-align: top;
-        outline: 0;
-    }
-
-    .carbon-img {
-        float: left;
-        padding: 10px;
-    }
-
-    .carbon-text {
-        color: #888;
-        display: inline-block;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        height: 60px;
-        margin-left: 9px;
-        width: 142px;
-        padding-top: 10px;
-    }
-
-    .carbon-text:hover {
-        color: #666;
-    }
-
-    .carbon-poweredby {
-        color: #6A6A6A;
-        float: left;
-        font-family: Verdana;
-        font-size: 11px;
-        font-weight: 400;
-        margin-left: 10px;
-        margin-top: 13px;
-        text-align: center;
-    }
-    </style>
 </head>
 
 <body>
@@ -162,8 +101,19 @@
 </a>
 </label>
 {% endif %}
-
-                             
+{% if username == 'admin' %}
+<label class="btn paymentMethod">
+<a href="/tool/cld-modulecreate" onclick="window.location.href = '/tool/cld-modulecreate';">
+<div class="method visa" style="border-radius: 3px;text-align: center;">
+<br><br>
+<img src="../img/plus.svg" style="height: 80;">
+<br>
+<span style="color:#177ddb;font-size:1.4rem;font-weight: 300;">Create module</span>
+<span style="color:#b5b5b5;font-size:1.4rem;font-weight: 100;"><br>Create module</span>
+</div>
+</a>
+</label>
+{% endif %}               
                             </div>      
                         
                         </div>
