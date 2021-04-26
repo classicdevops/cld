@@ -44,7 +44,7 @@ def bashstream(cmd, format="html"):
   process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   yield ''.join(addopentag)
   for line in process.stdout:
-    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+os.linesep+line.decode('utf8')+os.linesep+"EOHTML"+os.linesep+")"))
+    yield ''.join(bash("echo -e $(cat << 'EOHTML' | "+outputinterpreter+outputargs+os.linesep+line.decode('utf8')+os.linesep+"EOHTML"+os.linesep+")")+'\n')
   yield ''.join(addclosetag)
 
 def remoteaddr():
