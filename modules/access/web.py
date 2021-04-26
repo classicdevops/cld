@@ -10,7 +10,7 @@ def access_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-	file_list = ['/var/cld/modules/access/data/myips', '/var/cld/modules/access/data/enabledips', '/var/cld/modules/access/data/blackips', '/var/cld/modules/access/data/myip_tokens']
+    file_list = ['/var/cld/modules/access/data/myips', '/var/cld/modules/access/data/enabledips', '/var/cld/modules/access/data/blackips', '/var/cld/modules/access/data/myip_tokens']
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
