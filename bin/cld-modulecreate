@@ -15,6 +15,9 @@ EOL
 )
 
 source /var/cld/bin/include/cldfuncs
+
+init-load-constants CLD_DOMAIN\|cld.yourdomain.com
+
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
@@ -147,11 +150,18 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
+#import env variable from /var/cld/creds/creds
+init-load-constants CLD_DOMAIN\|cld.yourdomain.com
+
+#parsing arguments
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q '^\--filter=\|^\-filter=' && PATTERN=$(echo $OPTS | cut -d '=' -f 2)
 done
 
+
+echo This is demoscript at ${CLD_DOMAIN}
+echo
 echo Async date demo parsing started at:
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" ${PATTERN})
 do
@@ -289,6 +299,7 @@ echo Update users rights according access matrix /var/cld/creds/passwd
 echo
 echo Update documentation
 python3 /var/cld/modules/doc/doc.py &>/dev/null
+echo Module documentation will available by the link soon: "https://${CLD_DOMAIN}/doc#tag/${MODULE_NAME}"
 echo
 echo "Module ${MODULE_NAME} is ready"
 echo "Restarting systemd cld services - it can take up to 15 seconds"
