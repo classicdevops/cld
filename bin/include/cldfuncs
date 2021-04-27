@@ -333,9 +333,9 @@ done
 for CONSTANT_SET in ${ARGS}
 do
 CONSTANT_SET=${!CONSTANT_SET}
-CONSTANT=$(cut -d '|' -f 1 <<< ${CONSTANT_SET})
-EXAMPLE=$(cut -d '|' -f 2 <<< ${CONSTANT_SET})
-REGEX=$(cut -d '|' -f 3 <<< ${CONSTANT_SET})
+CONSTANT=$(cut -d '|' -f 1 <<< "${CONSTANT_SET}")
+EXAMPLE=$(cut -d '|' -f 2 <<< "${CONSTANT_SET}")
+REGEX=$(cut -d '|' -f 3 <<< "${CONSTANT_SET}")
 if ! [ "${!CONSTANT}" ]
 then
   while ! egrep -q "^${REGEX}$" <<< "$VALUE"
