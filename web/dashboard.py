@@ -837,8 +837,8 @@ def profile():
   if 'username' in session:
     username = session['username']
     clouds=bash('sudo -u '+vld(username)+' sudo /var/cld/bin/cld --list')
-    visiblemodules = uservisiblemodules(user)
-    modules = usermodules(user)
+    visiblemodules = uservisiblemodules(username)
+    modules = usermodules(username)
     perms=bash('grep "^'+vld(username)+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms, visiblemodules=visiblemodules, modules=modules)
 
