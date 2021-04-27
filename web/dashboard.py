@@ -61,12 +61,20 @@ def allowmoduleusers(cldmodule):
 def allowutilityusers(cldutility):
   return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
+def uservisiblemodules(user):
+  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
+  if "ALL" in modules:
+    return bash('MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev) ; if [ -f /var/cld/access/users/'+vld(user)+'/showonlymodules ]; then  grep -Ff /var/cld/access/users/'+vld(user)+'/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi').split('\n')
+  else:
+    return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; ; if [ -f /var/cld/access/users/'''+vld(user)+'''/showonlymodules ]; then  grep -Ff /var/cld/access/users/'''+vld(user)+'''/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi''').split('\n')
+
 def usermodules(user):
   modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
   if "ALL" in modules:
-    return bash('MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev) ; if [ -f /var/cld/access/users/'+vld(user)+'/webshowmodules ]; then  grep -Ff /var/cld/access/users/'+vld(user)+'/webshowmodules <<< "$MODULES"; else echo "$MODULES" ; fi').split('\n')
+    return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   else:
-    return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; ; if [ -f /var/cld/access/users/'''+vld(user)+'''/webshowmodules ]; then  grep -Ff /var/cld/access/users/'''+vld(user)+'''/webshowmodules <<< "$MODULES"; else echo "$MODULES" ; fi''').split('\n')
+    return bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')"''').split('\n')
+
 
 def usertools(user):
   tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(','))
@@ -473,9 +481,9 @@ def index():
     if 'username' not in session: return redirect('/login', code=302)
     user = session['username']
     isadmin = userisadmin(session['username'])
-    modulelist = usermodules(user)
+    modulelist = uservisiblemodules(user)
     if modulelist != ['']:
-      modulelist = list(usermodules(user))
+      modulelist = list(uservisiblemodules(user))
       modules = {}
       for module in modulelist:
         name = module
@@ -829,15 +837,17 @@ def profile():
   if 'username' in session:
     username = session['username']
     clouds=bash('sudo -u '+vld(username)+' sudo /var/cld/bin/cld --list')
+    visiblemodules = uservisiblemodules(user)
+    modules = usermodules(user)
     perms=bash('grep "^'+vld(username)+':" /var/cld/creds/passwd').split(':')
-    return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
+    return render_template('html/profile.html', username=username, clouds=clouds, perms=perms, visiblemodules=visiblemodules, modules=modules)
 
 @app.route('/profile/usermodules/<name>', methods=['GET','POST'])
 def profile_set_visible_modules(name):
   if 'username' in session:
     user = session['username']
     modules = list(request.form.to_dict())
-    open('/var/cld/access/users/'+vld(name)+'/webshowmodules', 'w').write("\n".join(modules))
+    open('/var/cld/access/users/'+vld(name)+'/showonlymodules', 'w').write("\n".join(modules))
     return Response('User groups saved', status=200, mimetype='text/plain')
 
 #Just easy direct pipeline for early dev version, will deleted in the future
