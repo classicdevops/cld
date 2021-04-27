@@ -833,7 +833,7 @@ def profile():
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
 
 @app.route('/profile/usermodules/<name>', methods=['GET','POST'])
-def usergroups(name):
+def profile_set_visible_modules(name):
   if 'username' in session:
     user = session['username']
     modules = list(request.form.to_dict())
