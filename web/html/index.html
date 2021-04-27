@@ -73,7 +73,7 @@
 {% if modules is defined %}
 {% for module in modules %}
 <label class="btn paymentMethod">
-<a href="/{{ modules[module] }}"  onclick="window.location.href = '/{{ modules[module] }}';">
+<a href="/{{ module }}"  onclick="window.location.href = '/{{ module }}';">
 <div class="method visa" style="border-radius: 3px;text-align: center;">
 <br>
 <img src="../{{ module.logo }}" style="height: 80;">
