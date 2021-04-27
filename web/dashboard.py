@@ -66,7 +66,7 @@ def uservisiblemodules(user):
   if "ALL" in modules:
     return bash('MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev) ; if [ -f /var/cld/access/users/'+vld(user)+'/showonlymodules ]; then  grep -Ff /var/cld/access/users/'+vld(user)+'/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi').split('\n')
   else:
-    return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; ; if [ -f /var/cld/access/users/'''+vld(user)+'''/showonlymodules ]; then  grep -Ff /var/cld/access/users/'''+vld(user)+'''/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi''').split('\n')
+    return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; if [ -f /var/cld/access/users/'''+vld(user)+'''/showonlymodules ]; then  grep -Ff /var/cld/access/users/'''+vld(user)+'''/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi''').split('\n')
 
 def usermodules(user):
   modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
