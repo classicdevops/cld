@@ -491,7 +491,7 @@ def index():
       init_module = ['name', 'logo', 'desc', 'homename']
       for n, i in enumerate(modules):
         modules[n] = {k:v for k,v in zip(init_module,modules[n].split(';'))}
-      return render_template('html/index.html', username=user, modules=modules)
+      return render_template('html/index.html', username=user, modules=modules, isadmin=isadmin)
     else:
       return render_template('html/index.html', username=user, isadmin=isadmin)
 
