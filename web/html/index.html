@@ -87,7 +87,7 @@
 {% endfor %}
 {% endif %}
 
-{% if username == 'admin' %}
+{% if isadmin == True %}
 <label class="btn paymentMethod">
 <a href="{{ url_for('admin') }}" onclick="window.location.href = '{{ url_for('admin') }}';">
 <div class="method visa" style="border-radius: 3px;text-align: center;">
@@ -101,7 +101,7 @@
 </a>
 </label>
 {% endif %}
-{% if username == 'admin' %}
+{% if isadmin == True %}
 <label class="btn paymentMethod">
 <a href="/tool/cld-modulecreate" onclick="window.open('/tool/cld-modulecreate');" target="_blank">
 <div class="method visa" style="border-radius: 3px;text-align: center;">

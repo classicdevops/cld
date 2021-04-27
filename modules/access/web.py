@@ -1,6 +1,7 @@
 webmodule["access"] = {}
 webmodule["access"]["homename"] = "Access"
 webmodule["access"]["desc"] = "Classic firewall"
+webmodule["access"]["adminonly"] = True
 @app.route("/access")
 def access_index():
   if 'username' in session:

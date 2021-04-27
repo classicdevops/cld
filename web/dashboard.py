@@ -472,6 +472,7 @@ def send_favicon():
 def index():
     if 'username' not in session: return redirect('/login', code=302)
     user = session['username']
+    isadmin = userisadmin(session['username'])
     modulelist = usermodules(user)
     if modulelist != ['']:
       modulelist = list(usermodules(user))
@@ -492,7 +493,7 @@ def index():
         modules[n] = {k:v for k,v in zip(init_module,modules[n].split(';'))}
       return render_template('html/index.html', username=user, modules=modules)
     else:
-      return render_template('html/index.html', username=user)
+      return render_template('html/index.html', username=user, isadmin=isadmin)
 
 @app.route('/panel/')
 def dashboard():
