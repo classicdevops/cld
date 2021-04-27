@@ -4,6 +4,9 @@
 #cld modules generated data
 /modules/*/data/
 
+#cld modules configs
+/modules/*/config
+
 #local files
 *.local
 *.local/*
