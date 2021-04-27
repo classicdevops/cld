@@ -488,9 +488,10 @@ text-align: center;
         border-bottom-width: 1px;
     }
 
-    @media (min-width: 1200px)
-    .container {
-        width: 1150px;
+    @media (min-width: 1200px) {
+        .container {
+            width: 1150px;
+        }
     }
 
     @media screen and (max-width: 2560px) {
