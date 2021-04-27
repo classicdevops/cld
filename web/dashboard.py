@@ -476,7 +476,7 @@ def index():
     modulelist = usermodules(user)
     if modulelist != ['']:
       modulelist = list(usermodules(user))
-      modules = list()
+      modules = {}
       for module in modulelist:
         name = module
         if os.path.isfile('modules/'+module+'/content/logo.svg'):
@@ -489,7 +489,7 @@ def index():
         except: webmodule[module]['homename'] = module.capitalize().replace('.local', '')
         try: webmodule[module]['adminonly']
         except: webmodule[module]['adminonly'] = False
-        modules.append(webmodule[module])
+        modules[module] = webmodule[module]
       return render_template('html/index.html', username=user, modules=modules, isadmin=isadmin)
     else:
       return render_template('html/index.html', username=user, isadmin=isadmin)
