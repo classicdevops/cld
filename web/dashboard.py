@@ -64,9 +64,9 @@ def allowutilityusers(cldutility):
 def usermodules(user):
   modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
   if "ALL" in modules:
-    return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
+    return bash('MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev) ; grep -Ff /var/cld/access/users/'+vld(user)+'/webshowmodules <<< $MODULES || echo "$MODULES"').split('\n')
   else:
-    return bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')"''').split('\n')
+    return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; grep -Ff /var/cld/access/users/'+vld(user)+'/webshowmodules <<< $MODULES || echo "$MODULES"''').split('\n')
 
 def usertools(user):
   tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(','))
@@ -831,6 +831,14 @@ def profile():
     clouds=bash('sudo -u '+vld(username)+' sudo /var/cld/bin/cld --list')
     perms=bash('grep "^'+vld(username)+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms)
+
+@app.route('/profile/usermodules/<name>', methods=['GET','POST'])
+def usergroups(name):
+  if 'username' in session:
+    user = session['username']
+    modules = list(request.form.to_dict())
+    open('/var/cld/access/users/'+vld(name)+'/webshowmodules', 'w').write("\n".join(modules))
+    return Response('User groups saved', status=200, mimetype='text/plain')
 
 #Just easy direct pipeline for early dev version, will deleted in the future
 @app.route('/backendgitpull')
