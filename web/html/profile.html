@@ -100,6 +100,32 @@
             <div id="collapse4" class="panel-collapse collapse">
               <div class="panel-body">
             <p>Modules:</p>
+            <script>
+              function savedata(id, url) {
+                      $.ajax({
+                          url : url,
+                          type: "POST",
+                          data : $('#'+id).serialize(),
+                          cache: false,
+                          processData:false,
+                          success: function (data) {
+                              $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                              sleep(500).then(() => {
+                              $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                              });
+                              console.log('Data saved');
+                              },
+                          error: function (data) {
+                              $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                              sleep(500).then(() => {
+                              $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                              });
+                              console.log('An error occurred while saving data');
+                              }
+                      })
+              
+              }
+            </script>
             <form id="usergroups" style="margin: 0px;">
               {% for module in modules %}
               {% if module in visiblemodules %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
