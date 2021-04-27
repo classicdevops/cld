@@ -72,6 +72,7 @@
 
 {% if modules is defined %}
 {% for module in modules %}
+{% if ( (modules[module]['adminonly'] == True and isadmin == True ) or modules[module]['adminonly'] == False ) %}
 <label class="btn paymentMethod">
 <a href="/{{ module }}"  onclick="window.location.href = '/{{ module }}';">
 <div class="method visa" style="border-radius: 3px;text-align: center;">
@@ -84,6 +85,7 @@
 </div>
 </a>
 </label>
+{% endif %}
 {% endfor %}
 {% endif %}
 
