@@ -490,6 +490,7 @@ def index():
         try: webmodule[module]['adminonly']
         except: webmodule[module]['adminonly'] = False
         modules[module] = webmodule[module]
+        print(str(modules), flush=True)
       return render_template('html/index.html', username=user, modules=modules, isadmin=isadmin)
     else:
       return render_template('html/index.html', username=user, isadmin=isadmin)
