@@ -30,7 +30,7 @@ done
 
 if [ "$MODULE_NAME" == "" ]
 then
-while ! [[ "$MODULE_NAME" =~  ^[a-z0-9]{3,61}$ ]]
+while ! [[ "$MODULE_NAME" =~  ^[a-z0-9]{3,25}$ ]]
 do
 echo "Please enter new CLD MODULE name using only 'a-z 0-9' symbols
 Example: somename"
@@ -41,7 +41,7 @@ fi
 
 if [ "$MODULE_DESC" == "" ]
 then
-while ! [[ "$MODULE_DESC" =~  ^[A-Za-z0-9\ -]{3,61}$ ]]
+while ! [[ "$MODULE_DESC" =~  ^[A-Za-z0-9\ -]{3,30}$ ]]
 do
 echo "Please enter the two/three words DESCRIPTION for new module using only 'A-z 0-9' symbols
 Example: Short description"
@@ -70,7 +70,6 @@ ${MODULE_DESC}
 usage example of "cld-${MODULE_NAME}-tool"
 \`\`\`
 EOREADME
-chmod 600 /var/cld/modules/${MODULE_NAME}/web.py
 
 cat > /var/cld/modules/${MODULE_NAME}/web.py << EOWEB
 webmodule["${MODULE_NAME}"] = {}
