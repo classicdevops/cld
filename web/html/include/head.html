@@ -60,12 +60,6 @@ $('#'+id+'-content').resizable({
 });
 $('#'+id+'-dialog').draggable();
 
-$('#'+id).on('show.bs.modal', function() {
-  $(this).find(id+'-body').css({
-    'max-height': '100%'
-  });
-});
-
 $('#'+id).modal('show')
 
 sleep(250).then(() => {
