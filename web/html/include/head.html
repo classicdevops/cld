@@ -73,8 +73,8 @@ $('#'+id+'-body').html('<iframe id="frame-'+id+'" width="1024" height="768" styl
 });
 
 $('#'+id).on('hide.bs.modal', function() {
-$('#'+id).modal('hide')
-$('#'+id).modal('dispose')
+$(this).modal('hide')
+$(this).modal('dispose')
 });
 
 };
