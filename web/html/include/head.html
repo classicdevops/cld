@@ -7,33 +7,71 @@
 <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
 <script type="text/javascript" src="/js/tablesort.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"/>
+<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
 <script>
-   function idgen() {
-     var length = 8,
-         charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-         retVal = "";
-     for (var i = 0, n = charset.length; i < length; ++i) {
-         retVal += charset.charAt(Math.floor(Math.random() * n));
+function idgen() {
+ var length = 8,
+     charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+     retVal = "";
+ for (var i = 0, n = charset.length; i < length; ++i) {
+     retVal += charset.charAt(Math.floor(Math.random() * n));
+ }
+ return retVal;
+}
+function sleep(time) {
+return new Promise((resolve) => setTimeout(resolve, time));
+}
+function search() {
+ var input, filter, ul, li, a, i, txtValue;
+ input = document.getElementById("searchInput");
+ filter = input.value.toUpperCase();
+ ul = document.getElementById("ServerListUl");
+ li = ul.getElementsByTagName("li");
+ for (i = 0; i < li.length; i++) {
+     a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
+     txtValue = a.textContent || a.innerText;
+     if (txtValue.toUpperCase().indexOf(filter) > -1) {
+         li[i].style.display = "";
+     } else {
+         li[i].style.display = "none";
      }
-     return retVal;
-   }
-   function sleep(time) {
-   return new Promise((resolve) => setTimeout(resolve, time));
-   }
-   function search() {
-     var input, filter, ul, li, a, i, txtValue;
-     input = document.getElementById("searchInput");
-     filter = input.value.toUpperCase();
-     ul = document.getElementById("ServerListUl");
-     li = ul.getElementsByTagName("li");
-     for (i = 0; i < li.length; i++) {
-         a = li[i].getElementsByTagName("a")[0] || li[i].getElementsByTagName("span")[0];
-         txtValue = a.textContent || a.innerText;
-         if (txtValue.toUpperCase().indexOf(filter) > -1) {
-             li[i].style.display = "";
-         } else {
-             li[i].style.display = "none";
-         }
-     }
-   }
+ }
+};
+function modalconsole(url) {
+var id = idgen()
+$("body").append(`\
+  <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div id="`+id+`-dialog" class="modal-dialog" role="document">
+      <div id="`+id+`-content" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="`+id+`Label">terminal</h4>
+        </div>
+        <div id="`+id+`-body" class="modal-body" style="padding: 0px;line-height: 0;"></div>
+      </div>
+    </div>
+  </div>
+  `)
+$('#'+id+'-content').resizable({
+  //alsoResize: ".modal-dialog",
+  minHeight: 300,
+  minWidth: 300
+});
+$('#'+id+'-dialog').draggable();
+
+$('#'+id).on('show.bs.modal', function() {
+  $(this).find(id+'-body').css({
+    'max-height': '100%'
+  });
+});
+
+$('#'+id).modal({
+  backdrop: 'static'
+})
+
+$('#'+id).modal('show')
+
+$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="800" height="800" style="visibility:visible;height: 70%; width: 100%; resize: both; border: 0px;" src="'+url+'"></iframe>');
+};
 </script>
