@@ -67,7 +67,7 @@ $('#'+id+'-body').html('<iframe id="frame-'+id+'" width="1024" height="768" styl
 });
 
 $('#'+id).on('hidden.bs.modal', function () {
-    $(this).data('bs.modal', null);
+    $('#'+id).modal('dispose');
 });
 
 };
