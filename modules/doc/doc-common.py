@@ -84,4 +84,4 @@ for modulepath in modules:
 
 if os.path.isdir('/var/cld/modules/doc/data') != True:
   bash('mkdir -p /var/cld/modules/doc/data &>/dev/null')
-open('/var/cld/modules/doc/data/doc.json', 'w').write(json.dumps(initjson)).replace(cld_domain, 'classicdeploy.com')
+open('/var/cld/modules/doc/data/doc-common.json', 'w').write(json.dumps(initjson)).replace(cld_domain, 'classicdeploy.com')
