@@ -43,7 +43,7 @@ var id = idgen()
 $("body").append(`\
   <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div id="`+id+`-dialog" class="modal-dialog" role="document">
-      <div id="`+id+`-content" class="modal-content">
+      <div id="`+id+`-content" class="modal-content" style="width: 1024px; height: 768px;">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="`+id+`Label">terminal</h4>
@@ -55,8 +55,8 @@ $("body").append(`\
   `)
 $('#'+id+'-content').resizable({
   //alsoResize: ".modal-dialog",
-  minHeight: 600,
-  minWidth: 800
+  minHeight: 768,
+  minWidth: 1024
 });
 $('#'+id+'-dialog').draggable();
 
@@ -72,6 +72,6 @@ $('#'+id).modal({
 
 $('#'+id).modal('show')
 
-$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="800" height="600" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
+$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="1024" height="768" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
 };
 </script>
