@@ -11,7 +11,7 @@
                 <a class="navbar-brand dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">{{ username }}
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    {% if username == 'admin' %}<li><a href="/admin">Administration</a></li>{% endif %}
+                    {% if isadmin is defined %}{% if isadmin == True %}<li><a href="/admin">Administration</a></li>{% endif %}{% endif %}
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="/logout">Logout</a></li>
                 </ul>
