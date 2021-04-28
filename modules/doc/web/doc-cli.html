@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>cld - documentation</title>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+
+<head>
+  <meta charset="utf8" />
+  <title>{{title}}</title>
+  <!-- needed for adaptive design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
     <style>
       body {
         margin: 0;
@@ -119,9 +121,13 @@
         border-radius: 2px !important;
       }
     </style>
-  </head>
-  <body>
-{{{redocHTML}}}
-</script>
-  </body>
+  </style>
+  {{{redocHead}}}
+  {{#unless disableGoogleFont}}<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">{{/unless}}
+</head>
+
+<body>
+  {{{redocHTML}}}
+</body>
+
 </html>
