@@ -55,7 +55,7 @@ $("body").append(`\
   </div>
   `)
 $('#'+id+'-content').resizable({
-  //alsoResize: ".modal-dialog",
+  /alsoResize: ".modal-dialog",
   minHeight: 480,
   minWidth: 640
 });
@@ -70,8 +70,6 @@ $('#'+id).modal('show')
 sleep(250).then(() => {
 $('#'+id+'-body').html('<iframe id="frame-'+id+'" width="1024" height="768" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
 });
-
-
 
 $('#'+id).on('hidden.bs.modal', function () {
     $('#'+id).remove();
