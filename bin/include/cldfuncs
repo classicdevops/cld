@@ -341,7 +341,7 @@ if ! [ "${!CONSTANT}" ]
 then
   while ! egrep -q "^${REGEX}$" <<< "$VALUE"
 do
-echo -e "Please enter the VALUE for ${BoldUline}${CONSTANT}${OffColor} variable using "${REGEX}" - symbols\nEXAMPLE: ${BoldUline}${EXAMPLE}${OffColor}"
+echo -e "Please enter the VALUE for ${BoldUline}${CONSTANT}${OffColor} variable using "${REGEX}" - symbols\nEXAMPLE: ${EXAMPLE}"
 echo -n "#: " ; read VALUE
 echo
 done
