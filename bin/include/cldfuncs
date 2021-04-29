@@ -341,7 +341,7 @@ if ! [ "${!CONSTANT}" ]
 then
   while ! egrep -q "^${REGEX}$" <<< "$VALUE"
 do
-echo -e "Please enter the VALUE for ${WhiteOnBlue}${CONSTANT}${OffColor} variable using "${REGEX}" - symbols\nEXAMPLE: ${WhiteOnBlue}${EXAMPLE}${OffColor}"
+echo -e "Please enter the VALUE for ${BoldUline}${CONSTANT}${OffColor} variable using "${REGEX}" - symbols\nEXAMPLE: ${BoldUline}${EXAMPLE}${OffColor}"
 echo -n "#: " ; read VALUE
 echo
 done
@@ -495,6 +495,7 @@ On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
 WhiteOnBlue='\e[48;5;19m'
+BoldUline='\e[1;4m'
 }
 
 for OPTS in ${@:1}
