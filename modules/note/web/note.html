@@ -40,6 +40,14 @@
       });
     </script>
     <script>
+      function escapeHtml(unsafe) {
+      return unsafe
+           .replace(/&/g, "&amp;")
+           .replace(/</g, "&lt;")
+           .replace(/>/g, "&gt;")
+           .replace(/"/g, "&quot;")
+           .replace(/'/g, "&#039;");
+      }
       function appendtab(id, note) {
           $('#hostTab').append('<li class="nav-item" id="' + id + '-li">\
               <a class="nav-link" id="' + id + '-tab" data-toggle="tab" href="#' + id + '" role="tab" aria-controls="' + id + '" aria-selected="false">\
@@ -63,7 +71,7 @@
               </div>\
               <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                   <div class="panel-body aceinit">\
-              <textarea id="'+filename+id+'">'+filecontent+'</textarea>\
+              <pre id="'+filename+id+'">'+escapeHtml(filecontent)+'</pre>\
               </div></div></div>');
           $('#link'+id+filename)[0].style.width = (($('#link'+id+filename)[0].value.length) * 5.63) + 'px';
           ace.edit(filename+id, {
