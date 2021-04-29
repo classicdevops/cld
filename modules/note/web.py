@@ -56,7 +56,7 @@ def note_save(note):
         os.makedirs('/var/cld/modules/note/data/'+note, mode = 0o700, exist_ok=True)
     notefiles = dict(request.form)
     for notefile in notefiles:
-        open("/var/cld/modules/note/data/"+vld(note)+"/"+vld(notefile), "w", newline='\n').write(notefiles[notefile].replace('\r', ''))
+        open("/var/cld/modules/note/data/"+vld(note)+"/"+vld(notefile), "w").write(notefiles[notefile].replace('\r', ''))
     return Response("Note saved", status=200, mimetype='text/plain')
 
 @app.route("/note/delete/<note>")
