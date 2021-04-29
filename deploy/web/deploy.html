@@ -30,8 +30,8 @@
          });
       </script>
       <script>
-         function escapeHtml(unsafe) {
-             return unsafe
+         function escapeHtml(content) {
+             return content
                .replace(/&/g, "&amp;")
                .replace(/</g, "&lt;")
                .replace(/>/g, "&gt;")

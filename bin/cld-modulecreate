@@ -232,9 +232,6 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
                     $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
                  });
                  }
-                 function sleep (time) {
-                   return new Promise((resolve) => setTimeout(resolve, time));
-                 }
                  function savefile(id, url) {
                          $.ajax({
                              url : url,
