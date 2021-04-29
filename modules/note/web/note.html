@@ -63,7 +63,7 @@
               </div>\
               <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                   <div class="panel-body aceinit">\
-              <pre id="'+filename+id+'">'+filecontent+'</pre>\
+              <textarea id="'+filename+id+'">'+filecontent+'</textarea>\
               </div></div></div>');
           $('#link'+id+filename)[0].style.width = (($('#link'+id+filename)[0].value.length) * 5.63) + 'px';
           ace.edit(filename+id, {
