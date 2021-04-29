@@ -349,7 +349,7 @@ source <(echo "CLOUD=\"${CLOUD}${VALUE}${DELIM}\"")
 unset VALUE
 fi
 done
-echo "${CLOUD::-1} writen fo file ${FILE}"
+echo "${CLOUD::-1} written to file ${FILE}"
 echo "${CLOUD::-1}" >> ${FILE}
 }
 
