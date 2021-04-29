@@ -59,19 +59,19 @@
       function appendfilecontent(id, note, filecontent, filenamestr) {
           var filename = filenamestr.replace(' ', '_')
           expanded = "true" ; collapsed = "" ; toggle = " in" ;
-          $('#'+id+'-accordion').append(`<div id="panel`+filename+id+`" class="panel panel-default`+collapsed+`">\
-              <div class="panel-heading" data-toggle="collapse" data-parent="#`+id+`-accordion" href="#collapse`+id+filename+`" aria-expanded="`+expanded+`" style="cursor:pointer;">\
-                <h4 class="panel-title">\
-                  <a data-toggle="collapse" data-parent="#`+id+`-accordion" href="#collapse`+id+filename+`">\
-                          file: `+filenamestr+`</a>\
-                  </h4>\
-                  <button class="btn btn-danger dpl_del_file_btn" onclick="deletenotefile('`+id+`', '`+note+`', '`+filenamestr+`')">✖</button>\
-                  <div style="float: right;margin: -17px 15px -20px 0px;">\
-                  <input id="link`+id+filename+`" class="prelink" value='bash -x <(wget -qO- "https://`+cld_domain+`/api/all/note/`+note+`/`+filenamestr+`?hash=`+CryptoJS.MD5(note+filenamestr+userapitoken).toString()+`")' readonly></div>\
-              </div>\
-              <div id="collapse`+id+filename+`" class="panel-collapse collapse`+toggle+`">\
-                  <div class="panel-body aceinit">\
-              <pre id="`+filename+id+`">`+escapeHtml(filecontent)+`</pre>\
+          $('#'+id+'-accordion').append(`<div id="panel`+filename+id+`" class="panel panel-default`+collapsed+`">
+              <div class="panel-heading" data-toggle="collapse" data-parent="#`+id+`-accordion" href="#collapse`+id+filename+`" aria-expanded="`+expanded+`" style="cursor:pointer;">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#`+id+`-accordion" href="#collapse`+id+filename+`">
+                          file: `+filenamestr+`</a>
+                  </h4>
+                  <button class="btn btn-danger dpl_del_file_btn" onclick="deletenotefile('`+id+`', '`+note+`', '`+filenamestr+`')">✖</button>
+                  <div style="float: right;margin: -17px 15px -20px 0px;">
+                  <input id="link`+id+filename+`" class="prelink" value='bash -x <(wget -qO- "https://`+cld_domain+`/api/all/note/`+note+`/`+filenamestr+`?hash=`+CryptoJS.MD5(note+filenamestr+userapitoken).toString()+`")' readonly></div>
+              </div>
+              <div id="collapse`+id+filename+`" class="panel-collapse collapse`+toggle+`">
+                  <div class="panel-body aceinit">
+              <pre id="`+filename+id+`">`+escapeHtml(filecontent)+`</pre>
               </div></div></div>`);
           $('#link'+id+filename)[0].style.width = (($('#link'+id+filename)[0].value.length) * 5.63) + 'px';
           ace.edit(filename+id, {
