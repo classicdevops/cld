@@ -177,10 +177,11 @@ server  {
 
     add_header X-Content-Type-Options nosniff;
 
-    location / {
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
     }
+
+    location / {
     include accesslist;
     deny all;
     proxy_pass      http://cldweb;
@@ -196,9 +197,6 @@ server  {
     }
 
     location /api {
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
-    }
     include accesslist;
     deny all;
     rewrite ^/api(.*)$ $1 break;
@@ -214,9 +212,6 @@ server  {
     location /api/all {
     add_header Access-Control-Allow-Origin *;
     limit_req zone=apiall burst=5 nodelay;
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
-    }
     rewrite ^/api(.*)$ $1 break;
     include /etc/nginx/deny.conf;
     proxy_pass                http://cldapi;
@@ -227,6 +222,12 @@ server  {
     proxy_set_header   X-Forwarded-For $remote_addr;
     proxy_set_header   X-Forwarded-Proto $real_scheme;
     }
+
+    location /documentation {
+    limit_req zone=apiall burst=5 nodelay;
+    alias /var/www/cld/doc/;
+    }
+
 }
 EOL
 touch /etc/nginx/accesslist /etc/nginx/deny.conf

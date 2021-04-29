@@ -1,0 +1,20 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Public documentation generation tool
+Clean CLD repo documentation will be able at https://cld.yourdomain.com/documentation/
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-docpublicgen
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+python3 /var/cld/modules/doc/doc-common.py
+mkdir -p /var/www/cld/doc/ &>/dev/null
+rm -rf /var/www/cld/doc/*
+mkdir -p /var/www/cld/doc/{doc,img}
+mkdir -p /var/www/cld/doc/modules/doc/content/
+cp /var/cld/web/img/cld_h.svg /var/www/cld/doc/img/
+cp /var/cld/modules/doc/web/doc.html /var/www/cld/doc/index.html
+cp /var/cld/modules/doc/data/doc-common.json /var/www/cld/doc/doc/doc.json
+cp /var/cld/modules/doc/web/content/doc.css /var/www/cld/doc/modules/doc/content/
