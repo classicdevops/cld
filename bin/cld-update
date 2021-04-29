@@ -24,5 +24,6 @@ echo Start services
 systemctl start cld
 systemctl start cron &>/dev/null
 systemctl start crond &>/dev/null
-echo Update documentation
+echo Update private and public documentation
+{ /var/cld/modules/doc/bin/cld-docpublicgen & disown ; } &>/dev/null
 python3 /var/cld/modules/doc/doc.py &>/dev/null
