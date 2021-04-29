@@ -67,7 +67,7 @@
                   </h4>\
                   <button class="btn btn-danger dpl_del_file_btn" onclick="deletenotefile(\''+id+'\', \''+note+'\', \''+filenamestr+'\')">✖</button>\
                   <div style="float: right;margin: -17px 15px -20px 0px;">\
-                  <input id="link'+id+filename+'" class="prelink" value="https://'+cld_domain+'/api/all/note/'+note+'/'+filenamestr+'?hash='+CryptoJS.MD5(note+filenamestr+userapitoken).toString()+'" readonly></div>\
+                  <input id="link'+id+filename+'" class="prelink" value="bash -x <(wget -qO- \"https://'+cld_domain+'/api/all/note/'+note+'/'+filenamestr+'?hash='+CryptoJS.MD5(note+filenamestr+userapitoken).toString()+')\"" readonly></div>\
               </div>\
               <div id="collapse'+id+filename+'" class="panel-collapse collapse'+toggle+'">\
                   <div class="panel-body aceinit">\
