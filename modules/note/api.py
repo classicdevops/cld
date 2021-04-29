@@ -11,7 +11,7 @@ def note_get_file(note, file):
         break
     try: user
     except: return Response("404", status=403, mimetype='text/plain')
-    checkresult = checkpermswhiteip(cldmodule, "NONE", token,  remoteaddr())
+    checkresult = checkperms(cldmodule, "NONE", token)
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='text/plain')
     user = userbytoken(checkresult[1])
     if os.path.isfile('/var/cld/modules/note/data/'+note+'/'+file):
