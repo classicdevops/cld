@@ -292,6 +292,7 @@ Files created:
 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
 /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
 EOL
+[ -f /var/cld/access/users/${SUDO_USER}/showonlymodules ] && echo -en "\n${MODULE_NAME}" >> /var/cld/access/users/${SUDO_USER}/showonlymodules
 echo
 echo Update users rights according access matrix /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd &>/dev/null
