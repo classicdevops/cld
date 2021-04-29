@@ -17,6 +17,8 @@ initjson['info']['x-logo']['altText'] = 'ClassicDeploy logo'
 
 modules = bash("find /var/cld/ /var/cld/{cm,deploy} /var/cld/modules/*/ -maxdepth 1 -name 'bin' -o -name 'README.md'").split('\n')
 
+
+
 itter = 0
 for modulepath in modules:
   module = modulepath.split('/')[-2]
