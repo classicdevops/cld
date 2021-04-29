@@ -312,7 +312,7 @@ done
 
 init-string()
 {
-ARGS_NUM=$(echo "${@:1}" | tr ' ' '\n' | grep -v "^--" | wc -l)
+ARGS_NUM=$(echo "${@:1}" | tr ' ' '\n' | grep -v "^--" | wc -w)
 for ARG in $(seq 1 ${ARGS_NUM})
 do
 source <(echo ARG${ARG}=\"$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -${ARG} | tail -1)\")
