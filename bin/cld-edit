@@ -17,7 +17,7 @@ EOL
 source /var/cld/bin/include/cldfuncs
 
 CLD_GROUP=$1
-ALLOWED_GROUPS=$(cat /var/cld/access/user/${SUDO_USER}/groups)
+ALLOWED_GROUPS=$(cat /var/cld/access/users/${SUDO_USER}/groups)
 
 if ! [ "$CLD_GROUP" ]
 then
