@@ -17,7 +17,8 @@ EOL
 source /var/cld/bin/include/cldfuncs
 
 CLD_GROUP=$1
-ALLOWED_GROUPS=$(cat /var/cld/access/users/${SUDO_USER}/groups)
+ALLOWED_GROUPS=$(grep -v "^#\|^$" /var/cld/access/users/${SUDO_USER}/groups)
+[ "$ALLOWED_GROUPS" ] || { echo ALLOWED GROUPS for user $SUDO_USER not defined ; exit 1 ; }
 
 if ! [ "$CLD_GROUP" ]
 then
@@ -45,4 +46,6 @@ fi
 if [ "$(grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}" && echo 0)" = "0" -a "$(user_is_admin $SUDO_USER)" = "0" ]
 then
 nano /var/cld/access/groups/${CLD_GROUP}/clouds
+else
+echoexit1 Group is not defined
 fi
