@@ -28,7 +28,7 @@ done
 
 if ! [ "$CLD_GROUP" ]
 then
-echo "Please group to edit instance list"
+echo "Please choose group to edit instance list"
 select CLD_GROUP in ${ALLOWED_GROUPS}
 do
   CLD_LOGS
