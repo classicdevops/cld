@@ -98,6 +98,20 @@ EXTERNAL_UMOUNT() {
 LOCALMOUNTPATH="/home/$SUDO_USER/mnt/$VM" &>/dev/null ; fusermount -uzq $LOCALMOUNTPATH &>/dev/null ; rmdir $LOCALMOUNTPATH &>/dev/null
 }
 
+user_is_admin()
+{
+CLD_USER=$1
+[ "$CLD_USER" ] || { echo CLD_USER is not defined ; return 1 ; }
+if awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^${CLD_USER}:" | cut -d : -f 2- | grep -q "^ALL:ALL$"
+then
+echo 0
+return 0
+else
+echo 1
+return 1
+fi
+}
+
 CLOUDS_USER_ALLOWED() {
 for OPTS in ${@:1}
 do

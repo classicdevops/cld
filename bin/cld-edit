@@ -1,0 +1,46 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+CLD group instance list editor
+This is "admin" role tool
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       CLD group to edit
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-edit
+cld-edit default
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+CLD_GROUP=$1
+ALLOWED_GROUPS=$(cat /var/cld/access/user/${SUDO_USER}/groups)
+
+if ! [ "$CLD_GROUP" ]
+then
+echo "Please group to edit instance list"
+select CLD_GROUP in ${ALLOWED_GROUPS}
+do
+  CLD_LOGS
+  if [ "$CLD_GROUP" ]
+  then
+    break
+  else
+  fi
+done
+fi
+
+if ! [ "$CLD_GROUP" ] || echoexit1 Group is not defined
+
+if grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}"
+then
+  nano 
+grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}" || echoexit1 Group is not defined
+
+if [ "$(grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}" && echo 0)" = "0" -a "$(user_is_admin)" = "0" ]
+then
+nano /var/cld/access/groups/${CLD_GROUP}/clouds
+fi

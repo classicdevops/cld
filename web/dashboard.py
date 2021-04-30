@@ -10,7 +10,6 @@ import subprocess
 import datetime
 import pam
 import time
-import logging
 import sys
 import random
 import pty
