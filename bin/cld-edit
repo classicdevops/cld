@@ -28,7 +28,6 @@ do
   if [ "$CLD_GROUP" ]
   then
     break
-  else
   fi
 done
 fi
