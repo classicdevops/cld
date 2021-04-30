@@ -17,7 +17,7 @@ EOL
 source /var/cld/bin/include/cldfuncs
 
 CLD_GROUP=$1
-ALLOWED_GROUPS=$(grep -v "^#\|^$" /var/cld/access/users/${SUDO_USER}/groups)
+ALLOWED_GROUPS=$(grep -v "^#\|^$" /var/cld/access/users/${SUDO_USER}/groups | sort -u)
 [ "$ALLOWED_GROUPS" ] || { echo ALLOWED GROUPS for user $SUDO_USER not defined ; exit 1 ; }
 
 if ! [ "$CLD_GROUP" ]
