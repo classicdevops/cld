@@ -11,7 +11,7 @@ $1                       First PATTERN filtering allowed instances and choose la
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cldx-bash-tty instance_1.2.3.4_22_root << EOCLD
+cldx-bash-notty instance_1.2.3.4_22_root << EOCLD
 script
 commands
 EOCLD
