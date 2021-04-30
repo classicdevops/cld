@@ -32,7 +32,10 @@ do
 done
 fi
 
-if ! [ "$CLD_GROUP" ] || echoexit1 Group is not defined
+if ! [ "$CLD_GROUP" ]
+then
+echoexit1 Group is not defined
+fi
 
 if grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}"
 then
