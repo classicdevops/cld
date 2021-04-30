@@ -38,10 +38,7 @@ then
 echoexit1 Group is not defined
 fi
 
-if grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}"
-then
-echoexit1 Group is not defined
-fi
+grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}" || { echo CLD_GROUP is not defined ; exit 1 ; }
 
 if [ "$(grep -q "^${CLD_GROUP}$" <<< "${ALLOWED_GROUPS}" && echo 0)" = "0" -a "$(user_is_admin $SUDO_USER)" = "0" ]
 then
