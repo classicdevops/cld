@@ -1,0 +1,24 @@
+#searchInput {
+background-position: 10px 12px;
+background-repeat: no-repeat;
+width: 95%;
+font-size: 14px;
+padding: 5px 5px 5px 8px;
+border: 1px solid #1e88e5;
+margin-bottom: 12px;
+}
+
+#ServerListUl li a {
+border: 1px solid #1e88e5;
+margin: 0px;
+background-color: white;
+padding: 0px;
+padding-left: 4px;
+text-decoration: none;
+display: block;
+font-size: 14;
+color: lightslategray;
+border-right-width: 0;
+border-left-width: 0;
+border-bottom-width: 0;
+}
