@@ -171,34 +171,3 @@ $(document).ready(function() {
       $('.row-offcanvas').toggleClass('active');
   });
 });
-
-function recursivesearch(patterns)
-{
-  $.ajax({
-      type : 'GET', 
-      url: '/api/note',
-      dataType: 'json',
-      data: { 
-          token: userapitoken, 
-          args: '--json '+patterns,
-          output: 'plain'
-        },
-      success: function (objfiles) {
-          $('#ServerListUl').html('')
-          for (note in objfiles) {
-              if (note != ""){
-                  $('#ServerListUl').append('\
-                      <li id="'+objfiles[note]+'">\
-                      <a onclick="newtab(&quot;'+objfiles[note]+'&quot;)" class="nav-link active" id="'+objfiles[note]+'-link" data-toggle="tab" href="#'+objfiles[note]+'">'+objfiles[note]+'</a>\
-                      </li>\
-                      ')
-              }
-          }
-      }
-  });
-};
-document.querySelector("#searchInput").addEventListener("keyup", event => {
-  if(event.key !== "Enter") return;
-  recursivesearch(document.getElementById('searchInput').value)
-  event.preventDefault();
-});
