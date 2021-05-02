@@ -13,7 +13,6 @@ cld-edit
 cld-edit default
 EOL
 )
-
 source /var/cld/bin/include/cldfuncs
 
 CLD_GROUP=$1
