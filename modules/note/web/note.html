@@ -19,11 +19,9 @@
    <script type="text/javascript" src="/modules/note/content/note.js"></script>
   <body>
     <div class="page-container">
-      <!-- top navbar -->
       {% include 'html/include/navbar-term.html' %}
       <div class="container term">
         <div class="row row-offcanvas row-offcanvas-left">
-          <!-- sidebar -->
           <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation" style="width: 15%;">
             <input type="text" id="searchInput" onkeyup="search()" placeholder="[Enter] - search in content" title="Type in a name">
             <ul class="nav" id="ServerListUl">
@@ -49,13 +47,9 @@
               </div>
             </div>
           </div>
-          <!-- /.col-xs-12 main -->
         </div>
-        <!--/.row-->
       </div>
-      <!--/.container-->
     </div>
-    <!--/.page-container-->
     <script>
       function recursivesearch(patterns)
       {
