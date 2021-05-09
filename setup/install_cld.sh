@@ -179,6 +179,8 @@ yum install python3 python3-pip  -y
 yum install python*-crypto python*-cryptography certbot -y
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 
+yum install https://kojipkgs.fedoraproject.org//packages/whatmask/1.2/27.fc34/x86_64/whatmask-1.2-27.fc34.x86_64.rpm -y
+
 pip3 install certbot certbot-dns-cloudflare
 pip3 install cryptography==3.2 zope.interface==5.3.0a1
 }
@@ -220,6 +222,15 @@ yum install python*-crypto python*-cryptography certbot python3-certbot-dns-clou
 
 pip3 install certbot certbot-dns-cloudflare
 pip3 install cryptography==3.2 zope.interface==5.3.0a1
+
+dnf install https://kojipkgs.fedoraproject.org//packages/whatmask/1.2/27.fc34/x86_64/whatmask-1.2-27.fc34.x86_64.rpm -y
+
+dnf group install "Development Tools" -y
+cd /usr/src
+git clone https://github.com/andre-simon/ansifilter.git
+cd ansifilter/
+make
+make install
 }
 
 system_setup_d9()
@@ -228,6 +239,20 @@ system_setup_d9()
 apt update
 apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
 pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
+
+cd /usr/src
+git clone https://github.com/andre-simon/ansifilter.git
+cd ansifilter/
+make
+make install
+
+cd /usr/src
+wget http://downloads.laffeycomputer.com/current_builds/whatmask/whatmask-1.2.tar.gz
+tar zxvf whatmask-1.2.tar.gz
+cd whatmask-1.2
+./configure
+make
+make install
 }
 
 system_setup_d10()
@@ -235,7 +260,21 @@ system_setup_d10()
 #install base soft
 apt update
 apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
-pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc 
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
+
+cd /usr/src
+git clone https://github.com/andre-simon/ansifilter.git
+cd ansifilter/
+make
+make install
+
+cd /usr/src
+wget http://downloads.laffeycomputer.com/current_builds/whatmask/whatmask-1.2.tar.gz
+tar zxvf whatmask-1.2.tar.gz
+cd whatmask-1.2
+./configure
+make
+make install
 }
 
 cld_install()
