@@ -16,6 +16,7 @@ systemctl stop crond &>/dev/null
 echo Check and wait if there current access list deploy
 while $(ps axfu | grep -v grep | grep -q cld-accesslistdeploy); do sleep 1s; done
 chattr -i /var/cld
+mkdir /var/cld/log &>/dev/null
 cd /var/cld && git pull --force
 [ -e "/var/cld/tmp" ] || mkdir -p /var/cld/tmp &>/dev/null
 echo Update users rights according access matrix /var/cld/creds/passwd
