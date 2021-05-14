@@ -1,0 +1,47 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Upload directory or big file as parts to telegram cloud
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--chatid=-1234567891011|123456789      Telegram chat or user id
+--filepath=/tmp/file_for_upload        Absolute file/dir path at cld/mounted server
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-tcloud-split --chatid=-1234567891011 --filepath=/tmp/big_file_or_dir_for_upload
+EOL
+)
+HELP_ONLY="CLI"
+
+source /var/cld/bin/include/cldfuncs
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cld.example.com
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--chatid=' && TG_GROUP="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--file=' && FILE_PATH="$(echo $OPTS | cut -d '=' -f 2)"
+done
+
+[ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details
+[ "$FILE_PATH" ] || echoexit1 File path is not defined - use --help argument for details
+
+CURRENT_TIMESTAMP=$(date +%s)
+FILE_NAME=$(basename ${FILE_PATH})
+
+rm -f ./${FILE_NAME}.part*
+tar zcvf - ${FILE_PATH} | split -b 20M - "${FILE_NAME}.part"
+for FILE_PART in $(ls ./${FILE_NAME}.part* | xargs readlink -e)
+do
+/var/cld/modules/telegramcloud/bin/cld-tcloud-upload --chatid=${TG_GROUP} --file=${FILE_PART}
+done | tee -a /var/cld/tmp/${FILE_NAME}.links
+cat << EOL | tee -a /var/cld/tmp/${FILE_NAME}.commands
+# Commands to download and collect file:
+
+$(awk '{print "wget -q "\$1}' /var/cld/tmp/${FILE_NAME}.links)
+cat ${FILE_NAME}.part > ${FILE_NAME}.tar.gz
+
+# Command to extract
+tar zxvf ${FILE_NAME}.tar.gz
+EOL
+/var/cld/modules/telegramcloud/bin/cld-tcloud-upload --chatid=${TG_GROUP} --file=/var/cld/tmp/${FILE_NAME}.commands
