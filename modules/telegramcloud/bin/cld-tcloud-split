@@ -20,7 +20,7 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--chatid=' && TG_GROUP="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--file=' && FILE_PATH="$(echo $OPTS | cut -d '=' -f 2)"
+echo $OPTS | grep -q  '^\--filepath=' && FILE_PATH="$(echo $OPTS | cut -d '=' -f 2)"
 done
 
 [ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details
