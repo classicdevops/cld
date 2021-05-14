@@ -45,6 +45,8 @@ cat ${FILE_NAME}.part* > ${FILE_NAME}.tar.gz
 
 # Extract content
 tar zxvf ${FILE_NAME}.tar.gz
+
+# Delete downloaded parts
 rm -f ./${FILE_NAME}.part*
 EOL
 /var/cld/modules/telegramcloud/bin/cld-tcloud-upload --chatid=${TG_GROUP} --file=/var/cld/tmp/${FILE_NAME}.commands
