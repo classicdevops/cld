@@ -39,9 +39,11 @@ cat << EOL | tee /var/cld/tmp/${FILE_NAME}.commands
 # Commands to download and collect file:
 rm -f ./${FILE_NAME}.part*
 $(awk '{print "wget "$1}' /var/cld/tmp/${FILE_NAME}.links)
+
+# Collect file
 cat ${FILE_NAME}.part* > ${FILE_NAME}.tar.gz
 
-# Command to extract
+# Extract content
 tar zxvf ${FILE_NAME}.tar.gz
 EOL
 /var/cld/modules/telegramcloud/bin/cld-tcloud-upload --chatid=${TG_GROUP} --file=/var/cld/tmp/${FILE_NAME}.commands
