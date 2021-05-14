@@ -35,10 +35,10 @@ for FILE_PART in $(ls ./${FILE_NAME}.part* | xargs readlink -e)
 do
 /var/cld/modules/telegramcloud/bin/cld-tcloud-upload --chatid=${TG_GROUP} --file=${FILE_PART}
 done | tee -a /var/cld/tmp/${FILE_NAME}.links
-cat << EOL | tee -a /var/cld/tmp/${FILE_NAME}.commands
+cat << EOL | tee /var/cld/tmp/${FILE_NAME}.commands
 # Commands to download and collect file:
-
-$(awk '{print "wget -q "$1}' /var/cld/tmp/${FILE_NAME}.links)
+rm -f ./${FILE_NAME}.part*
+$(awk '{print "wget "$1}' /var/cld/tmp/${FILE_NAME}.links)
 cat ${FILE_NAME}.part* > ${FILE_NAME}.tar.gz
 
 # Command to extract
