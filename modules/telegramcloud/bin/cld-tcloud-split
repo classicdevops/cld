@@ -38,8 +38,8 @@ done | tee -a /var/cld/tmp/${FILE_NAME}.links
 cat << EOL | tee -a /var/cld/tmp/${FILE_NAME}.commands
 # Commands to download and collect file:
 
-$(awk '{print "wget -q "\$1}' /var/cld/tmp/${FILE_NAME}.links)
-cat ${FILE_NAME}.part > ${FILE_NAME}.tar.gz
+$(awk '{print "wget -q "$1}' /var/cld/tmp/${FILE_NAME}.links)
+cat ${FILE_NAME}.part* > ${FILE_NAME}.tar.gz
 
 # Command to extract
 tar zxvf ${FILE_NAME}.tar.gz
