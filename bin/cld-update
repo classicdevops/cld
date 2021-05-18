@@ -22,7 +22,7 @@ then
 export UPGRADE=1
 elif [ "$1" = "downgrade" ]
 then
-export DEOWNGRADE=1
+export DOWNGRADE=1
 fi
 
 TIER=$(cat /var/cld/tmp/cld_tier)
