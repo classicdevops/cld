@@ -173,7 +173,7 @@ fi
 echo ${HOSTNAME}
 
 iptables-save | grep -q cldaccess || iptables -A INPUT -m comment --comment cldaccess
-ip6tables-save | grep -q cldaccessv6 || ip6tables -A INPUT -m comment --comment cldaccess
+ip6tables-save | grep -q cldaccessv6 || ip6tables -A INPUT -m comment --comment cldaccessv6
 
 IPTABLES_STATE="$(iptables-save)"
 
