@@ -72,7 +72,7 @@ cld-stop
 cld-update
 cld-start
 
-elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" -a "$UPGRADE" != "1" ]
+elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" -a "$UPGRADE" != "1" -a "$DOWNGRADE" != "1" ]
 then
 
 cld-stop
