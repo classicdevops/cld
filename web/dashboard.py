@@ -316,7 +316,7 @@ def uploadfile(instance):
     return Response('File uploaded', status=200, mimetype='text/plain')
 
 def keepalive_shell_session(socketid, child_pid, room, subprocpid, fd):
-    app.config["shell"]["keepalive"][socketid] = int(time.time())+15
+    app.config["shell"]["keepalive"][socketid] = int(time.time())+60
     print("keepalive_shell_session started for socketid: "+socketid, flush=True)
     while True:
         time.sleep(10)
