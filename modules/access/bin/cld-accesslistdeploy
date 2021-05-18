@@ -172,6 +172,9 @@ fi
 
 echo ${HOSTNAME}
 
+iptables-save | grep -q cldaccess || iptables -A INPUT -m comment --comment cldaccess
+ip6tables-save | grep -q cldaccessv6 || ip6tables -A INPUT -m comment --comment cldaccess
+
 IPTABLES_STATE="$(iptables-save)"
 
 IPTABLES_STATE6="$(ip6tables-save)"
@@ -218,31 +221,6 @@ done
 
 $SECOND_PART
 EOACCESS
-else
-source <(
-iptables-save | grep -v conntrack | grep -q ESTABLISHED || iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccess
-iptables-save | grep -v "$(echo $ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "${BLACK_IPS}" | grep -v "/32 -j DROP" | iptables-restore
-for LOCAL_NET in $LOCAL_NETS
-do
-echo "iptables -A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
-done
-for IP in $ALLOWED_IPS
-do
-cat << EOL
-iptables -A INPUT -s ${IP}/32 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess
-EOL
-done
-cat << EOL
-iptables -A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
-iptables -A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
-EOL
-for BLACK_IP in $BLACK_IPS
-do
-cat << EOL
-iptables -I INPUT -s ${BLACK_IP}/32 -j DROP -m comment --comment cldaccess
-EOL
-done
-)
 fi
 
 if grep -q "cldaccessv6" <<< "${IPTABLES_STATE6}"
@@ -275,31 +253,6 @@ done
 
 $SECOND_PART
 EOACCESS
-else
-source <(
-ip6tables-save | grep -v conntrack | grep -q ESTABLISHED || ip6tables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccessv6
-ip6tables-save | grep -v "$(echo $ALLOWED_PORTS | tr ' ' '@' | sed 's#@#@%#g' | tr '@' ',' | tr '%' '\n')" | grep -v "${BLACK_IPS6}" | grep -v "/128 -j DROP" | ip6tables-restore
-for LOCAL_NET in $LOCAL_NETS6
-do
-echo "ip6tables -A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6"
-done
-for IP in $ALLOWED_IPS6
-do
-cat << EOL
-ip6tables -A INPUT -s ${IP}/128 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6
-EOL
-done
-cat << EOL
-ip6tables -A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccessv6
-ip6tables -A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccessv6
-EOL
-for BLACK_IP in $BLACK_IPS6
-do
-cat << EOL
-ip6tables -I INPUT -s ${BLACK_IP}/128 -j DROP -m comment --comment cldaccessv6
-EOL
-done
-)
 fi
 
 EOIPTABLES
