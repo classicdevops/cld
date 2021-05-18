@@ -3,12 +3,35 @@ HELP_DESC=$(cat << 'EOL'
 Classicdeploy update tool
 EOL
 )
+HELP_ARGS=$(cat << 'EOL'
+upgrade                     Upgrade to stable repository or next paid plan
+downgrade                   Downgrade from paid to open source free plan
+EOL
+)
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-update
+cld-update upgrade
+cld-update downgrade
 EOL
 )
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
+
+if [ "$1" = "upgrade" ]
+then
+export UPGRADE=1
+elif [ "$1" = "downgrade" ]
+then
+export DEOWNGRADE=1
+fi
+
+TIER=$(cat /var/cld/tmp/cld_tier)
+[ "$TIER" ] || echo opensource > /var/cld/tmp/cld_tier
+TIER=${TIER:-opensource}
+
+
+cld-stop()
+{
 echo Stop services
 systemctl stop cld
 systemctl stop cron &>/dev/null
@@ -16,15 +39,95 @@ systemctl stop crond &>/dev/null
 echo Check and wait if there current access list deploy
 while $(ps axfu | grep -v grep | grep -q cld-accesslistdeploy); do sleep 1s; done
 chattr -i /var/cld
+}
+
+cld-update()
+{
+
 mkdir /var/cld/log &>/dev/null
 cd /var/cld && git pull --force
 [ -e "/var/cld/tmp" ] || mkdir -p /var/cld/tmp &>/dev/null
 echo Update users rights according access matrix /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd &>/dev/null
+echo Update private and public documentation
+{ /var/cld/modules/doc/bin/cld-docpublicgen & disown ; } &>/dev/null
+{ python3 /var/cld/modules/doc/doc.py &>/dev/null & disown ; } &>/dev/null
+}
+
+cld-start()
+{
 echo Start services
 systemctl start cld
 systemctl start cron &>/dev/null
 systemctl start crond &>/dev/null
-echo Update private and public documentation
-{ /var/cld/modules/doc/bin/cld-docpublicgen & disown ; } &>/dev/null
-python3 /var/cld/modules/doc/doc.py &>/dev/null
+}
+
+[ "$TIER" != "opensource" -a "$UPGRADE" != "1" ] && export VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${TIER}.git" && echo ${TIER})
+
+
+if [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
+then
+
+cld-stop
+cld-update
+cld-start
+
+elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" -a "$UPGRADE" != "1" ]
+then
+
+cld-stop
+cld-update
+cld-start
+
+elif [ "$UPGRADE" = "1" ]
+then
+
+for CHECK_TIER in basic business premium enterprise
+do
+VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${CHECK_TIER}.git" &>/dev/null && echo ${CHECK_TIER})
+[ "${VERIFIED_TIER}" ] && break
+done
+[ "${VERIFIED_TIER}" ] || { echo TIER is not defined - upgrade failed - exit ; exit 1 ; }
+
+TIER_COMMIT_ID=$(git ls-remote git@git.classicdeploy.com:cld/${VERIFIED_TIER}.git | tail -1 | cut -b  -8)
+
+[ -d /usr/src/cld ] && rm -rf /usr/src/cld
+mkdir /usr/src/cld
+cd /usr/src/cld
+git clone git@git.classicdeploy.com:cld/${VERIFIED_TIER}.git
+
+cld-stop
+
+rm -rf /var/cld/.git/
+rsync -avP /usr/src/cld/${VERIFIED_TIER}/ /var/cld/
+
+cd /var/cld/
+echo ${VERIFIED_TIER} > /var/cld/tmp/cld_tier
+
+cld-update
+cld-start
+
+elif [ "$DOWNGRADE" = "1" ]
+then
+
+TIER_COMMIT_ID=$(git ls-remote git@github.com:classicdeploy/cld.git | tail -1 | cut -b  -8)
+
+[ -d /usr/src/cld ] && rm -rf /usr/src/cld
+mkdir /usr/src/cld
+cd /usr/src/cld
+git clone git@github.com:classicdeploy/cld.git
+
+cld-stop
+
+rm -rf /var/cld/.git/
+rsync -avP /usr/src/cld/cld/ /var/cld/
+
+cd /var/cld/
+git add .
+git reset $TIER_COMMIT_ID --hard &>/dev/null
+echo opensource > /var/cld/tmp/cld_tier
+
+cld-update
+cld-start
+
+fi

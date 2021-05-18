@@ -210,6 +210,7 @@ then
 GATEWAY=62.210.0.2
 fi
 
+
 if [ "$GATEWAY" == "" ]
 then
 while ! [[ "$GATEWAY" =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]]
@@ -219,6 +220,8 @@ Example: 1.2.3.1"
 echo -n '#? '; read GATEWAY
 echo
 done
+else
+echo "[OK] Gateway detected"
 fi
 
 if [ "$NTMASK" = "" ] ; then NTMASK="255.255.255.0" ; fi
@@ -406,6 +409,7 @@ EOL
 ) 2>&1 | tee -a ${LOG_FILE}
 
 echo "${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD}" >> /var/cld/access/groups/default/clouds
+echo "CLD instance ${VMNAME}_${IPADDR}_22_root_${ROOTPASSWORD} added to default group"
 if echo `ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" -o "RequestTTY force" ${HPR_USER}@$HPR "sudo qm list | grep $VMID"` | grep --quiet "running"
 then echo "OK" >> ${LOG_FILE} ; send_tg Cloud \`${VMID}\` *created*'\n'Log file: \`${LOG_FILE}\`
 else echo "FAIL" >> ${LOG_FILE} ; send_tg Cloud \`${VMID}\` *Error* while creating'\n'Log file: \`${LOG_FILE}\`
