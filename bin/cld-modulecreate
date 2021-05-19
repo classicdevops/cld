@@ -13,6 +13,7 @@ cld-modulecreate
 cld-modulecreate --name=modulename --desc=Short_description
 EOL
 )
+HELP_ONLY="CLI API WEB"
 
 source /var/cld/bin/include/cldfuncs
 
