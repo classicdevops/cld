@@ -7,6 +7,9 @@ HELP_EXAMPLES=$(cat << 'EOL'
 cld-tgcmdgen
 EOL
 )
+source /var/cld/bin/include/cldfuncs
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+
 curl -s --request POST \
 --url https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setMyCommands \
 --header 'Content-Type: application/json' \
