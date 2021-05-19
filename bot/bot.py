@@ -143,15 +143,7 @@ EOL
 done
 '''))
 
-bash('''
-curl -s --request POST \
-  --url https://api.telegram.org/bot'''+telegram_bot_token+'''/setMyCommands \
-  --header 'Content-Type: application/json' \
-  --data "{
-        \"commands\":
-    $(cat /var/cld/modules/doc/data/doc.json  | jq '.paths | .[].options | select(."x-codeSamples"[].lang == "BOT") | {'command': .summary, 'description': .description}' | sed -e 's#\\n.*#"#g' | sed -e 's#  "#"#g' -e 's#""#"None"#g' -e 's#cld-##g' | jq -c . | tr -d '\n' | sed 's#}{#},{#g' | cat <(echo [) - <(echo ]) | jq .)
-    }" 2>&1
-''')
+bash("/var/cld/modules/doc/bin/cld-tgcmdgen")
 
 if __name__ == '__main__':
      bot.polling(none_stop=True)
