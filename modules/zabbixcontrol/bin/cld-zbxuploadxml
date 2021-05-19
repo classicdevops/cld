@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Zabbix XML configuration imort tool
+Zabbix XML configuration import tool
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
