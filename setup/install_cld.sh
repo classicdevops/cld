@@ -237,8 +237,8 @@ system_setup_d9()
 {
 #install base soft
 apt update
-apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
-pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx sipcalc uuid-runtime
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml 
 
 cd /usr/src
 git clone https://github.com/andre-simon/ansifilter.git
@@ -259,8 +259,8 @@ system_setup_d10()
 {
 #install base soft
 apt update
-apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx
-pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml sipcalc
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg2 git curl fuse sshfs sshpass screen jq python3 python3-pip certbot nginx sipcalc uuid-runtime
+pip3 install flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 
 cd /usr/src
 git clone https://github.com/andre-simon/ansifilter.git
