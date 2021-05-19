@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Telegram commands description generator
+Telegram bot commands description generator
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
