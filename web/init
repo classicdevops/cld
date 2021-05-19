@@ -177,11 +177,10 @@ server  {
 
     add_header X-Content-Type-Options nosniff;
 
+    location / {
     if ($real_scheme = http) {
         return 301 https://$host$request_uri;
     }
-
-    location / {
     include accesslist;
     deny all;
     proxy_pass      http://cldweb;
@@ -197,6 +196,9 @@ server  {
     }
 
     location /api {
+    if ($real_scheme = http) {
+        return 301 https://$host$request_uri;
+    }
     include accesslist;
     deny all;
     rewrite ^/api(.*)$ $1 break;
@@ -210,6 +212,9 @@ server  {
     }
 
     location /api/all {
+    if ($real_scheme = http) {
+        return 301 https://$host$request_uri;
+    }
     add_header Access-Control-Allow-Origin *;
     limit_req zone=apiall burst=5 nodelay;
     rewrite ^/api(.*)$ $1 break;
@@ -224,6 +229,9 @@ server  {
     }
 
     location /documentation {
+    if ($real_scheme = http) {
+        return 301 https://$host$request_uri;
+    }
     limit_req zone=apiall burst=5 nodelay;
     alias /var/www/cld/doc/;
     }
