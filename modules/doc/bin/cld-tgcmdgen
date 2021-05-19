@@ -13,4 +13,4 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 curl -s --request POST \
 --url https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setMyCommands \
 --header 'Content-Type: application/json' \
---data "{\"commands\":$(cat /var/cld/modules/doc/data/doc.json | jq '.paths | .[].options | select(."x-codeSamples"[].lang == "BOT") | {'command': .summary, 'description': ("/" + .summary + " -h | print help | " + .description)}' | sed -e 's#\\n.*#"#g' | sed -e 's#  "#"#g' -e 's#""#"None"#g' -e 's#cld-##g' | jq -c . | tr -d '\n' | sed 's#}{#},{#g' | cat <(echo [) - <(echo ]) | jq .)}"
+--data "{\"commands\":$(cat /var/cld/modules/doc/data/doc.json | jq '.paths | .[].options | select(."x-codeSamples"[].lang == "BOT") | {'command': .summary, 'description': ("*/" + .summary + " -h* to show help | " + .description)}' | sed -e 's#\\n.*#"#g' | sed -e 's#  "#"#g' -e 's#""#"None"#g' -e 's#cld-##g' | jq -c . | tr -d '\n' | sed 's#}{#},{#g' | cat <(echo [) - <(echo ]) | jq .)}"
