@@ -3,6 +3,10 @@ HELP_DESC=$(cat << 'EOL'
 Telegram bot commands description generator
 EOL
 )
+HELP_ARGS=$(cat << 'EOL'
+--show                                 Just get stored commands from telegram bot api
+EOL
+)
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-tgcmdgen
 EOL
@@ -10,7 +14,17 @@ EOL
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  "^\--show\|^\-show" && SHOW=1
+done
+
+if [ "$SHOW" = "1" ]
+then
+curl -s https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMyCommands | jq .
+else
 curl -s --request POST \
 --url https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setMyCommands \
 --header 'Content-Type: application/json' \
 --data "{\"commands\":$(cat /var/cld/modules/doc/data/doc.json | jq '.paths | .[].options | select(."x-codeSamples"[].lang == "BOT") | {'command': .summary, 'description': ("/" + .summary + " -h [show help] | " + .description)}' | sed -e 's#\\n.*#"#g' | sed -e 's#  "#"#g' -e 's#""#"None"#g' -e 's#cld-##g' -e 's#myipbot#myip#g' | jq -c . | tr -d '\n' | sed 's#}{#},{#g' | cat <(echo [) - <(echo ]) | jq .)}"
+fi
