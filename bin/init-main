@@ -28,7 +28,7 @@ fi
 
 cat > ${USR_PATH}/lib/systemd/system/cld-api.service << EOL
 [Unit]
-Description=Classic deploy api interface service
+Description=ClassicDeploy api interface service
 After=multi-user.target
 PartOf=cld.service
 
@@ -72,7 +72,7 @@ EOL
 
 cat > ${USR_PATH}/lib/systemd/system/cld-web.service << EOL
 [Unit]
-Description=Classic deploy web interface service
+Description=ClassicDeploy web interface service
 After=multi-user.target
 PartOf=cld.service
 
@@ -93,7 +93,7 @@ WantedBy=multi-user.target
 EOL
 cat > ${USR_PATH}/lib/systemd/system/cld.service << EOL
 [Unit]
-Description=Main classicdeploy additional interfaces service
+Description=Main ClassicDeploy additional interfaces service
 Wants=cld-api.service
 Wants=cld-bot.service
 Wants=cld-web.service

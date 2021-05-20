@@ -1,7 +1,7 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 Utility to check if there is attack for site and enable "under_attack" mode at CloudFlare - output is RPS amount
-Can be settet up for cron or to Zabbix as data item with system.run key or Classic Deploy API by URL
+Can be settet up for cron or to Zabbix as data item with system.run key or ClassicDeploy API by URL
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'

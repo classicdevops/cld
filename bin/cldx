@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Direct instance terminal access CLI utility of classic deploy access system
+Direct instance terminal access CLI utility of ClassicDeploy access system
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'

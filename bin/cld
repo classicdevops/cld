@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Main classic deploy CLI access system utility
+Main ClassicDeploy CLI access system utility
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
