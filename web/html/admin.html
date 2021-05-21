@@ -45,7 +45,7 @@
                               {% endfor %}
                            </tbody>
                         </table>
-                        <form method="POST" action="/adduser" class="form-inline" style="float: right;">
+                        <form method="POST" action="{{ url_for('adduser') }}" class="form-inline" style="float: right;">
                            <div class="form-group mx-sm-3 mb-2">
                               <input type="text" class="form-control" name="newuser" placeholder="New user">
                            </div>
