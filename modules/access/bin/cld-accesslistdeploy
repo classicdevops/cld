@@ -261,11 +261,14 @@ ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/ipt
 EOACCESSDEPLOY
 )
 
+if [ "$CLD_GROUPS" = "default" -a  "$CLD_ALLOW_GROUPS" = "default" ]
+then
 cat << EOL | bash
 $CLD_ACCESS_LIST
 $CLD_ACCESS_DEPLOY
 EOL
 bash -lc "/root/sbin/iptables_access"
+fi
 
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
 do
