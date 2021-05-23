@@ -17,4 +17,4 @@ def myvpn():
       return Response('404', status=404, mimetype='text/plain')
     return Response(stream_file(file_path), status=200, mimetype='application/octet-stream')
   else:
-    return 403
+    return Response('403', status=403, mimetype='text/plain')
