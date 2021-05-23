@@ -23,6 +23,32 @@ apt install $1 -y
 fi
 }
 
+openvpnsystemdservice()
+{
+if grep -qi "centos\|rhel" /etc/*-release
+then
+USR_PATH="/usr"
+elif grep -qi "debian\|ubuntu" /etc/*-release
+then
+USR_PATH=""
+fi
+
+cat > ${USR_PATH}/lib/systemd/system/openvpn@.service << 'EOL'
+[Unit]
+Description=OpenVPN Robust And Highly Flexible Tunneling Application On %I
+After=network.target
+
+[Service]
+Type=notify
+PrivateTmp=true
+ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/ --config %i.conf
+
+[Install]
+WantedBy=multi-user.target
+EOL
+systemctl daemon-reload
+}
+
 ovpngenerate()
 {
 
@@ -198,6 +224,9 @@ setenforce 0
 
 systemctl stop firewalld
 systemctl disable firewalld
+
+systemctl cat openvpn@ &>/dev/null || openvpnsystemdservice
+
 systemctl -f enable openvpn@server_${VPN_ID}.service
 systemctl start openvpn@server_${VPN_ID}.service
 systemctl restart openvpn@server_${VPN_ID}.service
