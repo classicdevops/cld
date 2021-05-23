@@ -99,7 +99,6 @@ cert server_${VPN_ID}.crt
 key server_${VPN_ID}.key  # This file should be kept secret
 dh dh2048_${VPN_ID}.pem
 server 10.8.${NETWORK}.0 255.255.255.0
-ifconfig-pool-persist ipp.txt
 push "redirect-gateway def1 bypass-dhcp"
 push "dhcp-option DNS 1.1.1.1"
 push "dhcp-option DNS 1.0.0.1"
@@ -113,7 +112,7 @@ auth SHA256
 comp-lzo
 persist-key
 persist-tun
-status openvpn-status-${VPN_ID}.log
+status /var/log/openvpn-status-${VPN_ID}.log
 verb 3
 EOALL
 
