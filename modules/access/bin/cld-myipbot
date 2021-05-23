@@ -22,10 +22,10 @@ HELP_ONLY="BOT"
 source /var/cld/bin/include/cldfuncs
 [ "${FROM}" != "BOT" ] && cldhelp
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
-echo ${3} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || (export TOKEN="$(uuidgen | tr -d '-')" ; echo "${TOKEN}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myip_tokens ; echo "To add your IP address to the white list, please visit: 
+echo ${3} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || (export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myip_tokens ; echo "To add your IP address to the white list, please visit: 
 https://${CLD_DOMAIN}/api/all/myipinit?token=${TOKEN}")
 echo ${3} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || exit 0
-grep -q ${1} /var/cld/modules/access/data/myips && (sed -i "s#.*${1}.*#${3}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private IP ${F}${3}${F} successfully updated for user ${B}${2}${B}") || (echo "${3}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myips ; echo "private IP ${F}${3}${F} successfully added to access list for user ${B}${2}${B}")
+grep -q ${1} /var/cld/modules/access/data/myips && (sed -i "s#.*${1}.*#${3}_${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips ; echo "private IP ${3} successfully updated for user ${2}") || (echo "${3}_${1}_${2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myips ; echo "private IP ${3} successfully added to access list for user ${2}")
 {
 { grep -v "^$\|^#" /var/cld/access/{users,groups}/*/clouds | cut -d _ -f 2 ; cat /var/cld/modules/access/data/{myips,enabledips} | cut -d _ -f 1 ; } | egrep "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" | sort -u > /var/cld/api/accesslist 2>/dev/null ;
 { cat /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts ; systemctl reload squid ; } ;

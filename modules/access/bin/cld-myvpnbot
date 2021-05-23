@@ -1,0 +1,26 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Get personal user openvpn key
+Tool oriented to BOT and API interfaces
+Arguments filling automatically by using /myvpn command at Telegram chat with bot
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Telegram user id
+$2                       Telegram user name\
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-myvpn #BOT
+cld-myvpn --regen #BOT
+EOL
+)
+HELP_ONLY="BOT"
+source /var/cld/bin/include/cldfuncs
+[ "${FROM}" != "BOT" ] && cldhelp
+init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
+
+[ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
+
+export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${1}_${2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "Download link for your OpenVPN key: 
+https://${CLD_DOMAIN}/api/all/myvpnget?token=${TOKEN}"
