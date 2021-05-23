@@ -11,6 +11,8 @@ EOL
 )
 HELP_ONLY="API"
 source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/include/ovpnfuncs
+
 [ "${FROM}" != "API" ] && cldhelp
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 TOKEN_SET=$(grep "${1}" /var/cld/modules/access/data/myvpn_tokens)
