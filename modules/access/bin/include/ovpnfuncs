@@ -207,6 +207,7 @@ EOTABLES
 mkdir /root/sbin
 cat > /root/sbin/cld_ovpn_iptables << 'EOIPTABLES'
 #!/bin/bash
+iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F ; iptables -t mangle -F
 iptables-save | grep -v "cldovpn" | iptables-restore ; source <(cat /etc/openvpn/iptables_*.rules)
 EOIPTABLES
 
