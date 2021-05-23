@@ -8,7 +8,7 @@ def myip():
   else:
     return 403
 
-@app.route('/all/myvpnget')
+@app.route('/myvpnget')
 def myvpn():
   if 'token' in request.args:
     token = re.fullmatch(r'[a-z0-9]+', request.args['token']).string
