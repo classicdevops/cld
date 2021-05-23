@@ -29,7 +29,7 @@ def cmd_myvpn(message):
       cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
   except:
       pass
-  cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myvpnbot '+vld(message.from_user.id)+' '+vld(message.from_user.username)+' '+cmd_args)
+  cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myvpnbot '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+cmd_args)
   last_message = bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown', disable_web_page_preview='true')
   open("/var/cld/modules/access/data/myvpn_token_chats", "a").write(cmdoutput.split('=')[1]+"_"+str(last_message.message_id)+"_"+str(message.chat.id)+"\n")
   sleep(10)
