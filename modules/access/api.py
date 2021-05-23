@@ -16,6 +16,8 @@ def myvpn():
     if os.path.exists(filepath) != True:
       return Response('404', status=404, mimetype='text/plain')
     filename = os.path.basename(filepath)
-    return Response(stream_file(filepath), status=200, mimetype='application/octet-stream').headers['Content-Disposition'] = "attachment; filename="+filename
+    resp = Response(stream_file(filepath), status=200, mimetype='application/octet-stream')
+    resp.headers['Content-Disposition'] = "attachment; filename="+filename
+    return resp
   else:
     return Response('403', status=403, mimetype='text/plain')
