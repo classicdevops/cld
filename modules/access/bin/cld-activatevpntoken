@@ -30,7 +30,6 @@ sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myvpn_tokens /var/cld/modules/
 if [ -f "/var/cld/modules/access/data/ovpn/${HOSTNAME}_${USERNAME}-${USERID}.ovpn" ]
 then
 echo /var/cld/modules/access/data/ovpn/${HOSTNAME}_${USERNAME}-${USERID}.ovpn
-exit 0
 else
 ovpngenerate --id=${USERNAME}-${USERID}
 fi
