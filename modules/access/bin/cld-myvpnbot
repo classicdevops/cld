@@ -7,7 +7,7 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 $1                       Telegram user id
-$2                       Telegram user name\
+$2                       Telegram user name
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
