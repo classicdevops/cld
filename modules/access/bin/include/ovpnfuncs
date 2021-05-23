@@ -214,6 +214,7 @@ EOIPTABLES
 chmod 700 /root/sbin/cld_ovpn_iptables
 echo '@reboot root /root/sbin/cld_ovpn_iptables' > /etc/cron.d/ovpn_iptables
 
+iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F ; iptables -t mangle -F
 iptables-save | grep -v "cldovpn" | iptables-restore ; source <(cat /etc/openvpn/iptables_*.rules)
 
 grep "net.ipv4.ip_forward = 1" /etc/sysctl.conf || echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
