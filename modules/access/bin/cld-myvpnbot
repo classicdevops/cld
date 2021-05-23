@@ -37,7 +37,7 @@ then
 rm -f /etc/openvpn/*${VPN_ID}*
 systemctl stop openvpn@server_${VPN_ID}.service
 systemctl disable openvpn@server_${VPN_ID}.service
-rm -f /var/cld/modules/access/data/ovpn/${VPN_ID}*.ovpn
+rm -f /var/cld/modules/access/data/ovpn/*${VPN_ID}*.ovpn
 fi
 
 fi
