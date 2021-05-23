@@ -20,6 +20,27 @@ source /var/cld/bin/include/cldfuncs
 [ "${FROM}" != "BOT" ] && cldhelp
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
 
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -1)
+
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  "^\--regen\|^\-regen" && VPN_REGEN=1
+done
+
+if [ "$VPN_REGEN" = "1" ]
+then
+
+VPN_ID=${2}-${1}
+if [ "$VPN_ID" ]
+then
+rm -f /etc/openvpn/*${VPN_ID}*
+systemctl stop openvpn@server_${VPN_ID}.service
+systemctl disable openvpn@server_${VPN_ID}.service
+rm -f /var/cld/modules/access/data/ovpn/${VPN_ID}*.ovpn
+fi
+
+fi
+
 [ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
 
 export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${1}_${2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "Download link for your OpenVPN key: 
