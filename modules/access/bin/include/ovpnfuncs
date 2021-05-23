@@ -9,7 +9,7 @@ wget -O /tmp/easyrsa https://github.com/OpenVPN/easy-rsa-old/archive/2.3.3.tar.g
 
 tar xfz /tmp/easyrsa
 mkdir /etc/openvpn/easy-rsa
-/usr/bin/cp -rf easy-rsa-old-2.3.3/easy-rsa/2.0/* /etc/openvpn/easy-rsa
+cp -rf easy-rsa-old-2.3.3/easy-rsa/2.0/* /etc/openvpn/easy-rsa
 }
 
 package-install()
@@ -53,6 +53,8 @@ ovpngenerate()
 {
 
 {
+unalias cp &>/dev/null
+
 which openvpn || package-install openvpn
 which expect || package-install expect
 which ntpdate || package-install ntpdate
@@ -95,7 +97,7 @@ dev tun
 ca ca_${VPN_ID}.crt
 cert server_${VPN_ID}.crt
 key server_${VPN_ID}.key  # This file should be kept secret
-dh dh1024_${VPN_ID}.pem
+dh dh2048_${VPN_ID}.pem
 server 10.8.${NETWORK}.0 255.255.255.0
 ifconfig-pool-persist ipp.txt
 push "redirect-gateway def1 bypass-dhcp"
@@ -129,8 +131,8 @@ export KEY_DIR="$EASY_RSA/keys"
 echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
 export PKCS11_MODULE_PATH="dummy"
 export PKCS11_PIN="dummy"
-export DH_KEY_SIZE=1024
-export KEY_SIZE=1024
+export DH_KEY_SIZE=2048
+export KEY_SIZE=2048
 export CA_EXPIRE=3650
 export KEY_EXPIRE=3650
 
@@ -157,10 +159,10 @@ sed -i 's# --interact##g' ./build-key-server
 ./build-dh
 
 cd /etc/openvpn/easy-rsa/keys
-/usr/bin/cp dh1024.pem /etc/openvpn/dh1024_${VPN_ID}.pem
-/usr/bin/cp ca.crt /etc/openvpn/ca_${VPN_ID}.crt
-/usr/bin/cp server.crt /etc/openvpn/server_${VPN_ID}.crt
-/usr/bin/cp server.key /etc/openvpn/server_${VPN_ID}.key
+cp dh2048.pem /etc/openvpn/dh2048_${VPN_ID}.pem
+cp ca.crt /etc/openvpn/ca_${VPN_ID}.crt
+cp server.crt /etc/openvpn/server_${VPN_ID}.crt
+cp server.key /etc/openvpn/server_${VPN_ID}.key
 
 cd /etc/openvpn/easy-rsa
 source ./vars
@@ -193,9 +195,9 @@ send "y\n"
 expect eof;
 EOF
 
-/usr/bin/cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
-/usr/bin/cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/ta_${VPN_ID}.key
-/usr/bin/cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys/ta_${VPN_ID}.key
+cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/ta_${VPN_ID}.key
+cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys/ta_${VPN_ID}.key
 
 INET_DEVICE=$(ip route show | grep default | egrep -o "dev\ [A-Za-z0-9]+\ " | cut -d ' ' -f 2)
 
@@ -279,7 +281,6 @@ cat ${BASE_CONFIG} \
 EOL
 chmod 700 /var/cld/tmp/ovpn/user-configs/make_config.sh
 /var/cld/tmp/ovpn/user-configs/make_config.sh id_${VPN_ID}
-unalias cp
 cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${VPN_ID}_${HOSTNAME}.ovpn
 } 1>&2
 
