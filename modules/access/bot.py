@@ -23,6 +23,7 @@ def cmd_myvpn(message):
   checkresult = checkperms(cldmodule, "cld-myvpnbot", message.from_user.id, message.chat.id, message.from_user.username)
   if checkresult[0] != "granted": return
   user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+  cmd_args=''
   try:
       for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
       cmd_args = str(re.match('^[A-z0-9.,@=/ -]+\$', cmd_args).string)
