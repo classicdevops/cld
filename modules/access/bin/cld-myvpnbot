@@ -23,4 +23,4 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 [ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
 
 export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${1}_${2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "Download link for your OpenVPN key: 
-https://${CLD_DOMAIN}/api/all/myvpnget?token=${TOKEN}"
+https://${CLD_DOMAIN}/api/myvpnget?token=${TOKEN}"
