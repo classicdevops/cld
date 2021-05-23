@@ -111,8 +111,6 @@ key-direction 0
 cipher AES-128-CBC   # AES
 auth SHA256
 comp-lzo
-user nobody
-group nobody
 persist-key
 persist-tun
 status openvpn-status-${VPN_ID}.log
