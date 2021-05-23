@@ -9,7 +9,7 @@ def myip():
     return 403
 
 @app.route('/all/myvpnget')
-def myip():
+def myvpn():
   if 'token' in request.args:
     token = re.fullmatch(r'[a-z0-9]+', request.args['token']).string
     file_path = bash('FROM=API /var/cld/modules/access/bin/cld-activatevpntoken '+token)
