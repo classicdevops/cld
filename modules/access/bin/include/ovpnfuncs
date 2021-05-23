@@ -254,6 +254,6 @@ unalias cp
 cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${VPN_ID}.ovpn
 } 1>&2
 
-[ -f "/var/cld/modules/access/data/ovpn/${VPN_ID}_${VPN_IP}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${VPN_ID}_${VPN_IP}.ovpn" || echo 404
+[ -f "/var/cld/modules/access/data/ovpn/${VPN_ID}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${VPN_ID}.ovpn" || echo 404
 
 }
