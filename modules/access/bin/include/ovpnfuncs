@@ -280,9 +280,9 @@ cat ${BASE_CONFIG} \
 EOL
 chmod 700 /var/cld/tmp/ovpn/user-configs/make_config.sh
 /var/cld/tmp/ovpn/user-configs/make_config.sh id_${VPN_ID}
-cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${HOSTNAME}_${VPN_ID}.ovpn
+cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${HOSTNAME}_10.8.${NETWORK}.1_${VPN_ID}.ovpn
 } 1>&2
 
-[ -f "/var/cld/modules/access/data/ovpn/${HOSTNAME}_${VPN_ID}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${HOSTNAME}_${VPN_ID}.ovpn" || echo 404
+[ -f "/var/cld/modules/access/data/ovpn/${HOSTNAME}_10.8.${NETWORK}.1_${VPN_ID}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${HOSTNAME}_10.8.${NETWORK}.1_${VPN_ID}.ovpn" || echo 404
 
 }
