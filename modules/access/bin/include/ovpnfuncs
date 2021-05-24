@@ -114,6 +114,8 @@ persist-key
 persist-tun
 status /var/log/openvpn-status-${VPN_ID}.log
 verb 3
+script-security 2
+client-connect "/usr/bin/sudo /etc/openvpn/ovpnipinit ${VPN_ID}"
 EOALL
 
 openvpn --genkey --secret /etc/openvpn/myvpn.tlsauth_${VPN_ID}
@@ -281,6 +283,18 @@ EOL
 chmod 700 /var/cld/tmp/ovpn/user-configs/make_config.sh
 /var/cld/tmp/ovpn/user-configs/make_config.sh id_${VPN_ID}
 cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${HOSTNAME}_10.8.${NETWORK}.1_${VPN_ID}.ovpn
+
+cat > /etc/openvpn/ovpnipinit << 'EOL'
+#!/bin/bash
+USER_SET=$1
+USER_NAME=$(cut -d - -f 1 <<< ${USER_SET})
+USER_ID=$(cut -d - -f 2- <<< ${USER_SET})
+USER_IP=$(journalctl -eu openvpn@server_${USER_SET}.service | grep "Peer Connection Initiated with" | tail -1 | cut -d ']' -f 4 | cut -d : -f 1)
+
+FROM=BOT /var/cld/modules/access/bin/cld-myipbot ${USER_ID} ${USER_NAME} ${USER_IP}
+EOL
+chmod 700 /etc/openvpn/ovpnipinit
+
 } 1>&2
 
 [ -f "/var/cld/modules/access/data/ovpn/${HOSTNAME}_10.8.${NETWORK}.1_${VPN_ID}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${HOSTNAME}_10.8.${NETWORK}.1_${VPN_ID}.ovpn" || echo 404
