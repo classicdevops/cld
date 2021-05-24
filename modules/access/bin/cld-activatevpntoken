@@ -34,4 +34,6 @@ else
 ovpngenerate --id=${USERNAME}-${USERID}
 fi
 
+{ grep -s "^server " /etc/openvpn/server_*.conf | awk '{print $2"/24"}' ; cat /var/cld/creds/local_nets ; } | sort -u > /var/cld/creds/local_nets.tmp ; mv -f /var/cld/creds/local_nets.tmp /var/cld/creds/local_nets
+
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`OpenVPN key sent - token cleared\`" &>/dev/null
