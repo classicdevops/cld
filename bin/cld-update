@@ -25,7 +25,7 @@ then
 export DOWNGRADE=1
 fi
 
-TIER=$(cat /var/cld/tmp/cld_tier)
+TIER=$(cat /var/cld/tmp/cld_tier 2>/dev/null)
 [ "$TIER" ] || echo opensource > /var/cld/tmp/cld_tier
 TIER=${TIER:-opensource}
 
