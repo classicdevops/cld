@@ -261,7 +261,7 @@ ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/ipt
 EOACCESSDEPLOY
 )
 
-if [ "$(echo $CLD_GROUPS | grep -o "default")" = "default" -a  "$($CLD_ALLOW_GROUPS | grep -o "default")" = "default" ]
+if [ "$(echo $CLD_GROUPS | grep -o "default")" = "default" -a  "$(echo $CLD_ALLOW_GROUPS | grep -o "default")" = "default" ]
 then
 cat << EOL | bash
 $CLD_ACCESS_LIST
