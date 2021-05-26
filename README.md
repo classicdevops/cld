@@ -76,7 +76,7 @@ A module with demo data/scripts can be created in the web interface using the `C
 ## Tool/Script
 CLI tool - is a script of the main/additional or custom module, named `cld-${TOOL}`
 The script is also translated for use through the rest of the interfaces available in the CLD.
-Detailed information on the available scripts included in the modules out of the box is available at https://classicdeploy.com/documentation
+Detailed information on the available scripts included in the modules "from the box" is available at https://classicdeploy.com/documentation
 
 ## Interface
 CLD interfaces are methods of using tools or any additional functionality
