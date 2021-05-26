@@ -185,7 +185,7 @@ The internal structure of the CLD includes a system of modules that allows you t
 - `cm` - create/manage/migrate KVM to Proxmox Virtual Environment
 - `deploy` - deploy bash scripts with support for backups, tests and everything you need to deploy thousands of servers
 - `dns` - cloudflare integration and DNS management across multiple accounts
-- `doc` - self-documenting system concept - generating documentation based on parsing readme files and help information of all existing modules and scripts
+- `doc` - core of self-documenting system concept - generating documentation based on parsing readme files and help information of all existing modules and scripts
 - `etcbackup` - backup of CLD instances configuration
 
 The system is designed in such a way that the addition of new functional modules for any purpose occurs as quickly as possible due to unification and automatic code generation for API and telegram bot, already now in production on a number of projects up to 50 local modules are used that provide the most diverse functionality and automation, in including complex CI/CD.
