@@ -1,6 +1,6 @@
 # Introduction
 CLD is a system for differentiating access to servers and scripts with the ability to quick and unify develop custom modules and automation tools based on this functionality.
-This project does not set itself the goal of replacing any automation tool or CI/CD/deployment/etc, on the contrary, it is designed to combine everything in one centralized self-documenting place, with secure, transparent and logged access to any server and tool, simultaneously through several available user interfaces.
+This project does not set itself the goal of replacing any automation tool or CI/CD/deployment/etc, to the contrary, it is designed to combine everything in one centralized self-documenting place, with secure, transparent and logged access to any server and tool, simultaneously through several available user interfaces.
 
 The main components of the system are bash-based utilities, API, telegram bot and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
@@ -71,7 +71,7 @@ Module of additional CLD functionality, modules are located along the path `/var
 - documentation file `./README.md`
 - data of custom modules is recommended to be stored in the directory `./data`
 
-A module with demo data/scripts can be created in the web interface using the `Create module` item or with the interactive CLI command cld-createmodule
+A module with demo data/scripts can be created in the web interface using the `Create module` item or with the interactive CLI command `cld-createmodule`
 
 ## Tool/Script
 CLI tool - is a script of the main/additional or custom module, named `cld-${TOOL}`
