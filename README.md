@@ -1,6 +1,6 @@
 # Introduction
 CLD is a system for differentiating access to servers and scripts with the ability to quick and unify develop custom modules and automation tools based on this functionality.
-This project does not set itself the goal of replacing any automation tool or CI/CD/deployment/etc, on the contrary, it is designed to combine everything in one centralized self-documenting place, with secure, transparent and logged access to any server and tool, simultaneously through several available use interfaces.
+This project does not set itself the goal of replacing any automation tool or CI/CD/deployment/etc, on the contrary, it is designed to combine everything in one centralized self-documenting place, with secure, transparent and logged access to any server and tool, simultaneously through several available user interfaces.
 
 The main components of the system are bash-based utilities, API, telegram bot and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
@@ -14,7 +14,7 @@ Server based on OS Linux with installed copy of CLD `Open source` or CLD `Basic`
 Linux-based server added to the CLD group as a string by the default delimeter '\_' `example.example_1.2.3.4_22_user`, the delimeter can be configured for individual groups with appropriate changes to the supported custom functions
 
 ## User
-PAM user on the CLD server created through the cld-useradd utility, file-related to cld (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
+PAM user on the CLD server created through the `cld-useradd` utility, file-related to cld (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
 Regardless of the role, it can contain:
 - list of available groups `/var/cld/access/users/${CLD_USER}/groups`
 - individual list of instances `/var/cld/access/users/${CLD_USER}/clouds` (optional)
@@ -23,7 +23,7 @@ Regardless of the role, it can contain:
 Roles:
 - admin - full access to modules and all tools, the role is defined in the access matrix by the presence of the ALL pattern in columns 4 (modules) and 5 (tools) (userexample ::: ALL: ALL)
 - user - configurable access to modules and individual tools (userexample ::: dns, doc, note: cld, cldmount, cld-modules)
-The role depends on the access matrix/var/cld/creds/passwd
+The role depends on the access matrix /var/cld/creds/passwd
 
 ## Group
 CLD Instance Group
