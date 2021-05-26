@@ -14,7 +14,7 @@ Server based on OS Linux with installed copy of CLD open source or CLD Basic/Bus
 Linux-based server added to the CLD group as a string by the default delimeter '\_' (example.example_1.2.3.4_22_user), the delimeter can be configured for individual groups with appropriate changes to the supported custom functions
 
 ## User
-PAM user on the CLD server created through the cld-useradd utility, file-related to cld (`/var/cld/creds/passwd`,`/var/cld/access/users/${CLD_USER}/`)
+PAM user on the CLD server created through the cld-useradd utility, file-related to cld (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
 Regardless of the role, it can contain:
 - list of available groups `/var/cld/access/users/${CLD_USER}/groups`
 - individual list of instances `/var/cld/access/users/${CLD_USER}/clouds` (optional)
@@ -41,7 +41,7 @@ Has a generated list of instances by the script in the file `/var/cld/access/gro
 
 ## Group functions
 Functions of the main actions when working with an instance:
-- definition of variables based on parsing the instance string (`hostname`,` ip`, `port`,` user`) - by default, custom groups can have any set of variables used later by other functions
+- definition of variables based on parsing the instance string (`hostname`, ` ip`, `port`, ` user`) - by default, custom groups can have any set of variables used later by other functions
 - connecting to the terminal of the instance via SSH
 - mounting the instance file system to the user directory on the CLD server
 - unmounting the file system of the instance
@@ -65,9 +65,9 @@ List of custom function files:
 
 ## Module
 Module of additional CLD functionality, modules are located along the path `/var/cld/modules/`, the module may contain:
-- tools `bin/cld- *`
-- custom methods of the interfaces `./{api,bot,web }.py`
-- custom WEB interface files `./web/${module} .html`,` ./web/content/somefile.{css, js, svg} `and so on
+- tools `bin/cld-*`
+- custom methods of the interfaces `./{api,bot,web}.py`
+- custom WEB interface files `./web/${module}.html`, `./web/content/somefile.{css,js,svg}` and so on
 - documentation file `./README.md`
 - data of custom modules is recommended to be stored in the directory `./data`
 
@@ -84,7 +84,7 @@ CLD standard interfaces:
 - CLI - the main working interface, the use of the interface is available through the shell Linux console, the connection is made via SSH, it is also possible to use it via a web terminal as part of the WEB interface
 - API - interface for accessing non-interactive scripts, access to scripts is validated by access lists and the user's personal token, additional arguments are translated as is, an example of use is `curl -s" https://yourcld.server.com/api/modules?token = y0urUserT0keN&args=-json"`, endpoints like `/api/all/` do not have validation by access lists, for example, they are used in `cld-myip`
 - BOT - an interface in the chat bot format for accessing non-interactive scripts, convenient for using when managing DNS, access lists, and so on, an example of use is `/setdns a subdomain.example.com 1.2.3.4`, at the moment only Telegram bots supported, Discord, Mattermost and Slack bot interfaces under developing
-- WEB - interface for access to any, including interactive scripts (using a web terminal), as well as to additional methods of system management, access is validated by access ip lists and by PAM for CLD users, the interface is available at the address - `https://yourcld .server.com/`
+- WEB - interface for access to any, including interactive scripts (using a web terminal), as well as to additional methods of system management, access is validated by access ip lists and by PAM for CLD users, the interface is available at the address - `https://yourcld.server.com/`
 
 ## Framework
 As per definition from wikipedia
