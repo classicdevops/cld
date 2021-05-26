@@ -29,7 +29,7 @@ The role depends on the access matrix /var/cld/creds/passwd
 CLD Instance Group
 Contains
 - list of instances `/var/cld/access/groups/${CLD_GROUP}/clouds`
-- specifying the type `/var/cld/access/groups/${CLD_GROUP}/type` - optional, default 0 (static)
+- specifying the type `/var/cld/access/groups/${CLD_GROUP}/type` - optional, default 0 `static`, 1 is `parsing` type
 - switch of used functions for instances of `/var/cld/access/groups/${CLD_GROUP}/funcs` - optional, default 0 (functions from the framework)
 - custom functions `/var/cld/access/groups/${CLD_GROUP}/func *` (body of custom function in each file)
 
