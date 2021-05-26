@@ -90,7 +90,7 @@ CLD standard interfaces:
 As per definition from wikipedia
 `Framework - a software platform that defines the structure of a software system; software that facilitates the development and integration of different components of a large software project.`
 The project is a kind of access and automation framework.
-To ensure the standard structure of the tools is used, the main bash library `/var/cld/bin/include/cldfuncs`, connected in all the tools out of the box, through the functions of this library, help unification is organized and, accordingly, general autodocumentation using the doc module for generating json and rendering via Redoc, as well as various auxiliary functions, access control, security, etc.
+To ensure the standard structure of the tools is used, the main bash library `/var/cld/bin/include/cldfuncs`, connected in all the tools "from the box", through the functions of this library, help unification is organized and, accordingly, general autodocumentation using the doc module for generating json and rendering via Redoc, as well as various auxiliary functions, access control, security, etc.
 
 
 # Centralized access system
