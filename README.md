@@ -8,10 +8,10 @@ To access any tool, several factor validation operates for the user, at the appl
 # Terms
 
 ## CLD server
-Server based on OS Linux with installed copy of CLD open source or CLD Basic/Business/Premium/Enterprise software
+Server based on OS Linux with installed copy of CLD `Open source` or CLD `Basic`/`Business`/`Premium`/`Enterprise` software
 
 ## Instance
-Linux-based server added to the CLD group as a string by the default delimeter '\_' (example.example_1.2.3.4_22_user), the delimeter can be configured for individual groups with appropriate changes to the supported custom functions
+Linux-based server added to the CLD group as a string by the default delimeter '\_' `example.example_1.2.3.4_22_user`, the delimeter can be configured for individual groups with appropriate changes to the supported custom functions
 
 ## User
 PAM user on the CLD server created through the cld-useradd utility, file-related to cld (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
@@ -83,7 +83,7 @@ CLD interfaces are methods of using tools or any additional functionality
 CLD standard interfaces:
 - CLI - the main working interface, the use of the interface is available through the shell Linux console, the connection is made via SSH, it is also possible to use it via a web terminal as part of the WEB interface
 - API - interface for accessing non-interactive scripts, access to scripts is validated by access lists and the user's personal token, additional arguments are translated as is, an example of use is `curl -s" https://yourcld.server.com/api/modules?token=y0urUserT0keN&args=-json"`, endpoints like `/api/all/` do not have validation by access lists, for example, they are used in `cld-myip`
-- BOT - an interface in the chat bot format for accessing non-interactive scripts, convenient for using when managing DNS, access lists, and so on, an example of use is `/setdns a subdomain.example.com 1.2.3.4`, at the moment only Telegram bots supported, Discord, Mattermost and Slack bot interfaces under developing
+- BOT - an interface in the chat bot format for accessing non-interactive scripts, convenient for using when managing DNS, access lists, and so on, an example of use is `/setdns a subdomain.example.com 1.2.3.4`, at the moment only `Telegram` bots supported, `Discord`, `Mattermost` and `Slack` bot interfaces under developing
 - WEB - interface for access to any, including interactive scripts (using a web terminal), as well as to additional methods of system management, access is validated by access ip lists and by PAM for CLD users, the interface is available at the address - `https://yourcld.server.com/`
 
 ## Framework
