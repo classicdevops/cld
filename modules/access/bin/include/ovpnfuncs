@@ -120,14 +120,14 @@ EOALL
 
 openvpn --genkey --secret /etc/openvpn/myvpn.tlsauth_${VPN_ID}
 
-cat > /etc/openvpn/easy-rsa/vars << 'EOL'
-export EASY_RSA="`pwd`"
+cat > /etc/openvpn/easy-rsa/vars << EOL
+export EASY_RSA="\`pwd\`"
 export OPENSSL="openssl"
 export PKCS11TOOL="pkcs11-tool"
 export GREP="grep"
-export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`
-export KEY_DIR="$EASY_RSA/keys"
-echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
+export KEY_CONFIG=\`\$EASY_RSA/whichopensslcnf \$EASY_RSA\`
+export KEY_DIR="\$EASY_RSA/keys_${VPN_ID}"
+echo NOTE: If you run ./clean-all, I will be doing a rm -rf on \$KEY_DIR
 export PKCS11_MODULE_PATH="dummy"
 export PKCS11_PIN="dummy"
 export DH_KEY_SIZE=2048
@@ -146,8 +146,8 @@ export KEY_NAME="server"
 export KEY_OU="Community"
 EOL
 
-
-rm -f /etc/openvpn/easy-rsa/keys/* 
+mkdir -p /etc/openvpn/easy-rsa/keys_${VPN_ID} &>/dev/null
+rm -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/* 
 cd /etc/openvpn/easy-rsa
 source ./vars
 ./clean-all
@@ -157,7 +157,7 @@ sed -i 's# --interact##g' ./build-key-server
 ./build-key-server server
 ./build-dh
 
-cd /etc/openvpn/easy-rsa/keys
+cd /etc/openvpn/easy-rsa/keys_${VPN_ID}
 cp dh2048.pem /etc/openvpn/dh2048_${VPN_ID}.pem
 cp ca.crt /etc/openvpn/ca_${VPN_ID}.crt
 cp server.crt /etc/openvpn/server_${VPN_ID}.crt
@@ -196,7 +196,7 @@ EOF
 
 cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
 cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/ta_${VPN_ID}.key
-cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys/ta_${VPN_ID}.key
+cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys_${VPN_ID}/ta_${VPN_ID}.key
 
 INET_DEVICE=$(ip route show | grep default | egrep -o "dev\ [A-Za-z0-9]+\ " | cut -d ' ' -f 2)
 
@@ -258,26 +258,26 @@ comp-lzo
 verb 3
 EOL
 
-cat > /var/cld/tmp/ovpn/user-configs/make_config.sh << 'EOL'
+cat > /var/cld/tmp/ovpn/user-configs/make_config.sh << EOL
 #!/bin/bash
 
 # First argument: Client identifier
 
-KEY_DIR=/etc/openvpn/easy-rsa/keys
+KEY_DIR=/etc/openvpn/easy-rsa/keys_${VPN_ID}
 OUTPUT_DIR=/var/cld/tmp/ovpn/user-configs/files
 BASE_CONFIG=/var/cld/tmp/ovpn/user-configs/base.conf
 
-cat ${BASE_CONFIG} \
+cat \${BASE_CONFIG} \
     <(echo -e '<ca>') \
-    ${KEY_DIR}/ca.crt \
+    \${KEY_DIR}/ca.crt \
     <(echo -e '</ca>\n<cert>') \
-    ${KEY_DIR}/${1}.crt \
+    \${KEY_DIR}/\${1}.crt \
     <(echo -e '</cert>\n<key>') \
-    ${KEY_DIR}/${1}.key \
+    \${KEY_DIR}/\${1}.key \
     <(echo -e '</key>\n<tls-auth>') \
-    ${KEY_DIR}/ta_${VPN_ID}.key \
+    \${KEY_DIR}/ta_\${VPN_ID}.key \
     <(echo -e '</tls-auth>') \
-    > ${OUTPUT_DIR}/${1}.ovpn
+    > \${OUTPUT_DIR}/\${1}.ovpn
 
 EOL
 chmod 700 /var/cld/tmp/ovpn/user-configs/make_config.sh
