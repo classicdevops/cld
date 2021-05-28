@@ -591,6 +591,16 @@ def adminsavefile():
     open(file, "w", newline='\n').write(content.replace('\r', ''))
     return Response("file "+file+" saved", status=200, mimetype='text/plain')
 
+@app.route('/admin/deletefile', methods=['POST'])
+def admindeletefile():
+  if 'username' in session:
+    if userisadmin(session['username']) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
+    file = request.form['file']
+    os.remove(file)
+    return Response("file "+file+" deleted", status=200, mimetype='text/plain')
+
 @app.route('/admin/user/<name>')
 def user(name):
   if 'username' in session:
