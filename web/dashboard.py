@@ -586,16 +586,17 @@ def adminsavefile():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    file = request.form['file']
-    filename = os.path.basename(file)
-    filedir = os.path.dirname(file)
-    if os.path.exists(filedir) != True:
-      os.mkdir(filedir, 0o700)
-    content = request.form['content']
-    open(file, "w", newline='\n').write(content.replace('\r', ''))
-    if re.match('(^cld-[A-za-z0-9]+$)', filename):
-      os.chmod(file, 0o700)
-    return Response("file "+file+" saved", status=200, mimetype='text/plain')
+    elif userisadmin(session['username']) == True:
+      file = request.form['file']
+      filename = os.path.basename(file)
+      filedir = os.path.dirname(file)
+      if os.path.exists(filedir) != True:
+        os.mkdir(filedir, 0o700)
+      content = request.form['content']
+      open(file, "w", newline='\n').write(content.replace('\r', ''))
+      if re.match('(^cld-[A-za-z0-9]+$)', filename):
+        os.chmod(file, 0o700)
+      return Response("file "+file+" saved", status=200, mimetype='text/plain')
 
 @app.route('/admin/deletefile', methods=['POST'])
 def admindeletefile():
@@ -603,9 +604,10 @@ def admindeletefile():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    file = request.form['file']
-    os.remove(file)
-    return Response("file "+file+" deleted", status=200, mimetype='text/plain')
+    elif userisadmin(session['username']) == True:
+      file = request.form['file']
+      os.remove(file)
+      return Response("file "+file+" deleted", status=200, mimetype='text/plain')
 
 @app.route('/admin/user/<name>')
 def user(name):
