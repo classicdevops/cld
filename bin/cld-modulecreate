@@ -281,6 +281,23 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
                                    }
                            })
                    }
+                   function newfile(inputid) {
+                          var file = '/var/cld/modules/MODULE_NAME/'+document.getElementById(inputid).value;
+                          var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+                          $('#filesedit').append(`
+                          <div id="`+fileid+`div">
+                          <form id="`+fileid+`">
+                             <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                             <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                          </form>
+                          <div class="prefile">`+file+`</div>
+                          <pre id="`+fileid+`Pre"></pre>
+                          <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2">Save `+file+`</button>
+                          <button id="`+fileid+`-button" onclick="deletefile('`+fileid+`', '/admin/deletefile')" class="btn btn-warning bt mb-2" style="float: right;">Delete `+file+`</button><br><br>
+                          </div>
+                          `);
+                          aceactivate(fileid);
+                  }
                 </script>
                 {% for file in files %}
                 {% set fileid = file.replace('/', '_').replace('.', '_') %}
@@ -297,7 +314,12 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
                    aceactivate('{{ fileid }}')
                 </script>
                 </div>
-                {% endfor %}
+                {% endfor %}   
+                <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
+                <pre style="padding: 7;margin-right: -5px;">/var/cld/modules/MODULE_NAME/</pre>
+                <input type="text" class="form-control" id="inputid" placeholder="bin/cld-toolname" style="width: 31%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
+                <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                </form>
            </section>
          </div>
       </div>
