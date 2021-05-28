@@ -21,7 +21,7 @@ echo $OPTS | grep -q  '^\--user=' && CLDUSER="$(echo $OPTS | cut -d '=' -f 2-)"
 done
 
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
-for USER_SET in $(cat /var/cld/creds/passwd | grep "${CLDUSER}:")
+for USER_SET in $(grep -v "^#" /var/cld/creds/passwd | grep "${CLDUSER}:")
 do
 USER_NAME=$(cut -d : -f 1 <<< $USER_SET)
 USER_TGID=$(cut -d : -f 2 <<< $USER_SET)

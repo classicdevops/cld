@@ -549,7 +549,7 @@ def admin():
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    userlist = bash('echo -n $(ls /var/cld/access/users/ | cat)').split(' ')
+    userlist = bash('ls /var/cld/access/users/').split('\n')
     users = list()
     for user in userlist:
       userid = bash('grep ^'+vld(user)+': /etc/passwd | cut -d : -f 3')
