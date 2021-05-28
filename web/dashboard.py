@@ -587,6 +587,9 @@ def adminsavefile():
       session.pop('username', None)
       return redirect('/', code=302)
     file = request.form['file']
+    filename = os.path.basename(file)
+    if re.match('(^cld-[A-za-z0-9]+$)', filename):
+      os.chmod(file, 0o700)
     content = request.form['content']
     open(file, "w", newline='\n').write(content.replace('\r', ''))
     return Response("file "+file+" saved", status=200, mimetype='text/plain')
