@@ -212,7 +212,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
              function aceactivate(file)
              {
              var modelist = ace.require("ace/ext/modelist")
-             var mode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
+             var acemode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
              if (acemode == "ace/mode/text") { acemode = "ace/mode/sh"};
              ace.edit(file+'Pre', {
                  theme: "ace/theme/monokai",
