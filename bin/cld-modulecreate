@@ -211,11 +211,14 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
              var editor = [];
              function aceactivate(file)
              {
+             var modelist = ace.require("ace/ext/modelist")
+             var mode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
+             if (acemode == "ace/mode/text") { acemode = "ace/mode/sh"};
              ace.edit(file+'Pre', {
                  theme: "ace/theme/monokai",
                  keyboardHandler: "ace/keyboard/sublime",
                  foldStyle: "markbeginend",
-                 mode: "ace/mode/sh",
+                 mode: acemode,
                  maxLines: 40,
                  minLines: 5,
                  fontSize: 16,
