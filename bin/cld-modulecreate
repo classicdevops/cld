@@ -200,129 +200,129 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
    <head>
       <title>cld web - MODULE_NAME</title>
       {% include 'html/include/head.html' %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
    </head>
    <body>
       <div class="page-container">
          {% include 'html/include/navbar.html' %}
-         <div class="container">
-           <section id="filesedit"><br><br>
+          <script>
+             var editor = [];
+             function aceactivate(file)
+             {
+             ace.edit(file+'Pre', {
+                 theme: "ace/theme/monokai",
+                 keyboardHandler: "ace/keyboard/sublime",
+                 foldStyle: "markbeginend",
+                 mode: "ace/mode/sh",
+                 maxLines: 40,
+                 minLines: 5,
+                 fontSize: 16,
+                 wrap: true,
+                 showPrintMargin: false,
+                 autoScrollEditorIntoView: true,
+                 highlightSelectedWord: true
+             });
+             editor[file+'Pre'] = ace.edit(file+'Pre');
+             editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+             $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+             editor[file+'Pre'].getSession().on('change', function () {
+                $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+             });
+             }
+             function savefile(id, url) {
+                     $.ajax({
+                         url : url,
+                         type: "POST",
+                         data : $('#'+id).serialize(),
+                         cache: false,
+                         processData:false,
+                         success: function (data) {
+                             $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                             });
+                             console.log('File saved');
+                             },
+                         error: function (data) {
+                             $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                             });
+                             console.log('An error occurred while saving data');
+                             }
+                     })
+             }
+             function deletefile(id, url) {
+                     $.ajax({
+                         url : url,
+                         type: "POST",
+                         data : $('#'+id).serialize(),
+                         cache: false,
+                         processData:false,
+                         success: function (data) {
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                             });
+                             console.log('File deleted');
+                             $('#'+id+'div').remove();
+                             },
+                         error: function (data) {
+                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button-del').addClass('btn-danger').removeClass('btn-warning');
+                             });
+                             console.log('An error occurred while deleting file');
+                             }
+                     })
+             }
+             function newfile(inputid) {
+                    var file = '/var/cld/modules/MODULE_NAME/'+document.getElementById(inputid).value;
+                    var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+                    $('#filesedit').prepend(`
+                    <div id="`+fileid+`div">
+                    <form id="`+fileid+`">
+                       <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                       <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                    </form>
+                    <div class="prefile">`+file+`</div>
+                    <pre id="`+fileid+`Pre"></pre>
+                    <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2">Save `+file+`</button>
+                    <button id="`+fileid+`-button" onclick="deletefile('`+fileid+`', '/admin/deletefile')" class="btn btn-warning bt mb-2" style="float: right;">Delete `+file+`</button><br><br>
+                    </div>
+                    `);
+                    aceactivate(fileid);
+            }
+          </script>
+        <div class="container"><br><br>
              <h4 class="panel-title">
                 Demo web page of module MODULE_NAME
              </h4>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
-                <script>
-                   var editor = [];
-                   function aceactivate(file)
-                   {
-                   ace.edit(file+'Pre', {
-                       theme: "ace/theme/monokai",
-                       keyboardHandler: "ace/keyboard/sublime",
-                       foldStyle: "markbeginend",
-                       mode: "ace/mode/sh",
-                       maxLines: 40,
-                       minLines: 5,
-                       fontSize: 16,
-                       wrap: true,
-                       showPrintMargin: false,
-                       autoScrollEditorIntoView: true,
-                       highlightSelectedWord: true
-                   });
-                   editor[file+'Pre'] = ace.edit(file+'Pre');
-                   editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
-                   $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
-                   editor[file+'Pre'].getSession().on('change', function () {
-                      $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
-                   });
-                   }
-                   function savefile(id, url) {
-                           $.ajax({
-                               url : url,
-                               type: "POST",
-                               data : $('#'+id).serialize(),
-                               cache: false,
-                               processData:false,
-                               success: function (data) {
-                                   $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
-                                   sleep(500).then(() => {
-                                   $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
-                                   });
-                                   console.log('File saved');
-                                   },
-                               error: function (data) {
-                                   $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
-                                   sleep(500).then(() => {
-                                   $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
-                                   });
-                                   console.log('An error occurred while saving data');
-                                   }
-                           })
-                   }
-                   function deletefile(id, url) {
-                           $.ajax({
-                               url : url,
-                               type: "POST",
-                               data : $('#'+id).serialize(),
-                               cache: false,
-                               processData:false,
-                               success: function (data) {
-                                   $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
-                                   sleep(500).then(() => {
-                                   $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
-                                   });
-                                   console.log('File deleted');
-                                   $('#'+id+'div').remove();
-                                   },
-                               error: function (data) {
-                                   $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
-                                   sleep(500).then(() => {
-                                   $('#'+id+'-button-del').addClass('btn-danger').removeClass('btn-warning');
-                                   });
-                                   console.log('An error occurred while deleting file');
-                                   }
-                           })
-                   }
-                   function newfile(inputid) {
-                          var file = '/var/cld/modules/MODULE_NAME/'+document.getElementById(inputid).value;
-                          var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-                          $('#filesedit').append(`
-                          <div id="`+fileid+`div">
-                          <form id="`+fileid+`">
-                             <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
-                             <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
-                          </form>
-                          <div class="prefile">`+file+`</div>
-                          <pre id="`+fileid+`Pre"></pre>
-                          <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2">Save `+file+`</button>
-                          <button id="`+fileid+`-button" onclick="deletefile('`+fileid+`', '/admin/deletefile')" class="btn btn-warning bt mb-2" style="float: right;">Delete `+file+`</button><br><br>
-                          </div>
-                          `);
-                          aceactivate(fileid);
-                  }
-                </script>
-                {% for file in files %}
-                {% set fileid = file.replace('/', '_').replace('.', '_') %}
-                <div id="{{ fileid }}div">
-                <form id="{{ fileid }}">
-                   <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
-                   <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
-                </form>
-                <div class="prefile">{{ file }}</div>
-                <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
-                <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button>
-                <button id="{{ fileid }}-button" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger bt mb-2" style="float: right;">Delete {{ file }}</button><br><br>
-                <script>
-                   aceactivate('{{ fileid }}')
-                </script>
-                </div>
-                {% endfor %}   
                 <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
                 <pre style="padding: 7;margin-right: -5px;">/var/cld/modules/MODULE_NAME/</pre>
                 <input type="text" class="form-control" id="inputid" placeholder="bin/cld-toolname" style="width: 31%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
                 <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
-           </section>
-         </div>
+                <section id="filesedit">
+                  {% for file in files %}
+                  {% set fileid = file.replace('/', '_').replace('.', '_') %}
+                  <div id="{{ fileid }}div">
+                  <form id="{{ fileid }}">
+                     <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
+                     <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                  </form>
+                  <div class="prefile">{{ file }}</div>
+                  <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
+                  <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button>
+                  <button id="{{ fileid }}-button" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger bt mb-2" style="float: right;">Delete {{ file }}</button><br><br>
+                  <script>
+                     aceactivate('{{ fileid }}')
+                  </script>
+                  </div>
+                  {% endfor %}   
+                </section>
+        </div>
       </div>
    </body>
 </html>
