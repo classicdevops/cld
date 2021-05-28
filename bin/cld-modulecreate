@@ -68,7 +68,7 @@ ${MODULE_DESC}
   - Another **one**
 
 \`\`\`bash
-usage example of "cld-${MODULE_NAME}-tool"
+usage example of "cld-${MODULE_NAME}tool"
 \`\`\`
 EOREADME
 
@@ -133,7 +133,7 @@ def cmd_cld_${MODULE_NAME}_test(message):
 EOBOT
 chmod 600 /var/cld/modules/${MODULE_NAME}/bot.py
 
-cat > /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool << 'EOTOOL'
+cat > /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}tool << 'EOTOOL'
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 Small script to demonstrate one of the many use cases
@@ -144,8 +144,8 @@ HELP_ARGS=$(cat << 'EOL'
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-MODULE_NAME-tool
-cld-MODULE_NAME-tool --filter=pattern
+cld-MODULE_NAMEtool
+cld-MODULE_NAMEtool --filter=pattern
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -192,8 +192,8 @@ EOSSH
 done
 echo Done
 EOTOOL
-sed -i 's#MODULE_NAME#'${MODULE_NAME}'#g' /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
-chmod 700 /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
+sed -i 's#MODULE_NAME#'${MODULE_NAME}'#g' /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}tool
+chmod 700 /var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}tool
 
 cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
 <html lang="en">
@@ -303,7 +303,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
                 Create new file:
              </h4>                <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
                 <pre style="padding: 7;margin-right: -5px;">/var/cld/modules/MODULE_NAME/</pre>
-                <input type="text" class="form-control" id="inputid" placeholder="bin/cld-toolname" style="width: 31%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
+                <input type="text" class="form-control" id="inputid" placeholder="bin/cldtoolname" style="width: 31%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
                 <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
                 <section id="filesedit">
@@ -341,7 +341,7 @@ Files created:
 /var/cld/modules/${MODULE_NAME}/web.py
 /var/cld/modules/${MODULE_NAME}/README.md
 /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html
-/var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}-tool
+/var/cld/modules/${MODULE_NAME}/bin/cld-${MODULE_NAME}tool
 EOL
 [ -f /var/cld/access/users/${SUDO_USER}/showonlymodules ] && echo -en "\n${MODULE_NAME}" >> /var/cld/access/users/${SUDO_USER}/showonlymodules
 echo
