@@ -269,6 +269,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
                                  $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
                                  });
                                  console.log('File deleted');
+                                 $('#'+id+'div').remove();
                                  },
                              error: function (data) {
                                  $('#'+id+'-button-del').addClass('btn-danger').removeClass('btn-warning');
@@ -282,6 +283,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
               </script>
               {% for file in files %}
               {% set fileid = file.replace('/', '_').replace('.', '_') %}
+              <div id="{{ fileid }}div">
               <form id="{{ fileid }}">
                  <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
                  <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
@@ -293,6 +295,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
               <script>
                  aceactivate('{{ fileid }}')
               </script>
+              </div>
               {% endfor %}
          </div>
       </div>
