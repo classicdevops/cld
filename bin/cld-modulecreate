@@ -202,6 +202,7 @@ cat > /var/cld/modules/${MODULE_NAME}/web/${MODULE_NAME}.html << 'EOHTML'
       {% include 'html/include/head.html' %}
       <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ext-modelist.js"></script>
    </head>
    <body>
       <div class="page-container">
