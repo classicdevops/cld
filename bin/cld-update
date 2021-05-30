@@ -67,14 +67,14 @@ systemctl start crond &>/dev/null
 
 if [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
 then
-
+echo Current subscription plan is $TIER
 cld-stop
 cld-update
 cld-start
 
 elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" -a "$UPGRADE" != "1" -a "$DOWNGRADE" != "1" ]
 then
-
+echo Current subscription plan is $VERIFIED_TIER
 cld-stop
 cld-update
 cld-start
@@ -88,6 +88,8 @@ VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${CH
 [ "${VERIFIED_TIER}" ] && break
 done
 [ "${VERIFIED_TIER}" ] || { echo TIER is not defined - upgrade failed - exit ; exit 1 ; }
+
+echo Current subscription plan is $VERIFIED_TIER
 
 TIER_COMMIT_ID=$(git ls-remote git@git.classicdeploy.com:cld/${VERIFIED_TIER}.git | tail -1 | cut -b  -8)
 
