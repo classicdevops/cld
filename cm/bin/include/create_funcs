@@ -23,7 +23,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 mkdir -p /var/cld/cm/tmp &>/dev/null
-truncate -s 0 /var/cld/cm/tmp/kvm_list
+rm -f /var/cld/cm/tmp/kvm_list.tmp &>/dev/null
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
 do
 (
@@ -31,11 +31,13 @@ HPRNM=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print $2"_"$1"_"hpr}' | grep -v '_500' >> /var/cld/cm/tmp/kvm_list
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print $2"_"$1"_"hpr}' | grep -v '_500' >> /var/cld/cm/tmp/kvm_list.tmp
 ) &
 done
 wait
-cat /var/cld/cm/tmp/kvm_list
+unalias mv &>/dev/null
+mv /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list
+grep "$(cat /var/cld/access/users/${SUDO_USER}/kvms 2>/dev/null)" /var/cld/cm/tmp/kvm_list
 }
 
 get-kvm-list-json()

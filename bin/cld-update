@@ -67,14 +67,18 @@ systemctl start crond &>/dev/null
 
 if [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
 then
+echo
 echo Current subscription plan is $TIER
+echo
 cld-stop
 cld-update
 cld-start
 
 elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" -a "$UPGRADE" != "1" -a "$DOWNGRADE" != "1" ]
 then
+echo
 echo Current subscription plan is $VERIFIED_TIER
+echo
 cld-stop
 cld-update
 cld-start
