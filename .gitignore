@@ -26,6 +26,7 @@
 !/modules/spamcheck/
 !/modules/doc/
 !/modules/dns/
+!/modules/lead/
 !/modules/note/
 !/modules/etcbackup/
 !/modules/telegramcloud/

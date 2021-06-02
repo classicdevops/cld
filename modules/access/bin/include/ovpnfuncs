@@ -5,8 +5,8 @@ ip route get 1.1.1.1 | awk '{print $NF;exit}'
 
 easyrsa-install()
 {
+cd /var/cld/tmp/
 wget -O /tmp/easyrsa https://github.com/OpenVPN/easy-rsa-old/archive/2.3.3.tar.gz
-
 tar xfz /tmp/easyrsa
 mkdir /etc/openvpn/easy-rsa
 cp -rf easy-rsa-old-2.3.3/easy-rsa/2.0/* /etc/openvpn/easy-rsa
