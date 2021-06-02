@@ -45,8 +45,8 @@ Functions of the main actions when working with an instance:
 - connecting to the terminal of the instance via SSH
 - mounting the instance file system to the user directory on the CLD server
 - unmounting the file system of the instance
-- diploy with forced tty - similar function to the terminal, has a timeout for execution, we accept input for execution on the instance, the exit command is required at the end of the input
-- diploy without forced tty - accepts input for execution on an instance, has a timeout for execution
+- deploy with forced tty - similar function to the terminal, has a timeout for execution, we accept input for execution on the instance, the exit command is required at the end of the input
+- deploy without forced tty - accepts input for execution on an instance, has a timeout for execution
 
 The default functions are defined in the main framework library `/var/cld/bin/include/cldfuncs`
 
