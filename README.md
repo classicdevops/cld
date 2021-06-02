@@ -3,7 +3,7 @@ CLD is a system for differentiating access to servers and scripts with the abili
 This project does not set itself the goal of replacing any existing automation tool or CI/CD/deployment/etc, to the contrary, it is designed to combine everything in one centralized self-documenting place, with secure, transparent and logged access to any server and tool, simultaneously through several available user interfaces.
 
 The main components of the system are bash-based utilities, API, chat bots and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
-  To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
+To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
 
 # Terms
 
@@ -16,7 +16,7 @@ Linux-based server added to the CLD group as a string by the default delimeter '
 ## User
 PAM user on the CLD server created through the `cld-useradd` utility, file-related to cld (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
   Regardless of the role, it can contain:
-  - list of available groups `/var/cld/access/users/${CLD_USER}/groups`
+- list of available groups `/var/cld/access/users/${CLD_USER}/groups`
 - individual list of instances `/var/cld/access/users/${CLD_USER}/clouds` (optional)
 
 ## User role
