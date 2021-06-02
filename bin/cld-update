@@ -62,7 +62,7 @@ systemctl start cron &>/dev/null
 systemctl start crond &>/dev/null
 }
 
-[ "$TIER" != "opensource" -a "$UPGRADE" != "1" ] && export VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${TIER}.git" && echo ${TIER})
+[ "$TIER" != "opensource" -a "$UPGRADE" != "1" ] && export VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${TIER}.git" 1>&2 && echo ${TIER})
 
 
 if [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
@@ -88,7 +88,7 @@ then
 
 for CHECK_TIER in basic business premium enterprise
 do
-VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${CHECK_TIER}.git" &>/dev/null && echo ${CHECK_TIER})
+VERIFIED_TIER=$(git ls-remote --exit-code -h "git@git.classicdeploy.com:cld/${CHECK_TIER}.git" &>/dev/null 1>&2 && echo ${CHECK_TIER})
 [ "${VERIFIED_TIER}" ] && break
 done
 [ "${VERIFIED_TIER}" ] || { echo TIER is not defined - upgrade failed - exit ; exit 1 ; }
