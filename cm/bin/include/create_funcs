@@ -71,7 +71,12 @@ done
 wait
 unalias mv &>/dev/null
 mv /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list
+if [ "$(user_is_admin ${SUDO_USER})" = "0" ]
+then
 grep "$(KVMS_USER_ALLOWED)" /var/cld/cm/tmp/kvm_list
+else
+KVMS_USER_ALLOWED
+fi
 }
 
 get-kvm-list-json()
