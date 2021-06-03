@@ -633,7 +633,7 @@ def user(name):
     allowedclouds = bash('sudo -u '+vld(clduser)+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+vld(clduser)+' sudo /var/cld/bin/cld --list)').split('\n')
     bash('if ! [ -d "/home/'+vld(clduser)+'/.ssh" ]; then mkdir -p /home/'+vld(clduser)+'/.ssh ; chown -R '+vld(clduser)+': /home/'+vld(clduser)+'/.ssh ; chmod 700 /home/'+vld(clduser)+'/.ssh; fi')
-    file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/groups', '/home/'+clduser+'/.ssh/authorized_keys']
+    file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/kvms', '/var/cld/access/users/'+clduser+'/groups', '/home/'+clduser+'/.ssh/authorized_keys']
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
@@ -671,7 +671,7 @@ def group(name):
     groupfuncumount = bash('cat /var/cld/access/groups/'+vld(group)+'/funcumount || cat /var/cld/access/groups/default/default_funcumount')
     groupfuncdeploy = bash('cat /var/cld/access/groups/'+vld(group)+'/funcdeploy || cat /var/cld/access/groups/default/default_funcdeploy')
     groupfuncdeploynotty = bash('cat /var/cld/access/groups/'+vld(group)+'/funcdeploynotty || cat /var/cld/access/groups/default/default_funcdeploynotty')
-    file_list = ['/var/cld/access/groups/'+cldgroup+'/clouds']
+    file_list = ['/var/cld/access/groups/'+cldgroup+'/clouds', '/var/cld/access/groups/'+cldgroup+'/kvms']
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
