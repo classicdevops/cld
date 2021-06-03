@@ -75,7 +75,9 @@ if [ "$(user_is_admin ${SUDO_USER})" = "0" ]
 then
 grep "$(KVMS_USER_ALLOWED)" /var/cld/cm/tmp/kvm_list
 else
-KVMS_USER_ALLOWED
+KVMS_ALLOWED="$(KVMS_USER_ALLOWED)"
+KVMS_ALLOWED_COUNT=$(wc -w <<< "${KVMS_ALLOWED}")
+[ "${KVMS_ALLOWED_COUNT}" -gt "0" ] && grep "$KVMS_ALLOWED" /var/cld/cm/tmp/kvm_list || echo
 fi
 }
 
