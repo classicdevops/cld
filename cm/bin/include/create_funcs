@@ -70,7 +70,7 @@ timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p
 done
 wait
 unalias mv &>/dev/null
-mv /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list
+mv -f /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list
 if [ "$(user_is_admin ${SUDO_USER})" = "0" ]
 then
 grep "$(KVMS_USER_ALLOWED)" /var/cld/cm/tmp/kvm_list
