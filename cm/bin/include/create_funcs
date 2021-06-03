@@ -58,7 +58,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 mkdir -p /var/cld/cm/tmp &>/dev/null
 rm -f /var/cld/cm/tmp/kvm_list.tmp &>/dev/null
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 (
 HPRNM=`echo $VM | cut -d "_" -f 1`
@@ -127,7 +127,7 @@ fi
 EOL
 EOPARSING
 )
-for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3")
+for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 (
 HPRNM=`echo $VM | cut -d "_" -f 1`

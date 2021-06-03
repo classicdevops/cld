@@ -1,12 +1,12 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Show list of hypervisors and clouds of cloud manager platform
+Show list of hypervisors and KVMs of cloud manager platform
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                            First PATTERN filtering allowed clouds
-$2                            Second PATTERN filtering allowed clouds
-$3                            Third PATTERN filtering allowed clouds
+$1                            First PATTERN filtering allowed KVMs
+$2                            Second PATTERN filtering allowed KVMs
+$3                            Third PATTERN filtering allowed KVMs
 --json                        Json outout option
 --beauty                      Using together with --json option to beautify json output
 --nocache                     Force hypervisors parsing without cache output
