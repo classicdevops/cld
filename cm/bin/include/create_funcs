@@ -15,6 +15,40 @@ wait
 sort -nu /var/cld/cm/tmp/last_vmid | tail -1
 }
 
+KVMS_USER_ALLOWED() {
+for OPTS in ${@:1}
+do
+echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n')"
+echo $OPTS | grep -q  '^\--json' && JSONFUNCOUT=1
+done
+
+ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
+
+if [ "$JSONFUNCOUT" == "1" ]
+then
+  for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
+  do
+    CLOUDS=$(grep -vh "^$\|^#" /var/cld/access/groups/${GROUP}/kvms 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
+    if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
+    then
+      cat << EOL | tr -d '\n'
+{"group": "$GROUP",
+"clouds": $(echo -n "$CLOUDS" | awk 'BEGIN {print "["} {print "\x22"$1"\x22,"} END {print "]"}' | tr -d '\n' | sed 's#,]#]#g')
+},
+EOL
+    fi
+  done | head -c -1 | cat <(echo -n '[') - <(echo -n ']')
+else
+  for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
+  do
+    grep -vh "^$\|^#" /var/cld/access/groups/${GROUP}/kvms 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
+  done
+  [ "$CLD_GROUPS" ] || grep -vh "^$\|^#" /var/cld/access/users/${SUDO_USER}/kvms 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
+fi
+}
+
 get-kvm-list()
 {
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
@@ -37,7 +71,7 @@ done
 wait
 unalias mv &>/dev/null
 mv /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list
-grep "$(cat /var/cld/access/users/${SUDO_USER}/kvms 2>/dev/null)" /var/cld/cm/tmp/kvm_list
+grep "$(KVMS_USER_ALLOWED)" /var/cld/cm/tmp/kvm_list
 }
 
 get-kvm-list-json()

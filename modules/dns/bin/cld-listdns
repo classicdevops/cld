@@ -16,4 +16,4 @@ for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
 cf-dns-get-zone ${MAIN_ZONE}
-done | grep "${MAIN_ZONE}" | tr -s ' ' | column -t -s ' ' #| awk -v f="$F" -v b="$B" '{print f$2f}'
+done | grep "${MAIN_ZONE}" | tr -s ' ' | column -t #| awk -v f="$F" -v b="$B" '{print f$2f}'
