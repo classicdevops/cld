@@ -70,7 +70,7 @@ timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p
 done
 wait
 unalias mv &>/dev/null
-mv -f /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list
+mv -f /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list &>/dev/null
 if [ "$(user_is_admin ${SUDO_USER})" = "0" ]
 then
 grep "$(KVMS_USER_ALLOWED)" /var/cld/cm/tmp/kvm_list
@@ -145,7 +145,7 @@ done
 wait
 cat /var/cld/cm/tmp/kvm_json_${DATEID} | tr -d '\r\n' | sed 's#},$#}#g' | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
 rm -f /var/cld/cm/tmp/kvm_json_${DATEID} &>/dev/null
-unalias mv &>/dev/null ; mv /var/cld/cm/tmp/kvm_json_${DATEID}_full /var/cld/cm/tmp/kvm_json
+unalias mv &>/dev/null ; mv -f /var/cld/cm/tmp/kvm_json_${DATEID}_full /var/cld/cm/tmp/kvm_json
 cat /var/cld/cm/tmp/kvm_json
 else
 cat /var/cld/cm/tmp/kvm_json
