@@ -26,7 +26,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
-ALLOWED_HPRS=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | cut -d _ -f 1 | head -c -1)
+ALLOWED_HPRS=$(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX" | cut -d _ -f 1 | head -c -1)
 [ "$ALLOWED_HPRS" ] || echoexit1 There is no allowed hypervisors for this user $SUDO_USER
 
 for OPTS in ${@:1}
@@ -63,6 +63,6 @@ if [ "$JSON" == "1" ]
 then
 source <(echo -n get-kvm-list-json "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
 else
-get-kvm-list
+get-kvm-list | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
 fi
 grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cm \-\-json.+\-\-nocache" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cm --json --nocache &>/dev/null' >> /etc/cron.d/cld
