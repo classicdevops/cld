@@ -8,7 +8,7 @@ To access any tool, several factor validation operates for the user, at the appl
 <details open>
 <summary>Show animation</summary>
 
-![cld_intro](https://classicdeploy.com/documentation/img/cld_intro.gif)
+![cld_intro](https://classicdeploy.com/gif/cld_intro.gif)
 </details>
 
 
