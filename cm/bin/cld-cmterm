@@ -14,7 +14,7 @@ EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-cmterm
-cld-cmterm --cmd=start --id=10001 --hyper=HPR-pve-1_1.2.3.4_22_root
+cld-cmterm kvm.name
 EOL
 )
 HELP_ONLY="CLI"

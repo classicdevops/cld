@@ -11,6 +11,18 @@ To access any tool, several factor validation operates for the user, at the appl
 ![cld_intro](https://classicdeploy.com/gif/cld_intro.gif)
 </details>
 
+# Support policy
+
+Please do not ask your questions in github issues. Such format is not suitable for storing FAQ. 
+Depending on the type of your question go to **ServerFault** or **StackOverflow** and please ask it there:
+1) Question about **installation/configuration/using/tweaking/etc** ask it on **[ServerFault](https://serverfault.com/questions/ask)**
+2) Question about some kind of **development** tool/modules/integration ask it on **[StackOverflow](https://stackoverflow.com/questions/ask)**
+
+Tag your question with **`cld`** and **`classicdeploy`** tags (both at once).
+
+We are continuously parsing full list of questions by these tags and will answer as soon as possible. Make your experience available for other users!
+
+[GitHub](https://github.com/classicdeploy/cld/issues) issues are for confirmed bugs/feature requests now. If you have feature idea - please describe it from user experience point of view. Describe how'd you gonna to configure CLD for desired result.
 
 # Terms
 
