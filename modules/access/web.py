@@ -11,7 +11,7 @@ def access_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    file_list = bash('find /var/cld/modules/access/data -maxdepth 3 -type f | grep -v ovpn | sort').split('\n') + ['/var/cld/creds/protected_ports', '/var/cld/creds/local_nets']
+    file_list = bash('find /var/cld/modules/access/data -maxdepth 3 -type f | grep -v "ovpn\|api_accesslist" | sort').split('\n') + ['/var/cld/creds/protected_ports', '/var/cld/creds/local_nets']
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
