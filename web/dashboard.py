@@ -591,7 +591,7 @@ def adminsavefile():
       filename = os.path.basename(file)
       filedir = os.path.dirname(file)
       if os.path.exists(filedir) != True:
-        os.mkdir(filedir, 0o700)
+        os.makedirs(filedir, mode=0o700, exist_ok=False)
       content = request.form['content']
       open(file, "w", newline='\n').write(content.replace('\r', ''))
       if re.match('(^cld-[A-za-z0-9]+$)', filename):
