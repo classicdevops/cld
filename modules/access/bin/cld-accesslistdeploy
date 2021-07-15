@@ -20,6 +20,8 @@ cld-accesslistdeploy --groups=default,prod,hypervisors --allowedgroups=default
 EOL
 )
 source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/accessfuncs
+
 grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
 init-load-constants CLD_IP\|1.2.3.4
 
@@ -52,6 +54,7 @@ grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+
 CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
 )
 EOHOSTSACCESS
+
 cat > /etc/hosts.deny.tmp << 'EOHOSTSBLACK'
 $(
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
@@ -264,7 +267,7 @@ EOACCESSDEPLOY
 if [ "$(echo $CLD_GROUPS | grep -o "default")" = "default" -a  "$(echo $CLD_ALLOW_GROUPS | grep -o "default")" = "default" ]
 then
 cat << EOL | bash
-$CLD_ACCESS_LIST
+$([ -d "/var/cld/modules/access/data/conf.d/cld" ] && cldaccesslistgen cld || echo "$CLD_ACCESS_LIST")
 $CLD_ACCESS_DEPLOY
 EOL
 bash -lc "/root/sbin/iptables_access"
@@ -280,7 +283,7 @@ $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
 $CLD_DEPLOY_NOTTY << EOSSH
-$CLD_ACCESS_LIST
+$([ -d "/var/cld/modules/access/data/conf.d/$VM" ] && cldaccesslistgen $VM || echo "$CLD_ACCESS_LIST")
 $CLD_ACCESS_DEPLOY
 EOSSH
 ) &
