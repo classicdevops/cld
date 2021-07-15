@@ -15,7 +15,7 @@
              {
              var modelist = ace.require("ace/ext/modelist")
              var acemode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
-             if (acemode == "ace/mode/text") { acemode = "ace/mode/sh"};
+             if (acemode == "ace/mode/text") { acemode = "ace/mode/markdown"};
              ace.edit(file+'Pre', {
                  theme: "ace/theme/monokai",
                  keyboardHandler: "ace/keyboard/sublime",
@@ -23,7 +23,7 @@
                  mode: acemode,
                  maxLines: 40,
                  minLines: 5,
-                 fontSize: 16,
+                 fontSize: 14,
                  wrap: true,
                  showPrintMargin: false,
                  autoScrollEditorIntoView: true,
