@@ -122,8 +122,8 @@
                   </form>
                   <div class="prefile">{{ file }}</div>
                   <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
-                  <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button>
-                  <button id="{{ fileid }}-button" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger bt mb-2" style="float: right;">Delete {{ file }}</button><br><br>
+                  <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="max-width: 45%;">Save {{ file }}</button>
+                  <button id="{{ fileid }}-button" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger bt mb-2" style="float: right;max-width: 45%;">Delete {{ file }}</button><br><br>
                   <script>
                      aceactivate('{{ fileid }}')
                   </script>
