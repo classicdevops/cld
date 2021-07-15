@@ -106,10 +106,16 @@
                 Access module files:
              </h4><br><br>
              <h4 class="panel-title">
-                Create exception file for cld instance:
-             </h4>                <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
-                <pre style="padding: 7;margin-right: -5px;">/var/cld/modules/access/data/conf.d/</pre>
+                Create exception file for cld instance/group:
+             </h4>
+                <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
+                <pre style="padding: 7;margin-right: -5px;">/var/cld/modules/access/data/instances/</pre>
                 <input type="text" class="form-control" id="inputid" placeholder="instance_1.1.1.1_22_root/{protected_ports,local_nets,etc...}" style="width: 85%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
+                <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                </form>
+                <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
+                <pre style="padding: 7;margin-right: -5px;">/var/cld/modules/access/data/groups/</pre>
+                <input type="text" class="form-control" id="inputid" placeholder="default/{protected_ports,local_nets,etc...}" style="width: 85%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
                 <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
                 <section id="filesedit">

@@ -267,31 +267,43 @@ EOACCESSDEPLOY
 if [ "$(echo $CLD_GROUPS | grep -o "default")" = "default" -a  "$(echo $CLD_ALLOW_GROUPS | grep -o "default")" = "default" ]
 then
 cat << EOL | bash
-$([ -d "/var/cld/modules/access/data/conf.d/cld" ] && cldaccesslistgen cld || echo "$CLD_ACCESS_LIST")
+$([ -d "/var/cld/modules/access/data/instances/cld" ] && instancelistgen cld || echo "$CLD_ACCESS_LIST")
 $CLD_ACCESS_DEPLOY
 EOL
 bash -lc "/root/sbin/iptables_access"
+fi
+
+############## Deploy begin ##############
+for CLD_ACCESS_GROUP in $(echo "${CLD_GROUPS}" | tr ',' '\n')
+do
+
+if [ -d "/var/cld/modules/access/data/groups/$CLD_ACCESS_GROUP" ]
+then
+CLD_ACCESS_LIST_DEFAULT="$(grouplistgen ${CLD_ACCESS_GROUP})"
+else
+CLD_ACCESS_LIST_DEFAULT="$CLD_ACCESS_LIST"
 fi
 
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
 do
 if [ "$VM" ]
 then
-
 INSTANCE_GROUP_FUNCS
 $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
 $CLD_DEPLOY_NOTTY << EOSSH
-$([ -d "/var/cld/modules/access/data/conf.d/$VM" ] && cldaccesslistgen $VM || echo "$CLD_ACCESS_LIST")
+$([ -d "/var/cld/modules/access/data/instances/$VM" ] && instancelistgen $VM || echo "$CLD_ACCESS_LIST_DEFAULT")
 $CLD_ACCESS_DEPLOY
 EOSSH
 ) &
-
 fi
 done
 
+done
+
 wait
+##############  Deploy end  ##############
 
 if [ "${MIKROTIK}" = "1" ]
 then
