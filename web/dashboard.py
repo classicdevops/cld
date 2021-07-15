@@ -607,6 +607,9 @@ def admindeletefile():
     elif userisadmin(session['username']) == True:
       file = request.form['file']
       os.remove(file)
+      filedir = os.path.dirname(file)
+      try: os.rmdir(filedir)
+      except: pass
       return Response("file "+file+" deleted", status=200, mimetype='text/plain')
 
 @app.route('/admin/user/<name>')
