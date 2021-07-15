@@ -33,7 +33,7 @@ echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 if [ "$EXPIRE" ]
 then
 EXPIRE_TIMESTAMP=$(wget -qO- "http://api.whois.vu/?q=${MAIN_ZONE}&clean" | jq .expires)
-cat << EOL
+cat << EOL | jq .
 {
 "Expire days": $(echo $EXPIRE_TIMESTAMP $(date +%s) | awk '{print ($1-$2)/60/60/24}' | cut -d . -f 1),
 "Expire date": "$(date +%F --date=@$EXPIRE_TIMESTAMP)",
