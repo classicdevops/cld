@@ -227,7 +227,7 @@ CLD framework script is:
 ### Recommended system requirements:
 Virtualization: `KVM`/`Bare metal`
 Supported OS: `Centos` 7/8, `Debian` 9/10
-CPU: `2` cores
+CPU: `1` cores
 RAM: `2` Gb
 Disk space: `20` Gb
 Direct public ip address
