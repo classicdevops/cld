@@ -406,7 +406,7 @@ then
 [ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< /${STRING//cld-/}
 elif [ "${METHOD}" == "API" ]
 then
-[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "API" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | awk '{print "     curl -s "$0}'
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "API" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | sed 's# #%20#g' | awk '{print "     curl -s "$0}'
 [ "$ONLYPATTERN" ] || awk '{print "     curl -s "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | sed 's#&args="$#"#g'
 elif [ "${METHOD}" == "WEB" ]
 then
