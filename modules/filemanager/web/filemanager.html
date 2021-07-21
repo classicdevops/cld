@@ -1,0 +1,234 @@
+<html lang="en">
+   <head>
+      <title>CLD web - filemanager</title>
+      {% include 'html/include/head.html' %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ext-modelist.js"></script>
+   </head>
+   <style>
+    li > a {
+    cursor: pointer;
+    font-size: large;
+    font-family: monospace;
+    font-weight: 600;
+    }
+   </style>
+   <body>
+      <div class="page-container">
+         {% include 'html/include/navbar.html' %}
+          <script>
+             var editor = [];
+             var currentdir = "{{ currentdir }}";
+             function aceactivate(file)
+             {
+             var modelist = ace.require("ace/ext/modelist")
+             var acemode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
+             if (acemode == "ace/mode/text") { acemode = "ace/mode/sh"};
+             ace.edit(file+'Pre', {
+                 theme: "ace/theme/monokai",
+                 keyboardHandler: "ace/keyboard/sublime",
+                 foldStyle: "markbeginend",
+                 mode: acemode,
+                 maxLines: 43,
+                 minLines: 5,
+                 fontSize: 16,
+                 wrap: true,
+                 showPrintMargin: false,
+                 autoScrollEditorIntoView: true,
+                 highlightSelectedWord: true
+             });
+             editor[file+'Pre'] = ace.edit(file+'Pre');
+             editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+             $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+             editor[file+'Pre'].getSession().on('change', function () {
+                $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+             });
+             }
+             function savefile(id, url) {
+                     $.ajax({
+                         url : url,
+                         type: "POST",
+                         data : $('#'+id).serialize(),
+                         cache: false,
+                         processData:false,
+                         success: function (data) {
+                             $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                             });
+                             console.log('File saved');
+                             },
+                         error: function (data) {
+                             $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                             });
+                             console.log('An error occurred while saving data');
+                             }
+                     })
+             }
+             function deletefile(id, url, modalid) {
+                     $.ajax({
+                         url : url,
+                         type: "POST",
+                         data : $('#'+id).serialize(),
+                         cache: false,
+                         processData:false,
+                         success: function (data) {
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                             });
+                             console.log('File deleted');
+                             $('#'+modalid).modal('hide');
+                             },
+                         error: function (data) {
+                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button-del').addClass('btn-danger').removeClass('btn-warning');
+                             });
+                             console.log('An error occurred while deleting file');
+                             }
+                     })
+             }
+             function newfile(inputid) {
+                    var file = currentdir+document.getElementById(inputid).value;
+                    modaleditor(file, "");
+            }
+            
+    function updatedirs(dirs) {
+    dirlist = document.createElement('ul');
+    dirlist.innerHTML = `<li><a onclick='currentdir = "${currentdir.split("/").slice(0, currentdir.split("/").length - 2).join("/")+"/"}"; getdirs(currentdir); getfiles(currentdir);'>..</a></li>` + dirs.map(item => `<li><a onclick='currentdir = currentdir + "${item}/"; getdirs(currentdir); getfiles(currentdir);'>${item}</a></li>`).join('')
+    document.querySelector("#dirlist").innerHTML = "Directories:<br>" + dirlist.outerHTML
+    }
+    
+    function updatefiles(files) {
+    filelist = document.createElement('ul');
+    filelist.innerHTML = files.map(item => `<li><a onclick='getfile("${currentdir+item}");'>${item}</a></li>`).join('')
+    document.querySelector("#filelist").innerHTML = "Files:<br>" + filelist.outerHTML
+    }
+
+    function getdirs(currentdir) {
+    $.ajax({
+        type : 'POST',
+        url: "{{ url_for('filemanager_getdirs') }}",
+        data : {currentdir: currentdir},
+        dataType : 'json',
+        success: function (data) {
+            console.log(data);
+            updatedirs(data);
+            document.querySelector("#currentdir").innerText = currentdir;
+            window.history.pushState("", "", "/filemanager?dir="+currentdir);
+        },
+        error: function (data) {
+        console.log(data);
+        }
+    });
+    }
+    
+    function getfiles(currentdir) {
+    $.ajax({
+        type : 'POST',
+        url: "{{ url_for('filemanager_getfiles') }}",
+        data : {currentdir: currentdir},
+        dataType : 'json',
+        success: function (data) {
+            updatefiles(data);
+            console.log(data);
+        },
+        error: function (data) {
+        console.log(data);
+        }
+    });
+    }
+    
+    function getfile(file) {
+    $.ajax({
+        type : 'POST',
+        url: "{{ url_for('filemanager_getfile') }}",
+        data : {file: file},
+        dataType : 'json',
+        success: function (data) {
+            modaleditor(data["file"], escapeHtml(data["content"]));
+            window.history.pushState("", "", "/filemanager?dir="+currentdir+"&"+"file="+data["file"].split("/")[data["file"].split("/").length - 1]);
+            console.log(data);
+        },
+        error: function (data) {
+        console.log(data);
+        }
+    });
+    }
+    
+    function modaleditor(file, content) {
+        var id = idgen();
+        var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+        $("body").append(`\
+          <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 1280px; height: 720px;">
+              <div id="`+id+`-content" class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '/admin/deletefile', '`+id+`')" class="btn btn-danger bt mb-2" style="float: right;margin-right: 10%;font-size: smaller;padding: 3px;">Delete `+file+`</button>
+                  <h4 class="modal-title" id="`+id+`Label" style="font-family: monospace; font-weight: 700;">`+file+`</h4>
+                </div>
+                <div id="`+id+`-body" class="modal-body" style="padding: 0px; line-height: 0; margin-block-end: 0px;">
+                            <div id="`+fileid+`div">
+                            <form id="`+fileid+`" style="margin-block-end: 0px;">
+                               <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                               <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                            </form>
+                            <pre id="`+fileid+`Pre">`+content+`</pre>
+                            <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2" style="float: right;">Save `+file+`</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `)
+        aceactivate(fileid);
+        $('#'+id+'-content').resizable({
+          alsoResize: ".modal-dialog",
+          minHeight: 480,
+          minWidth: 640
+        });
+        // $('#'+id+'-dialog').draggable();
+        
+        $('#'+id).modal({
+          backdrop: true
+        })
+        
+        $('#'+id).modal('show')
+        
+        $('#'+id).on('hidden.bs.modal', function () {
+            $('#'+id).remove();
+            window.history.pushState("", "", "/filemanager?dir="+currentdir);
+        });
+        
+        };
+        </script>
+        <div class="container"><br><br>
+             <h4 class="panel-title">
+                Classic file manager
+             </h4><br><br>
+             <h4 class="panel-title">
+                Create new file:
+             </h4>
+             <form style="display: -webkit-inline-box;" onsubmit="newfile('inputid');return false;">
+                <pre id="currentdir" style="padding: 7;margin-right: -5px;">/var/cld/modules/</pre>
+                <input type="text" class="form-control" id="inputid" placeholder="filename.txt" style="width: 31%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
+                <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                </form>
+                <section id="dirlist">
+                </section>
+                <section id="filelist">
+                </section>
+        </div>
+      </div>
+   </body>
+   <script>
+       getdirs(currentdir);
+       getfiles(currentdir);
+       let filevar = window.location.search.substr(1).split("&").filter(item => item.split("=")[0] == "file")
+       filevar.length > 0 && getfile(currentdir+filevar[0].split("=")[1])
+   </script>
+</html>
