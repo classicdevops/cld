@@ -425,10 +425,11 @@ version()
 {
 TOOL="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
 cd /var/cld && \
-GIT_DATA=$(git log -1 --date=format:'%F' ${TOOL})
+GIT_COMMITS="$(git log --date=format:'%F' ${TOOL})"
+[ "${GIT_COMMITS}" ] && GIT_DATA=$(head -5 <<< "${GIT_COMMITS}")
 if [ "${GIT_DATA}" ]
 then
-VERSION=" $(git log --oneline ${TOOL} | wc -l | awk '{print $1/100}')"
+VERSION=" $(grep commit <<< "${GIT_COMMITS}" | wc -l | awk '{print $1/100}')"
 VERSION_DATA="$(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2)"
 COPYRIGHT="(C) Aleksandr Chendev
 Released under the GNU General Public License v2.0"
