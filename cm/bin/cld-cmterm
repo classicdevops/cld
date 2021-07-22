@@ -20,6 +20,7 @@ cld-cmterm 12345
 EOL
 )
 HELP_ONLY="CLI"
+
 source /var/cld/bin/include/cldfuncs
 source /var/cld/cm/bin/include/dc_funcs
 source /var/cld/cm/bin/include/create_funcs
