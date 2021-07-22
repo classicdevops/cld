@@ -430,7 +430,7 @@ if [ "${GIT_DATA}" ]
 then
 VERSION_DATA="$(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2)"
 COPYRIGHT="(C) Aleksandr Chendev
-Released under the GNU General Public License v2.0."
+Released under the GNU General Public License v2.0"
 else
 GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
 VERSION_DATA="${GIT_DATA} - $(stat --format=%y ${TOOL} | cut -d '.' -f 1)"
