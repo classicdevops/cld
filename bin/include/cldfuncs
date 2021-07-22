@@ -433,7 +433,7 @@ COPYRIGHT="(C) Aleksandr Chendev
 Released under the GNU General Public License v2.0."
 else
 GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
-VERSION_DATA="${GIT_DATA} - $(stat --format=%y /var/cld/modules/cldsaas/bin/cld-saascreate | cut -d '.' -f 1)"
+VERSION_DATA="${GIT_DATA} - $(stat --format=%y ${TOOL} | cut -d '.' -f 1)"
 fi
 cat << EOL
 $(basename ${TOOL}) - ${VERSION_DATA} ${COPYRIGHT}
