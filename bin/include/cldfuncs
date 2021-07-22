@@ -426,9 +426,15 @@ version()
 TOOL="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
 cd /var/cld && \
 GIT_DATA=$(git log -1 --date=format:'%F' ${TOOL})
+if [ "${GIT_DATA}" ]
+then
+COPYRIGHT="(C) Aleksandr Chendev
+Released under the GNU General Public License v2.0."
+else
+GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
+fi
 cat << EOL
-$(basename ${TOOL}) - $(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2) (C) Aleksandr Chendev
-Released under the 2-Clause BSD License. 
+$(basename ${TOOL}) - $(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2) ${COPYRIGHT}
 
 EOL
 exit 0
