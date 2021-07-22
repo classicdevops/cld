@@ -428,6 +428,7 @@ cd /var/cld && \
 GIT_DATA=$(git log -1 --date=format:'%F' ${TOOL})
 if [ "${GIT_DATA}" ]
 then
+VERSION=" $(git log --oneline ${TOOL} | wc -l | awk '{print $1/100}')"
 VERSION_DATA="$(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2)"
 COPYRIGHT="(C) Aleksandr Chendev
 Released under the GNU General Public License v2.0"
@@ -436,7 +437,7 @@ GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
 VERSION_DATA="${GIT_DATA} - $(stat --format=%y ${TOOL} | cut -d '.' -f 1)"
 fi
 cat << EOL
-$(basename ${TOOL}) - ${VERSION_DATA} ${COPYRIGHT}
+$(basename ${TOOL})${VERSION} - ${VERSION_DATA} ${COPYRIGHT}
 
 EOL
 exit 0
