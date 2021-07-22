@@ -37,7 +37,7 @@ echo $OPTS | grep -q  '^\--nocache' && NOCACHE=1
 done
 
 ALLOWED_HPRS=$(CLOUDS_USER_ALLOWED ${HPRS} | grep -i "^$HYPERVISOR_NAME_PREFIX" | cut -d _ -f 1 | head -c -1)
-[ "$ALLOWED_HPRS" ] || echoexit1 There is no allowed hypervisors for this user $SUDO_USER
+[ "$ALLOWED_HPRS" ] || { echo There is not allowed hypervisors for this user $SUDO_USER 1>&2 ; echo '[]' ; }
 
 [ "$NOCACHE" ] || NOCACHE=0
 
