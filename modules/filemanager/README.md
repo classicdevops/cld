@@ -1,0 +1,1 @@
+File manager module in the web interface for administrators
