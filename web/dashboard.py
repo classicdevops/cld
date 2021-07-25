@@ -140,6 +140,8 @@ for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>
 bash('''
 rm -f /var/cld/web/modules/*
 mkdir /var/cld/web/modules &>/dev/null
+rm -f /var/cld/web/html/include/cld_tier.html
+ln -s /var/cld/web/html/include/cld_tier.html /var/cld/tmp/cld_tier
 for WEB_TEMPLATE_PATH in $(ls -d /var/cld/{cm,deploy}/web /var/cld/modules/*/web 2>/dev/null)
 do
 WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
