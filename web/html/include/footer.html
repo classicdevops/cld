@@ -1,5 +1,5 @@
 {% import 'html/include/cld_tier.html' as cldtier %}
-
+{% set cldtier = cldtier| replace(" ","") | replace("\n","") %}
 {% if cldtier in ["basic", "business", "premium", "enterprise"] %}
     {% set copyright = "CLD "+cldtier|capitalize+" License" %}
 {% else %}
