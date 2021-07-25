@@ -116,8 +116,9 @@ do
         echo $USER_NAME deleted due was not found at access rigths matrix file /var/cld/creds/passwd
     fi
 done
-sed -i '/CLD_PATH/d' /root/.bashrc &>/dev/null
+sed -i '/cld/d' /root/.bashrc &>/dev/null
 cat >> /root/.bashrc << 'EOL'
+alias cld-framework='source /var/cld/bin/include/cldfuncs'
 export CLD_PATH="/var/cld/bin:$(echo -n "$(ls -d /var/cld/*/bin /var/cld/modules/*/bin)" | tr "\n" :)"
 PATH="$PATH:$CLD_PATH"
 EOL
