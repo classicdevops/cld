@@ -22,10 +22,10 @@ do
 echo $OPTS | grep -q  '^\--chatid=' && TG_GROUP="$(echo $OPTS | cut -d '=' -f 2)"
 done
 
-TEXT=$(tr ' ' '\n' <<< ${@:1} | grep -v '^\--chatid=' | tr '\n' '%0A')
+TEXT=$(tr ' ' '\n' <<< ${@:1} | grep -v '^\--chatid=' | sed ':a;N;$!ba;s#\n#%0A#g')
 
 [ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details
 [ "$TEXT" ] || echoexit1 Text is not defined - use --help argument for details
 
-curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TG_GROUP}&parse_mode=markdown&text=\`\`\`${TEXT}\`\`\`" &>/dev/null
+curl -s 'https://api.telegram.org/bot'${TELEGRAM_BOT_TOKEN}'/sendMessage?chat_id='${TG_GROUP}'&parse_mode=markdown&text=```%0A'${TEXT}'```' &>/dev/null
 
