@@ -1,9 +1,9 @@
 {% import 'html/include/cld_tier.html' as cldtier %}
 
 {% if cldtier in ["basic", "business", "premium", "enterprise"] %}
-    {% set copyright = "CLD "+cldtier|capitalize+" License"
+    {% set copyright = "CLD "+cldtier|capitalize+" License" %}
 {% else %}
-    {% set copyright = "GNU General Public License v2.0"
+    {% set copyright = "GNU General Public License v2.0" %}
 {% endif %}
 
 <footer style="border-bottom: 1px;border-color: black;bottom: 0px;margin: 0 auto;position: absolute;left: 50%;transform: translate(-50%, -50%);" class="container">
