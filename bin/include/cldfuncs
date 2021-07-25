@@ -522,6 +522,21 @@ WhiteOnBlue='\e[48;5;19m'
 BoldUline='\e[1;4m'
 }
 
+urlencode() {
+OLD_LC_COLLATE=$LC_COLLATE
+LC_COLLATE=C
+local length="${#1}"
+for (( i = 0; i < length; i++ )); do
+    local CHAR="${1:$i:1}"
+    case $CHAR in
+        [a-zA-Z0-9.~_-]) printf '%s' "$CHAR" ;;
+        *) printf '%%%02X' "'$CHAR" ;;
+    esac
+done
+LC_COLLATE=$OLD_LC_COLLATE
+}
+
+
 for OPTS in ${@:1}
 do
 [[ "$OPTS" =~ ^(-h|--help)$ ]] && cldhelp
