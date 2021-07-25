@@ -31,7 +31,6 @@ done
 
 TEXT=$(echo "${@:2}")
 
-echo "$TEXT"
 [ "$TEXT" ] || TEXT="$(
 while IFS= read line; do
         echo ${line}
