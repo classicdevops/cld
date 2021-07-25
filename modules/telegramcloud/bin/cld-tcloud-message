@@ -5,11 +5,18 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 --chatid=-1234567891011|123456789      Telegram chat or user id
-Any text what here will send as is     Absolute file path at cld server
+Any text what here will send as is     Text from $2 will pass to a message - have prority before Here documement and stdin
+[Here documents|stdin]                 Any text passed into stdin or Here documents will send as is
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-tcloud-message --chatid=-1234567891011 Any text what here will send as is
+echo "Any message" cld-tcloud-message --chatid=-1234567891011
+cld-tcloud-message --chatid=-1234567891011 << EOCLD
+Any
+Here documents
+Text
+EOCLD
 EOL
 )
 HELP_ONLY="CLI"
