@@ -1,7 +1,7 @@
 {% import 'html/include/cld_tier.html' as cldtier %}
 
 {% if cldtier in ["basic", "business", "premium", "enterprise"] %}
-    {% set copyright = "CLD "cldtier|capitalize" License"
+    {% set copyright = "CLD "+cldtier|capitalize+" License"
 {% else %}
     {% set copyright = "GNU General Public License v2.0"
 {% endif %}
