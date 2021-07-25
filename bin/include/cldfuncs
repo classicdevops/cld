@@ -423,15 +423,21 @@ exit 0
 
 version()
 {
+
+upsearch () {
+    test / == "$PWD" && return || test -e "$1" && return || cd .. && upsearch "$1"
+}
+
 TOOL="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
-cd /var/cld && \
+cd $(dirname ${TOOL})
+upsearch .git
 GIT_COMMITS="$(git log --date=format:'%F' ${TOOL})"
 [ "${GIT_COMMITS}" ] && GIT_DATA=$(head -5 <<< "${GIT_COMMITS}")
 if [ "${GIT_DATA}" ]
 then
 VERSION=" $(grep commit <<< "${GIT_COMMITS}" | wc -l | awk '{print $1/100}')"
 VERSION_DATA="$(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2)"
-COPYRIGHT="(C) Aleksandr Chendev
+[ "${PWD}" = "/var/cld" ] && COPYRIGHT="(C) Aleksandr Chendev
 Released under the GNU General Public License v2.0"
 else
 GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
@@ -526,12 +532,9 @@ urlencode() {
 OLD_LC_COLLATE=$LC_COLLATE
 LC_COLLATE=C
 local length="${#1}"
-for (( i = 0; i < length; i++ )); do
+for i in $(seq 0 $length | head -n -1); do
     local CHAR="${1:$i:1}"
-    case $CHAR in
-        [a-zA-Z0-9.~_-]) printf '%s' "$CHAR" ;;
-        *) printf '%%%02X' "'$CHAR" ;;
-    esac
+    [[ "$CHAR" =~ [a-zA-Z0-9.~_-] ]] && printf '%s' "$CHAR" || printf '%%%02X' "'$CHAR"
 done
 LC_COLLATE=$OLD_LC_COLLATE
 }
