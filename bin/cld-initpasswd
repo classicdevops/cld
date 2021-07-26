@@ -117,7 +117,7 @@ do
     fi
 done
 sed -i '/cld/d' /root/.bashrc &>/dev/null
-sed -i '/CLD_PATH/d' /root/.bashrc &>/dev/null
+sed -i '/PATH=/d' /root/.bashrc &>/dev/null
 cat >> /root/.bashrc << 'EOL'
 alias cld-framework='source /var/cld/bin/include/cldfuncs'
 export CLD_PATH="/var/cld/bin:$(echo -n "$(ls -d /var/cld/*/bin /var/cld/modules/*/bin)" | tr "\n" :)"
