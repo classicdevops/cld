@@ -17,7 +17,8 @@ for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--file\|^\-file' && FILE="$(echo $OPTS | cut -d '=' -f 2)"
 done
-init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10
+
+init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10
 
 # Authenticate with Zabbix API
 authenticate() {
