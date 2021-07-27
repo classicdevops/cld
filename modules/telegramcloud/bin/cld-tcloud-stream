@@ -5,7 +5,7 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 --chatid=-1234567891011|123456789      Telegram chat or user id
---noansi                               Remove all ansi colors and sequence escapes tags
+--noansi                               Remove all ansi colors and escape sequences tags
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
