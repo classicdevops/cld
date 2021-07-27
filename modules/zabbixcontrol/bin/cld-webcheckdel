@@ -26,9 +26,9 @@ HOST_DNS="$ARG1"
 # CONSTANT VARIABLES
 ERROR='0'
 
-init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php HOSTGROUPID\|10 TEMPLATEIDS\|10362,10364,10365
+init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php ZABBIX_HOSTGROUPID\|10 ZABBIX_TEMPLATEIDS\|10362,10364,10365
 
-export TEMPLATEIDS="$(tr ',' '\n' <<< ${TEMPLATEIDS})"
+export ZABBIX_TEMPLATEIDS="$(tr ',' '\n' <<< ${ZABBIX_TEMPLATEIDS})"
 # Authenticate with Zabbix API
 authenticate() {
 echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
@@ -40,7 +40,7 @@ echo $(curl -k -s -H 'Content-Type: application/json-rpc' -d "{
   },
   \"auth\": null,
   \"id\": 0
-}" "$API" | cut -d ':' -f 3 | cut -d ',' -f 1) | tr -d '"'
+}" "$ZABBIX_API" | cut -d ':' -f 3 | cut -d ',' -f 1) | tr -d '"'
 }
 
 AUTH_TOKEN=$(authenticate)
@@ -62,7 +62,7 @@ JSON_ID_REQUEST=$(cat << EOL | jq .
 EOL
 )
 
-HOST_ID=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$API" | jq -r '.result[].hostid')
+HOST_ID=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$ZABBIX_API" | jq -r '.result[].hostid')
 
 AUTH_TOKEN=$(authenticate)
 
@@ -79,7 +79,7 @@ JSON_REQUEST=$(cat << EOL | jq .
 EOL
 )
 
-RESULT=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$API" | jq .)
+RESULT=$(curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_REQUEST}" "$ZABBIX_API" | jq .)
 
 (
 echo "$RESULT" | grep -q result && echo Web checker for $ARG1 deleted successfully || echo "$RESULT" | grep "data" | cut -d : -f 2- | cut -d ' ' -f 2- | tr -d '"''\\'
