@@ -26,7 +26,7 @@ HOST_DNS="$ARG1"
 # CONSTANT VARIABLES
 ERROR='0'
 
-init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_SERVER\|zbx.example.com ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php ZABBIX_HOSTGROUPID\|10 ZABBIX_TEMPLATEIDS\|10362,10364,10365
+init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php ZABBIX_HOSTGROUPID\|10 ZABBIX_TEMPLATEIDS\|10362,10364,10365
 
 export ZABBIX_TEMPLATEIDS="$(tr ',' '\n' <<< ${ZABBIX_TEMPLATEIDS})"
 # Authenticate with Zabbix API
