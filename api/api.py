@@ -117,12 +117,16 @@ def cmd_${CLD_UTIL//[.-]/_}():
     cmd_args = ''
     try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
     except: pass
+    tgout = ''
+    try: 
+      if request.args['tgout']: tgout = ' | /var/cld/modules/telegramcloud/bin/cld-tcloud-stream --chatid='+vld(request.args['tgout'])
+    except: pass
     bg = ''
     try: 
       if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
     except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
-    #cmdoutput = bash('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+bg)
+    #cmdoutput = bash('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg)
     return Response(bashstream('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+bg, output), status=200, mimetype='text/'+output)
 
 EOL
