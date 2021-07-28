@@ -24,7 +24,7 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +2 -2 | tail -1)
+ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +3 | tr '\n' ' ')
 
 for OPTS in ${@:1}
