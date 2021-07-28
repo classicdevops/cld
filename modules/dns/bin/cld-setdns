@@ -33,7 +33,7 @@ done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +3 | tr '\n' ' ')
+ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +3 | tr '\n' ' ' | head -c -1)
 
 TYPE=${ARG1^^}
 DNS_ZONE=${ARG2,,}
