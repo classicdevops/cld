@@ -5,18 +5,34 @@ Affect /var/cld/creds/creds file and others if it setted up in modules init scri
 Using  init-load-constants() and init-string() functions from /var/cld/bin/include/cldfuncs
 EOL
 )
+HELP_ARGS=$(cat << 'EOL'
+--minimal                Minimal main init - only domain will require
+EOL
+)
 HELP_EXAMPLES=$(cat << 'EOL'
 init-main
+init-main --minimal
 EOL
 )
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
-init-load-constants CLD_DOMAIN\|cld.yourdomain.com CLD_DOMAIN\|cldapi.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
-for INIT in $(ls -pd  /var/cld/*/init /var/cld/modules/*/init 2>/dev/null)
+for OPTS in ${@:1}
 do
-${INIT}
+echo $OPTS | grep -q  '^\--minimal' && MINIMAL_INIT=1
 done
+
+init-load-constants CLD_DOMAIN\|cld.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+
+if ! [ "${MINIMAL}" ]
+then
+	init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+
+	for INIT in $(ls -pd  /var/cld/*/init /var/cld/modules/*/init 2>/dev/null)
+	do
+	${INIT}
+	done
+fi
 
 if grep -qi "centos\|rhel" /etc/*-release
 then
