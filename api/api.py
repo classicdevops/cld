@@ -118,8 +118,7 @@ def cmd_${CLD_UTIL//[.-]/_}():
     try: cmd_args = str(re.match('^[A-z0-9.,@=/: -]+$', request.args['args']).string)
     except: pass
     tgout = ''
-    try: 
-      if request.args['tgout']: tgout = ' | /var/cld/modules/telegramcloud/bin/cld-tcloud-stream --chatid='+vld(request.args['tgout'])
+    try: tgout = ' | /var/cld/modules/telegramcloud/bin/cld-tcloud-stream --chatid='+vld(request.args['tgout'])
     except: pass
     bg = ''
     try: 
