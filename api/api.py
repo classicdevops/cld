@@ -120,8 +120,6 @@ def cmd_${CLD_UTIL//[.-]/_}():
     tgout = ''
     try: tgout = ' | /var/cld/modules/telegramcloud/bin/cld-tcloud-stream --chatid='+vld(request.args['tgout'])
     except: pass
-    print(tgout, flush=True)
-    print(vld(request.args['tgout']), flush=True)
     bg = ''
     try: 
       if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
