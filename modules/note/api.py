@@ -5,7 +5,6 @@ def note_get_file(note, file):
     for line in open('/var/cld/creds/passwd').read().strip().split('\n'):
       token = line.split(':')[2]
       checkhash = hashlib.md5(str(note+file+token).encode('utf-8')).hexdigest()
-      print(token+" "+checkhash+" "+apihash, flush=True)
       if checkhash == apihash:
         user = line.split(':')[0]
         break
