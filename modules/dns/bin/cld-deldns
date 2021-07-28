@@ -18,7 +18,8 @@ source /var/cld/modules/dns/bin/include/dnsfuncs
 TYPE=${1^^}
 DNS_ZONE=${2,,}
 MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
-CONTENT=$(echo $3)
+CONTENT=${@:3}
+
 
 echo $TYPE | grep -q "^A$\|^AAAA$\|^CNAME$\|^TXT$\|^SRV$\|^LOC$\|^MX$\|^NS$\|^SPF$\|^CERT$\|^DNSKEY$\|^DS$\|^NAPTR$\|^SMIMEA$\|^SSHFP$\|^TLSA$\|^URI$" \
 || echoexit1 "incorrect type - allowed types: A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF, CERT, DNSKEY, DS, NAPTR, SMIMEA, SSHFP, TLSA, URI"
