@@ -24,7 +24,7 @@ done
 
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
-if ! [ "${MINIMAL}" ]
+if ! [ "${MINIMAL_INIT}" ]
 then
 	init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
