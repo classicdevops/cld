@@ -39,6 +39,7 @@ curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
 sendmessageoffset() {
 local OFFSET=$1
 local MESSAGE_TEXT=$(tail -n +${OFFSET} ${TG_STREAM_FILE} | head -c 4080)
+[ "$(echo ${MESSAGE_TEXT} | wc -c)" -le "3" ] && MESSAGE_TEXT="Next init message"
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
 -d "chat_id=${TG_GROUP}&parse_mode=markdown&text=\`\`\`%0A$(urlencode "${MESSAGE_TEXT}")\`\`\`"
 }
@@ -78,7 +79,7 @@ do
         editmessage ${TG_FILE_LINE_OFFSET}
         TG_FILE_LINE_COUNT_PREV_SENT=$(expr ${TG_FILE_LINE_COUNT} + 1)
     fi
-    sleep 1.9s
+    sleep 2.9s
   fi
   sleep 0.1s
   TG_STREAM_FILE_SIZE_PREV=${TG_STREAM_FILE_SIZE}
