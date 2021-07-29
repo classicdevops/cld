@@ -11,7 +11,8 @@ then
 chattr +i /var/cld
 fi
 
-[ "$SUDO_USER" ] || SUDO_USER=admin
+[ "$SUDO_USER" ] && export SUDO_USER=${SUDO_USER} || export SUDO_USER=admin
+
 if [ "$FROM" == "API" ] 
 then 
   F=
