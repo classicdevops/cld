@@ -25,8 +25,8 @@ then
 export DOWNGRADE=1
 fi
 
-TIER=$(cat /var/cld/tmp/cld_tier 2>/dev/null)
-[ "$TIER" ] || echo opensource > /var/cld/tmp/cld_tier
+TIER=$(cat /var/cld/creds/cld_tier 2>/dev/null)
+[ "$TIER" ] || echo opensource > /var/cld/creds/cld_tier
 TIER=${TIER:-opensource}
 
 
@@ -108,7 +108,7 @@ rm -rf /var/cld/.git/
 rsync -avP /usr/src/cld/${VERIFIED_TIER}/ /var/cld/
 
 cd /var/cld/
-echo ${VERIFIED_TIER} > /var/cld/tmp/cld_tier
+echo ${VERIFIED_TIER} > /var/cld/creds/cld_tier
 
 cld-update
 cld-start
@@ -131,7 +131,7 @@ rsync -avP /usr/src/cld/cld/ /var/cld/
 cd /var/cld/
 git add .
 git reset $TIER_COMMIT_ID --hard &>/dev/null
-echo opensource > /var/cld/tmp/cld_tier
+echo opensource > /var/cld/creds/cld_tier
 
 cld-update
 cld-start

@@ -141,7 +141,7 @@ bash('''
 rm -f /var/cld/web/modules/*
 mkdir /var/cld/web/modules &>/dev/null
 rm -f /var/cld/web/html/include/cld_tier.html
-ln -s /var/cld/tmp/cld_tier /var/cld/web/html/include/cld_tier.html
+ln -s /var/cld/creds/cld_tier /var/cld/web/html/include/cld_tier.html
 for WEB_TEMPLATE_PATH in $(ls -d /var/cld/{cm,deploy}/web /var/cld/modules/*/web 2>/dev/null)
 do
 WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
