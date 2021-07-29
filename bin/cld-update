@@ -116,7 +116,7 @@ cld-start
 elif [ "$DOWNGRADE" = "1" ]
 then
 
-TIER_COMMIT_ID=$(git ls-remote git@github.com:classicdeploy/cld.git | tail -1 | cut -b  -8)
+TIER_COMMIT_ID=$(git ls-remote https://github.com/classicdeploy/cld.git | tail -1 | cut -b  -8)
 
 [ -d /usr/src/cld ] && rm -rf /usr/src/cld
 mkdir /usr/src/cld
