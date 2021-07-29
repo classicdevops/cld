@@ -105,7 +105,7 @@ git clone https://git.classicdeploy.com/cld/${VERIFIED_TIER}.git
 cld-stop
 
 rm -rf /var/cld/.git/
-rsync -avP /usr/src/cld/${VERIFIED_TIER}/ /var/cld/
+rsync -aP /usr/src/cld/${VERIFIED_TIER}/ /var/cld/
 
 cd /var/cld/
 echo ${VERIFIED_TIER} > /var/cld/creds/cld_tier
@@ -126,7 +126,7 @@ git clone https://github.com/classicdeploy/cld.git
 cld-stop
 
 rm -rf /var/cld/.git/
-rsync -avP /usr/src/cld/cld/ /var/cld/
+rsync -aP /usr/src/cld/cld/ /var/cld/
 
 cd /var/cld/
 git add .
