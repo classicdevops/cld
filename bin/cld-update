@@ -92,9 +92,9 @@ VERIFIED_TIER=$(git ls-remote --exit-code -h "https://git.classicdeploy.com/cld/
 [ "${VERIFIED_TIER}" ] && break
 done
 [ "${VERIFIED_TIER}" ] || { echo TIER is not defined - upgrade failed - exit ; exit 1 ; }
-
+echo
 echo Current subscription plan is $VERIFIED_TIER
-
+echo
 TIER_COMMIT_ID=$(git ls-remote https://git.classicdeploy.com/cld/${VERIFIED_TIER}.git | tail -1 | cut -b  -8)
 
 [ -d /usr/src/cld ] && rm -rf /usr/src/cld
