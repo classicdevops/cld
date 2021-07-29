@@ -121,7 +121,7 @@ TIER_COMMIT_ID=$(git ls-remote https://github.com/classicdeploy/cld.git | tail -
 [ -d /usr/src/cld ] && rm -rf /usr/src/cld
 mkdir /usr/src/cld
 cd /usr/src/cld
-git clone git@github.com:classicdeploy/cld.git
+git clone https://github.com/classicdeploy/cld.git
 
 cld-stop
 
