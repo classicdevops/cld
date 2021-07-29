@@ -511,12 +511,14 @@ def dashboard():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
   if request.method == 'POST':
-    try:
-      if pam.pam().authenticate(request.form['username'], request.form['password']):
-        session['username'] = request.form['username']
-        return redirect(url_for('dashboard'))
-    except:
-      pass
+    if 'username' not in session:
+      if os.path.isdir('/var/cld/access/users/'+request.form['username']):
+        try:
+          if pam.pam().authenticate(request.form['username'], request.form['password']):
+            session['username'] = request.form['username']
+            return redirect(url_for('dashboard'))
+        except:
+          pass
   if 'username' in session:
       username = session['username']
       return 'Logged in as ' + username + '<br>' + \
