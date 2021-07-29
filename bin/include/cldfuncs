@@ -444,12 +444,12 @@ else
 GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
 VERSION_DATA="${GIT_DATA} - $(stat --format=%y ${TOOL} | cut -d '.' -f 1)"
 fi
-if [ "$PWD" == "/var/cld" -a "$COPYRIGHT" == "" ]
-then
-cd $(dirname ${TOOL})
-upsearch COPYRIGHT
-[ "$PWD" != "/var/cld" ] && COPYRIGHT="$(cat ./COPYRIGHT)"
-fi
+# if [ "$PWD" == "/var/cld" -a "$COPYRIGHT" == "" ]
+# then
+# cd $(dirname ${TOOL})
+# upsearch COPYRIGHT
+# [ "$PWD" != "/var/cld" ] && COPYRIGHT="$(cat ./COPYRIGHT)"
+# fi
 
 cat << EOL
 $(basename ${TOOL})${VERSION} - ${VERSION_DATA} ${COPYRIGHT}
