@@ -65,25 +65,7 @@ systemctl start crond &>/dev/null
 [ "$TIER" != "opensource" -a "$UPGRADE" != "1" ] && export VERIFIED_TIER=$(git ls-remote --exit-code -h "https://git.classicdeploy.com/cld/${TIER}.git" &>/dev/null && echo ${TIER})
 
 
-if [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
-then
-echo
-echo Current subscription plan is $TIER
-echo
-cld-stop
-cld-update
-cld-start
-
-elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" -a "$UPGRADE" != "1" -a "$DOWNGRADE" != "1" ]
-then
-echo
-echo Current subscription plan is $VERIFIED_TIER
-echo
-cld-stop
-cld-update
-cld-start
-
-elif [ "$UPGRADE" = "1" ]
+if [ "$UPGRADE" = "1" ]
 then
 
 for CHECK_TIER in basic business premium enterprise
@@ -135,5 +117,24 @@ echo opensource > /var/cld/creds/cld_tier
 
 cld-update
 cld-start
+
+elif [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
+then
+echo
+echo Current subscription plan is $TIER
+echo
+cld-stop
+cld-update
+cld-start
+
+elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" ]
+then
+echo
+echo Current subscription plan is $VERIFIED_TIER
+echo
+cld-stop
+cld-update
+cld-start
+
 
 fi
