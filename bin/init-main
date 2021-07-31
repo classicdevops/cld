@@ -87,7 +87,7 @@ CLD_BOT_SERVICE_NAME=$(basename ${CLD_BOT_SERVICE})
 cat > /etc/systemd/system/${CLD_BOT_SERVICE_NAME} << EOL
 $(cat ${CLD_BOT_SERVICE})
 EOL
-CLD_BOT_SYSTEMD_WANTS=$(cat << EOL | tr -s '\n'
+CLD_BOT_SYSTEMD_WANTS=$(cat << EOL | grep -v "^$"
 ${CLD_BOT_SYSTEMD_WANTS}
 Wants=${CLD_BOT_SERVICE_NAME}
 EOL
@@ -124,5 +124,6 @@ EOL
 
 
 systemctl daemon-reload
+systemctl disable cld &>/dev/null
 systemctl enable cld
 systemctl restart cld
