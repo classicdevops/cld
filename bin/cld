@@ -30,11 +30,11 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 for OPTS in ${@:1}
 do
-echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--list' && LIST=1
-echo $OPTS | grep -q  '^\--json' && JSON=1
-echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
+parse-opts debug VERBOSE="\ -v"
+parse-opts groups CLD_GROUPS
+parse-opts list LIST=1
+parse-opts groups JSON=1
+parse-opts beauty JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'

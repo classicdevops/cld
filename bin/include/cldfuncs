@@ -548,6 +548,14 @@ done
 LC_COLLATE=$OLD_LC_COLLATE
 }
 
+parse-opts() {
+if [[ "$2" =~ .+=.+ ]]
+then
+[[ "$OPTS" =~ -?-$1 ]] && source <(echo $2)
+else
+[[ "$OPTS" =~ -?-$1=.+ ]] && source <(echo $2=$(cut -d '=' -f 2 <<< $OPTS))
+fi
+}
 
 for OPTS in ${@:1}
 do
