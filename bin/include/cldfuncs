@@ -440,7 +440,7 @@ CLD_TIER=$(cat /var/cld/creds/cld_tier)
 VERSION_COUNTER=$([ "$CLD_TIER" == "opensource" ] && echo 100 || echo 10)
 VERSION=" $(grep commit <<< "${GIT_COMMITS}" | wc -l | awk -v counter=${VERSION_COUNTER} '{print $1/counter}')"
 VERSION_DATA="$(echo "${GIT_DATA}" | head -1 | cut -d ' ' -f 2 | head -c 7) - $(echo "${GIT_DATA}" | head -3 | tail -1 | tr -s ' ' | cut -d ' ' -f 2)"
-[ -f "./COPYRIGHT" ] && COPYRIGHT="$(cat ./COPYRIGHT)"
+[ -f "./helpcopyright" ] && COPYRIGHT="$(cat ./helpcopyright)"
 else
 GIT_DATA=$(md5sum ${TOOL} | cut -d ' ' -f 1 | head -c 12)
 VERSION_DATA="${GIT_DATA} - $(stat --format=%y ${TOOL} | cut -d '.' -f 1)"
@@ -448,8 +448,8 @@ fi
 # if [ "$PWD" == "/var/cld" -a "$COPYRIGHT" == "" ]
 # then
 # cd $(dirname ${TOOL})
-# upsearch COPYRIGHT
-# [ "$PWD" != "/var/cld" ] && COPYRIGHT="$(cat ./COPYRIGHT)"
+# upsearch helpcopyright
+# [ "$PWD" != "/var/cld" ] && COPYRIGHT="$(cat ./helpcopyright)"
 # fi
 
 cat << EOL
