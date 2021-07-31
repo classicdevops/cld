@@ -30,11 +30,11 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -3 | tail -1)
 
 for OPTS in ${@:1}
 do
-parse-opts debug VERBOSE="\ -v"
-parse-opts groups CLD_GROUPS
-parse-opts list LIST=1
-parse-opts groups JSON=1
-parse-opts beauty JSON_BEAUTY=1
+parsearg-custom debug VERBOSE="\ -v"
+parsearg-std groups CLD_GROUPS
+parsearg-custom list LIST=1
+parsearg-custom groups JSON=1
+parsearg-custom beauty JSON_BEAUTY=1
 done
 
 [ "$JSON" == "1" ] && JSONARG='--json'
