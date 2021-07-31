@@ -874,12 +874,5 @@ def profile_set_visible_modules(name):
     open('/var/cld/access/users/'+vld(name)+'/showonlymodules', 'w').write("\n".join(modules))
     return Response('User groups saved', status=200, mimetype='text/plain')
 
-#Just easy direct pipeline for early dev version, will deleted in the future
-@app.route('/backendgitpull')
-def backendgitpull():
-    cmd = bash('/var/cld/bin/cld-update &>/dev/null & disown')
-    resp = Response(cmd, status=200, mimetype='text/plain')
-    return resp
-
 if __name__ == '__main__':
     socketio.run(app, host='127.0.0.1', port=8080)
