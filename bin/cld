@@ -28,14 +28,18 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -3 | tail -1)
 
-for OPTS in ${@:1}
-do
-parsearg-custom debug VERBOSE="\ -v"
-parsearg-std groups CLD_GROUPS
-parsearg-custom list LIST=1
-parsearg-custom groups JSON=1
-parsearg-custom beauty JSON_BEAUTY=1
+
+for i in "$@"; do
+  case $i in
+    -groups=*|--groups=*) CLD_GROUPS="${i#*=}"; shift ;;
+    --list) LIST=1; shift ;;
+    --json) JSON=1; shift ;;
+    --beauty) JSON_BEAUTY=1; shift ;;
+    --debug|-debug) VERBOSE=" -v"; shift ;;
+    *) ;;
+  esac
 done
+
 
 [ "$JSON" == "1" ] && JSONARG='--json'
 [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
