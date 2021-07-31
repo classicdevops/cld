@@ -82,7 +82,7 @@ EOL
 
 for CLD_BOT_SERVICE in $(find /var/cld/bot/ -name '*.service')
 do
-CLD_BOT_SERVICE_NAME=$(basebane ${CLD_BOT_SERVICE})
+CLD_BOT_SERVICE_NAME=$(basename ${CLD_BOT_SERVICE})
 
 cat > /etc/systemd/system/${CLD_BOT_SERVICE_NAME} << EOL
 $(cat ${CLD_BOT_SERVICE})
