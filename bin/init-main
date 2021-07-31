@@ -125,5 +125,5 @@ EOL
 
 systemctl daemon-reload
 systemctl disable cld &>/dev/null
-systemctl enable cld
+systemctl enable cld &>/dev/null
 systemctl restart cld
