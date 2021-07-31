@@ -432,7 +432,7 @@ upsearch () {
 TOOL="${BASH_SOURCE[${#BASH_SOURCE[@]} - 1]}"
 cd $(dirname ${TOOL})
 upsearch .git
-GIT_COMMITS="$(git log --date=format:'%F' ${TOOL})"
+GIT_COMMITS="$(git log --date=short ${TOOL})"
 [ "${GIT_COMMITS}" ] && GIT_DATA=$(head -5 <<< "${GIT_COMMITS}")
 if [ "${GIT_DATA}" ]
 then

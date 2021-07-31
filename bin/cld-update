@@ -118,23 +118,13 @@ echo opensource > /var/cld/creds/cld_tier
 cld-update
 cld-start
 
-elif [ "$TIER" = "opensource" -a "$UPGRADE" != "1" ]
-then
+else
+[ "${VERIFIED_TIER}" != "" ] && TIER=${VERIFIED_TIER}
 echo
 echo Current subscription plan is $TIER
 echo
 cld-stop
 cld-update
 cld-start
-
-elif [ "$TIER" != "opensource" -a "$VERIFIED_TIER" != "" ]
-then
-echo
-echo Current subscription plan is $VERIFIED_TIER
-echo
-cld-stop
-cld-update
-cld-start
-
 
 fi
