@@ -34,15 +34,8 @@ then
 	done
 fi
 
-if grep -qi "centos\|rhel" /etc/*-release
-then
-USR_PATH="/usr"
-elif grep -qi "debian\|ubuntu" /etc/*-release
-then
-USR_PATH=""
-fi
 
-cat > ${USR_PATH}/lib/systemd/system/cld-api.service << EOL
+cat > /etc/systemd/system/cld-api.service << EOL
 [Unit]
 Description=ClassicDeploy api interface service
 After=multi-user.target
@@ -64,29 +57,8 @@ KillMode=process
 WantedBy=multi-user.target
 EOL
 
-cat > ${USR_PATH}/lib/systemd/system/cld-bot.service << EOL
-[Unit]
-Description=Classic deploy bot interface service
-After=multi-user.target
-PartOf=cld.service
 
-[Service]
-WorkingDirectory=/var/cld/bot
-Type=simple
-ExecStart=/usr/bin/python3 /var/cld/bot/bot.py
-RemainAfterExit=no
-Restart=always
-RestartSec=2
-StartLimitBurst=999999
-StartLimitInterval=0
-KillMode=process
-
-
-[Install]
-WantedBy=multi-user.target
-EOL
-
-cat > ${USR_PATH}/lib/systemd/system/cld-web.service << EOL
+cat > /etc/systemd/system/cld-web.service << EOL
 [Unit]
 Description=ClassicDeploy web interface service
 After=multi-user.target
@@ -107,12 +79,35 @@ KillMode=process
 [Install]
 WantedBy=multi-user.target
 EOL
-cat > ${USR_PATH}/lib/systemd/system/cld.service << EOL
+
+for CLD_BOT_SERVICE in $(find /var/cld/bot/ -name '*.service')
+do
+CLD_BOT_SERVICE_NAME=$(basebane ${CLD_BOT_SERVICE})
+
+cat > /etc/systemd/system/${CLD_BOT_SERVICE_NAME} << EOL
+$(cat ${CLD_BOT_SERVICE})
+EOL
+CLD_BOT_SYSTEMD_WANTS=$(cat << EOL
+${CLD_BOT_SYSTEMD_WANTS}
+Wants=${CLD_BOT_SERVICE_NAME}
+EOL
+)
+done
+
+if grep -qi "centos\|rhel" /etc/*-release
+then
+USR_PATH="/usr"
+elif grep -qi "debian\|ubuntu" /etc/*-release
+then
+USR_PATH=""
+fi
+
+cat > /etc/systemd/system/cld.service << EOL
 [Unit]
 Description=Main ClassicDeploy additional interfaces service
 Wants=cld-api.service
-Wants=cld-bot.service
 Wants=cld-web.service
+${CLD_BOT_SYSTEMD_WANTS}
 
 [Service]
 WorkingDirectory=/var/cld

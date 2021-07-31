@@ -1,0 +1,19 @@
+[Unit]
+Description=ClassicDeploy Telegram bot interface service
+After=multi-user.target
+PartOf=cld.service
+
+[Service]
+WorkingDirectory=/var/cld/bot/telegram
+Type=simple
+ExecStart=/usr/bin/python3 /var/cld/bot/telegram/tgbot.py
+RemainAfterExit=no
+Restart=always
+RestartSec=2
+StartLimitBurst=999999
+StartLimitInterval=0
+KillMode=process
+
+
+[Install]
+WantedBy=multi-user.target
