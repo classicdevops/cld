@@ -31,14 +31,14 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -3 | tail -1)
 
 for i in "$@"
 do
-case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"; shift ;;
--l|-list|--list) LIST=1; shift ;;
--j|-json|--json) JSON=1; shift ;;
--b|-beauty|--beauty) JSON_BEAUTY=1; shift ;;
--d|-debug|--debug) VERBOSE=" -v"; shift ;;
-*) ;;
-esac
+  case $i in
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;shift;;
+    -l|-list|--list) LIST=1                         ;shift;;
+    -j|-json|--json) JSON=1                         ;shift;;
+    -b|-beauty|--beauty) JSON_BEAUTY=1              ;shift;;
+    -d|-debug|--debug) VERBOSE=" -v"                ;shift;;
+    *) ;;
+  esac
 done
 
 
