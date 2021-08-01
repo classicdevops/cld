@@ -22,7 +22,7 @@ for i in "$@"
 do
 case $i in
 -i=*|-id=*|--id=*) KVM_ID="${i#*=}"      ;shift;;
--h=*|-hyper=*|--hyper=*) HPR="${i#*=}"   ;shift;;
+-H=*|-hyper=*|--hyper=*) HPR="${i#*=}"   ;shift;;
 -c=*|-cmd=*|--cmd=*) COMMAND="${i#*=}"   ;shift;;
 *) ;;
 esac

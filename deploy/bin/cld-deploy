@@ -201,7 +201,7 @@ case $i in
 -D=*|-debug=*|--debug=*) DEBUG="${i#*=}"                                                    ;shift;;
 -C=*|-cron=*|--cron=*) CRON="${i#*=}"                                                       ;shift;;
 -o=*|-output=*|--output=*) CLD_DEPLOY_OUTPUT="${i#*=}"                                      ;shift;;
--v=*|-vars=*|--vars=*) CLD_DEPLOY_VARIABLES="${i#*=}"                                       ;shift;;
+-V=*|-vars=*|--vars=*) CLD_DEPLOY_VARIABLES="${i#*=}"                                       ;shift;;
 *) ;;
 esac
 done

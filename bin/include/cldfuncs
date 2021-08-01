@@ -548,8 +548,11 @@ done
 LC_COLLATE=$OLD_LC_COLLATE
 }
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-[[ "$OPTS" =~ ^(-h|--help)$ ]] && cldhelp
-[[ "$OPTS" =~ ^(-v|--version)$ ]] && version
+case $i in
+-h|-help|--help) cldhelp        ;shift;;
+-v|-version|--version) version  ;shift;;
+*) ;;
+esac
 done

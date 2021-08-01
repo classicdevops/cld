@@ -87,7 +87,7 @@ case $i in
 -d=*|-dc=*|--dc=*) DC="${i#*=}"                              ;shift;;
 -a=*|-autologin=*|--autologin=*) AUTO_LOGIN="${i#*=}"        ;shift;;
 -P=*|-privatenet=*|--privatenet=*) PRIVATENET="${i#*=}"      ;shift;;
--h=*|-hyper=*|--hyper=*) HYPER="${i#*=}"                     ;shift;;
+-H=*|-hyper=*|--hyper=*) HYPER="${i#*=}"                     ;shift;;
 -d|-debug|--debug) DEBUG=YES                                 ;shift;;
 -r|-run|--run) RUN=1                                         ;shift;;
 *) ;;
