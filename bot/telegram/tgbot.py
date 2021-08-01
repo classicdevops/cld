@@ -127,7 +127,7 @@ cat << EOL
 def cmd_${CLD_UTIL//[.-]/_}(message):
     checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.from_user.id, message.chat.id, message.from_user.username)
     if checkresult[0] != "granted": return
-    user = bash('grep ":'+checkresult[1]+'," /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+    user = bash('grep "[:,]'+checkresult[1]+'[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
     cmd_args=''
     try:
         for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
