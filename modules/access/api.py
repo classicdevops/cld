@@ -1,6 +1,5 @@
 @app.route('/all/myipinit')
 def myip():
-  try: request.headers.get('User-Agent')
   if 'token' in request.args:
     if re.findall(r'(AppleWebKit|Mozilla|Chrome|Safari|KHTML|Gecko)', request.headers.get('User-Agent')):
       token = re.fullmatch(r'[A-Za-z0-9]+', request.args['token']).string
