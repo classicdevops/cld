@@ -22,11 +22,14 @@ HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--debug' && VERBOSE=" -v"
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--list' && LIST=1
+case $i in
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;shift;;
+-l|-list|--list) LIST=1                         ;shift;;
+-d|-debug|--debug) VERBOSE=" -v"                ;shift;;
+*) ;;
+esac
 done
 
 VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)

@@ -17,9 +17,12 @@ source /var/cld/bin/include/cldfuncs
 
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q '\-\-send=' && TELEGRAM_CHAT_ID=$(echo $OPTS | cut -d '=' -f 2)
+case $i in
+-s=*|-send=*|--send=*) TELEGRAM_CHAT_ID="${i#*=}"   ;shift;;
+*) ;;
+esac
 done
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin

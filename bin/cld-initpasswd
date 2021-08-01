@@ -15,9 +15,12 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--user=' && CLDUSER="$(echo $OPTS | cut -d '=' -f 2-)"
+case $i in
+-u=*|-user=*|--user=*) CLDUSER="${i#*=}"     ;shift;;
+*) ;;
+esac
 done
 
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers

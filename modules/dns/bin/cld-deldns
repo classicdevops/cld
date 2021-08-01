@@ -6,7 +6,7 @@ EOL
 HELP_ARGS=$(cat << 'EOL'
 $1                       DNS record type
 $2                       DNS zone - FQDN
-$3                       DNS zone content
+$3+                      DNS zone content
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'

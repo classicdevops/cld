@@ -14,9 +14,12 @@ EOL
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  "^\--show\|^\-show" && SHOW=1
+case $i in
+-s|-show|--show) SHOW=1     ;shift;;
+*) ;;
+esac
 done
 
 if [ "$SHOW" = "1" ]

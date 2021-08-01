@@ -51,23 +51,26 @@ fi
 
 test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--clouds=' && CLOUDS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr ',' '\n')"
-echo $OPTS | grep -q  '^\--test=' && TEST=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--retry=' && RETRY=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--timeout=' && TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--testtimeout=' && TEST_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--backuptimeout=' && BACKUP_TIMEOUT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--nextdeploy=' && NEXT_DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--nextdeploywait=' && NEXT_DEPLOY_WAIT=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--nextdeployargs=' && NEXT_DEPLOY_ARGS=$(echo $OPTS | cut -d '=' -f 2-)
-echo $OPTS | grep -q  '^\--backup=' && BACKUP=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--custombackup=' && CUSTOM_BACKUP=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--async=' && ASYNC=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--debug=' && DEBUG=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '^\--cron=' && CRON=$(echo $OPTS | cut -d '=' -f 2)
+case $i in
+-c=*|-clouds=*|--clouds=*) CLOUDS=$(tr ',' '\n' <<< "${i#*=}")                              ;shift;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS=$(tr ',' '\n' <<< "${i#*=}")                          ;shift;;
+-T=*|-test=*|--test=*) TEST="${i#*=}"                                                       ;shift;;
+-R=*|-retry=*|--retry=*) RETRY="${i#*=}"                                                    ;shift;;
+-to=*|-timeout=*|--timeout=*) TIMEOUT="${i#*=}"                                             ;shift;;
+-tt=*|-testtimeout=*|--testtimeout=*) TEST_TIMEOUT="${i#*=}"                                ;shift;;
+-bt=*|-backuptimeout=*|--backuptimeout=*) BACKUP_TIMEOUT="${i#*=}"                          ;shift;;
+-nd=*|-nextdeploy=*|--nextdeploy=*) NEXT_DEPLOY="${i#*=}"                                   ;shift;;
+-ndw=*|-nextdeploywait=*|--nextdeploywait=*) NEXT_DEPLOY_WAIT="${i#*=}"                     ;shift;;
+-nda=*|-nextdeployargs=*|--nextdeployargs=*) NEXT_DEPLOY_ARGS="${i#*=}"                     ;shift;;
+-b=*|-backup=*|--backup=*) BACKUP="${i#*=}"                                                 ;shift;;
+-cb=*|-custombackup=*|--custombackup=*) CUSTOM_BACKUP="${i#*=}"                             ;shift;;
+-a=*|-async=*|--async=*) ASYNC="${i#*=}"                                                    ;shift;;
+-D=*|-debug=*|--debug=*) DEBUG="${i#*=}"                                                    ;shift;;
+-C=*|-cron=*|--cron=*) CRON="${i#*=}"                                                       ;shift;;
+*) ;;
+esac
 done
 
 create-deploy()

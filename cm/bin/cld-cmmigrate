@@ -22,13 +22,16 @@ source /var/cld/bin/include/cldfuncs
 source /var/cld/cm/bin/include/dc_funcs
 source /var/cld/cm/bin/include/create_funcs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-dest=' && DEST_HPR=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-source=' && SOURCE_HPR=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-clonefs' && CLONEFS=1
-echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
+case $i in
+-i=*|-id=*|--id=*) KVM_ID="${i#*=}"				;shift;;
+-d=*|-dest=*|--dest=*) DEST_HPR="${i#*=}" 		;shift;;
+-s=*|-source=*|--source=*) SOURCE_HPR="${i#*=}" ;shift;;
+-c|-clonefs|--clonefs) CLONEFS=1                ;shift;;
+-D|-debug|--debug) DEBUG=YES               		;shift;;
+*) ;;
+esac
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)

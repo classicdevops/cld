@@ -27,13 +27,16 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--hypers=' && HPRS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--json' && JSON=1
-echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
-echo $OPTS | grep -q  '^\--minify' && JSON_MINIFY=1
-echo $OPTS | grep -q  '^\--nocache' && NOCACHE=1
+case $i in
+-h=*|-hypers=*|--hypers=*) HPRS="${i#*=}"       ;shift;;
+-j|-json|--json) JSON=1                         ;shift;;
+-b|-beauty|--beauty) JSON_BEAUTY=1              ;shift;;
+-m|-minify|--minify) JSON_MINIFY=1              ;shift;;
+-n|-nocache|--nocache) NOCACHE=1                ;shift;;
+*) ;;
+esac
 done
 
 ALLOWED_HPRS=$(CLOUDS_USER_ALLOWED ${HPRS} | grep -i "^$HYPERVISOR_NAME_PREFIX" | cut -d _ -f 1 | head -c -1)

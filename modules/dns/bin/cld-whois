@@ -6,7 +6,7 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 $1                       FQDN
--exp/--expire            Show domain expire information only
+-i/-exp/--expire         Show domain expire information only
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -16,9 +16,12 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q '^\-exp$\|^\--exp$\|^\-expire$\|^\--expire$' && EXPIRE=1
+case $i in
+-e|-exp|-expire|--exp|--expire) EXPIRE=1    ;shift;;
+*) ;;
+esac
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)

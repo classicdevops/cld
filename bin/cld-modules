@@ -24,6 +24,16 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
+for i in "$@"
+do
+case $i in
+-m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;shift;;
+-j|-json|--json) JSON=1                            ;shift;;
+-b|-beauty|--beauty) JSON_BEAUTY=1                 ;shift;;
+*) ;;
+esac
+done
+
 for OPTS in ${@:1}
 do
 echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2)"

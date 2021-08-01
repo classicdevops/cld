@@ -19,10 +19,13 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -3 | tail -1)
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--pattern=\|^\-pattern=' && PATTERN="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--url\|^\-url' && URL="$(echo $OPTS | cut -d '=' -f 2)"
+case $i in
+-p=*|-pattern=*|--pattern=*) PATTERN="${i#*=}"  ;shift;;
+-u=*|-url=*|--url=*) URL="${i#*=}"              ;shift;;
+*) ;;
+esac
 done
 
 IP=127.0.0.1

@@ -17,10 +17,13 @@ HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cld.example.com
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--chatid=' && TG_GROUP="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--file=' && FILE_PATH="$(echo $OPTS | cut -d '=' -f 2)"
+case $i in
+-c=*|-chatid=*|--chatid=*) TG_GROUP="${i#*=}"   ;shift;;
+-f=*|-file=*|--file=*) FILE_PATH="${i#*=}"      ;shift;;
+*) ;;
+esac
 done
 
 [ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details

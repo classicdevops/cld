@@ -17,9 +17,12 @@ EOL
 HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--minimal' && MINIMAL_INIT=1
+case $i in
+-m|-minimal|--minimal) MINIMAL_INIT=1   ;shift;;
+*) ;;
+esac
 done
 
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com

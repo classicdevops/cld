@@ -23,9 +23,12 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -2 | tail -1)
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  "^\--regen\|^\-regen" && VPN_REGEN=1
+case $i in
+-r|-regen|--regen) VPN_REGEN=1  ;shift;;
+*) ;;
+esac
 done
 
 if [ "$VPN_REGEN" = "1" ]

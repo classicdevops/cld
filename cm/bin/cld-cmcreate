@@ -43,52 +43,55 @@ CMLOCK=$(cat /var/cld/cm/LOCK)
 
 
 if grep -q "1" /var/cld/cm/LOCK
-	then echo "${@:0}" >> /var/cld/cm/data/queue_create
+    then echo "${@:0}" >> /var/cld/cm/data/queue_create
     if [ "$RUN" = "1" ]
-		then
-		echoexit0 Lock detected - task added to the /var/cld/cm/data/queue_create - exit
-		else
-		echo LOCK detected, do you want FORCE UNLOCK ?
-		select LOCK in yes no
-			do
-			if [ "$LOCK" == "yes" ]
-				then
-				echo
-				sed -i '$ d' /var/cld/cm/data/queue_create
-				else
-				exit 0
-			fi
-			break
-			done
-	fi
-	else echo 1 > /var/cld/cm/LOCK
+        then
+        echoexit0 Lock detected - task added to the /var/cld/cm/data/queue_create - exit
+        else
+        echo LOCK detected, do you want FORCE UNLOCK ?
+        select LOCK in yes no
+            do
+            if [ "$LOCK" == "yes" ]
+                then
+                echo
+                sed -i '$ d' /var/cld/cm/data/queue_create
+                else
+                exit 0
+            fi
+            break
+            done
+    fi
+    else echo 1 > /var/cld/cm/LOCK
 fi
 
 ROOTPASSWORD=""
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q '\-\-os=' && OS=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-template=' && TEMPLATE=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-name=' && VMNAME=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-cpu=' && VMCPU=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-ram=' && VMMEMORY=$(expr `echo $OPTS | cut -d '=' -f 2` \* 1024)
-echo $OPTS | grep -q '\-\-disk=' && DISK=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-ip=' && IPADDR=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-mac=' && MACADDR=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-gate=' && GATEWAY=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-netmask=' && NTMASK=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-id=' && VMID=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-password=' && ROOTPASSWORD=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-keys=' && KEYS=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-storage=' && STORAGE=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-storagetype=' && STORAGE_TYPE=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-dc=' && DC=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-autologin=' && AUTO_LOGIN=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-privatenet=' && PRIVATENET=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-hyper=' && HYPER=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-debug' && DEBUG=YES
-echo $OPTS | grep -q '\-\-run' && RUN=1
+case $i in
+-o=*|-os=*|--os=*) OS="${i#*=}"                              ;shift;;
+-t=*|-template=*|--template=*) TEMPLATE="${i#*=}"            ;shift;;
+-n=*|-name=*|--name=*) VMNAME="${i#*=}"                      ;shift;;
+-c=*|-cpu=*|--cpu=*) VMCPU="${i#*=}"                         ;shift;;
+-r=*|-ram=*|--ram=*) VMMEMORY="$(expr ${i#*=} / 1024)"       ;shift;;
+-d=*|-disk=*|--disk=*) DISK="${i#*=}"                        ;shift;;
+-i=*|-ip=*|--ip=*) IPADDR="${i#*=}"                          ;shift;;
+-m=*|-mac=*|--mac=*) MACADDR="${i#*=}"                       ;shift;;
+-g=*|-gate=*|--gate=*) GATEWAY="${i#*=}"                     ;shift;;
+-N=*|-netmask=*|--netmask=*) NTMASK="${i#*=}"                ;shift;;
+-I=*|-id=*|--id=*) VMID="${i#*=}"                            ;shift;;
+-p=*|-password=*|--password=*) ROOTPASSWORD="${i#*=}"        ;shift;;
+-k=*|-keys=*|--keys=*) KEYS="${i#*=}"                        ;shift;;
+-s=*|-storage=*|--storage=*) STORAGE="${i#*=}"               ;shift;;
+-S=*|-storagetype=*|--storagetype=*) STORAGE_TYPE="${i#*=}"  ;shift;;
+-d=*|-dc=*|--dc=*) DC="${i#*=}"                              ;shift;;
+-a=*|-autologin=*|--autologin=*) AUTO_LOGIN="${i#*=}"        ;shift;;
+-P=*|-privatenet=*|--privatenet=*) PRIVATENET="${i#*=}"      ;shift;;
+-h=*|-hyper=*|--hyper=*) HYPER="${i#*=}"                     ;shift;;
+-d|-debug|--debug) DEBUG=YES                                 ;shift;;
+-r|-run|--run) RUN=1                                         ;shift;;
+*) ;;
+esac
 done
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR

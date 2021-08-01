@@ -17,10 +17,13 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--tools=' && CLD_TOOLS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--modules=' && CLD_MODULES="$(echo $OPTS | cut -d '=' -f 2)"
+case $i in
+-t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"       ;shift;;
+-m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;shift;;
+*) ;;
+esac
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)

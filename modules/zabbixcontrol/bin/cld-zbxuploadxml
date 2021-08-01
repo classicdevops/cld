@@ -13,9 +13,12 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--file\|^\-file' && FILE="$(echo $OPTS | cut -d '=' -f 2)"
+case $i in
+-f=*|-file=*|--file=*) FILE="${i#*=}"  ;shift;;
+*) ;;
+esac
 done
 
 init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php ZABBIX_HOSTGROUPID\|10

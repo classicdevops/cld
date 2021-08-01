@@ -24,11 +24,14 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--cfacc=\|^\-cfacc=' && CFACC="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--proxy\|^\-proxy' && CFPROXY=1
-echo $OPTS | grep -q  '^\--force\|^\-force' && FORCE=1
+case $i in
+-c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;shift;;
+-p|-proxy|--proxy) CFPROXY=1                ;shift;;
+-f|-force|--force) FORCE=1                  ;shift;;
+*) ;;
+esac
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)

@@ -29,11 +29,14 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--allowedgroups=' && CLD_ALLOW_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--mikrotik' && MIKROTIK=1
+case $i in
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;shift;;
+-a=*|-allowedgroups=*|--allowedgroups=*) CLD_ALLOW_GROUPS="${i#*=}"     ;shift;;
+-m|-mikrotik|--mikrotik) MIKROTIK=1                                     ;shift;;
+*) ;;
+esac
 done
 
 CLD_GROUPS=${CLD_GROUPS:-default}

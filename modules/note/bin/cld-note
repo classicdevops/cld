@@ -16,10 +16,13 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--json' && JSON=1
-echo $OPTS | grep -q  '^\--beauty' && JSON_BEAUTY=1
+case $i in
+-j|-json|--json) JSON=1             ;shift;;
+-b|-beauty|--beauty) JSON_BEAUTY=1  ;shift;;
+*) ;;
+esac
 done
 
 CUT_ARG=' | cut -d / -f7'

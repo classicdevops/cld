@@ -24,10 +24,13 @@ source /var/cld/bin/include/cldfuncs
 source /var/cld/cm/bin/include/dc_funcs
 source /var/cld/cm/bin/include/create_funcs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q '\-\-id=' && KVM_ID=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q '\-\-hyper=' && HPR=$(echo $OPTS | cut -d '=' -f 2)
+case $i in
+-i=*|-id=*|--id=*) KVM_ID="${i#*=}"     ;shift;;
+-h=*|-hyper=*|--hyper=*) HPR="${i#*=}"  ;shift;;
+*) ;;
+esac
 done
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)

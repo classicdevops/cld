@@ -23,10 +23,13 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--mtputty' && MTPUTTY_EXPORT="1"
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
+case $i in
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;shift;;
+-m|-mtputty|--mtputty) MTPUTTY_EXPORT=1         ;shift;;
+*) ;;
+esac
 done
 
 [ "$SUDO_USER" = "" ] && SUDO_USER=admin

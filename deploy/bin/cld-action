@@ -15,10 +15,13 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '\--deploy=' && DEPLOY=$(echo $OPTS | cut -d '=' -f 2)
-echo $OPTS | grep -q  '\--action=' && ACTION=$(echo $OPTS | cut -d '=' -f 2)
+case $i in
+-d=*|-deploy=*|--deploy=*) DEPLOY="${i#*=}" ;shift;;
+-a=*|-action=*|--action=*) ACTION="${i#*=}" ;shift;;
+*) ;;
+esac
 done
 
 if [ "$DEPLOY" != "" -a "$ACTION" != "" ]

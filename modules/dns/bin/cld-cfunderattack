@@ -20,14 +20,17 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--domain=' && DOMAIN="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--instance=' && VMPATTERN="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--rps=' && LIMIT_RPS="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--accesslog=' && ACCESS_LOG="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--logpattern=' && ACCESS_LOG_PATTERN="$(echo $OPTS | cut -d '=' -f 2)"
+case $i in
+-d=*|-domain=*|--domain=*) DOMAIN="${i#*=}"                     ;shift;;
+-i=*|-instance=*|--instance=*) VMPATTERN="${i#*=}"              ;shift;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                 ;shift;;
+-r=*|-rps=*|--rps=*) LIMIT_RPS="${i#*=}"                        ;shift;;
+-a=*|-accesslog=*|--accesslog=*) ACCESS_LOG="${i#*=}"           ;shift;;
+-l=*|-logpattern=*|--logpattern=*) ACCESS_LOG_PATTERN="${i#*=}" ;shift;;
+*) ;;
+esac
 done
 
 [ "$ACCESS_LOG" ] || export ACCESS_LOG=/var/log/nginx-main-access.log
