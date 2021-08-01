@@ -32,9 +32,9 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;shift;;
--a=*|-allowedgroups=*|--allowedgroups=*) CLD_ALLOW_GROUPS="${i#*=}"     ;shift;;
--m|-mikrotik|--mikrotik) MIKROTIK=1                                     ;shift;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;;
+-a=*|-allowedgroups=*|--allowedgroups=*) CLD_ALLOW_GROUPS="${i#*=}"     ;;
+-m|-mikrotik|--mikrotik) MIKROTIK=1                                     ;;
 *) ;;
 esac
 done

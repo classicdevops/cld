@@ -30,11 +30,11 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 for i in "$@"
 do
 case $i in
--H=*|-hypers=*|--hypers=*) HPRS="${i#*=}"       ;shift;;
--j|-json|--json) JSON=1                         ;shift;;
--b|-beauty|--beauty) JSON_BEAUTY=1              ;shift;;
--m|-minify|--minify) JSON_MINIFY=1              ;shift;;
--n|-nocache|--nocache) NOCACHE=1                ;shift;;
+-H=*|-hypers=*|--hypers=*) HPRS="${i#*=}"       ;;
+-j|-json|--json) JSON=1                         ;;
+-b|-beauty|--beauty) JSON_BEAUTY=1              ;;
+-m|-minify|--minify) JSON_MINIFY=1              ;;
+-n|-nocache|--nocache) NOCACHE=1                ;;
 *) ;;
 esac
 done

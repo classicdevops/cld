@@ -26,7 +26,7 @@ ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -2 | tail -1)
 for i in "$@"
 do
 case $i in
--r|-regen|--regen) VPN_REGEN=1  ;shift;;
+-r|-regen|--regen) VPN_REGEN=1  ;;
 *) ;;
 esac
 done

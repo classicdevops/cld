@@ -20,7 +20,7 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 for i in "$@"
 do
 case $i in
--s=*|-send=*|--send=*) TELEGRAM_CHAT_ID="${i#*=}"   ;shift;;
+-s=*|-send=*|--send=*) TELEGRAM_CHAT_ID="${i#*=}"   ;;
 *) ;;
 esac
 done

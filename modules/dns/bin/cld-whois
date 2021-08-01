@@ -19,7 +19,7 @@ source /var/cld/modules/dns/bin/include/dnsfuncs
 for i in "$@"
 do
 case $i in
--e|-exp|-expire|--exp|--expire) EXPIRE=1    ;shift;;
+-e|-exp|-expire|--exp|--expire) EXPIRE=1    ;;
 *) ;;
 esac
 done

@@ -25,11 +25,11 @@ source /var/cld/cm/bin/include/create_funcs
 for i in "$@"
 do
 case $i in
--i=*|-id=*|--id=*) KVM_ID="${i#*=}"				;shift;;
--d=*|-dest=*|--dest=*) DEST_HPR="${i#*=}" 		;shift;;
--s=*|-source=*|--source=*) SOURCE_HPR="${i#*=}" ;shift;;
--c|-clonefs|--clonefs) CLONEFS=1                ;shift;;
--D|-debug|--debug) DEBUG=YES               		;shift;;
+-i=*|-id=*|--id=*) KVM_ID="${i#*=}"				;;
+-d=*|-dest=*|--dest=*) DEST_HPR="${i#*=}" 		;;
+-s=*|-source=*|--source=*) SOURCE_HPR="${i#*=}" ;;
+-c|-clonefs|--clonefs) CLONEFS=1                ;;
+-D|-debug|--debug) DEBUG=YES               		;;
 *) ;;
 esac
 done

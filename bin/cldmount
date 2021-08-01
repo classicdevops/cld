@@ -27,7 +27,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;shift;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
 *) ;;
 esac
 done

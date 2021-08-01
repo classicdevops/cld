@@ -21,8 +21,8 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 for i in "$@"
 do
 case $i in
--c=*|-chatid=*|--chatid=*) TG_GROUP="${i#*=}"   ;shift;;
--n|-noansi|--noansi) ANSIFILTER=1               ;shift;;
+-c=*|-chatid=*|--chatid=*) TG_GROUP="${i#*=}"   ;;
+-n|-noansi|--noansi) ANSIFILTER=1               ;;
 *) ;;
 esac
 done

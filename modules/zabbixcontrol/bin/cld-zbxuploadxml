@@ -16,7 +16,7 @@ source /var/cld/bin/include/cldfuncs
 for i in "$@"
 do
 case $i in
--f=*|-file=*|--file=*) FILE="${i#*=}"  ;shift;;
+-f=*|-file=*|--file=*) FILE="${i#*=}"  ;;
 *) ;;
 esac
 done

@@ -18,8 +18,8 @@ source /var/cld/bin/include/cldfuncs
 for i in "$@"
 do
 case $i in
--d=*|-deploy=*|--deploy=*) DEPLOY="${i#*=}" ;shift;;
--a=*|-action=*|--action=*) ACTION="${i#*=}" ;shift;;
+-d=*|-deploy=*|--deploy=*) DEPLOY="${i#*=}" ;;
+-a=*|-action=*|--action=*) ACTION="${i#*=}" ;;
 *) ;;
 esac
 done

@@ -551,8 +551,8 @@ LC_COLLATE=$OLD_LC_COLLATE
 for i in "$@"
 do
 case $i in
--h|-help|--help) cldhelp        ;shift;;
--v|-version|--version) version  ;shift;;
+-h|-help|--help) cldhelp        ;;
+-v|-version|--version) version  ;;
 *) ;;
 esac
 done

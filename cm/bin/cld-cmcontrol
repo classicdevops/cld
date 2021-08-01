@@ -21,9 +21,9 @@ source /var/cld/cm/bin/include/create_funcs
 for i in "$@"
 do
 case $i in
--i=*|-id=*|--id=*) KVM_ID="${i#*=}"      ;shift;;
--H=*|-hyper=*|--hyper=*) HPR="${i#*=}"   ;shift;;
--c=*|-cmd=*|--cmd=*) COMMAND="${i#*=}"   ;shift;;
+-i=*|-id=*|--id=*) KVM_ID="${i#*=}"      ;;
+-H=*|-hyper=*|--hyper=*) HPR="${i#*=}"   ;;
+-c=*|-cmd=*|--cmd=*) COMMAND="${i#*=}"   ;;
 *) ;;
 esac
 done

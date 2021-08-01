@@ -22,8 +22,8 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 for i in "$@"
 do
 case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;shift;;
--d|-debug|--debug) VERBOSE=" -v"                ;shift;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+-d|-debug|--debug) VERBOSE=" -v"                ;;
 *) ;;
 esac
 done

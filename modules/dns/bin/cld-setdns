@@ -24,19 +24,19 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 
-for i in "$@"
-do
-case $i in
--c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;shift;;
--p|-proxy|--proxy) CFPROXY=1                ;shift;;
--f|-force|--force) FORCE=1                  ;shift;;
-*) ;;
-esac
-done
-
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +3 | tr '\n' ' ' | head -c -1)
+
+for i in "$@"
+do
+case $i in
+-c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;;
+-p|-proxy|--proxy) CFPROXY=1                ;;
+-f|-force|--force) FORCE=1                  ;;
+*) ;;
+esac
+done
 
 TYPE=${ARG1^^}
 DNS_ZONE=${ARG2,,}

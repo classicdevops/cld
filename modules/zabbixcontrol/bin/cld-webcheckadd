@@ -22,8 +22,8 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--p=*|-pattern=*|--pattern=*) PATTERN="${i#*=}"  ;shift;;
--u=*|-url=*|--url=*) URL="${i#*=}"              ;shift;;
+-p=*|-pattern=*|--pattern=*) PATTERN="${i#*=}"  ;;
+-u=*|-url=*|--url=*) URL="${i#*=}"              ;;
 *) ;;
 esac
 done

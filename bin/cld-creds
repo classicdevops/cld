@@ -26,8 +26,8 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;shift;;
--m|-mtputty|--mtputty) MTPUTTY_EXPORT=1         ;shift;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+-m|-mtputty|--mtputty) MTPUTTY_EXPORT=1         ;;
 *) ;;
 esac
 done

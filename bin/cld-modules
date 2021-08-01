@@ -27,9 +27,9 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;shift;;
--j|-json|--json) JSON=1                            ;shift;;
--b|-beauty|--beauty) JSON_BEAUTY=1                 ;shift;;
+-m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;;
+-j|-json|--json) JSON=1                            ;;
+-b|-beauty|--beauty) JSON_BEAUTY=1                 ;;
 *) ;;
 esac
 done

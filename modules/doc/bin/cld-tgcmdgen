@@ -17,7 +17,7 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 for i in "$@"
 do
 case $i in
--s|-show|--show) SHOW=1     ;shift;;
+-s|-show|--show) SHOW=1     ;;
 *) ;;
 esac
 done

@@ -19,8 +19,8 @@ source /var/cld/bin/include/cldfuncs
 for i in "$@"
 do
 case $i in
--j|-json|--json) JSON=1             ;shift;;
--b|-beauty|--beauty) JSON_BEAUTY=1  ;shift;;
+-j|-json|--json) JSON=1             ;;
+-b|-beauty|--beauty) JSON_BEAUTY=1  ;;
 *) ;;
 esac
 done

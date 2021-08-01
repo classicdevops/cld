@@ -20,8 +20,8 @@ source /var/cld/bin/include/cldfuncs
 for i in "$@"
 do
 case $i in
--t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"       ;shift;;
--m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;shift;;
+-t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"       ;;
+-m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;;
 *) ;;
 esac
 done

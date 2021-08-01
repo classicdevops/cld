@@ -26,8 +26,8 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--n=*|-name=*|--name=*) MODULE_NAME="${i#*=}"                       ;shift;;
--d=*|-desc=*|--desc=*) MODULE_DESC=$(tr '_' ' ' <<< "${i#*=}")     ;shift;;
+-n=*|-name=*|--name=*) MODULE_NAME="${i#*=}"                       ;;
+-d=*|-desc=*|--desc=*) MODULE_DESC=$(tr '_' ' ' <<< "${i#*=}")     ;;
 *) ;;
 esac
 done

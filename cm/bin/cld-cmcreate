@@ -69,27 +69,27 @@ ROOTPASSWORD=""
 for i in "$@"
 do
 case $i in
--o=*|-os=*|--os=*) OS="${i#*=}"                              ;shift;;
--t=*|-template=*|--template=*) TEMPLATE="${i#*=}"            ;shift;;
--n=*|-name=*|--name=*) VMNAME="${i#*=}"                      ;shift;;
--c=*|-cpu=*|--cpu=*) VMCPU="${i#*=}"                         ;shift;;
--r=*|-ram=*|--ram=*) VMMEMORY="$(expr ${i#*=} / 1024)"       ;shift;;
--d=*|-disk=*|--disk=*) DISK="${i#*=}"                        ;shift;;
--i=*|-ip=*|--ip=*) IPADDR="${i#*=}"                          ;shift;;
--m=*|-mac=*|--mac=*) MACADDR="${i#*=}"                       ;shift;;
--g=*|-gate=*|--gate=*) GATEWAY="${i#*=}"                     ;shift;;
--N=*|-netmask=*|--netmask=*) NTMASK="${i#*=}"                ;shift;;
--I=*|-id=*|--id=*) VMID="${i#*=}"                            ;shift;;
--p=*|-password=*|--password=*) ROOTPASSWORD="${i#*=}"        ;shift;;
--k=*|-keys=*|--keys=*) KEYS="${i#*=}"                        ;shift;;
--s=*|-storage=*|--storage=*) STORAGE="${i#*=}"               ;shift;;
--S=*|-storagetype=*|--storagetype=*) STORAGE_TYPE="${i#*=}"  ;shift;;
--d=*|-dc=*|--dc=*) DC="${i#*=}"                              ;shift;;
--a=*|-autologin=*|--autologin=*) AUTO_LOGIN="${i#*=}"        ;shift;;
--P=*|-privatenet=*|--privatenet=*) PRIVATENET="${i#*=}"      ;shift;;
--H=*|-hyper=*|--hyper=*) HYPER="${i#*=}"                     ;shift;;
--d|-debug|--debug) DEBUG=YES                                 ;shift;;
--r|-run|--run) RUN=1                                         ;shift;;
+-o=*|-os=*|--os=*) OS="${i#*=}"                              ;;
+-t=*|-template=*|--template=*) TEMPLATE="${i#*=}"            ;;
+-n=*|-name=*|--name=*) VMNAME="${i#*=}"                      ;;
+-c=*|-cpu=*|--cpu=*) VMCPU="${i#*=}"                         ;;
+-r=*|-ram=*|--ram=*) VMMEMORY="$(expr ${i#*=} / 1024)"       ;;
+-d=*|-disk=*|--disk=*) DISK="${i#*=}"                        ;;
+-i=*|-ip=*|--ip=*) IPADDR="${i#*=}"                          ;;
+-m=*|-mac=*|--mac=*) MACADDR="${i#*=}"                       ;;
+-g=*|-gate=*|--gate=*) GATEWAY="${i#*=}"                     ;;
+-N=*|-netmask=*|--netmask=*) NTMASK="${i#*=}"                ;;
+-I=*|-id=*|--id=*) VMID="${i#*=}"                            ;;
+-p=*|-password=*|--password=*) ROOTPASSWORD="${i#*=}"        ;;
+-k=*|-keys=*|--keys=*) KEYS="${i#*=}"                        ;;
+-s=*|-storage=*|--storage=*) STORAGE="${i#*=}"               ;;
+-S=*|-storagetype=*|--storagetype=*) STORAGE_TYPE="${i#*=}"  ;;
+-d=*|-dc=*|--dc=*) DC="${i#*=}"                              ;;
+-a=*|-autologin=*|--autologin=*) AUTO_LOGIN="${i#*=}"        ;;
+-P=*|-privatenet=*|--privatenet=*) PRIVATENET="${i#*=}"      ;;
+-H=*|-hyper=*|--hyper=*) HYPER="${i#*=}"                     ;;
+-d|-debug|--debug) DEBUG=YES                                 ;;
+-r|-run|--run) RUN=1                                         ;;
 *) ;;
 esac
 done

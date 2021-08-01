@@ -47,12 +47,12 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 for i in "$@"
 do
 case $i in
--d=*|-deploy=*|--deploy=*) DEPLOY="${i#*=}"         ;shift;;
--t=*|-template=*|--template=*) TEMPLATE="${i#*=}"   ;shift;;
--r|-run|--run) RUN=1                                ;shift;;
--l|-list|--list) LIST=1                             ;shift;;
--j|-json|--json) JSON=1                             ;shift;;
--b|-beauty|--beauty) JSON_BEAUTY=1                  ;shift;;
+-d=*|-deploy=*|--deploy=*) DEPLOY="${i#*=}"         ;;
+-t=*|-template=*|--template=*) TEMPLATE="${i#*=}"   ;;
+-r|-run|--run) RUN=1                                ;;
+-l|-list|--list) LIST=1                             ;;
+-j|-json|--json) JSON=1                             ;;
+-b|-beauty|--beauty) JSON_BEAUTY=1                  ;;
 *) ;;
 esac
 done
@@ -184,24 +184,24 @@ fi
 for i in "$@"
 do
 case $i in
--c=*|-clouds=*|--clouds=*) CLOUDS=$(tr ',' '\n' <<< "${i#*=}")                              ;shift;;
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                                             ;shift;;
--T=*|-test=*|--test=*) TEST="${i#*=}"                                                       ;shift;;
--R=*|-retry=*|--retry=*) RETRY="${i#*=}"                                                    ;shift;;
--to=*|-timeout=*|--timeout=*) TIMEOUT="${i#*=}"                                             ;shift;;
--tt=*|-testtimeout=*|--testtimeout=*) TEST_TIMEOUT="${i#*=}"                                ;shift;;
--bt=*|-backuptimeout=*|--backuptimeout=*) BACKUP_TIMEOUT="${i#*=}"                          ;shift;;
--nd=*|-nextdeploy=*|--nextdeploy=*) NEXT_DEPLOY="${i#*=}"                                   ;shift;;
--ndw=*|-nextdeploywait=*|--nextdeploywait=*) NEXT_DEPLOY_WAIT="${i#*=}"                     ;shift;;
--nda=*|-nextdeployargs=*|--nextdeployargs=*) NEXT_DEPLOY_ARGS=$(tr ',' ' ' <<< "${i#*=}")   ;shift;;
--b=*|-backup=*|--backup=*) BACKUP="${i#*=}"                                                 ;shift;;
--bl=*|-backuplist=*|--backuplist=*) BACKUP_LIST=$(tr ',' '\n' <<< "${i#*=}")                ;shift;;
--cb=*|-custombackup=*|--custombackup=*) CUSTOM_BACKUP="${i#*=}"                             ;shift;;
--a=*|-async=*|--async=*) ASYNC="${i#*=}"                                                    ;shift;;
--D=*|-debug=*|--debug=*) DEBUG="${i#*=}"                                                    ;shift;;
--C=*|-cron=*|--cron=*) CRON="${i#*=}"                                                       ;shift;;
--o=*|-output=*|--output=*) CLD_DEPLOY_OUTPUT="${i#*=}"                                      ;shift;;
--V=*|-vars=*|--vars=*) CLD_DEPLOY_VARIABLES="${i#*=}"                                       ;shift;;
+-c=*|-clouds=*|--clouds=*) CLOUDS=$(tr ',' '\n' <<< "${i#*=}")                              ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                                             ;;
+-T=*|-test=*|--test=*) TEST="${i#*=}"                                                       ;;
+-R=*|-retry=*|--retry=*) RETRY="${i#*=}"                                                    ;;
+-to=*|-timeout=*|--timeout=*) TIMEOUT="${i#*=}"                                             ;;
+-tt=*|-testtimeout=*|--testtimeout=*) TEST_TIMEOUT="${i#*=}"                                ;;
+-bt=*|-backuptimeout=*|--backuptimeout=*) BACKUP_TIMEOUT="${i#*=}"                          ;;
+-nd=*|-nextdeploy=*|--nextdeploy=*) NEXT_DEPLOY="${i#*=}"                                   ;;
+-ndw=*|-nextdeploywait=*|--nextdeploywait=*) NEXT_DEPLOY_WAIT="${i#*=}"                     ;;
+-nda=*|-nextdeployargs=*|--nextdeployargs=*) NEXT_DEPLOY_ARGS=$(tr ',' ' ' <<< "${i#*=}")   ;;
+-b=*|-backup=*|--backup=*) BACKUP="${i#*=}"                                                 ;;
+-bl=*|-backuplist=*|--backuplist=*) BACKUP_LIST=$(tr ',' '\n' <<< "${i#*=}")                ;;
+-cb=*|-custombackup=*|--custombackup=*) CUSTOM_BACKUP="${i#*=}"                             ;;
+-a=*|-async=*|--async=*) ASYNC="${i#*=}"                                                    ;;
+-D=*|-debug=*|--debug=*) DEBUG="${i#*=}"                                                    ;;
+-C=*|-cron=*|--cron=*) CRON="${i#*=}"                                                       ;;
+-o=*|-output=*|--output=*) CLD_DEPLOY_OUTPUT="${i#*=}"                                      ;;
+-V=*|-vars=*|--vars=*) CLD_DEPLOY_VARIABLES="${i#*=}"                                       ;;
 *) ;;
 esac
 done

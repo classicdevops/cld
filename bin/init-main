@@ -20,7 +20,7 @@ source /var/cld/bin/include/cldfuncs
 for i in "$@"
 do
 case $i in
--m|-minimal|--minimal) MINIMAL_INIT=1   ;shift;;
+-m|-minimal|--minimal) MINIMAL_INIT=1   ;;
 *) ;;
 esac
 done
