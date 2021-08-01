@@ -548,13 +548,6 @@ done
 LC_COLLATE=$OLD_LC_COLLATE
 }
 
-parsearg-std() {
-[[ "$OPTS" =~ -?-$1=.+ ]] && source <(echo $2=$(cut -d '=' -f 2 <<< $OPTS))
-}
-parsearg-custom() {
-[[ "$OPTS" =~ -?-$1 ]] && source <(echo $2)
-}
-
 for OPTS in ${@:1}
 do
 [[ "$OPTS" =~ ^(-h|--help)$ ]] && cldhelp
