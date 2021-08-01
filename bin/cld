@@ -62,7 +62,7 @@ do
     $CLD_TERMINAL
     $CLD_UMOUNT &>/dev/null &
   else
-    echo "you choosed incorrect instance, please try again and type numbers only"
+    echo "you choosed incorrect instance, please try again and type digits only"
   fi
   break
 done
