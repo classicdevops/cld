@@ -2,7 +2,7 @@
 def cmd_myip(message):
   checkresult = checkperms(cldmodule, "cld-myipbot", message.from_user.id, message.chat.id, message.from_user.username)
   if checkresult[0] != "granted": return
-  user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+  user = bash('grep "[:,]'+checkresult[1]+'[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
   if re.findall(r'[\d]+\.[\d]+\.[\d]+\.[\d]+', message.text):
     myip = re.search('([\d]+\.[\d]+\.[\d]+\.[\d]+)', message.text).group(1)
     cmdoutput = bash('sudo -u '+user+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myipbot '+str(message.from_user.id)+' '+str(message.from_user.username)+' '+str(myip))
@@ -22,7 +22,7 @@ def cmd_myip(message):
 def cmd_myvpn(message):
   checkresult = checkperms(cldmodule, "cld-myvpnbot", message.from_user.id, message.chat.id, message.from_user.username)
   if checkresult[0] != "granted": return
-  user = bash('grep ":'+checkresult[1]+':" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+  user = bash('grep "[:,]'+checkresult[1]+'[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
   cmd_args=''
   try:
       for arg in message.text.split()[1:]: cmd_args=cmd_args+" "+str(arg)
