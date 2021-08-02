@@ -1,0 +1,20 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+
+if ! grep -q "^TELEGRAM=" /var/cld/creds/creds
+then
+    echo "Are you using Telegram ?" 
+    select ANSWER in yes no
+    do
+        if [ "${ANSWER}" == "yes" ]
+            then
+                init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB || echo skipped
+                echo TELEGRAM=1 >> /var/cld/creds/creds
+                break
+        elif [ "${ANSWER}" == "no" ]
+            then
+                echo TELEGRAM=0 >> /var/cld/creds/creds
+                break
+        fi
+    done
+fi

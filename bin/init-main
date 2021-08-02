@@ -29,12 +29,10 @@ init-load-constants CLD_DOMAIN\|cld.yourdomain.com
 
 if ! [ "${MINIMAL_INIT}" ]
 then
-	init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
-
-	for INIT in $(ls -pd  /var/cld/*/init /var/cld/modules/*/init 2>/dev/null)
-	do
-	${INIT}
-	done
+    for INIT in $(ls -pd  /var/cld/*/init /var/cld/bot/*/init /var/cld/modules/*/init 2>/dev/null)
+    do
+        ${INIT}
+    done
 fi
 
 
@@ -83,8 +81,12 @@ KillMode=process
 WantedBy=multi-user.target
 EOL
 
-for CLD_BOT_SERVICE in $(find /var/cld/bot/ -name '*.service')
+for CLD_BOT_INTERFACE in $(find /var/cld/bot/* -maxdepth 0 -type d | grep -v __ | cut -d / -f 5)
 do
+if
+grep -q "${CLD_BOT_INTERFACE^^}=1" /var/cld/creds/creds
+then
+CLD_BOT_SERVICE=$(find /var/cld/bot/${CLD_BOT_INTERFACE}/ -name '*.service')
 CLD_BOT_SERVICE_NAME=$(basename ${CLD_BOT_SERVICE})
 
 cat > /etc/systemd/system/${CLD_BOT_SERVICE_NAME} << EOL
@@ -95,6 +97,7 @@ ${CLD_BOT_SYSTEMD_WANTS}
 Wants=${CLD_BOT_SERVICE_NAME}
 EOL
 )
+fi
 done
 
 if grep -qi "centos\|rhel" /etc/*-release
