@@ -36,7 +36,7 @@ done
 (
 [ "$CF_ZONE_ID" ] || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
-[ "$CONTENT" == "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content,.proxied]|@tsv"
+[ "$CONTENT" == "all" -o "$CONTENT" == "-all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content,.proxied]|@tsv"
 [ "$CONTENT" != "" -a "$CONTENT" != "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content,.proxied]|@tsv"
 [ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content,.proxied]|@tsv"
 ) | sed -r -e 's#\tfalse$##g' -e 's#\ttrue$# proxied#g' #| awk -v f="$F" -v b="$B" '{print f$0f}'
