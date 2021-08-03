@@ -8,7 +8,7 @@ $1                       DNS zone - FQDN
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-getns subdomain.example.com
+cld-getns example.com
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -32,7 +32,7 @@ cf-dns-api-creds
 CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
 [ "${CF_ZONE_ID}" ] && break
 done
-(
+
 [ "$CF_ZONE_ID" ] ${CF_ZONE_ID} || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
 cf-dns-zone-details jq '.result | if .original_name_servers == null and .status == "active" then {Domain: .name, Status: .status, Target_NS: .name_servers} else {Domain: .name, Status: .status, Target_NS: .name_servers, Original_NS: .original_name_servers} end'
