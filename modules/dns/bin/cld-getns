@@ -1,29 +1,24 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Get DNS record information from CloudFlare
+Get NS information from CloudFlare
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 $1                       DNS zone - FQDN
-$2                       DNS zone content - Empty or "ALL"
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-getdns subdomain.example.com
-cld-getdns subdomain.example.com all
+cld-getns subdomain.example.com
 EOL
 )
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 DNS_ZONE=${1,,}
 MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
-CONTENT=$(echo $2 | cut -d _ -f 1)
 
 echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 || echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
 
-[ "$CONTENT" == "@" ] && CONTENT=$MAIN_ZONE
-[ "$NEW_CONTENT" == "@" ] && NEW_CONTENT=$MAIN_ZONE
 #[ $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
 #[ $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
 [ "$CFACC" ] && {
@@ -38,9 +33,6 @@ CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
 [ "${CF_ZONE_ID}" ] && break
 done
 (
-[ "$CF_ZONE_ID" ] || echoexit1 "domain $MAIN_ZONE not found in known accounts"
+[ "$CF_ZONE_ID" ] ${CF_ZONE_ID} || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
-[ "$CONTENT" == "all" -o "$CONTENT" == "-all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | [.type,.name,.content,.proxied]|@tsv"
-[ "$CONTENT" != "" -a "$CONTENT" != "all" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.content == \"$CONTENT\") | [.type,.name,.content,.proxied]|@tsv"
-[ "$CONTENT" == "" ] && cf-dns-records-get $CF_ZONE_ID | jq -r ".result[] | select(.name == \"$DNS_ZONE\") | [.type,.name,.content,.proxied]|@tsv"
-) | sed -r -e 's#\tfalse$##g' -e 's#\ttrue$# proxied#g' #| awk -v f="$F" -v b="$B" '{print f$0f}'
+cf-dns-zone-details jq '.result | if .original_name_servers == null and .status == "active" then {Domain: .name, Status: .status, Target_NS: .name_servers} else {Domain: .name, Status: .status, Target_NS: .name_servers, Original_NS: .original_name_servers} end'
