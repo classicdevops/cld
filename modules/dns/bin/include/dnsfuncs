@@ -183,7 +183,6 @@ curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/${1}/settings/$2" \
  -H "X-Auth-Email: ${CFACC}" \
  -H "X-Auth-Key: ${CFKEY}" \
  -H "Content-Type: application/json" \
- --data '{"value":"'${3}'"}'
  --data "$(cat << EOL
 {"value":${CFQUOTE}${3}${CFQUOTE}}
 EOL
