@@ -2,12 +2,13 @@
 HELP_DESC=$(cat << 'EOL'
 Get personal user openvpn key
 Tool oriented to BOT and API interfaces
-Arguments filling automatically by using /myvpn command at Telegram chat with bot
+Arguments filling automatically by using /myvpn command at Messenger chat with bot
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       Telegram user id
-$2                       Telegram user name
+$1                       Messenger user id
+$2                       Messenger user name
+--regen                  Regeneration OpenVPN key - delete existed
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'

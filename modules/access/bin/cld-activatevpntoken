@@ -2,11 +2,11 @@
 HELP_DESC=$(cat << 'EOL'
 Get personal user openvpn key
 Tool oriented to BOT and API interfaces
-Arguments filling automatically by using /myvpn command at Telegram chat with bot
+Arguments filling automatically by using /myvpn command at Messenger chat with bot
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       Temporary token created by cld-myvpnbot tool used via /myvpn command at Telegram chat with bot
+$1                       Temporary token created by cld-myvpnbot tool used via /myvpn command at Messenger chat with bot
 EOL
 )
 HELP_ONLY="API"

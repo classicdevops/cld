@@ -2,14 +2,14 @@
 HELP_DESC=$(cat << 'EOL'
 Add or update private IP of user to access list
 Tool oriented to BOT and API interfaces
-Arguments filling automatically by using /myip command at Telegram chat with bot
+Arguments filling automatically by using /myip command at Messenger chat with bot
 If IP address is not detected - return api link with temporary token to add IP auto detected just by click
 To add an IP address to access list via CLI - use cld-enableip
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       Telegram user id
-$2                       Telegram user name
+$1                       Messenger user id
+$2                       Messenger user name
 $3                       IP address
 EOL
 )

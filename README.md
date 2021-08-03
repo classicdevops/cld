@@ -247,7 +247,7 @@ Before the installation process, you should prepare the following information:
 ClassicDeploy should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ```bash
-bash -x <(wget -qO- "https://raw.githubusercontent.com/achendev/cld/master/setup/install_cld.sh")
+bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdeploy/cld/master/setup/install_cld.sh")
 ```
 
 During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules
