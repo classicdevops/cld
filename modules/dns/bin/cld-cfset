@@ -64,10 +64,7 @@ EOL
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-cfset example.com ssl flexible
 cld-cfset example.com email_obfuscation off
-cld-cfset example.com server_side_exclude off
 cld-cfset example.com ipv6 off
-cld-cfset example.com cache_level basic
-cld-cfset example.com browser_cache_ttl 0
 cld-cfset example.com always_online off
 EOL
 )
