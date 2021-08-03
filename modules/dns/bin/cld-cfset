@@ -1,8 +1,8 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 CloudFlare settings manager
-Example settings:
 
+Example of possible settings:
 0rtt off
 advanced_ddos on
 always_online on
