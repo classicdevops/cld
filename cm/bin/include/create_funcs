@@ -104,7 +104,8 @@ KVM_IPS=$(qm guest cmd ${KVM_ID} network-get-interfaces | jq -r '.[] ."ip-addres
 WHITE_IPS=$(egrep -v "(^127\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)" <<< ${KVM_IPS} | tr '\n' ',' | head -c -1)
 GRAY_IPS=$(egrep "(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)" <<< ${KVM_IPS} | tr '\n' ',' | head -c -1)
 KVM_CORES=$(grep "^cores:" /etc/pve/qemu-server/${KVM_ID}.conf | tr -d ' ' | cut -d : -f 2)
-echo ${KVM_SET}_${KVM_CORES}_${WHITE_IPS}_${GRAY_IPS}
+KVM_STORAGE=$(grep "^scsi0" /etc/pve/qemu-server/${KVM_ID}.conf | head -1 | cut -d : -f 2 | tr -d ' \t')
+echo ${KVM_SET}_${KVM_CORES}_${WHITE_IPS}_${GRAY_IPS}_${KVM_STORAGE}
 ) & 2>/dev/null
 done
 wait
@@ -117,11 +118,29 @@ QMS=$(get-kvm-set 2>/dev/null)
 cat << EOL | tr -d '\n' | sed 's#],$#]#g' | cat - <(echo '},')
 {"hypervisor": "$HPRNM",
 "resources": $(echo "${CORES}_${FREE_CORES}_${MEM}"| awk -F _ '{print "{\x22""cores\x22"":\x22"""$1"\x22"",\x22""free_cores\x22"":\x22"$2"\x22"",\x22""ram\x22"":\x22"$3"\x22"",\x22""free_ram\x22"":\x22"$4"\x22""},"}' | tr -d '\n' | sed 's#,]#]#g')
-"storages": $(zpool list -pH -o name,size,alloc,free,fragmentation,capacity,health | tr '\t' '_' | awk -F _ 'BEGIN {print "["} {print "{\x22""name\x22"":\x22"""$1"\x22"",\x22""size\x22"":\x22"int($2/1024/1024/1024)"\x22"",\x22""allocated\x22"":\x22"int($3/1024/1024/1024)"\x22"",\x22""free\x22"":\x22"int($4/1024/1024/1024)"\x22"",\x22""fragmentation\x22"":\x22"$5"\x22"",\x22""capacity\x22"":\x22"$6"\x22"",\x22""health\x22"":\x22"$7"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g')
+"storages": $(zpool list -pH -o name,size,alloc,free,fragmentation,capacity,health | tr '\t' '_' | awk -F _ 'BEGIN {print "["} {print "{\
+\x22name\x22:\x22"$1"\x22,\
+\x22size\x22:\x22"int($2/1024/1024/1024)"\x22,\
+\x22allocated\x22:\x22"int($3/1024/1024/1024)"\x22,\
+\x22free\x22:\x22"int($4/1024/1024/1024)"\x22,\
+\x22fragmentation\x22:\x22"$5"\x22,\
+\x22capacity\x22:\x22"$6"\x22,\
+\x22health\x22:\x22"$7"\x22},\
+"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g')
 "instances": $(
 if [ "$(echo -n "$QMS" | wc -w)" != "0" ]
 then
-echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\x22""id\x22"":\x22"""$1"\x22"",\x22""name\x22"":\x22"$2"\x22"",\x22""status\x22"":\x22"$3"\x22"",\x22""ram\x22"":\x22"$4"\x22"",\x22""disk\x22"":\x22"$5"\x22"",\x22""cores\x22"":\x22"$6"\x22"",\x22""whiteips\x22"":\x22"$7"\x22"",\x22""grayips\x22"":\x22"$8"\x22""},"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g'
+echo "$QMS" | awk -F _ 'BEGIN {print "["} {print "{\
+\x22id\x22:\x22"$1"\x22,\
+\x22name\x22:\x22"$2"\x22,\
+\x22status\x22:\x22"$3"\x22,\
+\x22ram\x22:\x22"$4"\x22,\
+\x22disk\x22:\x22"$5"\x22,\
+\x22cores\x22:\x22"$6"\x22,\
+\x22whiteips\x22:\x22"$7"\x22,\
+\x22grayips\x22:\x22"$8"\x22,\
+\x22storage\x22:\x22"$9"\x22},\
+"} END {print "]"}' | tr -d '\n' | sed 's#,]#],#g'
 else
 echo '[],'
 fi
