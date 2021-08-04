@@ -35,4 +35,4 @@ done
 
 [ "$CF_ZONE_ID" ] || echoexit1 "domain $MAIN_ZONE not found in known accounts"
 
-cf-dns-zone-details ${CF_ZONE_ID} | jq '.result | {Domain: .name, Status: .status, Target_NS: .name_servers, Original_NS: .original_name_servers} | if .status == "active" then {Domain: .name, Status: .status, Target_NS: .Target_NS} else {Domain: .name, Status: .status, Target_NS: .Target_NS, Original_NS: .original_name_servers} end'
+cf-dns-zone-details ${CF_ZONE_ID} | jq '.result | {Domain: .name, Status: .status, Target_NS: .name_servers, Original_NS: .original_name_servers} | if .Status == "active" then {Domain: .name, Status: .Status, Target_NS: .Target_NS} else {Domain: .name, Status: .Status, Target_NS: .Target_NS, Original_NS: .Original_NS} end'
