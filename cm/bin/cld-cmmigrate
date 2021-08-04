@@ -252,9 +252,19 @@ echo
 elif [ "$HPR_DC" == "hetzner" ]
 then
 GATEWAY=$HPR_HOST
+
 elif [ "$HPR_DC" == "online" ]
 then
 GATEWAY=62.210.0.2
+
+[ "$ONLINE_NET" == "1" ] && curl -sX POST -H "Authorization: Bearer ${ONLINE_NET_PRIVATE_ACCESS_TOKEN}" \
+-H "Content-Type: application/json" \
+"https://api.online.net/api/v1/server/failover/edit" \
+--data "$(jq -c . << EOL
+{ "source": "${KVM_IP}", "destination": "${DEST_HPR_IP}" }
+EOL
+)" | jq .
+
 fi
 
 echo

@@ -27,7 +27,7 @@ ipv6 on
 log_to_cloudflare on
 max_upload 100
 min_tls_version 1.0
-minify {css:off html:off js:off}
+minify "{css:off html:off js:off}"
 mirage off
 mobile_redirect "{status:off mobile_subdomain:null strip_uri:false}"
 opportunistic_encryption on
