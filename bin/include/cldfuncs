@@ -142,9 +142,9 @@ EOL
 else
   for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
   do
-    cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
+    source <(cat <<< $(echo -n 'cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null'; for iii in $(seq $ii); do echo -n " | grep -i \'\$ARG$iii\'"; done))
   done
-  [ "$CLD_GROUPS" ] || cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
+  [ "$CLD_GROUPS" ] || source <(cat <<< $(echo -n 'cut -d _ -f -4 /var/cld/access/users/${SUDO_USER}/clouds | grep -vh "^$\|^#" 2>/dev/null'; for iii in $(seq $ii); do echo -n " | grep -i \'\$ARG$iii\'"; done))
 fi
 }
 
