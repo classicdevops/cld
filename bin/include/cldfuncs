@@ -114,6 +114,8 @@ fi
 }
 
 CLOUDS_USER_ALLOWED() {
+local i ii iii
+
 for i in "$@"
 do
   case $i in
@@ -122,7 +124,6 @@ do
     *) let ii++; local ARG$ii=${i}                  ;;
   esac
 done
-
 
 if [ "$JSONFUNCOUT" == "1" ]
 then
