@@ -331,22 +331,21 @@ done
 init-string()
 {
 cldcolorenv
-ARGS_NUM="$(echo "${@:1}" | tr ' ' '\n' | grep -v "^--" | wc -w)"
-for ARG in $(seq 1 ${ARGS_NUM})
+local i ii
+for i in "$@"
 do
-source <(echo ARG${ARG}=\"$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -${ARG} | tail -1)\")
-ARGS=$(cat << EOL
+  case $i in
+    -f=*|-file=*|--file=*) FILE="${i#*=}"                ;;
+    -s=*|-separator=*|--separator=*) DELIM="${i#*=}"     ;;
+    -*)                                                  ;;
+    *) let ii++; local ARG$ii="${i}"; ARGS=$(cat << EOL
 ${ARGS}
-ARG${ARG}
+ARG$ii
 EOL
-)
+)                                                        ;;
+  esac
 done
 
-for OPTS in $(echo "${@:1}" | tr ' ' '\n' | grep '^\--')
-do
-echo $OPTS | grep -q  '^\--file=' && FILE="$(echo $OPTS | cut -d '=' -f 2)"
-echo $OPTS | grep -q  '^\--separator=' && DELIM="$(echo $OPTS | cut -d '=' -f 2)"
-done
 [ "$DELIM" ] || DELIM=_
 
 for CONSTANT_SET in ${ARGS}
