@@ -114,21 +114,21 @@ fi
 }
 
 CLOUDS_USER_ALLOWED() {
-for OPTS in ${@:1}
+for i in "$@"
 do
-echo $OPTS | grep -q  '^\--groups=' && CLD_GROUPS="$(echo $OPTS | cut -d '=' -f 2 | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n')"
-echo $OPTS | grep -q  '^\--json' && JSONFUNCOUT=1
+  case $i in
+    -g=*|-groups=*|--groups=*) CLD_GROUPS=$(echo "${i#*=}"| tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n') ;;
+    -j|-json|--json) JSONFUNCOUT=1                  ;;
+    *) let ii++; local ARG$ii=${i}                  ;;
+  esac
 done
 
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 if [ "$JSONFUNCOUT" == "1" ]
 then
   for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
   do
-    CLOUDS=$(cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
+    CLOUDS=$(source <(cat <<< $(echo -n 'cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null'; for iii in $(seq $ii); do echo -n " | grep -i \"\$ARG$iii\""; done; echo -n ' | head -c -1')))
     if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
     then
       cat << EOL | tr -d '\n'

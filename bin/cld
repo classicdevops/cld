@@ -24,10 +24,6 @@ EOL
 )
 
 source /var/cld/bin/include/cldfuncs
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -3 | tail -1)
-
 
 for i in "$@"
 do
@@ -37,7 +33,7 @@ do
     -j|-json|--json) JSON=1                         ;;
     -b|-beauty|--beauty) JSON_BEAUTY=1              ;;
     -d|-debug|--debug) VERBOSE=" -v"                ;;
-    *) ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
   esac
 done
 
