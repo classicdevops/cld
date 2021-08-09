@@ -114,8 +114,6 @@ fi
 }
 
 CLOUDS_USER_ALLOWED() {
-local ii
-local iii
 for i in "$@"
 do
   case $i in
@@ -130,7 +128,7 @@ if [ "$JSONFUNCOUT" == "1" ]
 then
   for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
   do
-    CLOUDS=$(source <(cat <<< $(echo -n 'cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null'; for iii in $(seq $ii); do echo -n " | grep -i \"\$ARG$iii\""; done; echo -n ' | head -c -1')))
+    CLOUDS=$(source <(cat <<< $(echo -n 'cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null'; for iii in $(seq $ii); do echo -n " | grep -i \'\$ARG$iii\'"; done; echo -n ' | head -c -1')))
     if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
     then
       cat << EOL | tr -d '\n'
