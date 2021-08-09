@@ -114,6 +114,8 @@ fi
 }
 
 CLOUDS_USER_ALLOWED() {
+local ii
+local iii
 for i in "$@"
 do
   case $i in
