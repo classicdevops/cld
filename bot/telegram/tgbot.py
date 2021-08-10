@@ -131,7 +131,7 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     cmd_args=''
     try:
         for arg in message.text.split()[1:]:
-          cmd_args=cmd_args+" "+str(re.match('^[A-z0-9.,@=/:_-]+$', arg).string
+            cmd_args=cmd_args+" "+str(re.match('^[A-z0-9.,@=/:_-]+$', arg).string
     except:
         pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
