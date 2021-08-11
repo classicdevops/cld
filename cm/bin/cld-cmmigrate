@@ -30,13 +30,10 @@ case $i in
 -s=*|-source=*|--source=*) SOURCE_HPR="${i#*=}" ;;
 -c|-clonefs|--clonefs) CLONEFS=1                ;;
 -D|-debug|--debug) DEBUG=YES               		;;
-*) ;;
+-*)                                             ;;
+*) let ii++; declare ARG$ii=${i}                ;;
 esac
 done
-
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 

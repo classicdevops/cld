@@ -29,13 +29,10 @@ do
 case $i in
 -i=*|-id=*|--id=*) KVM_ID="${i#*=}"     ;;
 -H=*|-hyper=*|--hyper=*) HPR="${i#*=}"  ;;
-*) ;;
+-*)                                     ;;
+*) let ii++; declare ARG$ii=${i}        ;;
 esac
 done
-
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
