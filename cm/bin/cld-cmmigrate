@@ -212,18 +212,6 @@ $KVM_STOP
 $PVE_ZSYNC
 EOSSH
 echo
-if [ "$HPR_DC" != "ovh" ]
-then
-echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]" ; read SKIP_WAIT
-fi
-echo
-ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
-$CONSTANTS
-$SWITCH_KVM_CONFIGS
-EOSSH
-echo
-echo "KVM configs switched - check if migrated KVM need change gateway"
-echo
 
 if [ "$HPR_DC" == "ovh" ]
 then
@@ -252,11 +240,10 @@ echo
 elif [ "$HPR_DC" == "hetzner" ]
 then
 GATEWAY=$HPR_HOST
-
+echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]" ; read SKIP_WAIT
 elif [ "$HPR_DC" == "online" ]
 then
-GATEWAY=62.210.0.2
-
+init-load-constants ONLINE_NET\|0 ONLINE_NET_PRIVATE_ACCESS_TOKEN\|Xj0tDfJrBmWq5bcEgRenGwJkAydejQDWxqSFArET
 [ "$ONLINE_NET" == "1" ] && curl -sX POST -H "Authorization: Bearer ${ONLINE_NET_PRIVATE_ACCESS_TOKEN}" \
 -H "Content-Type: application/json" \
 "https://api.online.net/api/v1/server/failover/edit" \
@@ -265,10 +252,21 @@ GATEWAY=62.210.0.2
 EOL
 )" | jq .
 
+else
+echo "Ready to switch KVM - please migrate IP address at datacenter side if it required and press [ENTER]" ; read SKIP_WAIT
 fi
 
 echo
-echo "KVM configs switched - starting KVM at $DEST_HPR"
+ssh -o "StrictHostKeyChecking no" -p ${SOURCE_HPR_PORT} ${SOURCE_HPR_USER}@${SOURCE_HPR_IP} 'bash -s' << EOSSH
+$CONSTANTS
+$SWITCH_KVM_CONFIGS
+EOSSH
+echo
+echo "KVM configs switched - check if migrated KVM need change gateway"
+echo
+
+echo
+echo "starting KVM at $DEST_HPR"
 echo
 ssh -o StrictHostKeyChecking=no -p ${DEST_HPR_PORT} ${DEST_HPR_USER}@${DEST_HPR_IP} "bash -s" << EOSSH
 ${CONSTANTS}
