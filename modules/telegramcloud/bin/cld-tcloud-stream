@@ -29,89 +29,87 @@ done
 
 [ "$TG_GROUP" ] || echoexit1 Telegram user or chat id is not defined - use --help argument for details
 
-
-
 export COMMAND_ID=$(cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c 7)
-export TG_STREAM_FILE=/var/cld/tmp/tgstream_cmd_${COMMAND_ID}
-touch ${TG_STREAM_FILE}
+export STREAM_FILE=/var/cld/tmp/tgstream/cmd_${COMMAND_ID}
+[ -d "/var/cld/tmp/tgstream" ] || mkdir -p /var/cld/tmp/tgstream
+touch ${STREAM_FILE}
 
 sendmessage() {
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
 -d "chat_id=${TG_GROUP}&parse_mode=markdown&text=\`\`\`%0A$(urlencode "$1")\`\`\`"
 }
 
-sendmessageoffset() {
-local OFFSET=$1
-local MESSAGE_TEXT=$(tail -n +${OFFSET} ${TG_STREAM_FILE} | head -c 4080)
+sendmessagefile() {
+local MESSAGE_TEXT=$(cat ${1})
 [ "$(echo ${MESSAGE_TEXT} | wc -c)" -le "3" ] && MESSAGE_TEXT="Next init message"
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
 -d "chat_id=${TG_GROUP}&parse_mode=markdown&text=\`\`\`%0A$(urlencode "${MESSAGE_TEXT}")\`\`\`"
 }
 
 editmessage() {
-local OFFSET=$1
-local MESSAGE_TEXT=$(tail -n +${OFFSET} ${TG_STREAM_FILE})
+local MESSAGE_ID=$1
+local MESSAGE_TEXT=$(cat ${2})
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText" \
--d "chat_id=${TG_GROUP}&message_id=${TG_MESSAGE_ID}&parse_mode=markdown&text=\`\`\`%0A$(urlencode "${MESSAGE_TEXT}")\`\`\`" | grep false 1>&2
+-d "chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`\`\`%0A$(urlencode "${MESSAGE_TEXT}")\`\`\`" | grep false 1>&2
 }
 
-TG_MESSAGE_ID=$(sendmessage initializing | jq .result.message_id)
+MESSAGE_ID=$(sendmessage initializing | jq .result.message_id)
 
 {
-TG_STREAM_FILE_SIZE_PREV=0
-TG_FILE_LINE_COUNT_PREV=0
-TG_STREAM_FILE_SIZE=$(du -b ${TG_STREAM_FILE} | cut -f1)
-TG_FILE_OFFSET_STEP=3600
-TG_FILE_OFFSET=${TG_FILE_OFFSET_STEP}
-TG_FILE_LINE_OFFSET=1
+MAX_LENGTH=4000
+PREV_FILE=/var/cld/tmp/tgstream/xaaa${COMMAND_ID}
+PREV_FILE_SIZE=0
 while :;
 do
-  TG_STREAM_FILE_SIZE=$(du -b ${TG_STREAM_FILE} | cut -f1)
-  TG_FILE_LINE_COUNT=$(wc -l ${TG_STREAM_FILE} | cut -d ' ' -f 1)
-  if [ "${TG_STREAM_FILE_SIZE}" != "${TG_STREAM_FILE_SIZE_PREV}" ]
-  then
-    if [ "${TG_STREAM_FILE_SIZE}" -ge "${TG_FILE_OFFSET}" ]
-      then
-        editmessage ${TG_FILE_LINE_OFFSET}
-        TG_FILE_LINE_COUNT_PREV_SENT=$(expr ${TG_FILE_LINE_COUNT} + 1)
-        TG_FILE_OFFSET=$(expr $TG_FILE_OFFSET + $TG_FILE_OFFSET_STEP)
-        TG_MESSAGE_BODY=$(sendmessageoffset ${TG_FILE_LINE_COUNT_PREV_SENT})
-        echo "$TG_MESSAGE_BODY" | grep false 1>&2 
-        TG_MESSAGE_ID=$(echo "$TG_MESSAGE_BODY" | jq .result.message_id)
-        TG_FILE_LINE_OFFSET=${TG_FILE_LINE_COUNT_PREV_SENT}
-    else
-        editmessage ${TG_FILE_LINE_OFFSET}
-        TG_FILE_LINE_COUNT_PREV_SENT=$(expr ${TG_FILE_LINE_COUNT} + 1)
+[ -f "/var/cld/tmp/tgstream/cmd_${COMMAND_ID}_done" ] && export STREAM_DONE=1
+STREAM_FILE_SIZE=$(du -b ${STREAM_FILE} | cut -d $'\t' -f 1)
+
+if [ "$STREAM_FILE_SIZE" != "0" ]; then
+(cd $(dirname ${STREAM_FILE}) ; split --line-bytes=${MAX_LENGTH} --additional-suffix=${COMMAND_ID} --suffix-length=3 ${STREAM_FILE})
+
+LAST_FILE=$(ls /var/log/x* | grep ${COMMAND_ID} | tail -1)
+
+PREV_FILE_CURRENT_SIZE=$(du -b ${PREV_FILE} | cut -d $'\t' -f 1)
+  if [ "$LAST_FILE" != "$PREV_FILE" ]; then
+    if [ "$PREV_FILE_CURRENT_SIZE" != "$PREV_FILE_SIZE" ]; then
+      editmessage $MESSAGE_ID $PREV_FILE
+      FILES_LAST_TO_CURRENT=$(ls /var/cld/tmp/tgstream/x* | grep ${COMMAND_ID} | grep -A1000 "$PREV_FILE" | tail -n +2)
+      for SEND_FILE in ${FILES_LAST_TO_CURRENT}
+      do
+        MESSAGE_ID=$(sendmessagefile $SEND_FILE | jq .result.message_id)
+        PREV_FILE=$SEND_FILE
+        sleep 2s
+      done
+      PREV_FILE_SIZE=$(du -b ${PREV_FILE} | cut -d $'\t' -f 1)
     fi
-    sleep 2.9s
+  elif [ "$LAST_FILE" = "$PREV_FILE" ]; then
+    if [ "$PREV_FILE_CURRENT_SIZE" != "$PREV_FILE_SIZE" ]; then
+      PREV_FILE_SIZE=$PREV_FILE_CURRENT_SIZE
+      editmessage $MESSAGE_ID $PREV_FILE
+    fi
   fi
-  sleep 0.1s
-  TG_STREAM_FILE_SIZE_PREV=${TG_STREAM_FILE_SIZE}
-  if [ -f "/var/cld/tmp/tgstream_cmd_${COMMAND_ID}_done" ]
-  then
-    TG_STREAM_FILE_SIZE=$(du -b ${TG_STREAM_FILE} | cut -f1)
-    [ "${TG_STREAM_FILE_SIZE}" != "${TG_STREAM_FILE_SIZE_PREV}" ] && editmessage ${TG_FILE_LINE_OFFSET}
-    break
-  fi
+fi
+[ "$STREAM_DONE" ] && break
+sleep 2s
 done
 } &
 
 if [ "$ANSIFILTER" ]
 then
 ANSIFILTER_PREFIX=".ansi"
-touch ${TG_STREAM_FILE}${ANSIFILTER_PREFIX}
+touch ${STREAM_FILE}${ANSIFILTER_PREFIX}
 {
 while :;
 do
-ansifilter -i ${TG_STREAM_FILE}${ANSIFILTER_PREFIX} -o ${TG_STREAM_FILE}.tmp && { mv -f ${TG_STREAM_FILE}.tmp ${TG_STREAM_FILE} ; }
-[ -f "/var/cld/tmp/tgstream_cmd_${COMMAND_ID}_done" ] && break
+ansifilter -i ${STREAM_FILE}${ANSIFILTER_PREFIX} -o ${STREAM_FILE}.tmp && { mv -f ${STREAM_FILE}.tmp ${STREAM_FILE} ; }
+[ -f "/var/cld/tmp/tgstream/cmd_${COMMAND_ID}_done" ] && break
 sleep 0.1s
 done
 } &
 fi
 
 while IFS= read line; do
-echo "${line}" | tee -a ${TG_STREAM_FILE}${ANSIFILTER_PREFIX}
+echo "${line}" | tee -a ${STREAM_FILE}${ANSIFILTER_PREFIX}
 done
-touch /var/cld/tmp/tgstream_cmd_${COMMAND_ID}_done
+touch /var/cld/tmp/tgstream/cmd_${COMMAND_ID}_done
 wait
