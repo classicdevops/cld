@@ -546,7 +546,7 @@ def changepassword():
     randomid = ''
     for c in range(16): randomid += random.choice(chars)
     cmdoutput = bash(f'''
-cat << '{randomid}' | passwd vld({username})
+cat << '{randomid}' | passwd {vld(username)}
 {newpassword}
 {newpassword}
 {randomid}
