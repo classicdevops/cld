@@ -537,7 +537,7 @@ def terminal():
     cld_instances = json.loads(bash('sudo -u '+vld(username)+' sudo FROM=CLI /var/cld/bin/cld --list --json'))
     return render_template('html/terminal.html', username=username, cld_instances=cld_instances)
 
-@app.route('/password')
+@app.route('/password', methods=['POST'])
 def changepassword():
   if 'username' in session:
     username = session['username']
