@@ -542,11 +542,14 @@ def changepassword():
   if 'username' in session:
     username = session['username']
     newpassword = request.form['password']
+    chars = 'ABCDEFJHGKLMNPQRSTUVWXYZ'
+    randomid = ''
+    for c in range(16): randomid += random.choice(chars)
     cmdoutput = bash(f'''
-cat << 'EOL' | passwd {username}
+cat << '{randomid}' | passwd vld({username})
 {newpassword}
 {newpassword}
-EOL
+{randomid}
 ''')
     return Response(cmdoutput.replace('\n','<br>')+'<script>window.setTimeout(function(){window.location.href="/profile";},2000);</script>', status=200, mimetype='text/html')
 
