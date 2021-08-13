@@ -538,7 +538,7 @@ def terminal():
     return render_template('html/terminal.html', username=username, cld_instances=cld_instances)
 
 @app.route('/password')
-def password():
+def changepassword():
   if 'username' in session:
     username = session['username']
     newpassword = request.form['password']
