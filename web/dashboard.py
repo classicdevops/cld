@@ -548,13 +548,7 @@ cat << 'EOL' | passwd {username}
 {newpassword}
 EOL
 ''')
-    return Response(cmdoutput+'''
-<script>
-window.setTimeout(function(){
-window.location.href = "/profile";
-}, 2000);
-</script>
-''', status=200, mimetype='text/plain')
+    return Response(cmdoutput.replace('\n','<br>')+'<script>window.setTimeout(function(){window.location.href="/profile";},2000);</script>', status=200, mimetype='text/html')
 
 @app.route('/toolkit')
 def toolkit():
