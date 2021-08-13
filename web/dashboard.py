@@ -554,7 +554,7 @@ window.setTimeout(function(){
 window.location.href = "/profile";
 }, 2000);
 </script>
-''', status=200, mimetype='text/html')
+''', status=200, mimetype='text/plain')
 
 @app.route('/toolkit')
 def toolkit():
