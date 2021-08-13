@@ -65,8 +65,8 @@
             <div id="collapse3" class="panel-collapse collapse">
               <div class="panel-body">
                 <legend>Change password</legend>
-                <form style="display: -webkit-inline-box;">
-                    <input type="password" placeholder="New password" id="password" required="" class="form-control" style="width: 60%;padding-top: 3;border-radius: 4px 0px 0px 4px;">
+                <form style="display: -webkit-inline-box;" action="{{ url_for('changepassword') }}">
+                    <input type="password" placeholder="New password" id="password" name="password" required="" class="form-control" style="width: 60%;padding-top: 3;border-radius: 4px 0px 0px 4px;">
                     <input type="password" placeholder="Confirm Password" id="confirm_password" required="" class="form-control" style="width: 60%;padding-top: 3;margin-left: 0px;border-radius: 0px 0px 0px 0px;">
                     <button type="submit" class="btn btn-primary" style="margin-left: 0px;border-radius: 0px 4px 4px 0px;">Change</button>
                 </form>

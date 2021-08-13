@@ -537,6 +537,19 @@ def terminal():
     cld_instances = json.loads(bash('sudo -u '+vld(username)+' sudo FROM=CLI /var/cld/bin/cld --list --json'))
     return render_template('html/terminal.html', username=username, cld_instances=cld_instances)
 
+@app.route('/password')
+def password():
+  if 'username' in session:
+    username = session['username']
+    newpassword = request.form['password']
+    cmdoutput = bash(f'''
+cat << 'EOL' | passwd {username}
+{newpassword}
+{newpassword}
+EOL
+''')
+    return Response(cmdoutput, status=200, mimetype='application/json')
+
 @app.route('/toolkit')
 def toolkit():
   if 'username' in session:
