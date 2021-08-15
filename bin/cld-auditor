@@ -1,0 +1,38 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Continuous checks of system status and settings - running from systemd cld-auditor service
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+[ -d "/var/cld/tmp/auditor" ] || mkdir -p /var/cld/tmp/auditor
+[ -f "/var/cld/tmp/auditor/prev_passwd_hash" ] || touch /var/cld/tmp/auditor/prev_passwd_hash
+
+while :;
+do
+### Check permission matrix changes
+PASSWD_CURRENT_HASH=$(md5sum /var/cld/creds/passwd | cut -d ' ' -f 1)
+PASSWD_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_passwd_hash)
+echo "${CURRENT_HASH}" > /var/cld/tmp/auditor/prev_passwd_hash
+
+if [ "$PASSWD_CURRENT_HASH" !=  "$PASSWD_PREVIOUS_HASH" ]
+then
+bash -lc "/var/cld/bin/cld-initpasswd"
+fi
+
+### Security checks
+if [ "$(stat -c "%a" /var/cld)" != "700" ] 
+then
+chattr -i /var/cld
+chmod 700 /var/cld
+chattr +i /var/cld
+fi
+
+if ! [[ "$(lsattr -d /var/cld)" =~ ^[A-Za-z-]+i[A-Za-z-]+\ +/var/cld$ ]] 
+then
+chattr +i /var/cld
+fi
+
+sleep 5s
+done
