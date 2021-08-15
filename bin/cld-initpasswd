@@ -28,7 +28,8 @@ rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 1 | rev > /var/cld/creds/tools_list
 rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev > /var/cld/creds/modules_list
 
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
-for USER_SET in $(grep -v "^#" /var/cld/creds/passwd | grep "^${CLDUSER}:")
+[ "$CLDUSER" ] && USER_SETS=$(grep -v "^#" /var/cld/creds/passwd | grep "^${CLDUSER}:") || USER_SETS=$(grep -v "^#" /var/cld/creds/passwd)
+for USER_SET in ${USER_SETS}
 do
 USER_NAME=$(cut -d : -f 1 <<< $USER_SET)
 USER_TGID=$(cut -d : -f 2 <<< $USER_SET)
