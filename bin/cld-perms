@@ -32,7 +32,7 @@ do
 done
 
 [ "$(user_is_admin ${SUDO_USER})" != "0" ] && { unset CLD_USER ; CLD_USER=${SUDO_USER} ; }
-[ "CLD_USER" ] || CLD_USER=${SUDO_USER}
+[ "$CLD_USER" ] || CLD_USER=${SUDO_USER}
 
 if [ "$CLD_PERMS" == "bot" ]; then
   awk -F ':' '/^'${CLD_USER}':/{print $2}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
