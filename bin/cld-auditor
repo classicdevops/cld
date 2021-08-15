@@ -14,9 +14,9 @@ do
 ### Check permission matrix changes
 PASSWD_CURRENT_HASH=$(md5sum /var/cld/creds/passwd | cut -d ' ' -f 1)
 PASSWD_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_passwd_hash)
-echo "${CURRENT_HASH}" > /var/cld/tmp/auditor/prev_passwd_hash
+echo "${PASSWD_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_passwd_hash
 
-if [ "$PASSWD_CURRENT_HASH" !=  "$PASSWD_PREVIOUS_HASH" ]
+if [ "$PASSWD_CURRENT_HASH" != "$PASSWD_PREVIOUS_HASH" ]
 then
 bash -lc "/var/cld/bin/cld-initpasswd"
 fi
