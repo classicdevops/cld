@@ -23,6 +23,10 @@ case $i in
 esac
 done
 
+CLD_TOOLS_LIST=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
+rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 1 | rev > /var/cld/creds/tools_list
+rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev > /var/cld/creds/modules_list
+
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
 for USER_SET in $(grep -v "^#" /var/cld/creds/passwd | grep "${CLDUSER}:")
 do

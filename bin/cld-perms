@@ -40,9 +40,11 @@ if [ "$CLD_PERMS" == "bot" ]; then
 elif [ "$CLD_PERMS" == "api" ]; then
   awk -F ':' '/^'${CLD_USER}':/{print $3}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
 elif [ "$CLD_PERMS" == "modules" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+  CLD_COLUMN=$(awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d')
+  [ "$CLD_COLUMN" == "ALL" ] && cat /var/cld/creds/modules_list
 elif [ "$CLD_PERMS" == "tools" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+  CLD_COLUMN=$(awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d')
+  [ "$CLD_COLUMN" == "ALL" ] && cat /var/cld/creds/tools_list
 elif [ "$CLD_PERMS" == "groups" ]; then
   awk -F ':' '/^'${CLD_USER}':/{print $6}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
 fi
