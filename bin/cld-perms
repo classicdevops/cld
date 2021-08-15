@@ -1,0 +1,47 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Get user passwd column
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--user=username                     CLD PAM user name - admin setting - without will equal current user value
+--[bot|api|modules|tools|groups]    Show user column from /var/cld/creds/passwd
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-perms --bot
+cld-perms -u=user1 -g
+cld-perms --user=user1 --groups
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in "$(expr "$@" : '\([A-Za-z0-9.=_-]\+\)')"
+do
+  case $i in
+    -u=*|-user=*|--user=*) CLD_USER="${i#*=}"    ;;
+    -b|-bot|--bot) CLD_PERMS="bot"               ;;
+    -a|-api|--api) CLD_PERMS="api"               ;;
+    -m|-modules|--modules) CLD_PERMS="modules"   ;;
+    -t|-tools|--tools) CLD_PERMS="tools"         ;;
+    -g|-groups|--groups) CLD_PERMS="groups"      ;;
+    -*)                                          ;;
+    *) let ii++; declare ARG$ii=${i}             ;;
+  esac
+done
+
+[ "$(user_is_admin ${SUDO_USER})" != "0" ] && { unset CLD_USER ; CLD_USER=${SUDO_USER} ; }
+[ "CLD_USER" ] || CLD_USER=${SUDO_USER}
+
+if [ "$CLD_PERMS" == "bot" ]; then
+  awk -F ':' '/^'${CLD_USER}':/{print $2}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+elif [ "$CLD_PERMS" == "api" ]; then
+  awk -F ':' '/^'${CLD_USER}':/{print $3}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+elif [ "$CLD_PERMS" == "modules" ]; then
+  awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+elif [ "$CLD_PERMS" == "tools" ]; then
+  awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+elif [ "$CLD_PERMS" == "groups" ]; then
+  awk -F ':' '/^'${CLD_USER}':/{print $6}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+fi

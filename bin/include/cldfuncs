@@ -101,9 +101,17 @@ LOCALMOUNTPATH="/home/$SUDO_USER/mnt/$VM" &>/dev/null ; fusermount -uzq $LOCALMO
 
 user_is_admin()
 {
-CLD_USER=$1
+local i ii CLD_USER
+for i in "$(expr "$@" : '\([A-Za-z0-9._-]\+\)')"
+do
+  case $i in
+    *) let ii++; local ARG$ii=${i} ;;
+  esac
+done
+CLD_USER="$ARG1"
 [ "$CLD_USER" ] || { echo CLD_USER is not defined ; return 1 ; }
-if awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^${CLD_USER}:" | cut -d : -f 2- | grep -q "^ALL:ALL$"
+
+if [ "$(awk -F ":" '/^'${CLD_USER}':/{print $4":"$5}' /var/cld/creds/passwd)" == "ALL:ALL" ]
 then
 echo 0
 return 0
