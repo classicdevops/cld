@@ -33,15 +33,13 @@ done
 
 [ "$(user_is_admin ${SUDO_USER})" != "0" ] && { unset CLD_USER ; CLD_USER=${SUDO_USER} ; }
 [ "$CLD_USER" ] || CLD_USER=${SUDO_USER}
+[ "$CLD_USER" ] || { echo CLD_USER is not defined - exit ; exit 1 ; }
 
-if [ "$CLD_PERMS" == "bot" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $2}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
-elif [ "$CLD_PERMS" == "api" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $3}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
-elif [ "$CLD_PERMS" == "modules" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
-elif [ "$CLD_PERMS" == "tools" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
-elif [ "$CLD_PERMS" == "groups" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $6}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
-fi
+case $CLD_PERMS in
+bot) awk -F ':' '/^'${CLD_USER}':/{print $2}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'     ;;
+api) awk -F ':' '/^'${CLD_USER}':/{print $3}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'     ;;
+modules) awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d' ;;
+tools) awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'   ;;
+groups) awk -F ':' '/^'${CLD_USER}':/{print $6}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'  ;;
+*)                                          ;;
+esac
