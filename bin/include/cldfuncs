@@ -266,20 +266,6 @@ else
 fi
 }
 
-CUSTOM_FUNCS_ACTIVATE(){
-source  <(for GROUPFUNC in funcvars functerm funcmount funcumount 
-    do
-      echo "${GROUP}_${GROUPFUNC}(){"
-      cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
-      echo '}'
-    done)
-  alias EXTERNAL_VARS=${GROUP}_funcvars
-  alias EXTERNAL_MOUNT=${GROUP}_funcmount
-  alias EXTERNAL_TERMINAL=${GROUP}_functerm
-  alias EXTERNAL_UMOUNT=${GROUP}_funcumount
-  echo CUSTOM_FUNCS_ACTIVATE
-}
-
 init-load-constants()
 {
 for CONSTANT_SET in ${@:1}
