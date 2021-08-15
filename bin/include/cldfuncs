@@ -161,15 +161,6 @@ done
 fi
 }
 
-CHECK_DNS()
-{
-grep "$1" -qR --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date +%F`/ \
-&& echo "###############################################" \
-&& echo "Info by matching first argument with DNS lists:" | grep --color=always "DNS" \
-&& grep "$1" -R --color=always /var/cld/modules/dns/data/*/`TZ=Europe/Moscow date +%F`/ \
-&& echo "###############################################" && echo
-}
-
 cldtailcut()
 {
 cat << CLDTAILCUT
