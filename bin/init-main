@@ -108,6 +108,7 @@ then
 USR_PATH=""
 fi
 
+[ -d "/var/cld/tmp/auditor" ] || mkdir -p /var/cld/tmp/auditor
 cat > /etc/systemd/system/cld-auditor.service << EOL
 [Unit]
 Description=ClassicDeploy auditor service
