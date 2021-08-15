@@ -13,18 +13,6 @@ fi
 
 [ "$SUDO_USER" ] && export SUDO_USER=${SUDO_USER} || export SUDO_USER=admin
 
-if [ "$FROM" == "API" ] 
-then 
-  F=
-  B=
-elif [ "$FROM" == "BOT" ]
-then
-  F=
-  B=
-  # F='`'
-  # B='*'
-fi
-
 VM_LIST() {
 (
 for GROUP in $(ls /var/cld/access/groups/)
