@@ -17,8 +17,7 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-OPTS=$(expr "$(echo "$@")" : '\([A-Za-z0-9\ /:.,@_=+-]\+\)')
-for i in "$OPTS"
+for i in "$(expr "$(echo "$@")" : '\([A-Za-z0-9\ /:.,@_=+-]\+\)')"
 do
   case $i in
     -u=*|-user=*|--user=*) CLD_USER="${i#*=}"    ;;
