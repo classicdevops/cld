@@ -33,9 +33,9 @@ Server based on OS Linux with installed copy of CLD `Open source` or CLD `Basic`
 Linux-based server added to the CLD group as a string by the default delimeter '\_' `example.example_1.2.3.4_22_user`, the delimeter can be configured for individual groups with appropriate changes to the supported custom functions
 
 ## User
-PAM user on the CLD server created through the `cld-useradd` utility, file-related to cld (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
+PAM user on the CLD server created through the `cld-useradd` utility, file-related to CLD (`/var/cld/creds/passwd`, `/var/cld/access/users/${CLD_USER}/`)
+  User passwd string have such format: `Username`:`UserMessangerIds`:`ApiToken`:`Modules`:`Tools`:`Groups`
   Regardless of the role, it can contain:
-- list of available groups `/var/cld/access/users/${CLD_USER}/groups`
 - individual list of instances `/var/cld/access/users/${CLD_USER}/clouds` (optional)
 
 ## User role
