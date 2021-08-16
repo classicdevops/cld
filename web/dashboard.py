@@ -574,7 +574,7 @@ def admin():
     for user in userlist:
       userid = bash('grep ^'+vld(user)+': /etc/passwd | cut -d : -f 3')
       role = bash('cat /var/cld/access/users/'+vld(user)+'/role').replace('\n', '')
-      groups = bash('echo -n $(cat /var/cld/access/users/'+vld(user)+'/groups)').replace(' ', ',')
+      groups = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 6')
       status = bash("grep -q '"+vld(user)+":!' /etc/shadow && echo -n 0 || echo -n 1")
       lastlogin = bash('''echo -n $(last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}')''')
       users.append(userid+";"+user+";"+role+";"+groups+";"+status+";"+lastlogin)
