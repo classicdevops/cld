@@ -9,9 +9,9 @@ HELP_ARGS=$(cat << 'EOL'
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-perms --bot
-cld-perms -u=user1 -g
-cld-perms --user=user1 --groups
+cld-getpasswd --bot
+cld-getpasswd -u=user1 -g
+cld-getpasswd --user=user1 --groups
 EOL
 )
 

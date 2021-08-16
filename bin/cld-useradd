@@ -4,32 +4,30 @@ Add user - create record for user at /var/cld/creds/passwd and initilize
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       User name
-$2                       Password
---tools=cld,cldx         List of classicdeploy tools comma separated - cld,cldmount,cldx,cldxmount is default
---modules=access,dns     List of classicdeploy modules comma separated - empty is default
+$1                         User name
+$2                         Password
+--tools=cld,cldx           List of classicdeploy tools comma separated - cld,cldmount,cldx,cldxmount is default
+--modules=access,dns       List of classicdeploy modules comma separated - empty is default
+--groups=default,prod,dev  List of CLD groups comma separated - not required
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-useradd johndoe P45Sw0Rd
-cld-useradd johndoe P45Sw0Rd --tools=cld,cldx --modules=access,dns
+cld-useradd johndoe P45Sw0Rd --tools=cld,cldx -modules=access,dns -g=default,prod,dev
 EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for i in "$@"
+for i in $(expr "$(echo "$@")" : '\([A-Za-z0-9 /.,@_=+-]\+\)')
 do
 case $i in
 -t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"       ;;
 -m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;;
-*) ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"    ;;
+-*)                                                ;;
+*) let ii++; declare ARG$ii=${i}                   ;;
 esac
 done
-
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
-
-[ "${ARG1}" = "${ARG2}" ] && unset ARG2
 
 CLD_USER=$ARG1
 [ "$CLD_USER" ] || echoexit1 CLD user is not defined
@@ -38,7 +36,7 @@ CLD_USER_PASSWORD=$ARG2
 [ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cldmount,cldx,cldxmount,cld-modules"
 # useradd ${CLD_USER} --shell /bin/bash
 grep -q "^${CLD_USER}:" /var/cld/creds/passwd && echoexit1 User ${CLD_USER} already exist - exit
-echo "${CLD_USER}:::${CLD_MODULES}:${CLD_TOOLS}" >> /var/cld/creds/passwd
+echo "${CLD_USER}:::${CLD_MODULES}:${CLD_TOOLS}:${CLD_GROUPS}" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd --user=${CLD_USER} &>/dev/null
 echo user: ${CLD_USER}
 echo password: ${CLD_USER_PASSWORD}

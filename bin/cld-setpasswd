@@ -1,0 +1,56 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Set user passwd column
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--user=username                                   CLD PAM user name - admin setting - without will equal current user value
+--[bot|api|modules|tools|groups]=value1,value2    Set user column at /var/cld/creds/passwd
+--admin                                           Set admin role to user - the same as "-m=ALL -t=ALL"
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-setpasswd --bot
+cld-setpasswd --user=user1 --groups=default,aws,gcloud
+cld-setpasswd -u=user1 -admin
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in $(expr "$(echo "$@")" : '\([A-Za-z0-9 /:.,@_=+-]\+\)')
+do
+  case $i in
+    -u=*|-user=*|--user=*) CLD_USER="${i#*=}"                   ;;
+    -b=*|-bot=*|--bot=*) CLD_USER_BOT="${i#*=}"                 ;;
+    -a=*|-api=*|--api=*) CLD_USER_API="${i#*=}"                 ;;
+    -m=*|-modules=*|--modules=*) CLD_USER_MODULES="${i#*=}"     ;;
+    -t=*|-tools=*|--tools=*) CLD_USER_TOOLS="${i#*=}"           ;;
+    -g=*|-groups=*|--groups=*) CLD_USER_GROUPS="${i#*=}"        ;;
+    -a|-admin|--admin) CLD_USER_MODULES=ALL; CLD_USER_TOOLS=ALL ;;
+    -*)                                                         ;;
+    *) let ii++; declare ARG$ii=${i}                            ;;
+  esac
+done
+
+[ "$(user_is_admin ${SUDO_USER})" != "0" ] && { echo Your user role is not admin - exit ; exit 1 ; }
+[ "$CLD_USER" ] || CLD_USER=${SUDO_USER}
+[ "$CLD_USER" ] || { echo CLD_USER is not defined - exit ; exit 1 ; }
+[ "$CLD_USER_BOT" == "" -a "$CLD_USER_API" == "" -a "$CLD_USER_MODULES" == "" -a "$CLD_USER_TOOLS" == "" -a "$CLD_USER_GROUPS" == "" ] && { echo Nothing changed - exit ; exit 1 ; }
+
+CLD_USER_CRED_SET=$(grep "^${CLD_USER}:" /var/cld/creds/passwd)
+
+CLD_USER_BOT_OLD=$(cut -d : -f 2 <<< "${CLD_USER_CRED_SET}")
+CLD_USER_API_OLD=$(cut -d : -f 3 <<< "${CLD_USER_CRED_SET}")
+CLD_USER_MODULES_OLD=$(cut -d : -f 4 <<< "${CLD_USER_CRED_SET}")
+CLD_USER_TOOLS_OLD=$(cut -d : -f 5 <<< "${CLD_USER_CRED_SET}")
+CLD_USER_GROUPS_OLD=$(cut -d : -f 6 <<< "${CLD_USER_CRED_SET}")
+
+[ "$CLD_USER_BOT" ] || CLD_USER_BOT=${CLD_USER_BOT_OLD}
+[ "$CLD_USER_API" ] || CLD_USER_API=${CLD_USER_API_OLD}
+[ "$CLD_USER_MODULES" ] || CLD_USER_MODULES=${CLD_USER_MODULES_OLD}
+[ "$CLD_USER_TOOLS" ] || CLD_USER_TOOLS=${CLD_USER_TOOLS_OLD}
+[ "$CLD_USER_GROUPS" ] || CLD_USER_GROUPS=${CLD_USER_GROUPS_OLD}
+
+sed -i 's#^'${CLD_USER}':.*#'${CLD_USER}':'${CLD_USER_BOT}':'${CLD_USER_API}':'${CLD_USER_MODULES}':'${CLD_USER_TOOLS}':'${CLD_USER_GROUPS}'#g' /var/cld/creds/passwd && echo done
+
