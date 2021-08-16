@@ -645,7 +645,7 @@ def user(name):
     for user in name:
       userid = bash('grep ^'+vld(user)+': /etc/passwd | cut -d : -f 3').replace('\n', '')
       role = bash('cat /var/cld/access/users/'+vld(user)+'/role').replace('\n', '')
-      groups = bash('echo -n $(cat /var/cld/access/users/'+vld(user)+'/groups)').replace(' ', ',')
+      groups = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 6')
       status = bash("grep -q '"+vld(user)+":!' /etc/shadow && echo -n 0 || echo -n 1")
       lastlogin = bash('''echo -n $(last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}')''')
       users.append(userid+";"+user+";"+role+";"+groups+";"+status+";"+lastlogin)
@@ -656,7 +656,7 @@ def user(name):
     allowedclouds = bash('sudo -u '+vld(clduser)+' sudo FROM=CLI /var/cld/bin/cld --list').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | grep -vf <(sudo -u '+vld(clduser)+' sudo /var/cld/bin/cld --list)').split('\n')
     bash('if ! [ -d "/home/'+vld(clduser)+'/.ssh" ]; then mkdir -p /home/'+vld(clduser)+'/.ssh ; chown -R '+vld(clduser)+': /home/'+vld(clduser)+'/.ssh ; chmod 700 /home/'+vld(clduser)+'/.ssh; fi')
-    file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/kvms', '/var/cld/access/users/'+clduser+'/groups', '/home/'+clduser+'/.ssh/authorized_keys']
+    file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/kvms', '/home/'+clduser+'/.ssh/authorized_keys']
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
@@ -678,7 +678,7 @@ def group(name):
     for group in name:
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
       groupfuncs = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/funcs && echo -n "custom" || echo -n "default"').replace('\n', '')
-      groupusers = bash('echo -n $(grep -l "'+vld(group)+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
+      groupusers = bash('egrep "[:,]'+vld(group)+'[:,]?" /var/cld/creds/passwd | cut -d : -f 1').replace('\n', ',')
       cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+vld(group)+'/clouds | wc -l')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype+";"+groupfuncs)
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype', 'groupfuncs']
@@ -770,7 +770,7 @@ def usergroups(name):
       session.pop('username', None)
       return redirect('/', code=302)
     groups = list(request.form.to_dict())
-    open('/var/cld/access/users/'+name+'/groups', 'w').write("\n".join(groups))
+    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --groups='+','.join(groups))
     return Response('User groups saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/userclouds/<name>', methods=['GET','POST'])

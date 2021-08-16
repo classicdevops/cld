@@ -105,7 +105,7 @@ done
 
 if [ "$JSONFUNCOUT" == "1" ]
 then
-  for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
+  for GROUP in $(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")
   do
     CLOUDS=$(cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
     if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
@@ -118,7 +118,7 @@ EOL
     fi
   done | head -c -1 | cat <(echo -n '[') - <(echo -n ']')
 else
-  for GROUP in $(grep -v "^$\|^#" /var/cld/access/users/${SUDO_USER}/groups | grep "${CLD_GROUPS}")
+  for GROUP in $(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")
   do
     cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
   done
@@ -219,8 +219,8 @@ exit 1
 
 INSTANCE_GROUP_FUNCS()
 {
-CLD_USER_GROUPS=$(cat /var/cld/access/users/${SUDO_USER}/groups | grep -v "^$\|^#" | head -c -1 | tr '\n' ',')
-CLD_USER_GROUPS_COUNT=$(grep -v "^#\|^$" /var/cld/access/users/${SUDO_USER}/groups | wc -l)
+CLD_USER_GROUPS=$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6)
+CLD_USER_GROUPS_COUNT=$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' ' ' | wc -w)
 [ "$CLD_USER_GROUPS_COUNT" -eq 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/${CLD_USER_GROUPS}/clouds) | cut -d '/' -f 6 | tail -1)
 [ "$CLD_USER_GROUPS_COUNT" -gt 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/\{${CLD_USER_GROUPS}\}/clouds) | cut -d '/' -f 6 | tail -1)
 [ "$GROUP" ] || export GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
