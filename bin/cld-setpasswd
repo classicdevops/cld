@@ -27,6 +27,11 @@ do
     -m=*|-modules=*|--modules=*) CLD_USER_MODULES="${i#*=}"     ;;
     -t=*|-tools=*|--tools=*) CLD_USER_TOOLS="${i#*=}"           ;;
     -g=*|-groups=*|--groups=*) CLD_USER_GROUPS="${i#*=}"        ;;
+    -b=|-bot=|--bot=) CLD_USER_BOT="empty"                      ;;
+    -a=|-api=|--api=) CLD_USER_API="empty"                      ;;
+    -m=|-modules=|--modules=) CLD_USER_MODULES="empty"          ;;
+    -t=|-tools=|--tools=) CLD_USER_TOOLS="empty"                ;;
+    -g=|-groups=|--groups=) CLD_USER_GROUPS="empty"             ;;
     -a|-admin|--admin) CLD_USER_MODULES=ALL; CLD_USER_TOOLS=ALL ;;
     -*)                                                         ;;
     *) let ii++; declare ARG$ii=${i}                            ;;
@@ -52,6 +57,12 @@ CLD_USER_GROUPS_OLD=$(cut -d : -f 6 <<< "${CLD_USER_CRED_SET}")
 [ "$CLD_USER_MODULES" ] || CLD_USER_MODULES=${CLD_USER_MODULES_OLD}
 [ "$CLD_USER_TOOLS" ] || CLD_USER_TOOLS=${CLD_USER_TOOLS_OLD}
 [ "$CLD_USER_GROUPS" ] || CLD_USER_GROUPS=${CLD_USER_GROUPS_OLD}
+
+[ "$CLD_USER_BOT" == "empty" ] && CLD_USER_BOT=""
+[ "$CLD_USER_API" == "empty" ] && CLD_USER_API=""
+[ "$CLD_USER_MODULES" == "empty" ] && CLD_USER_MODULES=""
+[ "$CLD_USER_TOOLS" == "empty" ] && CLD_USER_TOOLS=""
+[ "$CLD_USER_GROUPS" == "empty" ] && CLD_USER_GROUPS=""
 
 sed -i 's#^'${CLD_USER}':.*#'${CLD_USER}':'${CLD_USER_BOT}':'${CLD_USER_API}':'${CLD_USER_MODULES}':'${CLD_USER_TOOLS}':'${CLD_USER_GROUPS}'#g' /var/cld/creds/passwd && echo done
 
