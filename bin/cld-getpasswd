@@ -36,15 +36,15 @@ done
 [ "$CLD_USER" ] || { echo CLD_USER is not defined - exit ; exit 1 ; }
 
 if [ "$CLD_PERMS" == "bot" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $2}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+  awk -F ':' '/^'${CLD_USER}':/{print $2}' /var/cld/creds/passwd | sed -e 's#,,#,#g' -e 's#,:#:#g' -e 's#:,#:#g'
 elif [ "$CLD_PERMS" == "api" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $3}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+  awk -F ':' '/^'${CLD_USER}':/{print $3}' /var/cld/creds/passwd | sed -e 's#,,#,#g' -e 's#,:#:#g' -e 's#:,#:#g'
 elif [ "$CLD_PERMS" == "modules" ]; then
-  CLD_COLUMN=$(awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d')
+  CLD_COLUMN=$(awk -F ':' '/^'${CLD_USER}':/{print $4}' /var/cld/creds/passwd | sed -e 's#,,#,#g' -e 's#,:#:#g' -e 's#:,#:#g')
   [ "$CLD_COLUMN" == "ALL" ] && cat /var/cld/creds/modules_list || echo "$CLD_COLUMN"
 elif [ "$CLD_PERMS" == "tools" ]; then
-  CLD_COLUMN=$(awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d')
+  CLD_COLUMN=$(awk -F ':' '/^'${CLD_USER}':/{print $5}' /var/cld/creds/passwd | sed -e 's#,,#,#g' -e 's#,:#:#g' -e 's#:,#:#g')
   [ "$CLD_COLUMN" == "ALL" ] && cat /var/cld/creds/tools_list || echo "$CLD_COLUMN"
 elif [ "$CLD_PERMS" == "groups" ]; then
-  awk -F ':' '/^'${CLD_USER}':/{print $6}' /var/cld/creds/passwd | tr ',' '\n' | sed '/^$/d'
+  awk -F ':' '/^'${CLD_USER}':/{print $6}' /var/cld/creds/passwd | sed -e 's#,,#,#g' -e 's#,:#:#g' -e 's#:,#:#g'
 fi
