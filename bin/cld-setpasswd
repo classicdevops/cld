@@ -22,16 +22,16 @@ for i in $(expr "$(echo "$@")" : '\([A-Za-z0-9 /:.,@_=+-]\+\)')
 do
   case $i in
     -u=*|-user=*|--user=*) CLD_USER="${i#*=}"                   ;;
-    -b=*|-bot=*|--bot=*) CLD_USER_BOT="${i#*=}"                 ;;
-    -a=*|-api=*|--api=*) CLD_USER_API="${i#*=}"                 ;;
-    -m=*|-modules=*|--modules=*) CLD_USER_MODULES="${i#*=}"     ;;
-    -t=*|-tools=*|--tools=*) CLD_USER_TOOLS="${i#*=}"           ;;
-    -g=*|-groups=*|--groups=*) CLD_USER_GROUPS="${i#*=}"        ;;
     -b=|-bot=|--bot=) CLD_USER_BOT="empty"                      ;;
     -a=|-api=|--api=) CLD_USER_API="empty"                      ;;
     -m=|-modules=|--modules=) CLD_USER_MODULES="empty"          ;;
     -t=|-tools=|--tools=) CLD_USER_TOOLS="empty"                ;;
     -g=|-groups=|--groups=) CLD_USER_GROUPS="empty"             ;;
+    -b=*|-bot=*|--bot=*) CLD_USER_BOT="${i#*=}"                 ;;
+    -a=*|-api=*|--api=*) CLD_USER_API="${i#*=}"                 ;;
+    -m=*|-modules=*|--modules=*) CLD_USER_MODULES="${i#*=}"     ;;
+    -t=*|-tools=*|--tools=*) CLD_USER_TOOLS="${i#*=}"           ;;
+    -g=*|-groups=*|--groups=*) CLD_USER_GROUPS="${i#*=}"        ;;
     -a|-admin|--admin) CLD_USER_MODULES=ALL; CLD_USER_TOOLS=ALL ;;
     -*)                                                         ;;
     *) let ii++; declare ARG$ii=${i}                            ;;
