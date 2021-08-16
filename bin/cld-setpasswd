@@ -34,9 +34,10 @@ do
 done
 
 [ "$(user_is_admin ${SUDO_USER})" != "0" ] && { echo Your user role is not admin - exit ; exit 1 ; }
-[ "$CLD_USER" ] || CLD_USER=${SUDO_USER}
+[ "$CLD_USER" ] || CLD_USER=$ARG1
 [ "$CLD_USER" ] || { echo CLD_USER is not defined - exit ; exit 1 ; }
 [ "$CLD_USER_BOT" == "" -a "$CLD_USER_API" == "" -a "$CLD_USER_MODULES" == "" -a "$CLD_USER_TOOLS" == "" -a "$CLD_USER_GROUPS" == "" ] && { echo Nothing changed - exit ; exit 1 ; }
+grep -q "^${CLD_USER}:" /var/cld/creds/passwd || { echo CLD_USER is not found - exit ; exit 1 ; }
 
 CLD_USER_CRED_SET=$(grep "^${CLD_USER}:" /var/cld/creds/passwd)
 
