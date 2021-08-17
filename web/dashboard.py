@@ -87,20 +87,20 @@ def getusermodules(user):
 
 
 def usertools(user):
-  tools = set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(','))
+  tools = bash('''awk -F ":" '/^'''+vld(user)+''':/{print $1":"$5}' /var/cld/creds/passwd | cut -d : -f 2''').split(',')
   if "ALL" in tools:
-    return set(bash('find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f | grep -v include | rev | cut -d / -f 1 | rev').split('\n'))
+    return open('/var/cld/creds/tools_list').read().strip().split(',')
   else:
     return tools
 
 def userisadmin(user):
-  if bash('''awk -F ":" '{print $1":"$4":"$5}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2-''') == "ALL:ALL":
+  if bash('''awk -F ":" '/^'''+vld(user)+''':/{print $1":"$4":"$5}' /var/cld/creds/passwd | cut -d : -f 2-''') == "ALL:ALL":
     return True
   else:
     return False
 
 def apitokenbyuser(user):
-  return bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 3 | head -1')
+  return bash('''awk -F ":" '/^'''+vld(user)+''':/{print $3}' /var/cld/creds/passwd''')
 
 def checkperms(cldmodule, cldutility, user):
   cldmodule=str(cldmodule)
@@ -587,12 +587,12 @@ def admin():
       role = bash('cat /var/cld/access/users/'+vld(user)+'/role').replace('\n', '')
       groups = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 6')
       status = bash("grep -q '"+vld(user)+":!' /etc/shadow && echo -n 0 || echo -n 1")
-      lastlogin = bash('''echo -n $(last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}')''')
+      lastlogin = bash('''last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}' ''')
       users.append(userid+";"+user+";"+role+";"+groups+";"+status+";"+lastlogin)
     init_list = ['userid', 'user', 'role', 'groups', 'status', 'lastlogin']
     for n, i in enumerate(users):
       users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
-    grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
+    grouplist = bash('ls /var/cld/access/groups/').split('\n')
     groups = list()
     for group in grouplist:
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"')
@@ -660,7 +660,7 @@ def user(name):
       tools = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 5')
       groups = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 6')
       status = bash("grep -q '^"+vld(user)+":!' /etc/shadow && echo -n 0 || echo -n 1")
-      lastlogin = bash('''echo -n $(last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}')''')
+      lastlogin = bash('''last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}' ''')
       users.append(userid+";"+user+";"+role+";"+modules+";"+tools+";"+groups+";"+status+";"+lastlogin)
     init_list = ['userid', 'user', 'role', 'modules', 'tools', 'groups', 'status', 'lastlogin']
     for n, i in enumerate(users):
@@ -688,7 +688,7 @@ def group(name):
     username = session['username']
     cldgroup = name
     name = [str(cldgroup)]
-    grouplist = bash('echo -n $(ls /var/cld/access/groups/ | cat)').split(' ')
+    grouplist = bash('ls /var/cld/access/groups/').split('\n')
     groups = list()
     for group in name:
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
