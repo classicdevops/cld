@@ -830,7 +830,7 @@ def groupusers(name):
       if denyuser != '':
         currentgroups = bash('/var/cld/bin/cld-getpasswd --user='+denyuser+' --groups').split(',')
         if group in currentgroups:
-          currentgroups = [x for x in a if x != group]
+          currentgroups = [x for x in currentgroups if x != group]
           bash('/var/cld/bin/cld-setpasswd --user='+denyuser+' --groups='+vld(','.join(currentgroups)))
     return Response('Group users saved', status=200, mimetype='text/plain')
 
