@@ -814,12 +814,13 @@ def userclouds(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
+    #clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
+    clouds = request.form.to_dict(flat=False)
     print(request.form.to_dict(flat=False)["allowclouds"], flush=True)
-    if str(clouds) == "['([])']":
+    if clouds == {}:
       bash('truncate -s 0 /var/cld/access/users/'+vld(name)+'/clouds')
     else:
-      open('/var/cld/access/users/'+name+'/clouds', 'w').write("\n".join(clouds))
+      open('/var/cld/access/users/'+name+'/clouds', 'w').write("\n".join(list(filter(None, clouds["allowclouds"]))))
     return Response('User clouds saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupusers/<name>', methods=['GET','POST'])
