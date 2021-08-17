@@ -666,7 +666,7 @@ def user(name):
       if os.path.exists(file) != True:
         bash('touch '+vld(file))
       files[file] = open(file).read()
-    return render_template('html/user.html', username=username, users=users, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, files=files)
+    return render_template('html/user.html', username=username, users=users, allmodules=allmodules, alltools=alltools, allgroups=allgroups, allowedclouds=allowedclouds, disallowedclouds=disallowedclouds, files=files)
 
 @app.route('/admin/group/<name>')
 def group(name):
