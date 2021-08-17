@@ -822,10 +822,16 @@ def groupusers(name):
     for user in users:
       if user != '':
         user = user
-        bash('grep '+vld(group)+' /var/cld/access/users/'+user+'/groups || echo -e "\n'+vld(group)+'" >> /var/cld/access/users/'+vld(user)+'/groups')
+        currentgroups = bash('/var/cld/bin/cld-getpasswd --user='+user+' --groups').split(',')
+        if group not in currentgroups:
+          currentgroups.append(group)
+          bash('/var/cld/bin/cld-setpasswd --user='+user+' --groups='+vld(','.join(currentgroups)))
     for denyuser in denyusers:
       if denyuser != '':
-        bash("sed -i '/"+vld(group)+"/d' /var/cld/access/users/"+vld(denyuser)+"/groups")
+        currentgroups = bash('/var/cld/bin/cld-getpasswd --user='+denyuser+' --groups').split(',')
+        if group in currentgroups:
+          currentgroups.append(group)
+          bash('/var/cld/bin/cld-setpasswd --user='+denyuser+' --groups='+vld(','.join(currentgroups)))
     return Response('Group users saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupclouds/<name>', methods=['GET','POST'])
@@ -857,7 +863,7 @@ def grouptype(name):
       pass
     if grouptype == 'on':
       bash('rm -f /var/cld/creds/'+vld(group)+'_list /var/cld/access/groups/'+vld(group)+'/clouds ; touch /var/cld/creds/'+vld(group)+'_list ; ln -s /var/cld/creds/'+vld(group)+'_list /var/cld/access/groups/'+vld(group)+'/clouds ; echo 1 > /var/cld/access/groups/'+vld(group)+'/type')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/parsingscript"+os.linesep+parsingscript+os.linesep+'EOPARSINGSCRIPT')
+      open("/var/cld/access/groups/"+vld(group)+"/parsingscript", "w", newline='\n').write(parsingscript.replace('\r', ''))
     else:
       bash('rm -f /var/cld/access/groups/'+vld(group)+'/clouds ; touch /var/cld/access/groups/'+vld(group)+'/clouds ; mv -f /var/cld/creds/'+vld(group)+'_list /var/cld/access/groups/'+vld(group)+'/clouds ; echo 0 > /var/cld/access/groups/'+vld(group)+'/type')
     return Response('Group type saved', status=200, mimetype='text/plain')
@@ -886,12 +892,12 @@ def groupfuncs(name):
     except: pass
     if groupfuncs == 'on':
       bash('echo 1 > /var/cld/access/groups/'+vld(group)+'/funcs')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/funcvars"+os.linesep+groupfuncvars+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/functerm"+os.linesep+groupfuncterm+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/funcmount"+os.linesep+groupfuncmount+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/funcumount"+os.linesep+groupfuncumount+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/funcdeploy"+os.linesep+groupfuncdeploy+os.linesep+'EOPARSINGSCRIPT')
-      bash("cat << 'EOPARSINGSCRIPT' | tr -d '\r' > /var/cld/access/groups/"+vld(group)+"/funcdeploynotty"+os.linesep+groupfuncdeploynotty+os.linesep+'EOPARSINGSCRIPT')
+      open("/var/cld/access/groups/"+vld(group)+"/funcvars", "w", newline='\n').write(groupfuncvars.replace('\r', ''))
+      open("/var/cld/access/groups/"+vld(group)+"/functerm", "w", newline='\n').write(groupfuncterm.replace('\r', ''))
+      open("/var/cld/access/groups/"+vld(group)+"/funcmount", "w", newline='\n').write(groupfuncmount.replace('\r', ''))
+      open("/var/cld/access/groups/"+vld(group)+"/funcumount", "w", newline='\n').write(groupfuncumount.replace('\r', ''))
+      open("/var/cld/access/groups/"+vld(group)+"/funcdeploy", "w", newline='\n').write(groupfuncdeploy.replace('\r', ''))
+      open("/var/cld/access/groups/"+vld(group)+"/funcdeploynotty", "w", newline='\n').write(groupfuncdeploynotty.replace('\r', ''))
     else:
       bash('echo 0 > /var/cld/access/groups/'+vld(group)+'/funcs')
     return Response('Group functions saved', status=200, mimetype='text/plain')
