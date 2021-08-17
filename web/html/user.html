@@ -73,7 +73,7 @@
               {% endfor %}
             </form>
             <button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply groups</button>
-            <br><hr>
+            <br><br><hr>
             <p>Modules:</p>
             <form id="usermodules" style="margin: 0px;">
               {% for module in allmodules %}
@@ -85,7 +85,7 @@
               {% endfor %}
             </form>
             <button id="usermodules-button" onclick="savedata('usermodules', '{{ url_for('usermodules', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply modules</button>
-            <br><hr>
+            <br><br><hr>
             <p>Tools:</p>
             <form id="usertools" style="margin: 0px;">
               {% for tool in alltools %}
@@ -97,7 +97,7 @@
               {% endfor %}
             </form>
             <button id="usertools-button" onclick="savedata('usertools', '{{ url_for('usertools', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply tools</button>
-            <br><hr>
+            <br><br><hr>
             <p>Clouds:</p>
             <div class="subject-info-box-1">
               <script type="text/javascript">
@@ -136,7 +136,7 @@
             <div class="clearfix"></div>
             <br>
             <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
-            <br><hr>
+            <br><br><hr>
 
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
@@ -196,13 +196,13 @@
                         </form>
                         <div class="prefile">{{ file }}</div>
                         <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
-                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button><br><hr>
+                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button><br><br><hr>
                         <script>
                            aceactivate('{{ fileid }}')
                         </script>
                         {% endfor %}
 
-            <br><hr>
+            <br><br><hr>
             <!-- <form action="{{ url_for('deluser', name=users[0].user) }}" class="form-inline" style="float: right;" method="GET">  
               <input type="text" name="name" value="{{ users[0].user }}" style="display: none"> -->
             <br><a href="{{ url_for('deluser', name=users[0].user) }}" style="float: right;"><button type="submit" class="btn btn-danger bt mb-2">Delete user</button></a>
