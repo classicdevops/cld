@@ -816,7 +816,7 @@ def userclouds(name):
       return redirect('/', code=302)
     #clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     clouds = request.form.to_dict(flat=False)
-    print(request.form.to_dict(flat=False)["allowclouds"], flush=True)
+    print(request.form.to_dict(flat=False), flush=True)
     if clouds == {}:
       bash('truncate -s 0 /var/cld/access/users/'+vld(name)+'/clouds')
     else:
