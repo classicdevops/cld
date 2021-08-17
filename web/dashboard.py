@@ -61,18 +61,29 @@ def allowutilityusers(cldutility):
   return set(bash('''awk -F ":" '{print $1":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | cut -d : -f 1''').split('\n'))
 
 def uservisiblemodules(user):
-  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
+  usermodules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
+  webmodules = bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   if "ALL" in modules:
-    return bash('MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev) ; if [ -f /var/cld/access/users/'+vld(user)+'/showonlymodules ]; then  grep -Ff /var/cld/access/users/'+vld(user)+'/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi').split('\n')
+    if os.path.isfile('/var/cld/access/users/'+vld(user)+'/showonlymodules'):
+      modulesinfile = open('/var/cld/access/users/'+vld(user)+'/showonlymodules').read().strip().split('\n')
+      return [x for x in modulesinfile if x in webmodules]
+    else:
+      return allmodules
   else:
-    return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; if [ -f /var/cld/access/users/'''+vld(user)+'''/showonlymodules ]; then  grep -Ff /var/cld/access/users/'''+vld(user)+'''/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi''').split('\n')
+    userwebmodules = [x for x in usermodules if x in webmodules]
+    if os.path.isfile('/var/cld/access/users/'+vld(user)+'/showonlymodules'):
+      modulesinfile = open('/var/cld/access/users/'+vld(user)+'/showonlymodules').read().strip().split('\n')
+      return [x for x in modulesinfile if x in userwebmodules]
+    else:
+      return userwebmodules
 
 def getusermodules(user):
-  modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
+  usermodules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
+  webmodules = bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   if "ALL" in modules:
-    return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
+    return webmodules
   else:
-    return bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')"''').split('\n')
+    return [x for x in webmodules if x in usermodules]
 
 
 def usertools(user):
