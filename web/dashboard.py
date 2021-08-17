@@ -725,7 +725,7 @@ def adduser():
       return redirect('/', code=302)
     newuser = request.form['newuser']
     newpassword = request.form['newpass']
-    bash('/var/cld/bin/cld-useradd '+vld(newuser)+' '+vld(newpassword)).replace('\n', ' ')
+    bash('/var/cld/bin/cld-useradd '+vld(newuser)+' '+vld(newpassword))
     return redirect('/admin', code=302)
 
 @app.route('/admin/deluser', methods=['GET'])
@@ -735,7 +735,7 @@ def deluser():
       session.pop('username', None)
       return redirect('/', code=302)
     deluser = request.args['name']
-    bash('/var/cld/bin/cld-userdel '+vld(deluser)).replace('\n', ' ')
+    bash('/var/cld/bin/cld-userdel '+vld(deluser))
     return redirect('/admin', code=302)
 
 @app.route('/admin/addgroup', methods=['POST'])
@@ -745,7 +745,7 @@ def addgroup():
       session.pop('username', None)
       return redirect('/', code=302)
     newgroup = request.form['newgroup']
-    bash('/var/cld/bin/cld-groupadd '+vld(newgroup)).replace('\n', ' ')
+    bash('/var/cld/bin/cld-groupadd '+vld(newgroup))
     return redirect('/admin', code=302)
 
 @app.route('/admin/delgroup', methods=['GET'])
@@ -755,7 +755,7 @@ def delgroup():
       session.pop('username', None)
       return redirect('/', code=302)
     delgroup = request.args['name']
-    bash('/var/cld/bin/cld-groupdel '+vld(delgroup)).replace('\n', ' ')
+    bash('/var/cld/bin/cld-groupdel '+vld(delgroup))
     return redirect('/admin', code=302)
 
 @app.route('/admin/enableuser', methods=['GET'])
@@ -765,7 +765,7 @@ def enableuser():
       session.pop('username', None)
       return redirect('/', code=302)
     enableuser = request.args['name']
-    bash('passwd --unlock '+vld(enableuser)).replace('\n', ' ')
+    bash('passwd --unlock '+vld(enableuser))
     return redirect('/admin', code=302)
 
 @app.route('/admin/disableuser', methods=['GET'])
@@ -775,7 +775,7 @@ def disableuser():
       session.pop('username', None)
       return redirect('/', code=302)
     disableuser = request.args['name']
-    bash('passwd --lock '+vld(disableuser)).replace('\n', ' ')
+    bash('passwd --lock '+vld(disableuser))
     return redirect('/admin', code=302)
 
 @app.route('/admin/usergroups/<name>', methods=['GET','POST'])
@@ -815,6 +815,7 @@ def userclouds(name):
       session.pop('username', None)
       return redirect('/', code=302)
     clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
+    print(request.form, flush=True)
     if str(clouds) == "['([])']":
       bash('truncate -s 0 /var/cld/access/users/'+vld(name)+'/clouds')
     else:
