@@ -74,6 +74,30 @@
             </form>
             <button id="usergroups-button" onclick="savedata('usergroups', '{{ url_for('usergroups', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply groups</button>
             <br><br>
+            <p>Modules:</p>
+            <form id="usergroups" style="margin: 0px;">
+              {% for module in allmodules %}
+              {% if module in users[0].modules %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="{{ module }}"{{ boxstatus }}>
+                <label class="form-check-label">{{ module }}</label>
+              </div>
+              {% endfor %}
+            </form>
+            <button id="usermodules-button" onclick="savedata('usermodules', '{{ url_for('usermodules', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply modules</button>
+            <br><br>
+            <p>Tools:</p>
+            <form id="usergroups" style="margin: 0px;">
+              {% for tool in alltools %}
+              {% if tool in users[0].tools %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="{{ tool }}"{{ boxstatus }}>
+                <label class="form-check-label">{{ tool }}</label>
+              </div>
+              {% endfor %}
+            </form>
+            <button id="usertools-button" onclick="savedata('usertools', '{{ url_for('usertools', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply tools</button>
+            <br><br>
             <p>Clouds:</p>
             <div class="subject-info-box-1">
               <script type="text/javascript">
