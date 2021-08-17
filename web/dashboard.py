@@ -814,9 +814,8 @@ def userclouds(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    #clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
     clouds = request.form.to_dict(flat=False)
-    print(request.form.to_dict(flat=False), flush=True)
+    print(clouds, flush=True)
     if clouds == {}:
       bash('truncate -s 0 /var/cld/access/users/'+vld(name)+'/clouds')
     else:
@@ -854,11 +853,12 @@ def groupclouds(name):
       session.pop('username', None)
       return redirect('/', code=302)
     group = name
-    clouds = str(request.form).replace('ImmutableMultiDict','').replace('([(','').replace(')])','').replace('), (','').replace("'allowclouds', ","").replace("''","','").replace("'","").split(',')
-    if str(clouds) == "['([])']":
+    clouds = request.form.to_dict(flat=False)
+    print(clouds, flush=True)
+    if clouds == {}:
       bash('truncate -s 0 /var/cld/access/groups/'+vld(group)+'/clouds')
     else:
-      open('/var/cld/access/groups/'+group+'/clouds', 'w').write("\n".join(clouds))
+      open('/var/cld/access/groups/'+group+'/clouds', 'w').write("\n".join(list(filter(None, clouds["allowclouds"]))))
     return Response('Group clouds saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/grouptype/<name>', methods=['GET','POST'])
