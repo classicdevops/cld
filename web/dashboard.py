@@ -909,8 +909,8 @@ def profile():
     clouds=bash('sudo -u '+vld(username)+' sudo /var/cld/bin/cld --list')
     visiblemodules = uservisiblemodules(username)
     #visiblemodules = []
-    #modules = usermodules(username)
-    modules = []
+    modules = usermodules(username)
+    #modules = []
     perms=bash('grep "^'+vld(username)+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms, visiblemodules=visiblemodules, modules=modules)
 
