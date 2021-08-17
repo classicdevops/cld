@@ -822,7 +822,7 @@ def groupusers(name):
     for user in users:
       if user != '':
         user = user
-        list(filter(None, testvar)) = bash('/var/cld/bin/cld-getpasswd --user='+user+' --groups').split(',')
+        currentgroups = bash('/var/cld/bin/cld-getpasswd --user='+user+' --groups').split(',')
         if group not in currentgroups:
           currentgroups.append(group)
           bash('/var/cld/bin/cld-setpasswd --user='+user+' --groups='+vld(','.join(list(filter(None, currentgroups)))))
