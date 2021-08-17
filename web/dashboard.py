@@ -774,7 +774,7 @@ def usergroups(name):
       session.pop('username', None)
       return redirect('/', code=302)
     groups = list(request.form.to_dict())
-    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --groups='+','.join(groups))
+    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --groups='+vld(','.join(list(filter(None, groups)))))
     return Response('User groups saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/usermodules/<name>', methods=['GET','POST'])
@@ -784,7 +784,7 @@ def usermodules(name):
       session.pop('username', None)
       return redirect('/', code=302)
     modules = list(request.form.to_dict())
-    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --modules='+','.join(modules))
+    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --modules='+vld(','.join(list(filter(None, modules)))))
     return Response('User modules saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/usertools/<name>', methods=['GET','POST'])
@@ -794,7 +794,7 @@ def usertools(name):
       session.pop('username', None)
       return redirect('/', code=302)
     tools = list(request.form.to_dict())
-    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --tools='+','.join(tools))
+    bash('/var/cld/bin/cld-setpasswd --user='+vld(name)+' --tools='+vld(','.join(list(filter(None, tools)))))
     return Response('User tools saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/userclouds/<name>', methods=['GET','POST'])
@@ -822,16 +822,16 @@ def groupusers(name):
     for user in users:
       if user != '':
         user = user
-        currentgroups = bash('/var/cld/bin/cld-getpasswd --user='+user+' --groups').split(',')
+        list(filter(None, testvar)) = bash('/var/cld/bin/cld-getpasswd --user='+user+' --groups').split(',')
         if group not in currentgroups:
           currentgroups.append(group)
-          bash('/var/cld/bin/cld-setpasswd --user='+user+' --groups='+vld(','.join(currentgroups)))
+          bash('/var/cld/bin/cld-setpasswd --user='+user+' --groups='+vld(','.join(list(filter(None, currentgroups)))))
     for denyuser in denyusers:
       if denyuser != '':
         currentgroups = bash('/var/cld/bin/cld-getpasswd --user='+denyuser+' --groups').split(',')
         if group in currentgroups:
           currentgroups = [x for x in currentgroups if x != group]
-          bash('/var/cld/bin/cld-setpasswd --user='+denyuser+' --groups='+vld(','.join(currentgroups)))
+          bash('/var/cld/bin/cld-setpasswd --user='+denyuser+' --groups='+vld(','.join(list(filter(None, currentgroups)))))
     return Response('Group users saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupclouds/<name>', methods=['GET','POST'])
