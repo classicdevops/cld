@@ -585,7 +585,7 @@ def admin():
     groups = list()
     for group in grouplist:
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"')
-      groupusers = bash('echo -n $(grep -l "'+vld(group)+'" /var/cld/access/users/*/groups | cut -d / -f 6)').replace(' ', ',')
+      groupusers = bash('egrep "[:,]'+vld(group)+'([:,]|$)" /var/cld/creds/passwd | cut -d : -f 1').replace('\n', ',')
       cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+vld(group)+'/clouds | wc -l')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
@@ -682,7 +682,7 @@ def group(name):
     for group in name:
       grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"').replace('\n', '')
       groupfuncs = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/funcs && echo -n "custom" || echo -n "default"').replace('\n', '')
-      groupusers = bash('egrep "[:,]'+vld(group)+'[:,]?" /var/cld/creds/passwd | cut -d : -f 1').replace('\n', ',')
+      groupusers = bash('egrep "[:,]'+vld(group)+'([:,]|$)" /var/cld/creds/passwd | cut -d : -f 1').replace('\n', ',')
       cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+vld(group)+'/clouds | wc -l')
       groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype+";"+groupfuncs)
     init_group = ['group', 'groupusers', 'cloudcount', 'grouptype', 'groupfuncs']
