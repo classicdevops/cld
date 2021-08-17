@@ -63,7 +63,7 @@ def allowutilityusers(cldutility):
 def uservisiblemodules(user):
   usermodules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
   webmodules = bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
-  if "ALL" in modules:
+  if "ALL" in usermodules:
     if os.path.isfile('/var/cld/access/users/'+vld(user)+'/showonlymodules'):
       modulesinfile = open('/var/cld/access/users/'+vld(user)+'/showonlymodules').read().strip().split('\n')
       return [x for x in modulesinfile if x in webmodules]
