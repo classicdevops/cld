@@ -67,12 +67,11 @@ def uservisiblemodules(user):
   else:
     return bash('''MODULES=$(ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')") ; if [ -f /var/cld/access/users/'''+vld(user)+'''/showonlymodules ]; then  grep -Ff /var/cld/access/users/'''+vld(user)+'''/showonlymodules <<< "$MODULES"; else echo "$MODULES" ; fi''').split('\n')
 
-def usermodules(user):
+def getusermodules(user):
   modules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
   if "ALL" in modules:
     return bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   else:
-    print('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')"''', flush=True)
     return bash('''ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev | grep "$(awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+user+''':" | cut -d : -f 2 | tr ',' '\n')"''').split('\n')
 
 
@@ -909,9 +908,7 @@ def profile():
     username = session['username']
     clouds=bash('sudo -u '+vld(username)+' sudo /var/cld/bin/cld --list')
     visiblemodules = uservisiblemodules(username)
-    #visiblemodules = []
-    modules = usermodules(username)
-    #modules = []
+    modules = getusermodules(username)
     perms=bash('grep "^'+vld(username)+':" /var/cld/creds/passwd').split(':')
     return render_template('html/profile.html', username=username, clouds=clouds, perms=perms, visiblemodules=visiblemodules, modules=modules)
 
