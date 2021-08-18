@@ -55,9 +55,7 @@ do
     echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
-    $CLD_MOUNT &>/dev/null &
     $CLD_TERMINAL
-    $CLD_UMOUNT &>/dev/null &
   else
     echo "you choosed incorrect instance, please try again and type digits only"
   fi

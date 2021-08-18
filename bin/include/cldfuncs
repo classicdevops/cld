@@ -40,6 +40,7 @@ PWD=`grep $VM /var/cld/access/groups/${GROUP}/clouds | cut -d _ -f 5-`
 }
 
 EXTERNAL_MOUNT() {
+unset LC_CTYPE
 LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
 fusermount -uzq $LOCALMOUNTPATH >> /dev/null
@@ -49,8 +50,15 @@ echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o Us
 echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 {
-echo $USR | grep -q root || sshfs -f -d -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH  &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
-echo $USR | grep -q root && sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
+if echo $USR | grep -q root; then
+sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
+else
+if [ "$(grep -q "/" <<< "${SUDO_PATH}" && echo 0)" == "0" -a "$(grep -q "/" <<< "${SFTP_PATH}" && echo 0)" == "0" ]; then
+sshfs -f -d -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH  &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
+else
+sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH  &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
+fi
+fi
 } &>/dev/null
 }
 
