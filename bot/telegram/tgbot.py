@@ -54,7 +54,7 @@ def bot_bash_stream(cmd, message):
           sleep(2.4)
     if STREAM_DONE == 1: break
     sleep(0.1)
-  if STREAM_FILE_SIZE != 0:
+  if STREAM_FILE_SIZE == 0:
     bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'```\nCommand returned null output\n```', parse_mode='Markdown')
   #bash('rm -f /var/cld/tmp/tgstream/*'+COMMAND_ID+'* /var/cld/tmp/tgstream/cmd_'+COMMAND_ID+'_done')
   return print('Command '+cmd+' completed', flush=True)
