@@ -68,7 +68,7 @@ def uservisiblemodules(user):
       modulesinfile = open('/var/cld/access/users/'+vld(user)+'/showonlymodules').read().strip().split('\n')
       return [x for x in modulesinfile if x in webmodules]
     else:
-      return allmodules
+      return webmodules
   else:
     userwebmodules = [x for x in usermodules if x in webmodules]
     if os.path.isfile('/var/cld/access/users/'+vld(user)+'/showonlymodules'):
