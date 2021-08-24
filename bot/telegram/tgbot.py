@@ -14,7 +14,7 @@ def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
 def vld(cld_variable):
-  return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
+  return re.match('(^[A-z0-9.,*@=/_ -]+?$|^$)', cld_variable).string
 
 def bot_bash_stream(cmd, message):
   message = bot.send_message(message.chat.id, '```\ninitializing\n```', parse_mode='Markdown', disable_web_page_preview='true')
@@ -143,7 +143,7 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
     cmd_args=''
     try:
       for arg in message.text.split()[1:]:
-        cmd_args=cmd_args+" "+re.match('^[A-z0-9.,@=/:_-]+$', arg).string
+        cmd_args=cmd_args+" "+re.match('^[A-z0-9.,@*=/:_-]+$', arg).string
     except:
       pass
     print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
