@@ -67,7 +67,7 @@ STREAM_FILE_SIZE=$(du -b ${STREAM_FILE} | cut -d $'\t' -f 1)
 if [ "$STREAM_FILE_SIZE" != "0" ]; then
 (cd $(dirname ${STREAM_FILE}) ; split --line-bytes=${MAX_LENGTH} --additional-suffix=${COMMAND_ID} --suffix-length=3 ${STREAM_FILE})
 
-LAST_FILE=$(ls /var/log/x* | grep ${COMMAND_ID} | tail -1)
+LAST_FILE=$(ls /var/cld/tmp/tgstream/x* | grep ${COMMAND_ID} | tail -1)
 
 PREV_FILE_CURRENT_SIZE=$(du -b ${PREV_FILE} | cut -d $'\t' -f 1)
   if [ "$LAST_FILE" != "$PREV_FILE" ]; then
