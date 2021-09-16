@@ -27,14 +27,15 @@ source /var/cld/bin/include/cldfuncs
 
 for i in "$@"
 do
-  case $i in
-    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
-    -l|-list|--list) LIST=1                         ;;
-    -j|-json|--json) JSON=1                         ;;
-    -b|-beauty|--beauty) JSON_BEAUTY=1              ;;
-    -d|-debug|--debug) VERBOSE=" -v"                ;;
-    -*)                                             ;;
-    *) let ii++; declare ARG$ii=${i}                ;;
+  case $i in                   
+    -g=*|-groups=*|--groups=*) printf -v CLD_GROUPS "%q" "${i#*=}" ;;
+    -l|-list|--list) LIST=1                                        ;;
+    -j|-json|--json) JSON=1                                        ;;
+    -b|-beauty|--beauty) JSON_BEAUTY=1                             ;;
+    -d|-debug|--debug) VERBOSE=" -v"                               ;;
+    -*)                                                            ;;
+    *) let ii++; declare ARG$ii=${i}                               ;;
+    *) let ii++; printf -v ARG$ii "%q" "${i}"                      ;;
   esac
 done
 
