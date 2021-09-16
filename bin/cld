@@ -25,17 +25,16 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-OPTS="$(expr "${@:1}" : '\([A-Za-z0-9 /:.,@_=+^*-]\+\)' 2>/dev/null)"
-for i in "$OPTS"
+for i in "$@"
 do
-  case $i in                   
-    -g=*|-groups=*|--groups=*) printf -v CLD_GROUPS "%q" "${i#*=}" ;;
-    -l|-list|--list) LIST=1                                        ;;
-    -j|-json|--json) JSON=1                                        ;;
-    -b|-beauty|--beauty) JSON_BEAUTY=1                             ;;
-    -d|-debug|--debug) VERBOSE=" -v"                               ;;
-    -*)                                                            ;;
-    *) let ii++; printf -v ARG$ii "%q" "${i}"                      ;;
+  case $i in
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+    -l|-list|--list) LIST=1                         ;;
+    -j|-json|--json) JSON=1                         ;;
+    -b|-beauty|--beauty) JSON_BEAUTY=1              ;;
+    -d|-debug|--debug) VERBOSE=" -v"                ;;
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
   esac
 done
 
