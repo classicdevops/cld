@@ -101,7 +101,7 @@ fi
 
 CLOUDS_USER_ALLOWED() {
 local i ii ARG1 ARG2 ARG3
-for i in "$@"
+for i in "${@:1}"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS=$(echo "${i#*=}"| tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n') ;;
