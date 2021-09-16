@@ -25,7 +25,8 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-for i in "$@"
+OPTS="$(expr "$@" : '\([A-Za-z0-9 /:.,@_=+^*-]\+\)')"
+for i in "$OPTS"
 do
   case $i in                   
     -g=*|-groups=*|--groups=*) printf -v CLD_GROUPS "%q" "${i#*=}" ;;
