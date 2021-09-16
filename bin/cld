@@ -25,7 +25,7 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-for i in "$@"
+for i in "${@:1}"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
