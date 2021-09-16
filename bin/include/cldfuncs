@@ -105,9 +105,9 @@ for i in "$@"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS=$(echo "${i#*=}"| tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n') ;;
-    -j|-json|--json) JSONFUNCOUT=1                          ;;
-    -*)                                                     ;;
-    *) let ii++; local ARG$ii=$(printf "%q" "${i}")         ;;
+    -j|-json|--json) JSONFUNCOUT=1                                      ;;
+    -*)                                                                 ;;
+    *) let ii++; [ "$i" ] && local ARG$ii=$(printf "%q" "${i}")         ;;
   esac
 done
 
