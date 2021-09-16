@@ -35,7 +35,7 @@ do
     -b|-beauty|--beauty) JSON_BEAUTY=1                             ;;
     -d|-debug|--debug) VERBOSE=" -v"                               ;;
     -*)                                                            ;;
-    *) let ii++; test "${i}" && printf -v ARG$ii "%q" "${i}"       ;;
+    *) let ii++; printf -v ARG$ii "%q" "${i}"                      ;;
   esac
 done
 
