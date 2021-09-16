@@ -25,10 +25,8 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-if [ "$@" ]
-then
 OPTS="$(expr "$@" : '\([A-Za-z0-9 /:.,@_=+^*-]\+\)')"
-for i in "$OPTS"
+for i in $OPTS
 do
   case $i in                   
     -g=*|-groups=*|--groups=*) printf -v CLD_GROUPS "%q" "${i#*=}" ;;
@@ -40,7 +38,7 @@ do
     *) let ii++; printf -v ARG$ii "%q" "${i}"                      ;;
   esac
 done
-fi
+
 
 [ "$JSON" == "1" ] && JSONARG='--json'
 [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
