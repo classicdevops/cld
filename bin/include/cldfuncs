@@ -1,6 +1,8 @@
 #!/bin/bash
 [ "$SUDO_USER" ] && export SUDO_USER=${SUDO_USER} || export SUDO_USER=admin
 
+CLDOPTS="$(expr "$(tr '\n' ' ' <<< "${@}")" : '\([A-Za-z0-9/ :.,@_=+^*-\n]\+\)' 2>/dev/null)"
+
 VM_LIST() {
 (
 for GROUP in $(ls /var/cld/access/groups/)
