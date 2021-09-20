@@ -514,7 +514,7 @@ done
 LC_COLLATE=$OLD_LC_COLLATE
 }
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -h|-help|--help) cldhelp        ;;
