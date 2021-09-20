@@ -25,7 +25,7 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-for i in "${@:1}"
+for i in "$@"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
@@ -34,7 +34,7 @@ do
     -b|-beauty|--beauty) JSON_BEAUTY=1              ;;
     -d|-debug|--debug) VERBOSE=" -v"                ;;
     -*)                                             ;;
-    *) let ii++; declare ARG$ii="${i}"              ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
   esac
 done
 
