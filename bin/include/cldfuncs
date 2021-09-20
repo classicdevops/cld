@@ -1,7 +1,7 @@
 #!/bin/bash
 [ "$SUDO_USER" ] && export SUDO_USER=${SUDO_USER} || export SUDO_USER=admin
 
-CLDOPTS="$(expr "$(tr '\n' ' ' <<< "${@}")" : '\([A-Za-z0-9/ :.,@_=+^*-\n]\+\)' 2>/dev/null)"
+CLDOPTS="$(expr "$(tr '\n' ' ' <<< "${@}")" : '\([A-Za-z0-9/ :.,@_=+^*-\n]\+\)' 2>/dev/null | tr ' ' '\n')"
 
 VM_LIST() {
 (
