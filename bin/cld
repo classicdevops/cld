@@ -25,7 +25,7 @@ EOL
 
 source /var/cld/bin/include/cldfuncs
 
-for i in "$(printf "%q" "$@")"
+for i in "$(expr "${@:1}" : '\([A-Za-z0-9 /:.,@_=+^*-]\+\)' 2>/dev/null)"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
