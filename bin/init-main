@@ -25,6 +25,7 @@ case $i in
 esac
 done
 
+export LOAD_CONSTANT=600
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com
 
 if ! [ "${MINIMAL_INIT}" ]
