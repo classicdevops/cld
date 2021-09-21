@@ -310,7 +310,7 @@ sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 
 /var/cld/bin/init-main
 
-echo "admin:::ALL:ALL" >> /var/cld/creds/passwd
+echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd
 echo
 echo "https://${CLD_DOMAIN}"
