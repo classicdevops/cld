@@ -313,6 +313,10 @@ sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd
 echo
+echo
+echo Thanks for choosing the CLD! 
+echo
+echo The web panel is available at:
 echo "https://${CLD_DOMAIN}"
 }
 
