@@ -1,4 +1,24 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
-CFAPI=$(cat /var/cld/creds/creds_dns_cf_api_list)
-[ "$CFAPI" ] || init-string 'CFACC|mymail@atcloud.flare|[A-Za-z0-9@.-]+' 'CFKEY|y0urcf4pi70keny0urcf4pi70keny0urcf4pi|[a-z0-9]{37}' 'CF_ACC_ID|y0urcfaccidy0urcfaccidy0urcfacci|[a-z0-9]{32}' --file=/var/cld/creds/creds_dns_cf_api_list
+
+if grep -q "^CLOUDFLARE=" /var/cld/creds/creds
+then
+    echo -n ""
+else
+    echo "Are you using CLOUDFLARE ?" 
+    select ANSWER in yes no
+    do
+        if [ "${ANSWER}" == "yes" ]
+            then
+                CFAPI=$(cat /var/cld/creds/creds_dns_cf_api_list 2>/dev/null)
+                [ "$CFAPI" ] || init-string 'CFACC|mymail@atcloud.flare|[A-Za-z0-9@.-]+' 'CFKEY|y0urcf4pi70keny0urcf4pi70keny0urcf4pi|[a-z0-9]{37}' 'CF_ACC_ID|y0urcfaccidy0urcfaccidy0urcfacci|[a-z0-9]{32}' --file=/var/cld/creds/creds_dns_cf_api_list
+                echo CLOUDFLARE=1 >> /var/cld/creds/creds
+                break
+        elif [ "${ANSWER}" == "no" ]
+            then
+                echo CLOUDFLARE=0 >> /var/cld/creds/creds
+                break
+        fi
+    done
+fi
+
