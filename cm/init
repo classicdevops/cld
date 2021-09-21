@@ -1,8 +1,6 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 
-init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB HYPERVISOR_NAME_PREFIX\|HPR
-
 if grep -q "^OVH=" /var/cld/creds/creds
 then
 	echo -n ""
