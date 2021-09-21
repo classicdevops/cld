@@ -295,6 +295,7 @@ done
 
 init-string()
 {
+[ "$LOAD_CONSTANT" ] || LOAD_CONSTANT=60
 cldcolorenv
 local i ii
 for i in "$@"
@@ -324,7 +325,7 @@ then
   while ! egrep -q "^${REGEX}$" <<< "$VALUE"
 do
 echo -e "Please enter the VALUE for ${BoldUline}${CONSTANT}${OffColor} variable using "${REGEX}" - symbols\nEXAMPLE: ${EXAMPLE}"
-echo -n "#: " ; read -t 60 VALUE || return 1
+echo -n "#: " ; read -t ${LOAD_CONSTANT} VALUE || return 1
 echo
 done
 source <(echo "CLOUD=\"${CLOUD}${VALUE}${DELIM}\"")

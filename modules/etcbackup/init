@@ -1,4 +1,23 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 
-init-load-constants ETC_STORAGE_NAME\|networkstorage ETC_BACKUP_PATH\|/networkstorage/backup/files/all_etc TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+if grep -q "^ETCBACKUP=" /var/cld/creds/creds
+then
+    echo -n ""
+else
+    echo "Will you using etc backup module ?" 
+    select ANSWER in yes no
+    do
+        if [ "${ANSWER}" == "yes" ]
+            then
+                init-load-constants ETC_STORAGE_NAME\|networkstorage ETC_BACKUP_PATH\|/networkstorage/backup/files/all_etc TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+                echo ETCBACKUP=1 >> /var/cld/creds/creds
+                break
+        elif [ "${ANSWER}" == "no" ]
+            then
+                echo ETCBACKUP=0 >> /var/cld/creds/creds
+                break
+        fi
+    done
+fi
+
