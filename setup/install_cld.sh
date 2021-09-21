@@ -312,6 +312,8 @@ sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 
 echo "admin:::ALL:ALL" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd
+
+echo "https://${CLD_DOMAIN}"
 }
 
 if grep --quiet 'stretch' /etc/*-release ; then
