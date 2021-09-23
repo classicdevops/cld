@@ -309,16 +309,15 @@ EOBASHRC
 HOSTIP=$(wget -qO- ipinfo.io/ip)
 sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 /var/cld/bin/init-main
+echo
 echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 echo
-/var/cld/bin/cld-initpasswd
+/var/cld/bin/cld-update
 echo
 mytty="$(tty | cut -d / -f 3-)"
 myip="$(w | grep "$mytty" | awk '{print $3}')"
 /var/cld/modules/access/bin/cld-enableip $myip user_install_ip
 echo
-echo
-
 CLD_DOMAIN=$(grep "CLD_DOMAIN=" /var/cld/creds/creds | cut -d = -f 2 | tr -d '"'"'")
 echo
 echo
