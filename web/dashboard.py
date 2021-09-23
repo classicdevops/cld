@@ -20,7 +20,7 @@ import fcntl
 import threading
 import json
 from engineio.payload import Payload
-
+    
 def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
@@ -124,6 +124,7 @@ def checkpermswhiteip(cldmodule, cldutility, user, remoteaddr):
     return ["denied", "DENIED"]
 
 cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
+cld_ip = bash('''grep CLD_IP /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 logging.basicConfig(level=logging.DEBUG)
 template_dir = os.path.abspath('./')
 upload_dir = os.path.abspath('./img')
@@ -131,7 +132,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 cli.show_server_banner = lambda *_: None
 Payload.max_decode_packets = 64
 app = Flask(__name__, template_folder=template_dir)
-socketio = SocketIO(app, cors_allowed_origins='https://'+cld_domain, threading=threading, threaded=True)
+socketio = SocketIO(app, cors_allowed_origins=['https://'+cld_domain, 'https://'+cld_ip], threading=threading, threaded=True)
 app.config['UPLOAD_FOLDER'] = upload_dir
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
