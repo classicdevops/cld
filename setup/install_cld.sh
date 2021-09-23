@@ -152,7 +152,8 @@ systemctl stop firewalld
 systemctl disable firewalld
 iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F  ; iptables -t mangle -F  ; iptables -F ; iptables -X
 
-yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+yum install -y https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
+yum install epel-release -y
 yum install -y http://rpms.famillecollet.com/enterprise/remi-release-8.rpm
 yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse fuse-sshfs strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot sipcalc openvpn
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
@@ -312,12 +313,15 @@ sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 
 echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd
+CLD_DOMAIN=$(grep "CLD_DOMAIN=" /var/cld/creds/creds | cut -d = -f 2 | tr -d '"'"'")
 echo
 echo
 echo Thanks for choosing the CLD! 
 echo
 echo The web panel is available at:
-echo "https://${CLD_DOMAIN}"
+echo "https://${CLD_DOMAIN}" (the recommended method - make sure you have the correct DNS record, SSL will issued automatically)
+echo and
+echo "https://${HOSTIP}" (some features may not be available with a self-signed certificate)
 }
 
 if grep --quiet 'stretch' /etc/*-release ; then
