@@ -308,12 +308,11 @@ EOBASHRC
 
 HOSTIP=$(wget -qO- ipinfo.io/ip)
 sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
-
 /var/cld/bin/init-main
-
 echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 echo
 /var/cld/bin/cld-initpasswd
+echo
 mytty="$(tty | cut -d / -f 3-)"
 myip="$(w | grep "$mytty" | awk '{print $3}')"
 /var/cld/modules/access/bin/cld-enableip $myip user_install_ip
