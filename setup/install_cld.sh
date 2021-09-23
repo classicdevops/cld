@@ -319,7 +319,7 @@ echo
 echo Thanks for choosing the CLD! 
 echo
 echo The web panel is available at:
-echo "https://${CLD_DOMAIN}" (the recommended method - make sure you have the correct DNS record, SSL will issued automatically)
+echo "https://${CLD_DOMAIN}" (the recommended method - make sure you have the correct DNS record, SSL will issued automatically in 1 minute after first request)
 echo and
 echo "https://${HOSTIP}" (some features may not be available with a self-signed certificate)
 }
