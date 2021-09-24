@@ -228,6 +228,7 @@ cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${DEPLOY}/${ACTI
 [ "$BACKUP_LIST" ] && echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
 
 [ "$RETRY" ] || RETRY=1
+[ "$TEST_PRINT" ] || TEST_PRINT=0
 [ "$TIMEOUT" ] || TIMEOUT=600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
 [ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
