@@ -27,7 +27,8 @@ SFTP_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_sftp_$(date +"%
 CLD_DEPLOY_LOGS() {
 mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log &>/dev/null
 CLD_ACTION_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${VM}
-[ "$TEST" == "1" ] && mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log &>/dev/null
+[ "$TEST" == "1" ] && mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/{test_log,test_status} &>/dev/null
+[ "$TEST" == "1" ] && CLD_ACTION_TEST_STATUS=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${VM}
 [ "$TEST" == "1" ] && CLD_ACTION_TEST_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/${VM}
 [ "$BACKUP" == "1" ] && mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log &>/dev/null
 [ "$BACKUP" == "1" ] && CLD_ACTION_BACKUP_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/${VM}

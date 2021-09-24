@@ -14,6 +14,7 @@ $3                                 Third PATTERN filtering existing deploys - in
 --clouds=srv_1.2.3.4               Instance pattern or list comma separated
 --groups=GROUP1,GROUP2             Filtering by instance groups
 --test=0                           Execute test script after deploy - 0 is disabled - 1 is enabled
+--testprint=0                     Perform test script output after deploy (depend on --test argument) - 0 is disabled - 1 is enabled
 --retry=1                          Count of retry deploy attempts per instance if ssh connection not established
 --timeout=180                      Timeout of deploy script in seconds
 --testtimeout=180                  Timeout of test script in seconds
@@ -107,6 +108,7 @@ CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
+TEST_PRINT="${TEST_PRINT}"
 RETRY="${RETRY}"
 TIMEOUT="${TIMEOUT}"
 TEST_TIMEOUT="${TEST_TIMEOUT}"
@@ -150,6 +152,7 @@ CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
+TEST_PRINT="${TEST_PRINT}"
 RETRY="${RETRY}"
 TIMEOUT="${TIMEOUT}"
 TEST_TIMEOUT="${TEST_TIMEOUT}"
@@ -187,6 +190,7 @@ case $i in
 -c=*|-clouds=*|--clouds=*) CLOUDS=$(tr ',' '\n' <<< "${i#*=}")                              ;;
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                                             ;;
 -T=*|-test=*|--test=*) TEST="${i#*=}"                                                       ;;
+-TP=*|-testprint=*|--testprint=*) TEST_PRINT="${i#*=}"                                      ;;
 -R=*|-retry=*|--retry=*) RETRY="${i#*=}"                                                    ;;
 -to=*|-timeout=*|--timeout=*) TIMEOUT="${i#*=}"                                             ;;
 -tt=*|-testtimeout=*|--testtimeout=*) TEST_TIMEOUT="${i#*=}"                                ;;
@@ -234,6 +238,7 @@ CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
 TEST="${TEST}"
+TEST_PRINT="${TEST_PRINT}"
 RETRY="${RETRY}"
 ASYNC="${ASYNC}"
 TIMEOUT="${TIMEOUT}"
@@ -327,7 +332,8 @@ then
 ####################################
 EOINSTANCELIST
         nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
-        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+        sed -i -e "/^$/d" -e "/^#/d" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+        sed -i -e "/^$/d" -e "/^#/d" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
@@ -393,17 +399,21 @@ then
         if [ "$TEST_SCRIPT_SELECT" == "edit" ] 
         then
         cat > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script << 'EOINSTANCELIST'
-##############################################
-# Test script                                #
-# example usage:                             #
-#                                            #
-# grep -qs pattern /file && echo 0 || echo 1 #
-#                                            #
-# 0 - output if success                      #
-# 1 - output if fail                         #
-# Delete this text before writing            #  
-# Or it will put in test log                 #
-##############################################
+#########################################################
+# # Test script                                         #
+# # Test status will track exit code of last command    #
+# # example usage:                                      #
+#                                                       #
+# # Simple test script example (one condidion):         #
+# grep pattern /file                                    #
+#                                                       #
+#                                                       #
+# # Multiple conditions test script example:            #
+# status1=$(grep -q pattern1 /file && echo 0 || echo 1) #
+# status2=$(grep -q pattern2 /file && echo 0 || echo 1) #
+# cat /file                                             #
+# [ "$status1" = "0" -a "$status2" = "0" ]              #
+#########################################################
 EOINSTANCELIST
         nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
         sed -i -e "/^$/d" -e "/^#/d" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
@@ -548,10 +558,12 @@ do
 DEPLOY_TEST_CHECK_LOG=$(grep -qs "[0-9]" $CLD_ACTION_TEST_LOG && echo 0 || echo 1)
 if [ "$DEPLOY_TEST_CHECK_LOG" == "1" ]
 then
-$CLD_DEPLOY_NOTTY << EODEPLOYTEST | tee -a $CLD_ACTION_TEST_LOG
+{
+$CLD_DEPLOY_NOTTY << EODEPLOYTEST && echo 0 > $CLD_ACTION_TEST_LOG || echo 1 > $CLD_ACTION_TEST_LOG
 $DEPLOY_INIT
 $DEPLOY_TEST_SCRIPT
 EODEPLOYTEST
+} | tee -a $CLD_ACTION_TEST_LOG
 else
 break
 fi
@@ -588,20 +600,30 @@ fi
 [ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status; echo ; wait")
 if [ "$TEST" == "1" ]
     then
-        AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/* | wc -l)
+        if [ "$TEST_PRINT" == "1" ]
+        then
+            for PRINT_LOG in $(ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/*)
+            do
+                TEST_INSTANCE=$(basename "${PRINT_LOG}")
+                echo -e "Test script output of $TEST_INSTANCE\e[48;5;6m          \e[K\e[00m"
+                cat ${PRINT_LOG}
+            done
+        fi
+        AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | wc -l)
         AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -l)
         if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
-            echo TEST_STATUS=0 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/status
+            echo TEST_STATUS=0 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status
             echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed
         else
-            echo TEST_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/status	
+            echo TEST_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status	
             echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"
-            for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v "$(grep -l "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/* | cut -d / -f 8)" || ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/ | grep -v "^status$\|^status_log$")
+            # for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v "$(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 8)" || ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/ | grep -v "^status$\|^status_log$")
+            for FAILED_INSTANCE in $(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 8 | grep -v "^status$\|^status_log$")
             do
-            echo "$(du /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
+            echo "$(du -b /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
             done
-        fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/status_log
+        fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status_log
 fi
 [ "$NEXT_DEPLOY" ] && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before start next deploy; echo ; wait")
