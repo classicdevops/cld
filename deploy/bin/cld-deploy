@@ -584,7 +584,7 @@ if [ "$BACKGROUND" ]
     else
         DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
 fi
-[ "$BACKUP" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check backups status; echo ; wait")
+[ "$BACKUP" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check backups status ; wait")
 if [ "$BACKUP" == "1" ]
     then
         AMOUNT_BACKUP_PASSED=$(grep -l "BACKUP_OK" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/* | wc -l)
@@ -596,9 +596,10 @@ if [ "$BACKUP" == "1" ]
         else
             echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status 
             echo -e "\e[01;31m${AMOUNT_BACKUP_PASSED}\e[00m/${AMOUNT_INSTANCES} backups completed"
+            echo
         fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status_log
 fi
-[ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status; echo ; wait")
+[ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status ; wait")
 if [ "$TEST" == "1" ]
     then
         if [ "$TEST_PRINT" == "1" ]
@@ -606,7 +607,6 @@ if [ "$TEST" == "1" ]
             for PRINT_LOG in $(ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/*)
             do
                 TEST_INSTANCE=$(basename "${PRINT_LOG}")
-                echo
                 echo -e "Test script output of $TEST_INSTANCE\e[48;5;6m          \e[K\e[00m"
                 if grep -q "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${TEST_INSTANCE}
                 then
@@ -633,6 +633,7 @@ if [ "$TEST" == "1" ]
             echo "$(du -b /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
             done
         fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status_log
+        echo
 fi
 [ "$NEXT_DEPLOY" ] && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before start next deploy; echo ; wait")
