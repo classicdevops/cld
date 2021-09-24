@@ -613,7 +613,7 @@ if [ "$TEST" == "1" ]
                 then
                 { echo -en "\033[0;32m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 else
-                { echo -en "\033[0;33m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
+                { echo -en "\033[0;31m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 fi
                 echo
             done
