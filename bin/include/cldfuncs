@@ -78,8 +78,8 @@ EXTERNAL_DEPLOY() {
 
 [ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=60
 EXTERNAL_DEPLOY_NOTTY() {
-[ "$USR" == "root" ] && timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1
-[ "$USR" == "root" ] || timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" 2>&1
+[ "$USR" == "root" ] && timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1 && return 0 || return 1
+[ "$USR" == "root" ] || timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" 2>&1 && return 0 || return 1
 }
 
 EXTERNAL_UMOUNT() {
