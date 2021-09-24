@@ -608,17 +608,14 @@ if [ "$TEST" == "1" ]
                 TEST_INSTANCE=$(basename "${PRINT_LOG}")
                 echo
                 echo -e "Test script output of $TEST_INSTANCE\e[48;5;6m          \e[K\e[00m"
-                export OLD_PS1="$PS1"
                 if grep -q "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${TEST_INSTANCE}
                 then
-                export PS1="\[\033[0;32m\]"
+                { echo -e "\033[0;32m" ; cat ${PRINT_LOG} ; }
                 else
-                export PS1="\[\033[0;31m\]"
+                { echo -e "\033[0;33m" ; cat ${PRINT_LOG} ; }
                 fi
-                cat ${PRINT_LOG}
                 echo
                 echo
-                export PS1="$OLD_PS1"
             done
         fi
         AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | wc -l)
