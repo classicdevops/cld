@@ -610,9 +610,9 @@ if [ "$TEST" == "1" ]
                 echo -e "Test script output of $TEST_INSTANCE\e[48;5;6m          \e[K\e[00m"
                 if grep -q "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${TEST_INSTANCE}
                 then
-                { echo -e "\033[0;32m" ; cat ${PRINT_LOG} ; }
+                { echo -e "\033[0;32m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 else
-                { echo -e "\033[0;33m" ; cat ${PRINT_LOG} ; }
+                { echo -e "\033[0;33m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 fi
                 echo
                 echo
