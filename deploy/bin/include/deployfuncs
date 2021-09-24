@@ -33,7 +33,7 @@ printf '"' ; ls /var/cld/deploy/templates/ | cat | head -c -1 | tr '\n' ',' | se
 printf ']},'
 printf '{"type":"deploys",'
 printf '"content":['
-printf '"' ; for CHECK_GROUP in $(/var/cld/bin/cld-getpasswd --user=$SUDO_USER --groups | tr ',' '\n'); do egrep -l "CLD_GROUPS=\"?.+?(\,|\"|\=)${CHECK_GROUP}(\,|\"|\=).+?\"?"\|"CLD_GROUPS=(\"\"|$)" /var/cld/deploy/deploys/*/vars; done | rev | cut -d / -f 2 | rev | head -c -1 | tr '\n' ',' | sed 's#,#","#g' ; printf '"'
+printf '"' ; for CHECK_GROUP in $(/var/cld/bin/cld-getpasswd --user=$SUDO_USER --groups | tr ',' '\n'); do egrep -l "CLD_GROUPS\"?.+?(\,|\"|\=)${CHECK_GROUP}(\,|\").+?\"?"\|"CLD_GROUPS(\"\"|$)" /var/cld/deploy/deploys/*/vars; done | rev | cut -d / -f 2 | rev | head -c -1 | tr '\n' ',' | sed 's#,#","#g' ; printf '"'
 printf ']}'
 echo ']'
 }
