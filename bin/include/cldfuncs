@@ -250,7 +250,9 @@ source <(for LOOP_FUNC in funcvars_VARS functerm_TERMINAL funcmount_MOUNT funcum
       NAMEFUNC=$(cut -d _ -f 2- <<< ${LOOP_FUNC})
       echo "${GROUP}_${GROUPFUNC}(){"
       [ -f /var/cld/access/groups/${GROUP}/${GROUPFUNC} ] && cat /var/cld/access/groups/${GROUP}/${GROUPFUNC} || declare -f EXTERNAL_${NAMEFUNC} | tail -n +3 | head -n -1
+      echo
       echo '}'
+      echo
     done)
   CLD_VARS=${GROUP}_funcvars
   CLD_MOUNT=${GROUP}_funcmount
