@@ -593,6 +593,7 @@ if [ "$BACKUP" == "1" ]
         then 
             echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status
             echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed
+            echo
         else
             echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status 
             echo -e "\e[01;31m${AMOUNT_BACKUP_PASSED}\e[00m/${AMOUNT_INSTANCES} backups completed"
@@ -610,11 +611,10 @@ if [ "$TEST" == "1" ]
                 echo -e "Test script output of $TEST_INSTANCE\e[48;5;6m          \e[K\e[00m"
                 if grep -q "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${TEST_INSTANCE}
                 then
-                { echo -e "\033[0;32m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
+                { echo -en "\033[0;32m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 else
-                { echo -e "\033[0;33m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
+                { echo -en "\033[0;33m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 fi
-                echo
                 echo
             done
         fi
