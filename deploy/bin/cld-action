@@ -27,7 +27,7 @@ done
 if [ "$DEPLOY" != "" -a "$ACTION" != "" ]
 then
 ls /var/cld/deploy/actions/${DEPLOY}/${ACTION}/deploy_log/ | wc -w
-cat /var/cld/deploy/actions/${DEPLOY}/${ACTION}/test_log/status_log | head -1 | cut -d ' ' -f 1 2>/dev/null | grep '/' || echo -
+cat /var/cld/deploy/actions/${DEPLOY}/${ACTION}/test_status/status_log | head -1 | cut -d ' ' -f 1 2>/dev/null | grep '/' || echo -
 grep -qs "DONE=1" /var/cld/deploy/actions/${DEPLOY}/${ACTION}/vars && echo done || echo unfinished
 elif [ "$DEPLOY" ]
 then
