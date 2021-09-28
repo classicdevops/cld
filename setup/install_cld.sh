@@ -313,12 +313,16 @@ echo
 echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 echo
 /var/cld/bin/cld-update
+export CLD_PATH="/var/cld/bin:$(echo -n "$(ls -d /var/cld/*/bin /var/cld/modules/*/bin)" | tr "\n" :)"
+PATH="$PATH:$CLD_PATH"
 echo
 mytty="$(tty | cut -d / -f 3-)"
 myip="$(w | grep "$mytty" | awk '{print $3}')"
 /var/cld/modules/access/bin/cld-enableip $myip user_install_ip
 echo
 CLD_DOMAIN=$(grep "CLD_DOMAIN=" /var/cld/creds/creds | cut -d = -f 2 | tr -d '"'"'")
+echo
+echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 echo
 echo
 echo Thanks for choosing the CLD! 
@@ -327,7 +331,6 @@ echo The web panel is available at:
 echo "https://${CLD_DOMAIN} (the recommended method - make sure you have the correct DNS record, SSL will issued automatically in 1 minute after first request)"
 echo and
 echo "https://${HOSTIP} (some features may not be available with a self-signed certificate)"
-
 }
 
 if grep --quiet 'stretch' /etc/*-release ; then
