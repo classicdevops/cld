@@ -15,7 +15,7 @@ To access any tool, several factor validation operates for the user, at the appl
 
 Please do not ask your questions in github issues. Such format is not suitable for storing FAQ.
 
-If you have any question, please go to **[StackOverflow](https://stackoverflow.com/questions/ask)** and ask it there.
+If you have any question, please go to **[ServerFault](https://serverfault.com/questions/ask?tags=cld%20classicdeploy)** and ask it there.
 
 Tag your question with **`cld`** and **`classicdeploy`** tags (both at once).
 
