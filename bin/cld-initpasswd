@@ -68,7 +68,12 @@ else
 fi
 if [ "${USER_UTILITES}" == "ALL" -o "${USER_MODULES}" == "ALL" ]
 then
-    echo 1 > /var/cld/access/users/${USER_NAME}/role
+    if [ "${USER_UTILITES}" == "ALL" -a "${USER_MODULES}" == "ALL" ]
+    then
+        echo 1 > /var/cld/access/users/${USER_NAME}/role
+    else
+        echo 0 > /var/cld/access/users/${USER_NAME}/role
+    fi
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
     CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
     for CLD_UTIL in ${CLD_UTILS}
