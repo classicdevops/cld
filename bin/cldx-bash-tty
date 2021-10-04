@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Direct instance deploy CLI utility of ClassicDeploy access system
+Direct instance deploy CLI utility of ClassicDevOps access system
 Read pipe input and execute on remote CLD instance
 Require "exit" at the end of input to stop execution
 EOL

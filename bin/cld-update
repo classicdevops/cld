@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-ClassicDeploy update tool
+ClassicDevOps update tool
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
@@ -62,7 +62,7 @@ systemctl start cron &>/dev/null
 systemctl start crond &>/dev/null
 }
 
-[ "$TIER" != "opensource" -a "$UPGRADE" != "1" ] && export VERIFIED_TIER=$(git ls-remote --exit-code -h "https://git.classicdeploy.com/cld/${TIER}.git" &>/dev/null && echo ${TIER})
+[ "$TIER" != "opensource" -a "$UPGRADE" != "1" ] && export VERIFIED_TIER=$(git ls-remote --exit-code -h "https://git.classicdevops.com/cld/${TIER}.git" &>/dev/null && echo ${TIER})
 
 
 if [ "$UPGRADE" = "1" ]
@@ -70,19 +70,19 @@ then
 
 for CHECK_TIER in basic business premium enterprise
 do
-VERIFIED_TIER=$(git ls-remote --exit-code -h "https://git.classicdeploy.com/cld/${CHECK_TIER}.git" &>/dev/null && echo ${CHECK_TIER})
+VERIFIED_TIER=$(git ls-remote --exit-code -h "https://git.classicdevops.com/cld/${CHECK_TIER}.git" &>/dev/null && echo ${CHECK_TIER})
 [ "${VERIFIED_TIER}" ] && break
 done
 [ "${VERIFIED_TIER}" ] || { echo TIER is not defined - upgrade failed - exit ; exit 1 ; }
 echo
 echo Current subscription plan is $VERIFIED_TIER
 echo
-TIER_COMMIT_ID=$(git ls-remote https://git.classicdeploy.com/cld/${VERIFIED_TIER}.git | tail -1 | cut -b  -8)
+TIER_COMMIT_ID=$(git ls-remote https://git.classicdevops.com/cld/${VERIFIED_TIER}.git | tail -1 | cut -b  -8)
 
 [ -d /usr/src/cld ] && rm -rf /usr/src/cld
 mkdir /usr/src/cld
 cd /usr/src/cld
-git clone https://git.classicdeploy.com/cld/${VERIFIED_TIER}.git
+git clone https://git.classicdevops.com/cld/${VERIFIED_TIER}.git
 
 cld-stop
 
@@ -98,12 +98,12 @@ cld-start
 elif [ "$DOWNGRADE" = "1" ]
 then
 
-TIER_COMMIT_ID=$(git ls-remote https://github.com/classicdeploy/cld.git | tail -1 | cut -b  -8)
+TIER_COMMIT_ID=$(git ls-remote https://github.com/classicdevops/cld.git | tail -1 | cut -b  -8)
 
 [ -d /usr/src/cld ] && rm -rf /usr/src/cld
 mkdir /usr/src/cld
 cd /usr/src/cld
-git clone https://github.com/classicdeploy/cld.git
+git clone https://github.com/classicdevops/cld.git
 
 cld-stop
 

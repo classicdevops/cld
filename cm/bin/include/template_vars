@@ -63,7 +63,7 @@ C7SNT-send-user-data()
 {
 echo "id: ${VMID}
 Sentry admin panel: http://${IPADDR}:9000
-user: root@snt.classicdeploy
+user: root@snt.classicdevops
 password: ${ROOTPASSWORD}"
 }
 

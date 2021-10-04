@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Classicdeploy etc backup tool
+ClassicDevOps etc backup tool
 Should be setted up on daily cron
 EOL
 )

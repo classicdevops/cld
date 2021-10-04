@@ -1,6 +1,6 @@
 webmodule["deploy"] = {}
 webmodule["deploy"]["homename"] = "Deploy"
-webmodule["deploy"]["desc"] = "Classic deploy"
+webmodule["deploy"]["desc"] = "Classic DevOps"
 @app.route("/deploy")
 def deploy_index():
   if 'username' in session:

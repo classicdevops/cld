@@ -1,5 +1,5 @@
 [Unit]
-Description=ClassicDeploy Telegram bot interface service
+Description=ClassicDevOps Telegram bot interface service
 After=multi-user.target
 PartOf=cld.service
 

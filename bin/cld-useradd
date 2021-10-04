@@ -6,8 +6,8 @@ EOL
 HELP_ARGS=$(cat << 'EOL'
 $1                         User name
 $2                         Password
---tools=cld,cldx           List of classicdeploy tools comma separated - cld,cldmount,cldx,cldxmount is default
---modules=access,dns       List of classicdeploy modules comma separated - empty is default
+--tools=cld,cldx           List of classicdevops tools comma separated - cld,cldmount,cldx,cldxmount is default
+--modules=access,dns       List of classicdevops modules comma separated - empty is default
 --groups=default,prod,dev  List of CLD groups comma separated - not required
 EOL
 )

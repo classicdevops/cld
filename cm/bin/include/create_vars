@@ -19,7 +19,7 @@ STORAGE=$2
 qm list | awk '{print $1}' | grep "^${TEMPLATE_ID}$" && return 0
 mkdir /tmp/cmtemplates/ -p &>/dev/null
 rm -f /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz &>/dev/null
-cd /tmp/cmtemplates/ && wget cmtemplates.classicdeploy.com/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz
+cd /tmp/cmtemplates/ && wget cmtemplates.classicdevops.com/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz
 [ -f /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz ] && qmrestore /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz ${TEMPLATE_ID} --storage ${STORAGE} --force
 rm -f /tmp/cmtemplates/vzdump-qemu-${TEMPLATE_ID}-2000_01_01-00_00_00.vma.gz &>/dev/null
 }

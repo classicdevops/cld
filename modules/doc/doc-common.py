@@ -13,7 +13,7 @@ initjson['info']['description'] = description
 initjson['info']['x-logo'] = {}
 initjson['info']['x-logo']['url'] = './img/cld_h.svg'
 initjson['info']['x-logo']['href'] = '/'
-initjson['info']['x-logo']['altText'] = 'ClassicDeploy logo'
+initjson['info']['x-logo']['altText'] = 'ClassicDevOps logo'
 
 cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 repo_modules = bash('''grep '!/modules' /var/cld/.gitignore | cut -d / -f 3 | head -c -1 | tr '\n' ',' ''')
@@ -84,4 +84,4 @@ for modulepath in modules:
 
 if os.path.isdir('/var/cld/modules/doc/data') != True:
   bash('mkdir -p /var/cld/modules/doc/data &>/dev/null')
-open('/var/cld/modules/doc/data/doc-common.json', 'w').write(json.dumps(initjson).replace(cld_domain, 'classicdeploy.com'))
+open('/var/cld/modules/doc/data/doc-common.json', 'w').write(json.dumps(initjson).replace(cld_domain, 'classicdevops.com'))

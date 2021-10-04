@@ -8,20 +8,20 @@ To access any tool, several factor validation operates for the user, at the appl
 <details open>
 <summary>Show animation</summary>
 
-![cld_intro](https://classicdeploy.com/gif/cld_intro.gif)
+![cld_intro](https://classicdevops.com/gif/cld_intro.gif)
 </details>
 
 # Support policy
 
 Please do not ask your questions in github issues. Such format is not suitable for storing FAQ.
 
-If you have any question, please go to **[ServerFault](https://serverfault.com/questions/ask?tags=cld%20classicdeploy)** and ask it there.
+If you have any question, please go to **[ServerFault](https://serverfault.com/questions/ask?tags=cld%20classicdevops)** and ask it there.
 
-Tag your question with **`cld`** and **`classicdeploy`** tags (both at once).
+Tag your question with **`cld`** and **`classicdevops`** tags (both at once).
 
 We are continuously parsing full list of questions by these tags and will answer as soon as possible. Make your experience available for other users!
 
-[GitHub](https://github.com/classicdeploy/cld/issues) issues are for confirmed bugs/feature requests now. If you have feature idea - please describe it from user experience point of view. Describe how'd you gonna to configure CLD for desired result.
+[GitHub](https://github.com/classicdevops/cld/issues) issues are for confirmed bugs/feature requests now. If you have feature idea - please describe it from user experience point of view. Describe how'd you gonna to configure CLD for desired result.
 
 # Terms
 
@@ -94,7 +94,7 @@ A module with demo data/scripts can be created in the web interface using the `C
 ## Tool/Script
 CLI tool - is a script of the main/additional or custom module, named `cld-${TOOL}`
 The script is also translated for use through the rest of the interfaces available in the CLD.
-Detailed information on the available scripts included in the modules "from the box" is available at https://classicdeploy.com/documentation
+Detailed information on the available scripts included in the modules "from the box" is available at https://classicdevops.com/documentation
 
 ## Interface
 CLD interfaces are methods of using tools or any additional functionality
@@ -210,7 +210,7 @@ The system is designed in such a way that the addition of new functional modules
 Access to modules via CLI, bot telegram, API and via the web interface is separately configured for each user.
 
 # Framework
-`ClassicDeploy` is home to all your infrastructure scripts where they are always at hand
+`ClassicDevOps` is home to all your infrastructure scripts where they are always at hand
 
 CLD framework script is:
 - Available through various CLI, API, Telegram bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
@@ -243,10 +243,10 @@ Before the installation process, you should prepare the following information:
 	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `link for Zabbix API`)
 
 ### Quick start
-ClassicDeploy should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
+ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ```bash
-bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdeploy/cld/master/setup/install_cld.sh")
+bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdevops/cld/master/setup/install_cld.sh")
 ```
 
 During the installation process, all init scripts of the system and modules will be executed, for each of them in interactive mode, you will need to specify the initialization data necessary for the operation of the system and modules

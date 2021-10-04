@@ -13,7 +13,7 @@ initjson['info']['description'] = description
 initjson['info']['x-logo'] = {}
 initjson['info']['x-logo']['url'] = './img/cld_h.svg'
 initjson['info']['x-logo']['href'] = '/'
-initjson['info']['x-logo']['altText'] = 'ClassicDeploy logo'
+initjson['info']['x-logo']['altText'] = 'ClassicDevOps logo'
 
 modules = bash("find /var/cld/ /var/cld/{cm,deploy} /var/cld/modules/*/ -maxdepth 1 -name 'bin' -o -name 'README.md'").split('\n')
 

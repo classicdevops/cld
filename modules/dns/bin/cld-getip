@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Get information filtering by IP address - based on ClassicDeploy instance lists and DNS backup infromation
+Get information filtering by IP address - based on ClassicDevOps instance lists and DNS backup infromation
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'

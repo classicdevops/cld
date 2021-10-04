@@ -39,7 +39,7 @@ fi
 
 cat > /etc/systemd/system/cld-api.service << EOL
 [Unit]
-Description=ClassicDeploy API interface service
+Description=ClassicDevOps API interface service
 After=multi-user.target
 PartOf=cld.service
 
@@ -62,7 +62,7 @@ EOL
 
 cat > /etc/systemd/system/cld-web.service << EOL
 [Unit]
-Description=ClassicDeploy Web interface service
+Description=ClassicDevOps Web interface service
 After=multi-user.target
 PartOf=cld.service
 
@@ -112,7 +112,7 @@ fi
 [ -d "/var/cld/tmp/auditor" ] || mkdir -p /var/cld/tmp/auditor
 cat > /etc/systemd/system/cld-auditor.service << EOL
 [Unit]
-Description=ClassicDeploy auditor service
+Description=ClassicDevOps auditor service
 After=multi-user.target
 PartOf=cld.service
 
@@ -133,7 +133,7 @@ EOL
 
 cat > /etc/systemd/system/cld.service << EOL
 [Unit]
-Description=Main ClassicDeploy additional interfaces service
+Description=Main ClassicDevOps additional interfaces service
 Wants=cld-auditor.service
 Wants=cld-api.service
 Wants=cld-web.service
