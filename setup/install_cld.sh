@@ -348,7 +348,7 @@ system_setup_c7
 sysctl_setup
 bash_conf
 cld_install
-elif grep --quiet 'CentOS Linux 8' /etc/*-release ; then
+elif grep --quiet 'CentOS Linux 8\|CentOS Stream' /etc/*-release ; then
 sysctl_setup
 bash_conf
 system_setup_c8
