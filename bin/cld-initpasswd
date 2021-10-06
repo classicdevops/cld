@@ -40,7 +40,7 @@ USER_UTILITES=$(cut -d : -f 5 <<< $USER_SET)
 [ "$USER_MODULES" ] || USER_MODULES=NONE
 [ "$USER_UTILITES" ] || USER_UTILITES=NONE
 
-if grep -q "$USER_NAME" /etc/passwd
+if grep -q "^${USER_NAME}:" /etc/passwd
 then
     echo PAM user $USER_NAME found
 else
