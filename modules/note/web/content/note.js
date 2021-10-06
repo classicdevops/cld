@@ -90,6 +90,9 @@ function appendcontent(id, note) {
                   appendfilecontent(id, note, objfiles[filename], filename)
               }
           }
+      },
+      error: function (objfiles) {
+          appendfilecontent(id, note, '', "script")
       }
   });
 }
