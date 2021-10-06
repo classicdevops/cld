@@ -3,17 +3,6 @@
 
 CLDOPTS="$(expr "$(tr '\n' ' ' <<< "${@}")" : '\([A-Za-z0-9/ :.,@_=+^*-]\+\)' 2>/dev/null | tr ' ' '\n')"
 
-VM_LIST() {
-(
-for GROUP in $(ls /var/cld/access/groups/)
-do
-grep -qs "1" /var/cld/access/groups/${GROUP}/type \
-&& cat /var/cld/access/groups/${GROUP}/clouds \
-|| cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds
-done
-) | grep -v "^$"
-}
-
 CLD_LOGS() {
 CLD_LOG_DATE=$(date +%F)
 if ! [ -d "/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}" ]
@@ -27,23 +16,27 @@ SFTP_LOG=/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}/${VM}_sftp_$(date +"%
 CLD_DEPLOY_LOGS() {
 mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log &>/dev/null
 CLD_ACTION_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${VM}
-[ "$TEST" == "1" ] && mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/{test_log,test_status} &>/dev/null
-[ "$TEST" == "1" ] && CLD_ACTION_TEST_STATUS=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${VM}
-[ "$TEST" == "1" ] && CLD_ACTION_TEST_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/${VM}
-[ "$BACKUP" == "1" ] && mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log &>/dev/null
-[ "$BACKUP" == "1" ] && CLD_ACTION_BACKUP_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/${VM}
+[ "$TEST" == "1" ] && {
+ mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/{test_log,test_status} &>/dev/null
+LD_ACTION_TEST_STATUS=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${VM}
+CLD_ACTION_TEST_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/${VM}
+}
+[ "$BACKUP" == "1" ] && {
+mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log &>/dev/null
+CLD_ACTION_BACKUP_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/${VM}
+}
 }
 
 EXTERNAL_VARS() {
-VMN=`echo $VM | cut -d "_" -f 1`
-SRV=`echo $VM | cut -d "_" -f 2`
-PRT=`echo $VM | cut -d "_" -f 3`
-USR=`echo $VM | cut -d "_" -f 4`
-PWD=`grep $VM /var/cld/access/groups/${GROUP}/clouds | cut -d _ -f 5-`
+VMN=$(cut -d "_" -f 1 <<< "$VM")
+SRV=$(cut -d "_" -f 2 <<< "$VM")
+PRT=$(cut -d "_" -f 3 <<< "$VM")
+USR=$(cut -d "_" -f 4 <<< "$VM")
+PWD=$(grep "^${VM}_" /var/cld/access/groups/${GROUP}/clouds | cut -d _ -f 5-)
 }
 
 EXTERNAL_MOUNT() {
-unset LC_CTYPE
+unset LC_CTYPE &>/dev/null
 LOCALMOUNTPATH="/home/${SUDO_USER}/mnt/${VM}"
 if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
 fusermount -uzq $LOCALMOUNTPATH >> /dev/null
