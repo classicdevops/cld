@@ -24,6 +24,10 @@ label.form-check-label {
     font-weight: 500;
 }
 
+.method.visa span {
+    font-weight: 500 !important;
+}
+
 .win-size-grip {
     position: absolute;
     width: 24px;
