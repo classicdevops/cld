@@ -42,37 +42,24 @@ if [ ! -d "$DIR" ]; then mkdir -p $LOCALMOUNTPATH ;fi
 fusermount -uzq $LOCALMOUNTPATH >> /dev/null
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $PWD | grep -q "^$" || PWDOPT="-o password_stdin"
-echo $USR | grep -q root || SFTP_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "grep sftp /etc/ssh/sshd_config" | awk '{print $3}' | tr -d '\r\n')
-echo $USR | grep -q root || SUDO_PATH=$(sshpass -p "$PWD" ssh -q -p ${PRT} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" $USR@$SRV "which sudo" | tr -d '\r\n')
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 {
-if echo $USR | grep -q root; then
 sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
-else
-if [ "$(grep -q "/" <<< "${SUDO_PATH}" && echo 0)" == "0" -a "$(grep -q "/" <<< "${SFTP_PATH}" && echo 0)" == "0" ]; then
-sshfs -f -d -p $PRT ${PWDOPT} -o sftp_server="${SUDO_PATH} ${SFTP_PATH}" -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH  &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
-else
-sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH  &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
-fi
-fi
 } &>/dev/null
 }
 
 EXTERNAL_TERMINAL() {
-[ "$USR" == "root" ] && sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV  | tee -a $CLD_LOG
-[ "$USR" == "root" ] || sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo -i" | tee -a $CLD_LOG
+sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV  | tee -a $CLD_LOG
 }
 
 [ "$TIMEOUT" ] || export TIMEOUT=60
 EXTERNAL_DEPLOY() {
-[ "$USR" == "root" ] && timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1
-[ "$USR" == "root" ] || timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "sudo bash -s" 2>&1
+timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1
 }
 
 [ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=60
 EXTERNAL_DEPLOY_NOTTY() {
-[ "$USR" == "root" ] && timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1 && return 0 || return 1
-[ "$USR" == "root" ] || timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" 2>&1 && return 0 || return 1
+timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1 && return 0 || return 1
 }
 
 EXTERNAL_UMOUNT() {
