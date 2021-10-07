@@ -20,6 +20,8 @@ p {
 
 label.form-check-label {
     min-width: 280px;
+    color: black;
+    font-weight: 500;
 }
 
 .win-size-grip {
