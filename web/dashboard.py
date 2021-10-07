@@ -815,12 +815,9 @@ def userclouds(name):
     if userisadmin(session['username']) != True:
       session.pop('username', None)
       return redirect('/', code=302)
-    clouds = request.form.to_dict(flat=False)
+    clouds = list(request.form.to_dict())
     print(clouds, flush=True)
-    if clouds == {}:
-      bash('truncate -s 0 /var/cld/access/users/'+vld(name)+'/clouds')
-    else:
-      open('/var/cld/access/users/'+name+'/clouds', 'w').write("\n".join(list(filter(None, clouds["allowclouds"]))))
+    open('/var/cld/access/users/'+name+'/clouds', 'w').write("\n".join(list(filter(None, clouds))))
     return Response('User clouds saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/groupusers/<name>', methods=['GET','POST'])
