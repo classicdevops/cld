@@ -103,8 +103,8 @@
               {% for cloud in disallowedclouds %}
               {% if cloud in allowedclouds %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="{{ tool }}"{{ boxstatus }}>
-                <label class="form-check-label">{{ tool }}</label>
+                <input class="form-check-input" type="checkbox" name="{{ cloud }}"{{ boxstatus }}>
+                <label class="form-check-label">{{ cloud }}</label>
               </div>
               {% endfor %}
             </form>
