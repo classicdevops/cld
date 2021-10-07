@@ -467,6 +467,7 @@ text-align: center;
     body {
         padding-top: 51px;
         font-family: sans-serif;
+        color: black !important;
     }
 
     .text-center {
