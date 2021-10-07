@@ -15,3 +15,21 @@ do
 export GROUP
 grep -qs '1' /var/cld/access/groups/${GROUP}/type && source /var/cld/access/groups/${GROUP}/parsingscript
 done
+
+for INSTANCE in $(/var/cld/bin/cld --list)
+do
+CLD_NAME=$(cut -d _ -f 1 <<< $INSTANCE)
+CLD_IP=$(cut -d _ -f 2 <<< $INSTANCE)
+CLD_PORT=$(cut -d _ -f 3 <<< $INSTANCE)
+CLD_USER=$(cut -d _ -f 4 <<< $INSTANCE)
+cat << EOL >> /root/.ssh/config.cld.bak
+Host ${INSTANCE}
+    HostName ${CLD_IP}
+    User ${CLD_USER}
+    Port ${CLD_PORT}
+    StrictHostKeyChecking no
+    
+EOL
+done
+mv -f /root/.ssh/config.cld.bak /root/.ssh/config.cld
+grep -q "Include config.cld" /root/.ssh/config || echo "Include config.cld" >> /root/.ssh/config
