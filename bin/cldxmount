@@ -29,7 +29,7 @@ case $i in
 esac
 done
 
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | head -1)
 do
   CLD_LOGS
   if [ "$VM" ]

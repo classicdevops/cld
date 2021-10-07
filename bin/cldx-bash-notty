@@ -32,7 +32,7 @@ case $i in
 esac
 done
 
-VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | tail -1)
+VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | head -1)
 CLD_LOGS
 if [ "$VM" ]
 then
