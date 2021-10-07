@@ -18,6 +18,10 @@ p {
     margin: 0;
 }
 
+label.form-check-label {
+    min-width: 280px;
+}
+
 .win-size-grip {
     position: absolute;
     width: 24px;
