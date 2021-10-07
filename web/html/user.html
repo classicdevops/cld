@@ -110,46 +110,6 @@
             </form>
             <button id="userclouds-button" onclick="savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply Instances</button>
             <br><br><hr>
-            <p>Clouds:</p>
-            <div class="subject-info-box-1">
-              <script type="text/javascript">
-                function selectAll() 
-                { 
-                    selectBox = document.getElementById("lstBox1");
-                
-                    for (var i = 0; i < selectBox.options.length; i++) 
-                    { 
-                         selectBox.options[i].selected = true; 
-                    } 
-                }
-              </script>
-              <form id="userclouds">
-                <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
-                  {% for cloud in allowedclouds %}
-                  <option value="{{ cloud }}">{{ cloud }}</option>
-                  {% endfor %}
-                </select>
-              </form>
-            </div>
-            <div class="subject-info-arrows text-center">
-              <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
-              <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
-              <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
-              <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
-            </div>
-            <div class="subject-info-box-2">
-              <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
-                {% for cloud in disallowedclouds %}
-                <option value="{{ cloud }}">{{ cloud }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <br>
-            <div class="clearfix"></div>
-            <br>
-            <button id="userclouds-button" onclick="selectAll();savedata('userclouds', '{{ url_for('userclouds', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
-            <br><br><hr>
-
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
                         <script>
