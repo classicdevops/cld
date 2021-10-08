@@ -44,8 +44,8 @@
               {% endfor %}
             </form>
             <button id="groupusers-button" onclick="savedata('groupusers', '{{ url_for('groupusers', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply users</button>
-            <br><br>
-            <p>Instances:</p>
+            <br><br><hr>
+            <p>{{ groups[0].group }} instances:</p>
             <form id="groupclouds" style="margin: 0px;">
               {% for cloud in disallowedclouds %}
               {% if cloud in allowedclouds %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
@@ -57,44 +57,6 @@
             </form>
             <button id="groupclouds-button" onclick="savedata('groupclouds', '{{ url_for('groupclouds', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply Instances</button>
             <br><br><hr>
-            <p>{{ groups[0].group }} clouds:</p>
-            <div class="subject-info-box-1">
-              <script type="text/javascript">
-                function selectAll() 
-                { 
-                    selectBox = document.getElementById("lstBox1");
-                    for (var i = 0; i < selectBox.options.length; i++) 
-                    { 
-                         selectBox.options[i].selected = true; 
-                    } 
-                }
-              </script>
-              <form id="groupclouds">
-                <select multiple size="1" name="allowclouds" id='lstBox1' class="content-info-box form-control">
-                  {% for cloud in allowedclouds %}
-                  <option value="{{ cloud }}">{{ cloud }}</option>
-                  {% endfor %}
-                </select>
-              </form>
-            </div>
-            <div class="subject-info-arrows text-center">
-              <input type="button" id="btnAllRight" value=">>" class="btn btn-default" /><br />
-              <input type="button" id="btnRight" value=">" class="btn btn-default" /><br />
-              <input type="button" id="btnLeft" value="<" class="btn btn-default" /><br />
-              <input type="button" id="btnAllLeft" value="<<" class="btn btn-default" />
-            </div>
-            <div class="subject-info-box-2">
-              <select multiple="multiple" id='lstBox2' class="content-info-box form-control">
-                {% for cloud in disallowedclouds %}
-                <option value="{{ cloud }}">{{ cloud }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <br>
-            <div class="clearfix"></div>
-            <br>
-            <button id="groupclouds-button" onclick="selectAll();savedata('groupclouds', '{{ url_for('groupclouds', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply clouds</button>
-            <br><br>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
             <script>
@@ -190,7 +152,7 @@
             <pre id="ScriptPre">{{parsingscript}}</pre>
             <br>
             <button id="grouptype-button" onclick="savedata('grouptype', '{{ url_for('grouptype', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply type</button>
-            <br><br>
+            <br><br><hr>
             {% if groups[0].groupfuncs == 'default' %}{% set funcstatus = ' disabled' %}{% set typeboxstatus = '' %}{% else %}{% set funcstatus = '' %}{% set typeboxstatus = ' checked' %}{% endif %}
             <form id="groupfuncs">
               Manual functions <input type="checkbox" id="GroupFuncsCheckbox" name="groupfuncs"{{typeboxstatus}}> <br><br>
@@ -219,7 +181,7 @@
             Deploy no tty  function: <br>
             <pre id="FuncDeploynottyPre">{{groupfuncdeploynotty}}</pre>
             <br>
-            <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" `>Apply functions</button>
+            <button id="groupfuncs-button" onclick="savedata('groupfuncs', '{{ url_for('groupfuncs', name=groups[0].group) }}')" class="btn btn-primary bt mb-2">Apply functions</button>
             <script>
               var funcs = ['Script', 'FuncVars', 'FuncTerm', 'FuncMount', 'FuncUmount', 'FuncDeploy', 'FuncDeploynotty']
               // var editor = [];
