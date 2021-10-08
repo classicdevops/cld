@@ -701,7 +701,7 @@ def group(name):
     for n, i in enumerate(groups):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
-    allowedclouds = bash('/var/cld/bin/cld --groups='+cldgroup+' --list' | sort -u).split('\n')
+    allowedclouds = bash('/var/cld/bin/cld --groups='+cldgroup+' --list | sort -u').split('\n')
     disallowedclouds = bash('/var/cld/bin/cld --list | sort -u').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+vld(group)+'/parsingscript')
     groupfuncvars = bash('cat /var/cld/access/groups/'+vld(group)+'/funcvars || cat /var/cld/access/groups/default/default_funcvars')
