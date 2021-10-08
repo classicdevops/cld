@@ -851,12 +851,9 @@ def groupclouds(name):
       session.pop('username', None)
       return redirect('/', code=302)
     group = name
-    clouds = request.form.to_dict(flat=False)
+    clouds = [vld(cloud) for cloud in list(request.form.to_dict())]
     print(clouds, flush=True)
-    if clouds == {}:
-      bash('truncate -s 0 /var/cld/access/groups/'+vld(group)+'/clouds')
-    else:
-      open('/var/cld/access/groups/'+group+'/clouds', 'w').write("\n".join(list(filter(None, clouds["allowclouds"]))))
+    open('/var/cld/access/groups/'+group+'/clouds', 'w').write("\n".join(list(filter(None, clouds))))
     return Response('Group clouds saved', status=200, mimetype='text/plain')
 
 @app.route('/admin/grouptype/<name>', methods=['GET','POST'])
