@@ -56,7 +56,7 @@
                 <td>{{ role }}</td>
                 <td>{{ user.groups }}</td>
                 <td>{{ user.lastlogin }}</td>
-                <td> <a href="{{ link }}" class="btn-sm btn-{{ style }}" data-toggle="tooltip" '="" data-original-title="" title="">{{ status }}</a></td>
+                <td> <a href="{{ link }}" class="btn-sm btn-{{ style }}" data-toggle="tooltip" data-original-title="" title="">{{ status }}</a></td>
               </tr>
               {% endfor %}
             </tbody>
@@ -67,8 +67,7 @@
               {% for group in allgroups %}
               {% if group in users[0].groups %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="{{ group }}"{{ boxstatus }}>
-                <label class="form-check-label">{{ group }}</label>
+                <label class="form-check-label"><input class="form-check-input" type="checkbox" name="{{ group }}"{{ {{ group }}</label>
               </div>
               {% endfor %}
             </form>
@@ -79,8 +78,7 @@
               {% for module in allmodules %}
               {% if module in users[0].modules %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="{{ module }}"{{ boxstatus }}>
-                <label class="form-check-label">{{ module }}</label>
+                <label class="form-check-label"><input class="form-check-input" type="checkbox" name="{{ module }}"{{ boxstatus }}>{{ module }}</label>
               </div>
               {% endfor %}
             </form>
@@ -91,8 +89,7 @@
               {% for tool in alltools %}
               {% if tool in users[0].tools %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="{{ tool }}"{{ boxstatus }}>
-                <label class="form-check-label">{{ tool }}</label>
+                <label class="form-check-label"><input class="form-check-input" type="checkbox" name="{{ tool }}"{{ boxstatus }}>{{ tool }}</label>
               </div>
               {% endfor %}
             </form>
@@ -103,8 +100,7 @@
               {% for cloud in disallowedclouds %}
               {% if cloud in allowedclouds %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="{{ cloud }}"{{ boxstatus }}>
-                <label class="form-check-label">{{ cloud }}</label>
+                <label class="form-check-label"><input class="form-check-input" type="checkbox" name="{{ cloud }}"{{ boxstatus }}>{{ cloud }}</label>
               </div>
               {% endfor %}
             </form>
