@@ -29,16 +29,15 @@ case $i in
 esac
 done
 
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" | head -1)
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" | grep "$(df 2>/dev/null | grep /home/${SUDO_USER}/mnt | rev | cut -d / -f 1 | rev)" | head -1)
 do
   CLD_LOGS
   if [ "$VM" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
-    $CLD_MOUNT
+    $CLD_UMOUNT && echo -e "Inctance filesystem unmounted from \n$LOCALMOUNTPATH"
   fi
   break
 done

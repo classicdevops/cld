@@ -37,7 +37,7 @@ do
     INSTANCE_GROUP_FUNCS
     $CLD_VARS
     echo
-    $CLD_UMOUNT && echo "Inctance filesystem unmounted from $LOCALMOUNTPATH"
+    $CLD_UMOUNT && echo -e "Inctance filesystem unmounted from \n$LOCALMOUNTPATH"
   fi
   break
 done

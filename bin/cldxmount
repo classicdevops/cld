@@ -38,7 +38,7 @@ do
     echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
-    $CLD_MOUNT
+    $CLD_MOUNT && echo -e "Inctance filesystem mounted to \n$LOCALMOUNTPATH"
   fi
   break
 done

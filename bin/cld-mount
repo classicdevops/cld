@@ -37,7 +37,7 @@ do
     INSTANCE_GROUP_FUNCS
     $CLD_VARS
     echo
-    $CLD_MOUNT && echo "Inctance filesystem mounted to $LOCALMOUNTPATH" || echo "Mount FAILED - check manual access to instance or custom mount group funtion"
+    $CLD_MOUNT && echo -e "Inctance filesystem mounted to \n$LOCALMOUNTPATH" || echo "Mount FAILED - check manual access to instance or custom mount group funtion"
     exit 0
   fi
   break
