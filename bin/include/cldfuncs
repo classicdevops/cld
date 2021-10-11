@@ -44,7 +44,9 @@ mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $PWD | grep -q "^$" || PWDOPT="-o password_stdin"
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 {
-sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH &>/dev/stdout <<< "$PWD" | pigz -9 -f > ${SFTP_LOG} & disown
+{
+sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH &>/dev/stdout <<< "$PWD" || return 1
+} | pigz -9 -f > ${SFTP_LOG} & disown
 } &>/dev/null
 }
 
