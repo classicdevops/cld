@@ -43,7 +43,7 @@ fusermount -uzq $LOCALMOUNTPATH >> /dev/null
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
 echo $PWD | grep -q "^$" || PWDOPT="-o password_stdin"
 mkdir -p $LOCALMOUNTPATH 2>&1 >/dev/null
-timeout 10 telnet $SRV $PRT <<< quit &>/dev/null || { echo "Instance SSH port unavailable - test command \"timeout 10 telnet $SRV $PRT <<< quit\"" ; return 1 ; }
+echo -e '\x1dclose\x0d' | timeout 10 telnet $SRV $PRT &>/dev/null || { echo "Instance SSH port unavailable - test command \"timeout 10 telnet $SRV $PRT <<< quit\"" ; return 1 ; }
 {
 {
 sshfs -f -d -p $PRT ${PWDOPT} -o allow_other,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no,Ciphers=chacha20-poly1305@openssh.com $USR@$SRV:/ $LOCALMOUNTPATH &>/dev/stdout <<< "$PWD" || return 1
