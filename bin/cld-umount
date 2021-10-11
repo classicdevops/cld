@@ -1,8 +1,7 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Direct mount utility for mount filesystems of instance
+Intactive mount utility for mount filesystems of instance
 Remote filesystem mounting by sshfs in /home/${USER}/mnt/${CLD_INSTANCE} directory
-If there are several after - the first one will be selected
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
@@ -13,8 +12,9 @@ $3                       Third PATTERN filtering allowed instances
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cldxmount prod 1.2.3.4_instance_22_root
-cldxmount prod 1.2.3.4_instance_22_root --groups=gcloud
+cld-umount
+cld-umount prod 1.2.
+cld-umount prod 1.2.3.4_instance_22_root --groups=gcloud
 EOL
 )
 HELP_ONLY="CLI WEB"
@@ -29,16 +29,15 @@ case $i in
 esac
 done
 
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" | head -1)
+select VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" | grep "$(df 2>/dev/null | grep /home/${SUDO_USER}/mnt | rev | cut -d / -f 1 | rev)")
 do
   CLD_LOGS
   if [ "$VM" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
-    $CLD_MOUNT
+    $CLD_UMOUNT && echo "Inctance filesystem unmounted from $LOCALMOUNTPATH"
   fi
   break
 done

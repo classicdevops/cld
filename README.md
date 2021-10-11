@@ -40,7 +40,7 @@ PAM user on the CLD server created through the `cld-useradd` utility, file-relat
 ## User role
 Roles:
 - admin - full access to modules and all tools, the role is defined in the access matrix by the presence of the ALL pattern in columns 4 (modules) and 5 (tools) (userexample:::ALL:ALL)
-- user - configurable access to modules and individual tools (userexample:::dns,doc,note:cld,cldmount,cld-modules)
+- user - configurable access to modules and individual tools (userexample:::dns,doc,note:cld,cld-mount,cld-modules)
 The role depends on the access matrix /var/cld/creds/passwd
 
 ## Group
@@ -115,8 +115,8 @@ To ensure the standard structure of the tools is used, the main bash library `/v
 The basis of the project is a centralized system of SSH access based on PAM:
 - all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal telegram account id, as well as API token
 - each user is authorized on the server to his PAM account
-- access to allowed servers is carried out using a single private SSH key or password
-- the list of servers allowed for connection to the user is determined both by specifying specific instances and according to the groups to which the user belongs
+- access to allowed servers is carried out using a single private SSH key or instance password
+- the list of servers allowed for connection for the user is determined both by specifying specific instances and according to the groups which shared for a user
 - SSH-key and passwords, with the help of which authorization takes place on remote nodes - are not available to the user, respectively, this data is reliably protected and cannot be compromised
 - access to the CLD management server (as well as to other nodes connected to the system) can be limited by the list of allowed ip addresses (access lists)
 - the formation of lists of IP addresses allowed for access is carried out using the telegram bot using the API, or through the built-in CLI utility

@@ -6,7 +6,7 @@ EOL
 HELP_ARGS=$(cat << 'EOL'
 $1                         User name
 $2                         Password
---tools=cld,cldx           List of classicdevops tools comma separated - cld,cldmount,cldx,cldxmount is default
+--tools=cld,cldx           List of classicdevops tools comma separated - cld,cld-mount,cldx,cldxmount is default
 --modules=access,dns       List of classicdevops modules comma separated - empty is default
 --groups=default,prod,dev  List of CLD groups comma separated - not required
 EOL
@@ -33,7 +33,7 @@ CLD_USER=$ARG1
 [ "$CLD_USER" ] || echoexit1 CLD user is not defined
 CLD_USER_PASSWORD=$ARG2
 [ "$CLD_USER_PASSWORD" ] || CLD_USER_PASSWORD=$(passwordgen)
-[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cldmount,cldx,cldxmount,cld-modules"
+[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cld-mount,cldx,cldxmount,cld-modules"
 # useradd ${CLD_USER} --shell /bin/bash
 grep -q "^${CLD_USER}:" /var/cld/creds/passwd && echoexit1 User ${CLD_USER} already exist - exit
 echo "${CLD_USER}:::${CLD_MODULES}:${CLD_TOOLS}:${CLD_GROUPS}" >> /var/cld/creds/passwd

@@ -55,9 +55,13 @@ do
     echo "You had chosen ${GROUP} $VM"
     $CLD_VARS
     echo
-    $CLD_TERMINAL
+    $CLD_TERMINAL || echo "Connection FAILED - use --debug argument to clarify reason"
+    exit 0
   else
     echo "you choosed incorrect instance, please try again and type digits only"
+    exit 0
   fi
   break
 done
+echo
+echo "There is no any allowed instances - try remove filter arguments or ask your system administrator add/share it"
