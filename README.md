@@ -224,12 +224,12 @@ CLD framework script is:
 
 # Installation
 ### Recommended system requirements:
-Virtualization: `KVM`/`Bare metal`
-Supported OS: `Centos` 7/8, `Debian` 9/10
-CPU: `1` cores
-RAM: `2` Gb
-Disk space: `20` Gb
-Direct public ip address
+- Virtualization: `KVM`/`Bare metal`
+- Supported OS: `Centos` 7/8, `Debian` 9/10
+- CPU: `1` cores
+- RAM: `2` Gb
+- Disk space: `20` Gb
+- Direct public ip address
 
 ### Data required for interfaces and modules
 Before the installation process, you should prepare the following information:
