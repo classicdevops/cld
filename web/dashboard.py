@@ -670,7 +670,7 @@ def user(name):
     alltools = open('/var/cld/creds/tools_list').read().strip().split(',')
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     allowedclouds = bash('grep -v "^#" /var/cld/access/users/'+vld(user)+'/clouds').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list --all | sort -u').split('\n')
     bash('if ! [ -d "/home/'+vld(clduser)+'/.ssh" ]; then mkdir -p /home/'+vld(clduser)+'/.ssh ; fi; chown -R '+vld(clduser)+': /home/'+vld(clduser)+'/.ssh ; chmod 700 /home/'+vld(clduser)+'/.ssh')
     file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/kvms', '/home/'+clduser+'/.ssh/authorized_keys']
     files = {}
@@ -702,7 +702,7 @@ def group(name):
       groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
     allusers = [os.path.basename(name) for name in os.listdir('/var/cld/access/users/') if os.path.isdir('/var/cld/access/users/'+name)]
     allowedclouds = bash('/var/cld/bin/cld --groups='+cldgroup+' --list | sort -u').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list | sort -u').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list --all | sort -u').split('\n')
     parsingscript = bash('cat /var/cld/access/groups/'+vld(group)+'/parsingscript')
     groupfuncvars = bash('cat /var/cld/access/groups/'+vld(group)+'/funcvars || cat /var/cld/access/groups/default/default_funcvars')
     groupfuncterm = bash('cat /var/cld/access/groups/'+vld(group)+'/functerm || cat /var/cld/access/groups/default/default_functerm')
