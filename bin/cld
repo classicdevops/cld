@@ -12,6 +12,7 @@ $3                       Third PATTERN filtering allowed instances
 --beauty                 Using together with --list and --json option to beautify json output
 --groups=GROUP1,GROUP2   Filtering by instance groups
 --debug                  Verbose output of connection
+--all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
