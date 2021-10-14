@@ -670,7 +670,7 @@ def user(name):
     alltools = open('/var/cld/creds/tools_list').read().strip().split(',')
     allgroups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     allowedclouds = bash('grep -v "^#" /var/cld/access/users/'+vld(user)+'/clouds').split('\n')
-    disallowedclouds = bash('/var/cld/bin/cld --list --all | sort -u').split('\n')
+    disallowedclouds = bash('/var/cld/bin/cld --list --all').split('\n')
     bash('if ! [ -d "/home/'+vld(clduser)+'/.ssh" ]; then mkdir -p /home/'+vld(clduser)+'/.ssh ; fi; chown -R '+vld(clduser)+': /home/'+vld(clduser)+'/.ssh ; chmod 700 /home/'+vld(clduser)+'/.ssh')
     file_list = ['/var/cld/access/users/'+clduser+'/clouds', '/var/cld/access/users/'+clduser+'/kvms', '/home/'+clduser+'/.ssh/authorized_keys']
     files = {}
