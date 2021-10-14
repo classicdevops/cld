@@ -3,6 +3,11 @@
 
 CLDOPTS="$(expr "$(tr '\n' ' ' <<< "${@}")" : '\([A-Za-z0-9/ :.,@_=+^*-]\+\)' 2>/dev/null | tr ' ' '\n')"
 
+passwordgen()
+{
+cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}
+}
+
 CLD_LOGS() {
 CLD_LOG_DATE=$(date +%F)
 if ! [ -d "/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}" ]
@@ -102,7 +107,7 @@ if [ "${CLD_ALL_GROUPS}" = "1" ]
 then
   if  [ "$(user_is_admin $SUDO_USER)" = "0" ]
   then
-  CLD_FILTER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6)"
+  CLD_FILTER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | grep "${CLD_GROUPS}")"
   else
   CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
   fi
@@ -333,11 +338,6 @@ fi
 done
 echo "${CLOUD::-1} written to file ${FILE}"
 echo "${CLOUD::-1}" >> ${FILE}
-}
-
-passwordgen()
-{
-cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}
 }
 
 cldhelp()

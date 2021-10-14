@@ -1,3 +1,48 @@
+generate_access_map()
+{
+local CLD_USER CLD_INSTANCE
+ACCESS_MAP_TASK_ID=$(passwordgen 7)
+
+ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
+ALL_CLD_INSTANCES=$(/var/cld/bin/cld -a -l)
+
+mkdir -p /var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID}/{users,instances}
+CLD_FILTER_DIR="/var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID}"
+
+for CLD_USER in ${ALL_CLD_USERS}
+do
+SUDO_USER=${CLD_USER} /var/cld/bin/cld -l > ${CLD_FILTER_DIR}/users/${CLD_USER} 2>/dev/null
+done
+
+for CLD_INSTANCE in ${ALL_CLD_INSTANCES}
+do
+grep -lr "^${CLD_INSTANCE}$" ${CLD_FILTER_DIR}/users/  | cut -d / -f 7 | sort -u > ${CLD_FILTER_DIR}/instances/${CLD_INSTANCE}
+done
+}
+
+cld_sshkey_deploy()
+{
+local TMPLT_ID
+TMPLT_ID=$(passwordgen 5)
+cat << EOSSHDEPLOY${TMPLT_ID}
+cat > ~/.ssh/authorized_keys_tmp << 'EOUSERSSH${TMPLT_ID}'
+$(
+echo "${MAIN_CLD_KEY}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
+for SSHKEYUSER in $(cat ${CLD_FILTER_DIR}/instances/${VM})
+do
+SSHKEYVAR="sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${SSHKEYUSER})"
+echo "${!SSHKEYVAR}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
+done | sort -u
+)
+EOUSERSSH${TMPLT_ID}
+grep -v "cld_sshkeysdeploy" ~/.ssh/authorized_keys >> ~/.ssh/authorized_keys_tmp
+chmod 600 ~/.ssh/authorized_keys_tmp
+unalias mv &>/dev/null
+grep -q "^${MAIN_CLD_KEY}$" ~/.ssh/authorized_keys_tmp && mv -f ~/.ssh/authorized_keys_tmp ~/.ssh/authorized_keys
+EOSSHDEPLOY${TMPLT_ID}
+EOSSHDEPLOY
+}
+
 instancelistgen()
 {
 cat << EOACCESSLIST

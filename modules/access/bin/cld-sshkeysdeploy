@@ -1,0 +1,77 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+SSH key deploy tool
+Deploying SSH keys of CLD users to instances
+Should be setted up on cron
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                             First PATTERN filtering allowed instances
+$2                             Second PATTERN filtering allowed instances
+$3                             Third PATTERN filtering allowed instances
+--groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-sshkeysdeploy
+cld-sshkeysdeploy --groups=default,prod,hypervisors --allowedgroups=default
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/include/accessfuncs
+
+grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
+init-load-constants CLD_IP\|1.2.3.4
+
+for i in ${CLDOPTS}
+do
+case $i in
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;;
+-a=*|-allowedgroups=*|--allowedgroups=*) CLD_ALLOW_GROUPS="${i#*=}"     ;;
+-*)                                                                     ;;
+*) let ii++; declare ARG$ii=${i}                                        ;;
+esac
+done
+
+CLD_GROUPS=${CLD_GROUPS:-default}
+
+generate_access_map
+
+for CLD_USER in ${ALL_CLD_USERS}
+do
+export sshkeys_${CLD_USER}="$(egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys)"
+done
+
+cld_sshkey_deploy()
+{
+cat << EOSSHDEPLOY
+
+
+
+EOSSHDEPLOY
+}
+
+############## Deploy begin ##############
+for CLD_ACCESS_GROUP in $(echo "${CLD_GROUPS}" | tr ',' '\n')
+do
+
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
+do
+if [ "$VM" ]
+then
+INSTANCE_GROUP_FUNCS
+$CLD_VARS
+export TIMEOUT_NOTTY=30
+(
+$CLD_DEPLOY_NOTTY << EOSSH
+$([ -d "/var/cld/modules/access/data/instances/$VM" ] && instancelistgen $VM || echo "$CLD_ACCESS_LIST_DEFAULT")
+$CLD_ACCESS_DEPLOY
+EOSSH
+) &
+fi
+done
+
+done
+
+wait
+##############  Deploy end  ##############
