@@ -1,7 +1,7 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 SSH key deploy tool
-Deploying SSH keys of CLD users to instances
+Deploying SSH keys of CLD users to allowed instances
 Should be setted up on cron
 EOL
 )
@@ -14,14 +14,11 @@ EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-sshkeysdeploy
-cld-sshkeysdeploy --groups=default,prod,hypervisors --allowedgroups=default
+cld-sshkeysdeploy --groups=default,prod,hypervisors
 EOL
 )
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/access/bin/include/accessfuncs
-
-grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
-init-load-constants CLD_IP\|1.2.3.4
 
 for i in ${CLDOPTS}
 do
@@ -34,27 +31,20 @@ esac
 done
 
 CLD_GROUPS=${CLD_GROUPS:-default}
+export MAIN_CLD_KEY="$(cat /root/.ssh/id_rsa.pub)"
+
+[ "${MAIN_CLD_KEY}" ] || { echo Main CLD SSH key is not defined - probably you need generate it ssh-keygen commad - exit ; exit 1 ; }
 
 generate_access_map
 
 for CLD_USER in ${ALL_CLD_USERS}
 do
-export sshkeys_${CLD_USER}="$(egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys)"
+export sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< "${CLD_USER}")="$(egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys)"
 done
 
-cld_sshkey_deploy()
-{
-cat << EOSSHDEPLOY
-
-
-
-EOSSHDEPLOY
-}
+SSHKEY_DEPLOY_DATE="$(date +%d.%m.%Y\ %H:%M)"
 
 ############## Deploy begin ##############
-for CLD_ACCESS_GROUP in $(echo "${CLD_GROUPS}" | tr ',' '\n')
-do
-
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
 do
 if [ "$VM" ]
@@ -64,13 +54,10 @@ $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
 $CLD_DEPLOY_NOTTY << EOSSH
-$([ -d "/var/cld/modules/access/data/instances/$VM" ] && instancelistgen $VM || echo "$CLD_ACCESS_LIST_DEFAULT")
-$CLD_ACCESS_DEPLOY
+$(cld_sshkey_deploy)
 EOSSH
 ) &
 fi
-done
-
 done
 
 wait
