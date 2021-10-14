@@ -20,29 +20,6 @@ grep -lr "^${CLD_INSTANCE}$" ${CLD_FILTER_DIR}/users/  | cut -d / -f 7 | sort -u
 done
 }
 
-cld_sshkey_deploy()
-{
-local TMPLT_ID
-TMPLT_ID=$(passwordgen 5)
-cat << EOSSHDEPLOY${TMPLT_ID}
-cat > ~/.ssh/authorized_keys_tmp << 'EOUSERSSH${TMPLT_ID}'
-$(
-echo "${MAIN_CLD_KEY}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
-for SSHKEYUSER in $(cat ${CLD_FILTER_DIR}/instances/${VM})
-do
-SSHKEYVAR="sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${SSHKEYUSER})"
-echo "${!SSHKEYVAR}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
-done | sort -u
-)
-EOUSERSSH${TMPLT_ID}
-grep -v "cld_sshkeysdeploy" ~/.ssh/authorized_keys >> ~/.ssh/authorized_keys_tmp
-chmod 600 ~/.ssh/authorized_keys_tmp
-unalias mv &>/dev/null
-grep -q "^${MAIN_CLD_KEY}$" ~/.ssh/authorized_keys_tmp && mv -f ~/.ssh/authorized_keys_tmp ~/.ssh/authorized_keys
-EOSSHDEPLOY${TMPLT_ID}
-EOSSHDEPLOY
-}
-
 instancelistgen()
 {
 cat << EOACCESSLIST
@@ -188,4 +165,26 @@ updateaccesslists()
     #Deploy current accesslist
     ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || /var/cld/modules/access/bin/cld-accesslistdeploy &>/dev/null
     }  &>/dev/null & disown
+}
+
+cld_sshkey_deploy()
+{
+local TMPLT_ID
+TMPLT_ID=$(passwordgen 5)
+cat << EOSSHDEPLOY${TMPLT_ID}
+cat > ~/.ssh/authorized_keys_tmp << 'EOUSERSSH${TMPLT_ID}'
+$(
+echo "${MAIN_CLD_KEY}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
+for SSHKEYUSER in $(cat ${CLD_FILTER_DIR}/instances/${VM})
+do
+SSHKEYVAR="sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${SSHKEYUSER})"
+echo "${!SSHKEYVAR}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
+done | sort -u
+)
+EOUSERSSH${TMPLT_ID}
+grep -v "cld_sshkeysdeploy" ~/.ssh/authorized_keys >> ~/.ssh/authorized_keys_tmp
+chmod 600 ~/.ssh/authorized_keys_tmp
+unalias mv &>/dev/null
+grep -q "^${MAIN_CLD_KEY}$" ~/.ssh/authorized_keys_tmp && mv -f ~/.ssh/authorized_keys_tmp ~/.ssh/authorized_keys
+EOSSHDEPLOY${TMPLT_ID}
 }
