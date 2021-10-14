@@ -177,7 +177,7 @@ $(
 echo "${MAIN_CLD_KEY}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
 for SSHKEYUSER in $(cat ${CLD_FILTER_DIR}/instances/${VM})
 do
-SSHKEYVAR="sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${SSHKEYUSER})"
+SSHKEYVAR="sshkeys_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${SSHKEYUSER})"
 echo "${!SSHKEYVAR}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date}'
 done | sort -u
 )
