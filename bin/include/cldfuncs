@@ -86,20 +86,33 @@ fi
 }
 
 CLOUDS_USER_ALLOWED() {
-local i ii ARG1 ARG2 ARG3
+local i ii ARG1 ARG2 ARG3 CLD_ALL_GROUPS
 for i in "${@:1}"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS=$(echo "${i#*=}"| tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n') ;;
     -j|-json|--json) JSONFUNCOUT=1                  ;;
+    -a|-all|--all) CLD_ALL_GROUPS=1                 ;;
     -*)                                             ;;
     *) let ii++; local ARG$ii=${i}                  ;;
   esac
 done
 
+if [ "${CLD_ALL_GROUPS}" = "1" ]
+then
+  if  [ "$(user_is_admin $SUDO_USER)" = "0" ]
+  then
+  CLD_FILTER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6)"
+  else
+  CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
+  fi
+else
+  CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
+fi
+
 if [ "$JSONFUNCOUT" == "1" ]
 then
-  for GROUP in $(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")
+  for GROUP in ${CLD_FILTER_GROUPS}
   do
     CLOUDS=$(cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
     if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
@@ -112,7 +125,7 @@ EOL
     fi
   done | head -c -1 | cat <(echo -n '[') - <(echo -n ']')
 else
-  for GROUP in $(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")
+  for GROUP in ${CLD_FILTER_GROUPS}
   do
     cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
   done
