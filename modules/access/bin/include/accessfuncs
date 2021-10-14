@@ -3,8 +3,8 @@ generate_access_map()
 local CLD_USER CLD_INSTANCE
 ACCESS_MAP_TASK_ID=$(passwordgen 7)
 
-ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
-ALL_CLD_INSTANCES=$(/var/cld/bin/cld -a -l)
+export ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
+export ALL_CLD_INSTANCES=$(/var/cld/bin/cld -a -l -g="$CLD_GROUP")
 
 mkdir -p /var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID}/{users,instances}
 CLD_FILTER_DIR="/var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID}"

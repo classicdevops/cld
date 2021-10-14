@@ -24,7 +24,6 @@ for i in ${CLDOPTS}
 do
 case $i in
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;;
--a=*|-allowedgroups=*|--allowedgroups=*) CLD_ALLOW_GROUPS="${i#*=}"     ;;
 -*)                                                                     ;;
 *) let ii++; declare ARG$ii=${i}                                        ;;
 esac
@@ -39,6 +38,7 @@ generate_access_map
 
 for CLD_USER in ${ALL_CLD_USERS}
 do
+echo $CLD_USER
 echo "sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< "${CLD_USER}")"
 export sshkeys_$(sed -e 's#.#__DOT__#g' -e 's#-#__DASH__#g' <<< "${CLD_USER}")="$(egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys)"
 done
