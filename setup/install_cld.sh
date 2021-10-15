@@ -218,13 +218,13 @@ module_hotfixes=true
 EONGINX
 yum install -y nginx
 
-yum install python3 python3-pip  -y
+yum install python39 python39-pip  -y
 pip3 install cryptography flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 
 yum install python*-crypto python*-cryptography certbot python3-certbot-dns-cloudflare --skip-broken -y
 
 pip3 install certbot certbot-dns-cloudflare
-pip3 install cryptography==3.2 zope.interface==5.3.0a1
+pip3 install cryptography zope.interface
 
 dnf install https://kojipkgs.fedoraproject.org//packages/whatmask/1.2/27.fc34/x86_64/whatmask-1.2-27.fc34.x86_64.rpm -y
 
@@ -322,15 +322,17 @@ myip="$(w | grep "$mytty" | awk '{print $3}')"
 echo
 CLD_DOMAIN=$(grep "CLD_DOMAIN=" /var/cld/creds/creds | cut -d = -f 2 | tr -d '"'"'")
 echo
-echo "admin:::ALL:ALL:default" >> /var/cld/creds/passwd
 echo
-echo
-echo Thanks for choosing the CLD! 
-echo
-echo The web panel is available at:
-echo "https://${CLD_DOMAIN} (the recommended method - make sure you have the correct DNS record, SSL will issued automatically in 1 minute after first request)"
-echo and
-echo "https://${HOSTIP} (some features may not be available with a self-signed certificate)"
+cat << DEPLOYOUTPUT
+Thanks for choosing the CLD!
+The web panel is available at:
+"ttps://${CLD_DOMAIN} (the recommended method - make sure you have the correct DNS record, SSL will issued automatically in 1 minute after first request)
+and
+https://${HOSTIP} (some features may not be available with a self-signed certificate)
+
+user: Admin
+password: $(cat /home/${USER_NAME}/.cldusercreds)
+DEPLOYOUTPUT
 }
 
 if grep --quiet 'stretch' /etc/*-release ; then

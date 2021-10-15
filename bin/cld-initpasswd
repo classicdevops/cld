@@ -54,6 +54,7 @@ else
     echo user created:
     echo user: ${USER_NAME}
     echo password: ${USER_PASSWORD}
+    echo -e "${USER_PASSWORD}" >> /home/${USER_NAME}/.cldusercreds
 fi
 if [ -d /var/cld/access/users/${USER_NAME} ]
 then
