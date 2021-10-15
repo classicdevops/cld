@@ -331,7 +331,7 @@ and
 https://${HOSTIP} (some features may not be available with a self-signed certificate)
 
 user: Admin
-password: $(cat /home/${USER_NAME}/.cldusercreds)
+password: $(cat /home/admin/.cldusercreds)
 DEPLOYOUTPUT
 }
 
