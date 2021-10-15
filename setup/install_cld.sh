@@ -219,6 +219,8 @@ EONGINX
 yum install -y nginx
 
 yum install python39 python39-pip  -y
+ln -fs /usr/bin/python3.9 /usr/bin/python3
+ln -fs /usr/bin/pip3.9 /usr/bin/pip3
 pip3 install cryptography flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 
 yum install python*-crypto python*-cryptography certbot python3-certbot-dns-cloudflare --skip-broken -y
