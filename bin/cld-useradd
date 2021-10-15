@@ -33,7 +33,7 @@ CLD_USER=$ARG1
 [ "$CLD_USER" ] || echoexit1 CLD user is not defined
 CLD_USER_PASSWORD=$ARG2
 [ "$CLD_USER_PASSWORD" ] || CLD_USER_PASSWORD=$(passwordgen)
-[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cld-mount,cldx,cldxmount,cld-modules"
+[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cld-modules,cld-mount,cld-umount,cldx,cldxmount,cldxumount"
 # useradd ${CLD_USER} --shell /bin/bash
 grep -q "^${CLD_USER}:" /var/cld/creds/passwd && echoexit1 User ${CLD_USER} already exist - exit
 sed -i -e '$a\' /var/cld/creds/passwd
