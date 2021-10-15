@@ -178,7 +178,7 @@ echo "${MAIN_CLD_KEY}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added
 for SSHKEYUSER in $(cat ${CLD_FILTER_DIR}/instances/${VM})
 do
 SSHKEYVAR="sshkeys_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${SSHKEYUSER})"
-echo "${!SSHKEYVAR}" | awk -v date="${SSHKEY_DEPLOY_DATE}" -v user="${SSHKEYUSER}" '{print $0" # added by cld_sshkeysdeploy "date" - key of user "user}'
+echo "${!SSHKEYVAR}" | egrep -q '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' && echo "${!SSHKEYVAR}" | awk -v date="${SSHKEY_DEPLOY_DATE}" -v user="${SSHKEYUSER}" '{print $0" # added by cld_sshkeysdeploy "date" - key of user "user}'
 done | sort -u
 )
 EOUSERSSH${TMPLT_ID}
