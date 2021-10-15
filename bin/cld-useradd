@@ -36,6 +36,7 @@ CLD_USER_PASSWORD=$ARG2
 [ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cld-mount,cldx,cldxmount,cld-modules"
 # useradd ${CLD_USER} --shell /bin/bash
 grep -q "^${CLD_USER}:" /var/cld/creds/passwd && echoexit1 User ${CLD_USER} already exist - exit
+sed -i -e '$a\' /var/cld/creds/passwd
 echo "${CLD_USER}:::${CLD_MODULES}:${CLD_TOOLS}:${CLD_GROUPS}" >> /var/cld/creds/passwd
 /var/cld/bin/cld-initpasswd --user=${CLD_USER} &>/dev/null
 echo user: ${CLD_USER}
