@@ -344,7 +344,7 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script -a "$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script 2>/dev/null | wc -l)" != "0" ]
+    if [ -f /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script -a "$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script 2>/dev/null | wc -w)" != "0" ]
         then
         echo Deploy script is: "$(echo;cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script)"
         echo
