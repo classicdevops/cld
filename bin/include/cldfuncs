@@ -23,7 +23,7 @@ mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log &>/dev/nu
 CLD_ACTION_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${VM}
 [ "$TEST" == "1" ] && {
  mkdir -p /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/{test_log,test_status} &>/dev/null
-LD_ACTION_TEST_STATUS=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${VM}
+CLD_ACTION_TEST_STATUS=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${VM}
 CLD_ACTION_TEST_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/${VM}
 }
 [ "$BACKUP" == "1" ] && {
