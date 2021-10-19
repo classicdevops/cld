@@ -628,10 +628,10 @@ if [ "$TEST" == "1" ]
             echo TEST_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status	
             echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"
             # for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v "$(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 8)" || ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/ | grep -v "^status$\|^status_log$")
-            for FAILED_INSTANCE in $(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 8 | grep -v "^status$\|^status_log$\|^test_status$")
+            for FAILED_INSTANCE in $(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 9 | grep -v "^status$\|^status_log$\|^test_status$")
             do
-            echo "$(du -b /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "$1}')"
-            done
+            echo "$(du -b /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "int($1/1024)"Kb"}')"
+            done | sort -k2 -n
         fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status_log
         echo
 fi
