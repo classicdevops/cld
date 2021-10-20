@@ -201,7 +201,7 @@ FIRST_LINE=$(grep -nh cldaccess <<< "${IPTABLES_STATE}" | head -1 | cut -d : -f 
 LAST_LINE=$(grep -nh cldaccess <<< "${IPTABLES_STATE}" | tail -1 | cut -d : -f 1)
 FIRST_PART=$(head -n $((${FIRST_LINE}-1)) <<< "${IPTABLES_STATE}")
 SECOND_PART=$(tail -n +$((${LAST_LINE}+1)) <<< "${IPTABLES_STATE}")
-CURRENT_STATE_HASH=$(iptables-save | grep cldaccess | md5sum | awk '{print $1}')
+CURRENT_STATE_HASH=$(iptables-save | grep cldaccess | sort -u | md5sum | awk '{print $1}')
 NEW_STATE=$(cat << EOSTATE
 $FIRST_PART
 $(
@@ -227,7 +227,7 @@ done
 $SECOND_PART
 EOSTATE
 )
-NEW_STATE_HASH=$(echo "$NEW_STATE" | grep cldaccess | md5sum | awk '{print $1}')
+NEW_STATE_HASH=$(echo "$NEW_STATE" | grep cldaccess | sort -u | md5sum | awk '{print $1}')
 if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" ]
 then
 iptables-restore << EOACCESS
@@ -242,7 +242,7 @@ FIRST_LINE=$(grep -nh cldaccessv6 <<< "${IPTABLES_STATE6}" | head -1 | cut -d : 
 LAST_LINE=$(grep -nh cldaccessv6 <<< "${IPTABLES_STATE6}" | tail -1 | cut -d : -f 1)
 FIRST_PART=$(head -n $((${FIRST_LINE}-1)) <<< "${IPTABLES_STATE6}")
 SECOND_PART=$(tail -n +$((${LAST_LINE}+1)) <<< "${IPTABLES_STATE6}")
-CURRENT_STATEV6_HASH=$(ip6tables-save | grep cldaccessv6 | md5sum | awk '{print $1}')
+CURRENT_STATEV6_HASH=$(ip6tables-save | grep cldaccessv6 | sort -u | md5sum | awk '{print $1}')
 NEW_STATEV6=$(cat << EOSTATEV6
 $FIRST_PART
 $(
@@ -269,7 +269,7 @@ $SECOND_PART
 EOSTATEV6
 )
 
-NEW_STATEV6_HASH=$(echo "$NEW_STATEV6" | grep cldaccess | md5sum | awk '{print $1}')
+NEW_STATEV6_HASH=$(echo "$NEW_STATEV6" | grep cldaccessv6 | sort -u | md5sum | awk '{print $1}')
 if [ "$CURRENT_STATEV6_HASH" != "$NEW_STATEV6_HASH" ]
 then
 ip6tables-restore << EOACCESS
