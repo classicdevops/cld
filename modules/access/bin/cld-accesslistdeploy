@@ -207,7 +207,7 @@ $FIRST_PART
 $(
 for BLACK_IP in $BLACK_IPS
 do
-echo "-I INPUT -s ${BLACK_IP}/32 -m comment --comment cldaccess -j DROP"
+echo "-A INPUT -s ${BLACK_IP}/32 -m comment --comment cldaccess -j DROP"
 done
 
 echo "-A INPUT -m state --state ESTABLISHED,RELATED -m comment --comment cldaccess -j ACCEPT"
@@ -248,7 +248,7 @@ $FIRST_PART
 $(
 for BLACK_IP in $BLACK_IPS6
 do
-echo "-I INPUT -s ${BLACK_IP}/128 -m comment --comment cldaccessv6 -j DROP"
+echo "-A INPUT -s ${BLACK_IP}/128 -m comment --comment cldaccessv6 -j DROP"
 done
 
 echo "-A INPUT -m state --state ESTABLISHED,RELATED -m comment --comment cldaccessv6 -j ACCEPT"
