@@ -207,22 +207,22 @@ $FIRST_PART
 $(
 for BLACK_IP in $BLACK_IPS
 do
-echo "-I INPUT -s ${BLACK_IP}/32 -j DROP -m comment --comment cldaccess"
+echo "-I INPUT -s ${BLACK_IP}/32 -m comment --comment cldaccess -j DROP"
 done
 
-echo "-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccess"
+echo "-A INPUT -m state --state ESTABLISHED,RELATED -m comment --comment cldaccess -j ACCEPT"
 for LOCAL_NET in $LOCAL_NETS
 do
-echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
+echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j ACCEPT"
 done
 
 for IP in $ALLOWED_IPS
 do
-echo "-A INPUT -s ${IP}/32 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccess"
+echo "-A INPUT -s ${IP}/32 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j ACCEPT"
 done
 )
--A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
--A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccess
+-A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j DROP
+-A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j DROP
 
 $SECOND_PART
 EOSTATE
@@ -248,22 +248,22 @@ $FIRST_PART
 $(
 for BLACK_IP in $BLACK_IPS6
 do
-echo "-I INPUT -s ${BLACK_IP}/128 -j DROP -m comment --comment cldaccessv6"
+echo "-I INPUT -s ${BLACK_IP}/128 -m comment --comment cldaccessv6 -j DROP"
 done
 
-echo "-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT -m comment --comment cldaccessv6"
+echo "-A INPUT -m state --state ESTABLISHED,RELATED -m comment --comment cldaccessv6 -j ACCEPT"
 for LOCAL_NET in $LOCAL_NETS6
 do
-echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6"
+echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j ACCEPT"
 done
 
 for IP in $ALLOWED_IPS6
 do
-echo "-A INPUT -s ${IP}/128 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j ACCEPT -m comment --comment cldaccessv6"
+echo "-A INPUT -s ${IP}/128 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j ACCEPT"
 done
 )
--A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccessv6
--A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -j DROP -m comment --comment cldaccessv6
+-A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j DROP
+-A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j DROP
 
 $SECOND_PART
 EOSTATEV6
