@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Utility to add IP address to the black list
+Utility to add IP address to the ban list
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
@@ -16,12 +16,12 @@ source /var/cld/bin/include/cldfuncs
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || echo "ip address is incorrect please fix it and try again"
 echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || exit 1
-grep -q "${1}" /var/cld/modules/access/data/blackips && echo "ip ${1} already is in black list" || (echo "${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/blackips && echo "ip ${1} successfully added to black list with comment ${2}")
-BLACK_IP=$1
+grep -q "${1}" /var/cld/modules/access/data/banips && echo "ip ${1} already is in ban list" || (echo "${1}_${2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/banips && echo "ip ${1} successfully added to ban list with comment ${2}")
+BAN_IP=$1
 COMMENT=$2
 source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
-cf-firewall-rules-ip-ban-add ${BLACK_IP} ${COMMENT}_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip ${BLACK_IP} successfully banned by CloudFlare for account ${CFACC}"
+cf-firewall-rules-ip-ban-add ${BAN_IP} ${COMMENT}_$(TZ=Europe/Moscow date +%F-%H-%M) | grep -q '"success": true' && echo "ip ${BAN_IP} successfully banned by CloudFlare for account ${CFACC}"
 done

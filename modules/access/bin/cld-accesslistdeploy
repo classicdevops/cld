@@ -57,11 +57,11 @@ CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f
 )
 EOHOSTSACCESS
 
-cat > /etc/hosts.deny.tmp << 'EOHOSTSBLACK'
+cat > /etc/hosts.deny.tmp << 'EOHOSTSBAN'
 $(
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 )
-EOHOSTSBLACK
+EOHOSTSBAN
 cat > /etc/hosts.ports.tmp << 'EOHOSTSPORTS'
 $(cat /var/cld/creds/protected_ports 2>/dev/null)
 EOHOSTSPORTS
@@ -115,7 +115,7 @@ $(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9
 EOIPS
 )
 
-BLACK_IPS=$(cat << EOIPS
+BAN_IPS=$(cat << EOIPS
 $(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
 EOIPS
 )
@@ -125,14 +125,14 @@ $(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "([a-f0-9:]+:+)+[
 EOIPS
 )
 
-BLACK_IPS6=$(cat << EOIPS
+BAN_IPS6=$(cat << EOIPS
 $(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+")
 EOIPS
 )
 
-[ "$BLACK_IPS" ] || BLACK_IPS=172.31.255.254
+[ "$BAN_IPS" ] || BAN_IPS=172.31.255.254
 
-[ "$BLACK_IPS6" ] || BLACK_IPS6=fdfb:bb7c:5000:553a:ffff:ffff:ffff:ffff
+[ "$BAN_IPS6" ] || BAN_IPS6=fdfb:bb7c:5000:553a:ffff:ffff:ffff:ffff
 
 ALLOWED_IPS_LINES=$(wc -w <<< "$ALLOWED_IPS")
 
@@ -205,9 +205,9 @@ CURRENT_STATE_HASH=$(iptables-save | grep cldaccess | sort -u | md5sum | awk '{p
 NEW_STATE=$(cat << EOSTATE
 $FIRST_PART
 $(
-for BLACK_IP in $BLACK_IPS
+for BAN_IP in $BAN_IPS
 do
-echo "-A INPUT -s ${BLACK_IP}/32 -m comment --comment cldaccess -j DROP"
+echo "-A INPUT -s ${BAN_IP}/32 -m comment --comment cldaccess -j DROP"
 done
 
 echo "-A INPUT -m state --state ESTABLISHED,RELATED -m comment --comment cldaccess -j ACCEPT"
@@ -246,9 +246,9 @@ CURRENT_STATEV6_HASH=$(ip6tables-save | grep cldaccessv6 | sort -u | md5sum | aw
 NEW_STATEV6=$(cat << EOSTATEV6
 $FIRST_PART
 $(
-for BLACK_IP in $BLACK_IPS6
+for BAN_IP in $BAN_IPS6
 do
-echo "-A INPUT -s ${BLACK_IP}/128 -m comment --comment cldaccessv6 -j DROP"
+echo "-A INPUT -s ${BAN_IP}/128 -m comment --comment cldaccessv6 -j DROP"
 done
 
 echo "-A INPUT -m state --state ESTABLISHED,RELATED -m comment --comment cldaccessv6 -j ACCEPT"

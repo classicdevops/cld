@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Show black list
+Show ban list
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -8,4 +8,4 @@ cld-banlist
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-cat /var/cld/modules/access/data/blackips | tr '_' ' ' #| awk -v f="$F" -v b="$B" '{print f$0f}'
+cat /var/cld/modules/access/data/banips | tr '_' ' ' #| awk -v f="$F" -v b="$B" '{print f$0f}'

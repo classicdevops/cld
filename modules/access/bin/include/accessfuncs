@@ -38,7 +38,7 @@ CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f
 )
 EOHOSTSACCESS
 
-cat > /etc/hosts.deny.tmp << 'EOHOSTSBLACK'
+cat > /etc/hosts.deny.tmp << 'EOHOSTSBAN'
 $(
 if [ -s "/var/cld/modules/access/data/instances/$1/blackips" ]
 then
@@ -47,7 +47,7 @@ else
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 fi
 )
-EOHOSTSBLACK
+EOHOSTSBAN
 
 cat > /etc/hosts.ports.tmp << 'EOHOSTSPORTS'
 $(
@@ -103,7 +103,7 @@ CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f
 )
 EOHOSTSACCESS
 
-cat > /etc/hosts.deny.tmp << 'EOHOSTSBLACK'
+cat > /etc/hosts.deny.tmp << 'EOHOSTSBAN'
 $(
 if [ -s "/var/cld/modules/access/data/instances/$1/blackips" ]
 then
@@ -112,7 +112,7 @@ else
 grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 fi
 )
-EOHOSTSBLACK
+EOHOSTSBAN
 
 cat > /etc/hosts.ports.tmp << 'EOHOSTSPORTS'
 $(
