@@ -10,6 +10,7 @@ $1                             First PATTERN filtering allowed instances
 $2                             Second PATTERN filtering allowed instances
 $3                             Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
+--all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -23,9 +24,10 @@ source /var/cld/modules/access/bin/include/accessfuncs
 for i in ${CLDOPTS}
 do
 case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;;
--*)                                                                     ;;
-*) let ii++; declare ARG$ii=${i}                                        ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
+-*)                                             ;;
+*) let ii++; declare ARG$ii=${i}                ;;
 esac
 done
 
@@ -44,7 +46,7 @@ done
 SSHKEY_DEPLOY_DATE="$(date +%d.%m.%Y\ %H:%M)"
 
 ############## Deploy begin ##############
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
 do
 if [ "$VM" ]
 then

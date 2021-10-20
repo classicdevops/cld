@@ -12,6 +12,7 @@ $3                             Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
 --allowedgroups=GROUP1,GROUP2  Groups of instances which ip addresses will be added to accesslist together with /var/cld/modules/access/data/myips and /var/cld/modules/access/data/enabledips - default is the same as --groups or "default"
 --mikrotik                     Enable access list deploy to Mikrotik
+--all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -25,17 +26,15 @@ source /var/cld/modules/access/bin/include/accessfuncs
 grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
 init-load-constants CLD_IP\|1.2.3.4
 
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
-
 for i in "$@"
 do
 case $i in
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;;
 -a=*|-allowedgroups=*|--allowedgroups=*) CLD_ALLOW_GROUPS="${i#*=}"     ;;
 -m|-mikrotik|--mikrotik) MIKROTIK=1                                     ;;
-*) ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"                               ;;
+-*)                                                                     ;;
+*) let ii++; declare ARG$ii=${i}                                        ;;
 esac
 done
 
@@ -287,7 +286,7 @@ else
 CLD_ACCESS_LIST_DEFAULT="$CLD_ACCESS_LIST"
 fi
 
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3")
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
 do
 if [ "$VM" ]
 then
