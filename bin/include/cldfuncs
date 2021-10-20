@@ -231,7 +231,12 @@ exit 1
 
 INSTANCE_GROUP_FUNCS()
 {
+if [ "$CLD_ALL_GROUPS_ARG" == '--all' ]
+then
+CLD_USER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | head -c -1 | tr '\n' ',')"
+else
 CLD_USER_GROUPS=$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6)
+fi
 CLD_USER_GROUPS_COUNT=$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' ' ' | wc -w)
 [ "$CLD_USER_GROUPS_COUNT" -eq 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/${CLD_USER_GROUPS}/clouds) | cut -d '/' -f 6 | tail -1)
 [ "$CLD_USER_GROUPS_COUNT" -gt 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/\{${CLD_USER_GROUPS}\}/clouds) | cut -d '/' -f 6 | tail -1)

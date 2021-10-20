@@ -2,11 +2,15 @@
 HELP_DESC=$(cat << 'EOL'
 Direct instance deploy CLI utility of ClassicDevOps access system
 Read pipe input and execute on remote CLD instance
+Will choose first one after all filters
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                       First PATTERN filtering allowed instances and choose last one
+$1                       First PATTERN filtering allowed instances
+$2                       Second PATTERN filtering allowed instances
+$3                       Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2   Filtering by instance groups
+--all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to 
 --debug                  Verbose output of connection
 EOL
 )
@@ -20,7 +24,6 @@ EOL
 HELP_ONLY="CLI"
 
 source /var/cld/bin/include/cldfuncs
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 
 for i in "$@"
 do
@@ -28,11 +31,13 @@ case $i in
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
 -l|-list|--list) LIST=1                         ;;
 -d|-debug|--debug) VERBOSE=" -v"                ;;
-*) ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
+-*)                                             ;;
+*) let ii++; declare ARG$ii=${i}                ;;
 esac
 done
 
-VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep -i "$ARG1" | head -1)
+VM=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG" | head -1)
 CLD_LOGS
 if [ "$VM" ]
 then

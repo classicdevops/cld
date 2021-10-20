@@ -2,7 +2,7 @@
 HELP_DESC=$(cat << 'EOL'
 Direct mount utility for mount filesystems of instance
 Remote filesystem mounting by sshfs in /home/${USER}/mnt/${CLD_INSTANCE} directory
-If there are several after - the first one will be selected
+If there are several after filtering - the first one will be selected
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
@@ -10,6 +10,7 @@ $1                       First PATTERN filtering allowed instances
 $2                       Second PATTERN filtering allowed instances
 $3                       Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2   Filtering by instance groups
+--all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to 
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -24,12 +25,13 @@ for i in "$@"
 do
 case $i in
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
 -*)                                             ;;
 *) let ii++; declare ARG$ii=${i}                ;;
 esac
 done
 
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" | grep "$(df 2>/dev/null | grep /home/${SUDO_USER}/mnt | rev | cut -d / -f 1 | rev)" | head -1)
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG" | grep "$(df 2>/dev/null | grep /home/${SUDO_USER}/mnt | rev | cut -d / -f 1 | rev)" | head -1)
 do
   CLD_LOGS
   if [ "$VM" ]
