@@ -182,7 +182,7 @@ echo "${!SSHKEYVAR}" | egrep -q '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?
 done | sort -u
 )
 EOUSERSSH${TMPLT_ID}
-grep -v "cld_sshkeysdeploy" ~/.ssh/authorized_keys >> ~/.ssh/authorized_keys_tmp
+$([ "${SKIP_MANUAL_ADDED_KEYS}" == "1" ] || echo 'grep -v "cld_sshkeysdeploy" ~/.ssh/authorized_keys >> ~/.ssh/authorized_keys_tmp')
 chmod 600 ~/.ssh/authorized_keys_tmp
 unalias mv &>/dev/null
 grep -q "^${MAIN_CLD_KEY}$" ~/.ssh/authorized_keys_tmp && mv -f ~/.ssh/authorized_keys_tmp ~/.ssh/authorized_keys

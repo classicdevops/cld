@@ -11,6 +11,7 @@ $2                             Second PATTERN filtering allowed instances
 $3                             Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
 --all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
+--delmanualkeys                Delete existing manual added keys on instances
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -24,10 +25,11 @@ source /var/cld/modules/access/bin/include/accessfuncs
 for i in ${CLDOPTS}
 do
 case $i in
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
--a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
--*)                                             ;;
-*) let ii++; declare ARG$ii=${i}                ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                  ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"                        ;;
+-d|-delmanualkeys|--delmanualkeys) SKIP_MANUAL_ADDED_KEYS="1"    ;;
+-*)                                                              ;;
+*) let ii++; declare ARG$ii=${i}                                 ;;
 esac
 done
 
