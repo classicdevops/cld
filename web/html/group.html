@@ -45,7 +45,7 @@
             <button id="groupusers-button" onclick="savedata('groupusers', '{{ url_for('groupusers', name=groups[0].group) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply users</button>
             <br><br><hr>
             <p>{{ groups[0].group }} instances:</p>
-            <form id="groupclouds" style="margin: 0px;">
+            <form id="groupclouds" style="margin: 0px; height: 50vh; overflow: overlay;">
               {% for cloud in disallowedclouds %}
               {% if cloud in allowedclouds %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">

@@ -96,7 +96,7 @@
             <button id="usertools-button" onclick="savedata('usertools', '{{ url_for('usertools', name=users[0].user) }}')" class="btn btn-primary bt mb-2" style="float: right">Apply tools</button>
             <br><br><hr>
             <p>Instances:</p>
-            <form id="userclouds" style="margin: 0px;">
+            <form id="userclouds" style="margin: 0px; height: 50vh; overflow: overlay;">
               {% for cloud in disallowedclouds %}
               {% if cloud in allowedclouds %}{% set boxstatus = ' checked' %}{% else %}{% set boxstatus = '' %}{% endif %}
               <div class="form-check form-check-inline">
