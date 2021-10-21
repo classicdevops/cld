@@ -36,7 +36,7 @@ done
 CLD_GROUPS=${CLD_GROUPS:-default}
 export MAIN_CLD_KEY="$(cat /root/.ssh/id_rsa.pub)"
 
-[ "${MAIN_CLD_KEY}" ] || { echo Main CLD SSH key is not defined - probably you need generate it ssh-keygen commad - exit ; exit 1 ; }
+[ "${MAIN_CLD_KEY}" ] || { echo Main CLD SSH key is not defined - probably you need generate it with ssh-keygen commad - exit ; exit 1 ; }
 
 generate_access_map
 
