@@ -12,19 +12,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.9.0/css/xterm.css" />
   </head>
   <body style="background: black;">
-    <span>
-    <span style="font-size: small;color: white;">cld web shell</span>&nbsp;&nbsp;&nbsp;
-    <span style="font-size: small;color: white;">status: <span style="font-size: small;color: black;background-color: lightgray;" id="status">| connecting... |</span>
-    </span>
-    <span style="padding-left: calc(100% - 910px);">
-    <input type="text" placeholder="/path/to/file_for_download" class="form-control" id="downloadfile" value="/etc/hosts" required="" style="border-color: white;border-style: solid;background-color: black;color:white;">
-    <button style="border-color: lightgreen;border-style: solid;background-color: black;color:lightgreen;" id="downloadbtn" name="downloadbtn" href="#">download</button>
-    &nbsp;
-    <input type="text" name="target" id="target" placeholder="/dir/to/upload_file/" style="border-color: white;border-style: solid;background-color: black;color:white;border-width:2;" value="/tmp/">
-    <input id="uploadfile" type="file" name="sortpic" style="width:120">
-    <button id="uploadfilebtn" style="border-color: lightgreen;border-style: solid;background-color: black;color:lightgreen;">upload</button>
-    </span>
-    </span>
+    <div style="display: flex;align-items: center;justify-content: flex-start;flex-wrap: wrap;flex-direction: row;column-gap: 5px;row-gap: 4px;">
+      <span style="font-size: small;color: white;">CLD web shell</span> 
+      <span style="font-size: small;color: white;">status: <span style="font-size: small;color: black;background-color: lightgray;" id="status">| connecting... |</span>
+      </span>
+      <input type="text" placeholder="/path/to/file_for_download" class="form-control" id="downloadfile" value="/etc/hosts" required="" style="border-color: white;border-style: solid;background-color: black;color:white;">
+      <button style="border-color: lightgreen;border-style: solid;background-color: black;color:lightgreen;" id="downloadbtn" name="downloadbtn" href="#">download</button>
+      &nbsp;
+      <input type="text" name="target" id="target" placeholder="/dir/to/upload_file/" style="border-color: white;border-style: solid;background-color: black;color:white;border-width:2;" value="/tmp/">
+      <input id="uploadfile" type="file" name="sortpic" style="width:120">
+      <button id="uploadfilebtn" style="border-color: lightgreen;border-style: solid;background-color: black;color:lightgreen;">upload</button>
+    </div>
     <div style="width: 100%; height: calc(100% - 25px);" id="terminal"></div>
     <!-- xterm -->
     <script src="https://cdn.jsdelivr.net/npm/xterm@4.9.0/lib/xterm.min.js"></script>

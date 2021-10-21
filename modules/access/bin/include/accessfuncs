@@ -40,11 +40,11 @@ EOHOSTSACCESS
 
 cat > /etc/hosts.deny.tmp << 'EOHOSTSBAN'
 $(
-if [ -s "/var/cld/modules/access/data/instances/$1/blackips" ]
+if [ -s "/var/cld/modules/access/data/instances/$1/banips" ]
 then
-grep -svh "^$\|^#" /var/cld/modules/access/data/instances/$1/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
+grep -svh "^$\|^#" /var/cld/modules/access/data/instances/$1/banips | awk -F"_" '{print "sshd: "$1" # ban ip of "$2}'
 else
-grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
+grep -svh "^$\|^#" /var/cld/modules/access/data/banips | awk -F"_" '{print "sshd: "$1" # ban ip of "$2}'
 fi
 )
 EOHOSTSBAN
@@ -105,11 +105,11 @@ EOHOSTSACCESS
 
 cat > /etc/hosts.deny.tmp << 'EOHOSTSBAN'
 $(
-if [ -s "/var/cld/modules/access/data/instances/$1/blackips" ]
+if [ -s "/var/cld/modules/access/data/instances/$1/banips" ]
 then
-grep -svh "^$\|^#" /var/cld/modules/access/data/groups/$1/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
+grep -svh "^$\|^#" /var/cld/modules/access/data/groups/$1/banips | awk -F"_" '{print "sshd: "$1" # ban ip of "$2}'
 else
-grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
+grep -svh "^$\|^#" /var/cld/modules/access/data/banips | awk -F"_" '{print "sshd: "$1" # ban ip of "$2}'
 fi
 )
 EOHOSTSBAN
