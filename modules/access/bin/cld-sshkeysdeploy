@@ -10,8 +10,8 @@ $1                             First PATTERN filtering allowed instances
 $2                             Second PATTERN filtering allowed instances
 $3                             Third PATTERN filtering allowed instances
 --groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
---all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
---delmanualkeys                Delete existing manual added keys on instances
+--all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix - it will impact just allowed instances for current user - groups argument will still filtering as well
+--delmanualkeys                Delete existing manual added keys at instances
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
