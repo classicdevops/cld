@@ -36,9 +36,6 @@ done
 
 CLD_USER_ROLE=$(user_is_admin $SUDO_USER)
 
-
-
-[ "$SUDO_USER" = "" ] && SUDO_USER=admin
 showcreds()
 {
 if  [ "$CLD_USER_ROLE" = "0" -a "$SHOW_PASS" = "1" ]
@@ -56,6 +53,7 @@ else
     done
 fi
 }
+
 exportputty()
 {
 cat << EOMTPUTTY
@@ -67,23 +65,9 @@ EOMTPUTTY
 for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
 do
   CLD_LOGS
-  if [ "$VM" = "" ] ; then
-   echo "you choosed incorrect VM, please try again and type numbers only"
-  else
-    GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
-    if [ "$GROUP" = "" ] ; then echo "choosen CLOUD have incorrect GROUP" ; exit 1 ; fi
-    if grep -qs "1" /var/cld/access/groups/${GROUP}/funcs
-    then
-    source <(for GROUPFUNC in funcvars 
-        do
-          echo "${GROUP}_${GROUPFUNC}(){"
-          cat /var/cld/access/groups/${GROUP}/${GROUPFUNC}
-          echo '}'
-        done)
-      CLD_VARS=${GROUP}_funcvars
-    else
-      CLD_VARS=EXTERNAL_VARS
-    fi
+  if [ "$VM" ]
+  then
+    INSTANCE_GROUP_FUNCS
     $CLD_VARS
     [ "$MTPUTTY_EXPORT" ] && exportputty || showcreds
   fi
