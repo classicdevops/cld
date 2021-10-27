@@ -237,7 +237,7 @@ CLD_USER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d
 else
 CLD_USER_GROUPS=$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6)
 fi
-CLD_USER_GROUPS_COUNT=$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' ' ' | wc -w)
+CLD_USER_GROUPS_COUNT=$(echo "${CLD_USER_GROUPS}" | tr ',' ' ' | wc -w)
 [ "$CLD_USER_GROUPS_COUNT" -eq 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/${CLD_USER_GROUPS}/clouds) | cut -d '/' -f 6 | tail -1)
 [ "$CLD_USER_GROUPS_COUNT" -gt 1 ] && export GROUP=$(source <(echo grep -l "${VM}" /var/cld/access/groups/\{${CLD_USER_GROUPS}\}/clouds) | cut -d '/' -f 6 | tail -1)
 [ "$GROUP" ] || export GROUP=$(grep -l $VM /var/cld/access/groups/*/clouds | cut -d '/' -f 6 | tail -1)
