@@ -15,7 +15,7 @@
          <div>cpu: <div class="prein">' + cpu.toUpperCase() + '</div></div>\
          <div>ram: <div class="prein">' + ram.toUpperCase() + '</div></div>\
          <div>disk: <div class="prein">' + disk.toUpperCase() + '</div></div>\
-         <div>white ip: <div class="prein">' + whiteips.toUpperCase() + '</div></div>\
+         <div>public ip: <div class="prein">' + whiteips.toUpperCase() + '</div></div>\
          <div>private ip: <div class="prein">' + grayips.toUpperCase() + '</div></div>\
          </div>\
          <button type="button" class="btn btn-success" onclick="controlkvm(\''+id+'\', \''+kvmid+'\', \'start\', \''+hyper+'\')" style="width: 10%;min-width: 120px;margin-top: 10px;">Start KVM</button>\
