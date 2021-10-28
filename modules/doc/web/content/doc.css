@@ -3,7 +3,7 @@
 ::-webkit-scrollbar-thumb {background: #747473;}
 ::-webkit-scrollbar-thumb:hover {background: #555;}
 
-.cFYLqk {
+.kreCXJ {
     font-family: Montserrat, sans-serif;
     font-weight: 400;
     font-size: 1.85714em;
@@ -43,14 +43,14 @@ div.sc-hKFxyN.gHYYBK.api-info p {
   display: none;
 }
 
-.sc-evcjBb.ifwede.operation-type.options {
+span.sc-gIvpjk.juglBf.operation-type.options {
   background-color: rgb(39 108 166);
   text-indent: -9999px;
   line-height: 0;
   visibility: hidden;
 }
 
-.sc-evcjBb.ifwede.operation-type.options:after {
+span.sc-gIvpjk.juglBf.operation-type.options:after {
   background-color: rgb(39 108 166);
   content: "bash";
   text-indent: 0;
