@@ -33,7 +33,7 @@ div.sc-cTApHj.fVRyQa {
   margin: 0px;
 }
 
-pre.sc-iBzEeX.sc-cOifOu.coaOfs.emjsJn {
+pre.sc-jNnpgg.sc-dPaNzc.crBktj.FNwuy {
   line-height: inherit;
   white-space: pre !important;
   overflow-x: scroll;
@@ -117,4 +117,15 @@ pre {
   white-space: pre-wrap !important;
   border: 1px solid #ffffff2b !important;
   border-radius: 2px !important;
+}
+
+.emjsJn pre {
+    background-color: gainsboro;
+    color: black;
+    padding: 20px;
+    line-height: inherit;
+    white-space: pre !important;
+    overflow-x: scroll;
+    border-radius: 5px !important;
+    border: 1px solid #276ca6 !important;
 }
