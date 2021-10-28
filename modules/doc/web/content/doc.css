@@ -120,12 +120,11 @@ pre {
 }
 
 .emjsJn pre {
-    background-color: gainsboro;
-    color: black;
-    padding: 20px;
+    background-color: gainsboro !important;
+    color: black !important;
     line-height: inherit;
     white-space: pre !important;
-    overflow-x: scroll;
+    overflow-x: scroll !important;
     border-radius: 5px !important;
     border: 1px solid #276ca6 !important;
 }
