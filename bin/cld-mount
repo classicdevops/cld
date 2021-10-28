@@ -21,7 +21,7 @@ EOL
 HELP_ONLY="CLI WEB"
 source /var/cld/bin/include/cldfuncs
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;

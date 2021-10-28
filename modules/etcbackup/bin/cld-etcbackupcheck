@@ -22,7 +22,7 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"     ;;

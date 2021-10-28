@@ -51,7 +51,7 @@ fi
 
 test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -c=*|-clouds=*|--clouds=*) CLOUDS=$(tr ',' '\n' <<< "${i#*=}")                              ;;

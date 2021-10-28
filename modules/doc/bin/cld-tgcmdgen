@@ -14,7 +14,7 @@ EOL
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -s|-show|--show) SHOW=1     ;;

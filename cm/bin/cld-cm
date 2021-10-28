@@ -27,7 +27,7 @@ ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -H=*|-hypers=*|--hypers=*) HPRS="${i#*=}"       ;;

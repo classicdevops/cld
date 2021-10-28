@@ -20,7 +20,7 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -d=*|-domain=*|--domain=*) DOMAIN="${i#*=}"                     ;;

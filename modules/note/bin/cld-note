@@ -16,7 +16,7 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -j|-json|--json) JSON=1             ;;

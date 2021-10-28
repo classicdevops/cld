@@ -17,7 +17,7 @@ HELP_ONLY="CLI"
 source /var/cld/bin/include/cldfuncs
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cld.example.com
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -c=*|-chatid=*|--chatid=*) TG_GROUP="${i#*=}"   ;;

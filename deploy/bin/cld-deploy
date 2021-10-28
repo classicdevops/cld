@@ -45,7 +45,7 @@ ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -d=*|-deploy=*|--deploy=*) DEPLOY="${i#*=}"         ;;
@@ -184,7 +184,7 @@ fi
 [ -d /var/cld/deploy/deploys/${DEPLOY} ] || echoexit1 Deploy is not exist
 [ "$DEPLOY" ] && source /var/cld/deploy/deploys/${DEPLOY}/vars
 
-for i in "$@"
+for i in ${CLDOPTS}
 do
 case $i in
 -c=*|-clouds=*|--clouds=*) CLOUDS=$(tr ',' '\n' <<< "${i#*=}")                              ;;

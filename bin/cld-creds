@@ -7,6 +7,7 @@ HELP_ARGS=$(cat << 'EOL'
 $1                       First PATTERN filtering allowed instances
 $2                       Second PATTERN filtering allowed instances
 $3                       Third PATTERN filtering allowed instances
+--groups=GROUP1,GROUP2   Filtering by instance groups
 --mtputty                Export data in mtputty app format to paste as group
 --all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 --password               Admin user option - will show password if it exist at regular CLD instance string
