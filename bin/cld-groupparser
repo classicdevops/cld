@@ -25,8 +25,8 @@ CLD_USER=$(cut -d _ -f 4 <<< $INSTANCE)
 cat << EOL >> /root/.ssh/config.cld.bak
 Host ${INSTANCE}
     HostName ${CLD_IP}
-    User ${CLD_USER}
-    Port ${CLD_PORT}
+    User ${CLD_USER:-root}
+    Port ${CLD_PORT:-22}
     StrictHostKeyChecking no
     
 EOL
