@@ -429,11 +429,12 @@ wait
 
 cat /var/cld/cm/data/queue_create
 
-if du /var/cld/cm/data/queue_create | tr '\t' ' ' | cut -d ' ' -f 1 | grep -q "^0$"
+if [ "$(cat /var/cld/cm/data/queue_create | wc -w)" -le "3" ]
 then
  exit 0
 else
 CMD_CREATE="`head -1 /var/cld/cm/data/queue_create`"
+[ "$(echo "$CMD_CREATE" | wc -w)" -le "3" ] && continue
 sed -i '1d' /var/cld/cm/data/queue_create
 echo ${CMD_CREATE} | bash
 fi
