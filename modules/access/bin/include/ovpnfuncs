@@ -116,6 +116,7 @@ status /var/log/openvpn-status-${VPN_ID}.log
 verb 3
 script-security 2
 client-connect "/usr/bin/sudo /etc/openvpn/ovpnipinit ${VPN_ID}"
+$(cat /var/cld/access/data/vpn/server.d/main.conf 2>/dev/null; cat /var/cld/access/data/vpn/server.d/${USERID}.conf 2>/dev/null)
 EOALL
 
 openvpn --genkey --secret /etc/openvpn/myvpn.tlsauth_${VPN_ID}
@@ -256,6 +257,7 @@ auth SHA256
 key-direction 1
 comp-lzo
 verb 3
+$(cat /var/cld/access/data/vpn/client.d/main.conf 2>/dev/null; cat /var/cld/access/data/vpn/client.d/${USERID}.conf 2>/dev/null)
 EOL
 
 cat > /var/cld/tmp/ovpn/user-configs/make_config.sh << EOL

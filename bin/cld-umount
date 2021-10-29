@@ -1,6 +1,6 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Intactive mount utility for mount filesystems of instance
+Interactive mount utility for mount filesystems of instance
 Remote filesystem mounting by sshfs in /home/${USER}/mnt/${CLD_INSTANCE} directory
 EOL
 )
