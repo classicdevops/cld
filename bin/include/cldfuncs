@@ -359,6 +359,7 @@ echo)
 [ "$HELP_ARGS" ] && awk '{print "     "$0}' <<< "${HELP_ARGS}"
 awk '{print "     "$0}' <<< "-h --help                Print this information"
 awk '{print "     "$0}' <<< "-v --version             Print tool version"
+awk '{print "     "$0}' <<< "-v --kill                Kill all running ${0##*/} processes"
 echo)
 [ "$HELP_EXAMPLES" ] && (
 echo Usage examples:
@@ -520,11 +521,29 @@ done
 LC_COLLATE=$OLD_LC_COLLATE
 }
 
+killcldtool() {
+CLD_TOOLTOKILL=$(ps -eo etimes,pid,command | sort -nr | egrep "/bin/${0##*/}($| )" | grep -v " grep " | head -n -2)
+CLD_TOOLTOKILLPIDS="$(echo "${CLD_TOOLTOKILL}" | awk '{print $2}')"
+if [ "{CLD_TOOLTOKILLPIDS}" ]
+then
+echo "Proccesses to kill:"
+{
+echo RunTime PID Command
+echo "${CLD_TOOLTOKILL}"
+} | column -t
+else
+echo "There is any process to kill - exit"
+exit 1
+fi
+kill -9 ${CLD_TOOLTOKILLPIDS}
+}
+
 for i in ${CLDOPTS}
 do
 case $i in
 -h|-help|--help) cldhelp        ;;
 -v|-version|--version) version  ;;
+-kill|--kill) killcldtool          ;;
 *) ;;
 esac
 done
