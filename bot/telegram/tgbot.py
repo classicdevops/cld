@@ -45,13 +45,13 @@ def bot_bash_stream(cmd, message):
         for SEND_FILE in FILES_LAST_TO_CURRENT:
           message = bot.send_message(message.chat.id, f'```\n{open(SEND_FILE).read()}\n```', parse_mode='Markdown', disable_web_page_preview='true')
           PREV_FILE = SEND_FILE
-          sleep(2.9)
+          sleep(3.9)
         PREV_FILE_SIZE = os.stat(PREV_FILE).st_size
       elif LAST_FILE == PREV_FILE:
         if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
           PREV_FILE_SIZE = PREV_FILE_CURRENT_SIZE
           bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'```\n{open(PREV_FILE).read()}\n```', parse_mode='Markdown')
-          sleep(2.9)
+          sleep(3.9)
     if STREAM_DONE == 1: break
     sleep(0.1)
   if STREAM_FILE_SIZE == 0:
