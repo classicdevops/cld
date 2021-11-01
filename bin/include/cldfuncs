@@ -522,14 +522,14 @@ LC_COLLATE=$OLD_LC_COLLATE
 }
 
 killcldtool() {
-CLD_TOOLTOKILL=$(ps -eo etimes,pid,command | sort -nr | egrep "/bin/${0##*/}($| )" | grep -v " grep " | head -n -2)
+CLD_TOOLTOKILL=$(ps -eo etimes,pid,command | sort -nr | egrep "/bin/${0##*/}($| )" | grep -v " grep \|\-kill$")
 CLD_TOOLTOKILLPIDS="$(echo "${CLD_TOOLTOKILL}" | awk '{print $2}')"
 if [ "{CLD_TOOLTOKILLPIDS}" ]
 then
 echo "Proccesses to kill:"
 {
 echo RunTime PID Command
-echo "${CLD_TOOLTOKILL}"
+echo "${CLD_TOOLTOKILL}" | grep -v " sudo "
 } | column -t
 else
 echo "There is any process to kill - exit"
