@@ -536,6 +536,8 @@ echo "There is any process to kill - exit"
 exit 1
 fi
 kill -9 ${CLD_TOOLTOKILLPIDS}
+echo
+echo Done
 exit 0
 }
 
