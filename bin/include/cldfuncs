@@ -536,7 +536,7 @@ echo "There is any process to kill - exit"
 exit 1
 fi
 CLD_BOT_DONE_FILE=$(echo "${CLD_TOOLTOKILL}" | egrep "\ touch .*done$" | awk '{print $2}')
-echo ${CLD_BOT_DONE_FILE} 1>$2
+echo ${CLD_BOT_DONE_FILE} 1>&2
 [ "${CLD_BOT_DONE_FILE}" ] && { sleep 4s ; touch ${CLD_BOT_DONE_FILE} &>/dev/null ; }
 kill -9 ${CLD_TOOLTOKILLPIDS}
 echo
