@@ -536,6 +536,7 @@ echo "There is any process to kill - exit"
 exit 1
 fi
 kill -9 ${CLD_TOOLTOKILLPIDS}
+exit 0
 }
 
 for i in ${CLDOPTS}
@@ -543,7 +544,7 @@ do
 case $i in
 -h|-help|--help) cldhelp        ;;
 -v|-version|--version) version  ;;
--kill|--kill) killcldtool          ;;
+-kill|--kill) killcldtool        ;;
 *) ;;
 esac
 done
