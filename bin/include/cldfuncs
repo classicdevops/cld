@@ -522,7 +522,7 @@ LC_COLLATE=$OLD_LC_COLLATE
 }
 
 killcldtool() {
-CLD_TOOLTOKILL=$(ps -eo etimes,pid,command | egrep -v "( grep | \-harakiri($| )|ELAPSED |\; touch )" | sort -nr | egrep "/bin/${0##*/}($| )")
+CLD_TOOLTOKILL=$(ps -eo etimes,pid,command | egrep -v "( grep | \-kill($| )|ELAPSED | ; touch )" | sort -nr | egrep "/bin/${0##*/}($| )")
 CLD_TOOLTOKILLPIDS="$(echo "${CLD_TOOLTOKILL}" | awk '{print $2}')"
 if [ "{CLD_TOOLTOKILLPIDS}" ]
 then
