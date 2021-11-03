@@ -18,8 +18,9 @@ And many other parameters that you can use every day.
 It is important to note that all the above functionality is available not only in the CLD management console, but also successfully integrated into Telegram, Slack, Mattermost and other corporate messengers.
 
 Below is a list of the DNS-module initial variables.
+
 | Variable | Description |
-| ------ | ----------- |
+| :------- | :----------- |
 | CLOUDFLARE | variable responsible for initializing the DNS module. |
 | CFACC | email address of the account connected to the DNS module. |
 | CFKEY | API key generated in the CloudFlare panel |
