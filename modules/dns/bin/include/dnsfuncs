@@ -30,6 +30,14 @@ curl -s -X POST -H "X-Auth-Key: $CFKEY" -H "X-Auth-Email: $CFACC" \
      --data '{"account": {"id": "'$CF_ACC_ID'"}, "name":"'$1'","jump_start":false}' | jq . | grep id | head -1 | cut -d '"' -f 4
 }
 
+cf-dns-domain-del()
+{
+curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$1" \
+     -H "X-Auth-Email: ${CFACC}" \
+     -H "X-Auth-Key: ${CFKEY}" \
+     -H "Content-Type: application/json" | jq .
+}
+
 cf-dns-get-zone-id()
 {
 curl -s -X GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
