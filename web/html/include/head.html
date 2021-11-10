@@ -76,7 +76,7 @@ $('#'+id).modal({
 $('#'+id).modal('show')
 
 sleep(250).then(() => {
-$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="1024" height="768" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
+$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="80vw" height="80vh" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
 });
 
 $('#'+id).on('hidden.bs.modal', function () {
