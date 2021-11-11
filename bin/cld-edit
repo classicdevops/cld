@@ -6,6 +6,7 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 $1                       CLD group to edit
+--all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -16,13 +17,28 @@ EOL
 HELP_ONLY="CLI WEB"
 source /var/cld/bin/include/cldfuncs
 
-CLD_GROUP=$1
-ALLOWED_GROUPS=$(
-for CLD_GROUP_FILTER in $(grep -v "^#\|^$" /var/cld/access/users/${SUDO_USER}/groups | sort -u)
+for i in ${CLDOPTS}
 do
-grep -qs "1" /var/cld/access/groups/${CLD_GROUP_FILTER}/type || echo ${CLD_GROUP_FILTER}
+  case $i in
+    -a|-all|--all) CLD_ALL_GROUPS=1       ;;
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
 done
-)
+
+CLD_GROUP="${ARG1}"
+
+if [ "${CLD_ALL_GROUPS}" = "1" ]
+then
+  if  [ "$(user_is_admin $SUDO_USER)" = "0" ]
+  then
+  ALLOWED_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | grep "${CLD_GROUP}")"
+  else
+  ALLOWED_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUP}")"
+  fi
+else
+  ALLOWED_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUP}")"
+fi
 
 [ "$ALLOWED_GROUPS" ] || { echo ALLOWED GROUPS for user $SUDO_USER not defined ; exit 1 ; }
 
