@@ -32,13 +32,20 @@ if [ "${CLD_ALL_GROUPS}" = "1" ]
 then
   if  [ "$(user_is_admin $SUDO_USER)" = "0" ]
   then
-  ALLOWED_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | grep "${CLD_GROUP}")"
+  CLD_FILTER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | grep "${CLD_GROUPS}")"
   else
-  ALLOWED_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUP}")"
+  CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
   fi
 else
-  ALLOWED_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUP}")"
+  CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
 fi
+
+ALLOWED_GROUPS=$(
+for CLD_FILTER_GROUP in ${CLD_FILTER_GROUPS}
+do
+grep -qs "1" /var/cld/access/groups/${CLD_FILTER_GROUP}/type || echo ${CLD_FILTER_GROUP}
+done
+)
 
 [ "$ALLOWED_GROUPS" ] || { echo ALLOWED GROUPS for user $SUDO_USER not defined ; exit 1 ; }
 
