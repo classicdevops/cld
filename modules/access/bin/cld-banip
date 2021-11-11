@@ -1,7 +1,9 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
 Utility to add IP address to the ban list.
-Access for the specified ip address is blocked on all instances under CLD control, for all ports. It is possible to exclude an ip address from the banlist using the unbanip command. To check the list of blocked ip addresses, you can use the banlist command.
+Access for the specified ip address is blocked on all instances under CLD control, for all ports. 
+It is possible to exclude an ip address from the banlist using the unbanip command. 
+To check the list of blocked ip addresses, you can use the banlist command.
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
