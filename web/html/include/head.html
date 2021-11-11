@@ -51,7 +51,7 @@ function modalconsole(url) {
 var id = idgen()
 $("body").append(`\
   <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 1024px; height: 768px;">
+    <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 80vw; height: 80vh;">
       <div id="`+id+`-content" class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -76,7 +76,7 @@ $('#'+id).modal({
 $('#'+id).modal('show')
 
 sleep(250).then(() => {
-$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="1024" height="768" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
+$('#'+id+'-body').html('<iframe id="frame-'+id+'" width="80vw" height="80vh" style="visibility:visible;height: calc(100% - 56px); width: 100%; border: 0px;" src="'+url+'"></iframe>');
 });
 
 $('#'+id).on('hidden.bs.modal', function () {
