@@ -245,6 +245,7 @@ systemctl enable nginx &>/dev/null
 mkdir -p /etc/letsencrypt/live/
 ln -s /etc/ssl/certs/nginx-selfsigned.crt /etc/letsencrypt/live/fullchain.pem
 ln -s /etc/ssl/private/nginx-selfsigned.key /etc/letsencrypt/live/privkey.pem
+chmod -R 755 /etc/letsencrypt/
 } &>/dev/null
 
 for LOOP_FUNC in funcvars_VARS functerm_TERMINAL funcmount_MOUNT funcumount_UMOUNT funcdeploy_DEPLOY funcdeploynotty_DEPLOY_NOTTY
