@@ -16,6 +16,14 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
+for i in ${CLDOPTS}
+do
+  case $i in
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
+done
+
 init-load-constants ZABBIX_USER\|zabbix ZABBIX_PASS\|pAs5w0Rd ZABBIX_API\|https://zbx.example.com/api_jsonrpc.php ZABBIX_HOSTGROUPID\|10 ZABBIX_TEMPLATEIDS\|10362,10364,10365
 
 export ZABBIX_TEMPLATEIDS="$(tr ',' '\n' <<< ${ZABBIX_TEMPLATEIDS})"
@@ -49,4 +57,4 @@ EOL
 )
 
 # curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$ZABBIX_API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed 's#\]\[#\n#g' | tr -d '['']''"'',' | awk '{print "`"$2" "$3" "$4"`"}'
-curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$ZABBIX_API" | jq '.result[] | select(.name|test("^check.")) | [.name,.macros[].value]' | tr -d '\n' | sed -e 's#check ##g' -e 's#\]\[#\n\n\n#g' | tr ',' '\n' | tr -d '"''['']' | grep -A2 -B2 "$1" | awk '{print $1}' | grep -v '^--' | tr '\n' '^' | sed 's#\^\^\^#^^#g' | sed 's#\^\^\^#^^#g' | tr '^' '\n' #| awk -v f="$F" -v b="$B" '{print f$0f}'
+curl -k -s -H 'Content-Type: application/json-rpc' -d "${JSON_ID_REQUEST}" "$ZABBIX_API" | jq '.result[] | select(.name|test("^check.")) | {"host":.name,"pattern":.macros[0].value,"url":.macros[1].value}' | jq "select(.host,.pattern,.url|test(\"$ARG1\"))" | tr -d '\n' | sed -e 's#^{  ##g' -e 's#}$##g' -e 's#}{  #\n---------------------------------------------\n#g' -e 's#,  #\n#g' -e 's#"##g' -e 's#host: #&   #g' -e 's#url: #&    #g' #| awk -v f="$F" -v b="$B" '{print f$0f}'
