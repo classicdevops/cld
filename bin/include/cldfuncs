@@ -33,6 +33,7 @@ CLD_ACTION_BACKUP_LOG=/var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_
 }
 
 EXTERNAL_VARS() {
+[ "${VM}" ] || VM=${INSTANCE}
 VMN=$(cut -d "_" -f 1 <<< "$VM")
 SRV=$(cut -d "_" -f 2 <<< "$VM")
 PRT=$(cut -d "_" -f 3 <<< "$VM")
