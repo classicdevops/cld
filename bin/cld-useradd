@@ -67,7 +67,7 @@ do
   if [ "$INSTANCE" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "Creating user $INSTANCE"
+    echo "Creating user $CLD_USER"
     $CLD_VARS
     echo
     $CLD_DEPLOY_NOTTY << 'EOINSTKEY' | egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' | awk -v INSTANCE=${INSTANCE} '{print $0" # key of instance "INSTANCE}' >> /home/${CLD_USER}/.ssh/authorized_keys_tmp
@@ -121,6 +121,7 @@ done
     fi
 
 CLD_USER=cldg-${CLD_GROUP}
+echo "Creating user $CLD_USER"
 cld-user-create
 mkdir -p /home/${CLD_USER}/.ssh &>/dev/null
 
