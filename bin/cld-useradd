@@ -60,7 +60,7 @@ if [ "${INSTANCE_USER}" = 1 ] ; then
 echo "Please select instance to create associated user"
 select INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$CLD_ALL_GROUPS_ARG")
 do
-  CLD_USER=cld_instance_${INSTANCE}
+  CLD_USER=cldi-${INSTANCE}
   cld-user-create
   mkdir -p /home/${CLD_USER}/.ssh &>/dev/null
   CLD_LOGS
@@ -120,7 +120,7 @@ done
     done
     fi
 
-CLD_USER=cld_group_${CLD_GROUP}
+CLD_USER=cldg-${CLD_GROUP}
 cld-user-create
 mkdir -p /home/${CLD_USER}/.ssh &>/dev/null
 
