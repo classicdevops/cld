@@ -61,13 +61,13 @@ echo "Please select instance to create associated user"
 select INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$CLD_ALL_GROUPS_ARG")
 do
   CLD_USER=cldi-${INSTANCE}
+  echo "Creating user $CLD_USER"
   cld-user-create
   mkdir -p /home/${CLD_USER}/.ssh &>/dev/null
   CLD_LOGS
   if [ "$INSTANCE" ]
   then
     INSTANCE_GROUP_FUNCS
-    echo "Creating user $CLD_USER"
     $CLD_VARS
     echo
     $CLD_DEPLOY_NOTTY << 'EOINSTKEY' | egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' | awk -v INSTANCE=${INSTANCE} '{print $0" # key of instance "INSTANCE}' >> /home/${CLD_USER}/.ssh/authorized_keys_tmp
