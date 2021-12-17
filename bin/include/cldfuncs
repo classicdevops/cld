@@ -232,6 +232,7 @@ exit 1
 
 INSTANCE_GROUP_FUNCS()
 {
+[ "${VM}" ] || VM=${INSTANCE}
 if [ "$CLD_ALL_GROUPS_ARG" == '--all' ]
 then
 CLD_USER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | head -c -1 | tr '\n' ',')"
