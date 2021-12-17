@@ -46,8 +46,19 @@ then
 else
     echo PAM user $USER_NAME not found - creating
     USER_PASSWORD=$(passwordgen)
-    useradd ${USER_NAME} --shell /bin/bash
-    echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME} &>/dev/null
+
+    if [ "$(wc -c <<< "${USER_NAME}")" -gt "32" ] ; then
+        USER_NAME_PAM=$(egrep -o "^[A-Za-z0-9_.-]{0,31}" <<< "${USER_NAME}")
+        useradd ${USER_NAME_PAM}
+        echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME_PAM} &>/dev/null
+        sed -i -e "s#^${USER_NAME_PAM}:#${USER_NAME}:#g" /etc/passwd /etc/shadow /etc/group
+        sed -i -e "s#/home/${USER_NAME_PAM}:#/home/${USER_NAME}:#g" /etc/passwd
+        mv /home/${USER_NAME_PAM} /home/${USER_NAME}
+    else
+        useradd ${USER_NAME} --shell /bin/bash
+        echo -e "${USER_PASSWORD}\n${USER_PASSWORD}\n" | passwd ${USER_NAME} &>/dev/null
+    fi
+
     mkdir /home/${USER_NAME} &>/dev/null
     chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
     echo
