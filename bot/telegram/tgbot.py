@@ -17,7 +17,7 @@ def vld(cld_variable):
   return re.match('(^[A-z0-9.,*@=/_ -]+?$|^$)', cld_variable).string
 
 def bot_bash_stream(cmd, message):
-  message = bot.send_message(message.chat.id, '```\ninitializing\n```', parse_mode='Markdown', disable_web_page_preview='true')
+  message = bot.send_message(message.chat.id, '''```\ninitializing\n```''', parse_mode='Markdown', disable_web_page_preview='true')
   if os.path.exists('/var/cld/tmp/tgstream') != True: bash('chattr -i /var/cld ; mkdir -p /var/cld/tmp/tgstream ; chattr +i /var/cld')
   chars = 'abcdefjhgkmnopqrstuvwxyz1234567890'
   COMMAND_ID = ''
@@ -40,22 +40,22 @@ def bot_bash_stream(cmd, message):
       PREV_FILE_CURRENT_SIZE = os.stat(PREV_FILE).st_size
       if LAST_FILE != PREV_FILE:
         if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
-          bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'```\n{open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')}\n```', parse_mode='Markdown')
+          bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'''```\n{open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')}\n```''', parse_mode='Markdown')
         FILES_LAST_TO_CURRENT = bash('ls /var/cld/tmp/tgstream/x* | grep '+COMMAND_ID+' | grep -A1000 "'+PREV_FILE+'" | tail -n +2').split('\n')
         for SEND_FILE in FILES_LAST_TO_CURRENT:
-          message = bot.send_message(message.chat.id, f'```\n{open(SEND_FILE).read().replace('\\n', '\n').replace('\\t', '\t')}\n```', parse_mode='Markdown', disable_web_page_preview='true')
+          message = bot.send_message(message.chat.id, f'''```\n{open(SEND_FILE).read().replace('\\n', '\n').replace('\\t', '\t')}\n```''', parse_mode='Markdown', disable_web_page_preview='true')
           PREV_FILE = SEND_FILE
           sleep(3.9)
         PREV_FILE_SIZE = os.stat(PREV_FILE).st_size
       elif LAST_FILE == PREV_FILE:
         if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
           PREV_FILE_SIZE = PREV_FILE_CURRENT_SIZE
-          bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'```\n{open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')}\n```', parse_mode='Markdown')
+          bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'''```\n{open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')}\n```''', parse_mode='Markdown')
           sleep(3.9)
     if STREAM_DONE == 1: break
     sleep(0.1)
   if STREAM_FILE_SIZE == 0:
-    bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'```\nCommand returned null output\n```', parse_mode='Markdown')
+    bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'''```\nCommand returned null output\n```''', parse_mode='Markdown')
   bash('rm -f /var/cld/tmp/tgstream/*'+COMMAND_ID+'* /var/cld/tmp/tgstream/cmd_'+COMMAND_ID+'_done')
   return print('Command '+cmd+' completed', flush=True)
 
