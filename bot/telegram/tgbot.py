@@ -41,11 +41,11 @@ def bot_bash_stream(cmd, message):
       if LAST_FILE != PREV_FILE:
         if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
           bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'```\n{open(PREV_FILE).read()}\n```', parse_mode='Markdown')
-          FILES_LAST_TO_CURRENT = bash('ls /var/cld/tmp/tgstream/x* | grep '+COMMAND_ID+' | grep -A1000 "'+PREV_FILE+'" | tail -n +2').split('\n')
-          for SEND_FILE in FILES_LAST_TO_CURRENT:
-            message = bot.send_message(message.chat.id, f'```\n{open(SEND_FILE).read()}\n```', parse_mode='Markdown', disable_web_page_preview='true')
-            PREV_FILE = SEND_FILE
-            sleep(3.9)
+        FILES_LAST_TO_CURRENT = bash('ls /var/cld/tmp/tgstream/x* | grep '+COMMAND_ID+' | grep -A1000 "'+PREV_FILE+'" | tail -n +2').split('\n')
+        for SEND_FILE in FILES_LAST_TO_CURRENT:
+          message = bot.send_message(message.chat.id, f'```\n{open(SEND_FILE).read()}\n```', parse_mode='Markdown', disable_web_page_preview='true')
+          PREV_FILE = SEND_FILE
+          sleep(3.9)
         PREV_FILE_SIZE = os.stat(PREV_FILE).st_size
       elif LAST_FILE == PREV_FILE:
         if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
