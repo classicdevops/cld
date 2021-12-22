@@ -29,6 +29,8 @@ Host $DEST_HPR_NAME
 Hostname $DEST_HPR_IP
 User $DEST_HPR_USER
 Port $DEST_HPR_PORT
+UserKnownHostsFile /dev/null
+StrictHostKeyChecking no
 
 EOL
 ssh -q -o StrictHostKeyChecking=no -p $DEST_HPR_PORT $DEST_HPR_USER@$DEST_HPR_IP "exit" &>/dev/null
