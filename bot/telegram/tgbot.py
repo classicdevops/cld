@@ -73,14 +73,13 @@ def bot_bash_stream(cmd, message):
             _len = 0
             last_offset = offset
             fl.seek(offset)
-            for num, content in enumerate(read__in_chunks(fl)):
-                print(num, flush=True)
+            for content in read__in_chunks(fl):
                 content = content.replace('\\n', '\n').replace('\\t', '\t')
                 _len = len(content)
                 if _len == CHUNK_SIZE:
                     offset += _len
                     bot__message_edit(message, content)
-                    message = bot__message_send(message, '')
+                    #message = bot__message_send(message, '')
                 else:
                     bot__message_edit(message, content)
             if (offset == last_offset) and (offset + _len == last_len):
