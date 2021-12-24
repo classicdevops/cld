@@ -74,7 +74,7 @@ def bot_bash_stream(cmd, message):
             last_offset = offset
             fl.seek(offset)
             for num, content in enumerate(read__in_chunks(fl)):
-                print(num)
+                print(num, flush=True)
                 content = content.replace('\\n', '\n').replace('\\t', '\t')
                 _len = len(content)
                 if _len == CHUNK_SIZE:
