@@ -19,9 +19,6 @@ def vld(cld_variable):
   return re.match('(^[A-z0-9.,*@=/_ -]+?$|^$)', cld_variable).string
 
 def bot__message_edit(message, text):
-    """
-    Редактирование сообщения бота.
-    """
     return bot.edit_message_text(
         chat_id=message.chat.id,
         message_id=message.message_id,
@@ -31,9 +28,6 @@ def bot__message_edit(message, text):
 
 
 def bot__message_send(message, text):
-    """
-    Первичная отправка сообщения бота.
-    """
     return bot.send_message(
         message.chat.id,
         f'```\n{text}\n```',
@@ -46,9 +40,6 @@ CHUNK_SIZE = 4000
 
 
 def read__in_chunks(file_object, CHUNK_SIZE=CHUNK_SIZE):
-    """
-    Чтение из файла кусками/чанками
-    """
     while True:
         data = file_object.read(CHUNK_SIZE)
         if not data:
@@ -82,7 +73,8 @@ def bot_bash_stream(cmd, message):
             _len = 0
             last_offset = offset
             fl.seek(offset)
-            for content in read__in_chunks(fl):
+            for num, content in enumerate(read__in_chunks(fl)):
+                print(num)
                 content = content.replace('\\n', '\n').replace('\\t', '\t')
                 _len = len(content)
                 if _len == CHUNK_SIZE:
