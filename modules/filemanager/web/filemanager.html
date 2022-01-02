@@ -186,8 +186,8 @@
             </div>
           </div>
         `)
-        
-        document.querySelector(`#${id}`).addEventListener("keyup", event => {
+
+        document.querySelector('#'+id).addEventListener("keyup", event => {
           const isCtrlS = event.ctrlKey && event.key.toLowerCase() === "s"
           if (!isCtrlS) {
             return
