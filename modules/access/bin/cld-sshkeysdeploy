@@ -56,7 +56,7 @@ if [ "$VM" ]
 then
 INSTANCE_GROUP_FUNCS
 $CLD_VARS
-export TIMEOUT_NOTTY=30
+export TIMEOUT_NOTTY=45
 (
 $CLD_DEPLOY_NOTTY << EOSSH
 $(cld_sshkey_deploy)
