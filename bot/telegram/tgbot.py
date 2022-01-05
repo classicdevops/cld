@@ -11,91 +11,53 @@ from time import sleep
 types = telebot.types
 
 def bash(cmd):
-    return subprocess.Popen(
-        cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash'
-    ).communicate()[0].decode('utf8').strip()
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
 def vld(cld_variable):
   return re.match('(^[A-z0-9.,*@=/_ -]+?$|^$)', cld_variable).string
 
 def bot_bash_stream(cmd, message):
-    message = bot.send_message(
-        message.chat.id,
-        '```\ninitializing\n```',
-        parse_mode='Markdown',
-        disable_web_page_preview='true'
-    )
-    if os.path.exists('/var/cld/tmp/tgstream') != True:
-        bash('chattr -i /var/cld ; mkdir -p /var/cld/tmp/tgstream ; chattr +i /var/cld')
-    chars = 'abcdefjhgkmnopqrstuvwxyz1234567890'
-    COMMAND_ID = ''.join(random.choice(chars) for i in range(7))
-    STREAM_FILE = f'/var/cld/tmp/tgstream/cmd_{COMMAND_ID}'
-    STREAM_DIR = str(os.path.dirname(STREAM_FILE))
-    with open(f'/var/cld/tmp/tgstream/cmd_{COMMAND_ID}', 'a'):
-        os.utime(f'/var/cld/tmp/tgstream/cmd_{COMMAND_ID}', None)
-    subprocess.Popen(
-        f'{cmd} | tee -a /var/cld/tmp/tgstream/cmd_{COMMAND_ID}; touch {STREAM_FILE}_done',
-        shell=True,
-        stdout=subprocess.PIPE,
-        universal_newlines=True,
-        executable='/bin/bash'
-    )
-    MAX_LENGTH = 4000
-    PREV_FILE = f'/var/cld/tmp/tgstream/xaaa{COMMAND_ID}'
-    PREV_FILE_SIZE = 0
-    STREAM_DONE = 0
-    while True:
-        if os.path.isfile(f'{STREAM_FILE}_done'):
-            STREAM_DONE = 1
-        STREAM_FILE_SIZE = os.stat(STREAM_FILE).st_size
-        if STREAM_FILE_SIZE != 0:
-            bash(f'cd {STREAM_DIR} ; split --line-bytes={MAX_LENGTH} --additional-suffix={COMMAND_ID} --suffix-length=3 {STREAM_FILE}')
-            LAST_FILE = bash('ls {STREAM_DIR}/* | grep {COMMAND_ID} | tail -1')
-            PREV_FILE_CURRENT_SIZE = os.stat(PREV_FILE).st_size
-            if LAST_FILE != PREV_FILE:
-                if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
-                    content = open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')
-                    bot.edit_message_text(
-                        chat_id=message.chat.id,
-                        message_id=message.message_id,
-                        text=f'```\n{content}\n```',
-                        parse_mode='Markdown'
-                    )
-                FILES_LAST_TO_CURRENT = bash(f'ls /var/cld/tmp/tgstream/x* | grep {COMMAND_ID} | grep -A1000 "{PREV_FILE}" | tail -n +2').split('\n')
-                for SEND_FILE in FILES_LAST_TO_CURRENT:
-                    content = open(SEND_FILE).read().replace('\\n', '\n').replace('\\t', '\t')
-                    message = bot.send_message(
-                        message.chat.id,
-                        f'```\n{content}\n```',
-                        parse_mode='Markdown',
-                        disable_web_page_preview='true'
-                    )
-                    PREV_FILE = SEND_FILE
-                    sleep(3.9)
-                PREV_FILE_SIZE = os.stat(PREV_FILE).st_size
-            elif LAST_FILE == PREV_FILE:
-                if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
-                    PREV_FILE_SIZE = PREV_FILE_CURRENT_SIZE
-                    content = open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')
-                    bot.edit_message_text(
-                        chat_id=message.chat.id,
-                        message_id=message.message_id,
-                        text=f'```\n{content}\n```',
-                        parse_mode='Markdown'
-                    )
-                    sleep(3.9)
-        if STREAM_DONE == 1:
-            break
-        sleep(0.1)
-    if STREAM_FILE_SIZE == 0:
-        bot.edit_message_text(
-            chat_id=message.chat.id,
-            message_id=message.message_id,
-            text='```\nCommand returned null output\n```',
-            parse_mode='Markdown'
-        )
-    bash(f'rm -f /var/cld/tmp/tgstream/*{COMMAND_ID}* /var/cld/tmp/tgstream/cmd_{COMMAND_ID}_done')
-    return print(f'Command {cmd} completed', flush=True)
+  message = bot.send_message(message.chat.id, '''```\ninitializing\n```''', parse_mode='Markdown', disable_web_page_preview='true')
+  if os.path.exists('/var/cld/tmp/tgstream') != True: bash('chattr -i /var/cld ; mkdir -p /var/cld/tmp/tgstream ; chattr +i /var/cld')
+  chars = 'abcdefjhgkmnopqrstuvwxyz1234567890'
+  COMMAND_ID = ''
+  for c in range(7):
+    COMMAND_ID += random.choice(chars)
+  STREAM_FILE = '/var/cld/tmp/tgstream/cmd_'+COMMAND_ID
+  STREAM_DIR = str(os.path.dirname(STREAM_FILE))
+  with open('/var/cld/tmp/tgstream/cmd_'+COMMAND_ID, 'a'): os.utime('/var/cld/tmp/tgstream/cmd_'+COMMAND_ID, None)
+  subprocess.Popen(cmd+' | tee -a /var/cld/tmp/tgstream/cmd_'+COMMAND_ID+'; touch '+STREAM_FILE+'_done', shell=True, stdout=subprocess.PIPE, universal_newlines=True, executable='/bin/bash')
+  MAX_LENGTH=4000
+  PREV_FILE="/var/cld/tmp/tgstream/xaaa"+COMMAND_ID
+  PREV_FILE_SIZE=0
+  STREAM_DONE = 0
+  while True:
+    if os.path.isfile(STREAM_FILE+'_done'): STREAM_DONE = 1
+    STREAM_FILE_SIZE = os.stat(STREAM_FILE).st_size
+    if STREAM_FILE_SIZE != 0: 
+      bash("cd "+STREAM_DIR+" ; split --line-bytes="+str(MAX_LENGTH)+" --additional-suffix="+COMMAND_ID+" --suffix-length=3 "+STREAM_FILE)
+      LAST_FILE = bash("ls "+STREAM_DIR+"/* | grep "+COMMAND_ID+" | tail -1")
+      PREV_FILE_CURRENT_SIZE = os.stat(PREV_FILE).st_size
+      if LAST_FILE != PREV_FILE:
+        if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
+          bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text='''```\n'''+open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')+'''\n```''', parse_mode='Markdown')
+        FILES_LAST_TO_CURRENT = bash('ls /var/cld/tmp/tgstream/x* | grep '+COMMAND_ID+' | grep -A1000 "'+PREV_FILE+'" | tail -n +2').split('\n')
+        for SEND_FILE in FILES_LAST_TO_CURRENT:
+          message = bot.send_message(message.chat.id, '''```\n'''+open(SEND_FILE).read().replace('\\n', '\n').replace('\\t', '\t')+'''\n```''', parse_mode='Markdown', disable_web_page_preview='true')
+          PREV_FILE = SEND_FILE
+          sleep(3.9)
+        PREV_FILE_SIZE = os.stat(PREV_FILE).st_size
+      elif LAST_FILE == PREV_FILE:
+        if PREV_FILE_CURRENT_SIZE != PREV_FILE_SIZE:
+          PREV_FILE_SIZE = PREV_FILE_CURRENT_SIZE
+          bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text='''```\n'''+open(PREV_FILE).read().replace('\\n', '\n').replace('\\t', '\t')+'''\n```''', parse_mode='Markdown')
+          sleep(3.9)
+    if STREAM_DONE == 1: break
+    sleep(0.1)
+  if STREAM_FILE_SIZE == 0:
+    bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=f'''```\nCommand returned null output\n```''', parse_mode='Markdown')
+  bash('rm -f /var/cld/tmp/tgstream/*'+COMMAND_ID+'* /var/cld/tmp/tgstream/cmd_'+COMMAND_ID+'_done')
+  return print('Command '+cmd+' completed', flush=True)
 
 def arg(arg, message):
   return re.search('[A-z0-9.=-]+', message.text.split()[arg])[0]
