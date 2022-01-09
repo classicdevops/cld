@@ -5,6 +5,7 @@ The main functionality of this module is:
 - Convenient and flexible configuration of the list of instances for backing up configuration files in the directory `/ etc /`.
 - Setting up tasks for checking the status of backups with the ability to send reports to Telegram.
 Below is a list of the etcbackup-module initial variables.
+
 | Variable | Description |
 | ------ | ----------- |
 | ETCBACKUP | variable responsible for initializing the ETCBACKUP module. |

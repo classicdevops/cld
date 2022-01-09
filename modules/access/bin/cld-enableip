@@ -1,6 +1,8 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Utility to add IP address to the white list
+Utility with which you can add the specified IP address to the list of allowed for access.
+Adding an IP address allows connection from it to all instances running CLD.
+The date and time of adding an IP address is recorded automatically.
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
