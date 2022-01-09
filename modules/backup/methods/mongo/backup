@@ -1,0 +1,12 @@
+/usr/bin/ionice -c3 mongodump --forceTableScan --host ${MONGO_HOST} -u "${MONGO_USER}" -p "${MONGO_PASSWORD}" --authenticationDatabase "admin" --gzip --out ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/
+
+cat << EONOTICE
+mongo admin --eval "
+db.createUser(
+  {
+    user: '${MONGO_USER}',
+    pwd: '${MONGO_PASSWORD}',
+    roles: [ { role: 'userAdminAnyDatabase', db: 'admin' }, 'readWriteAnyDatabase' ]
+  }
+)"
+EONOTICE

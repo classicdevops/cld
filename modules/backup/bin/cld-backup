@@ -1,0 +1,183 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Classic backup scripts deploy tool
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                             First PATTERN filtering allowed instances
+$2                             Second PATTERN filtering allowed instances
+$3                             Third PATTERN filtering allowed instances
+--groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
+--all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix - it will impact just allowed instances for current user - groups argument will still filtering as well
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-backup jenkins.srv_194.96.224.91_22_root
+cld-backup --groups=default,prod,hypervisors
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+case $i in
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                      ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"                            ;;
+-*)                                                                  ;;
+*) let ii++; declare ARG$ii=${i}                                     ;;
+esac
+done
+
+if [ "${CLD_GROUPS}" = "" -a "${CLD_ALL_GROUPS_ARG}" = "--all" ]; then
+echo -n
+else
+CLD_GROUPS=${CLD_GROUPS:-default}
+fi
+
+definevarsdir()
+{
+unset BACKUP_VARS_DIR
+if [ -d "/var/cld/modules/backup/data/instances/${INSTANCE}" ]; then
+BACKUP_VARS_DIR="/var/cld/modules/backup/data/instances/${INSTANCE}"
+elif [ -d "/var/cld/modules/backup/data/groups/${GROUP}" ]; then
+BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${GROUP}"
+else
+return 1
+fi
+}
+
+definemethods()
+{
+BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null)"
+[ "${BACKUP_METHODS}" ] || return 1
+}
+
+loadmethodvars()
+{
+source <(grep "^CRON=\|^KEEPLAST=" ${BACKUP_VARS_DIR}/${BACKUP_METHOD})
+CRON=${CRON:-'* * 0 0 0'}
+KEEPLAST=${KEEPLAST:-7}
+}
+
+defineserver()
+{
+[ "${SERVER}" ] || SERVER=$(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | head -n 1 | cut -d ',' -f 1)
+BACKUP_SERVER=$(CLOUDS_USER_ALLOWED "${SERVER}" "$CLD_ALL_GROUPS_ARG" | head -n 1)
+[ "${BACKUP_SERVER}" ] || { echo BACKUP_SERVER is not defined - check /var/cld/modules/backup/data/servers or backup method variables - try --all argument - exit ; exit 1 ; }
+}
+
+validatemethod()
+{
+[ -f "/var/cld/modules/backup/methods/${BACKUP_METHOD}/backup" ] || { echo BACKUP_METHOD is not defined - check /var/cld/modules/backup/methods/${BACKUP_METHOD}/backup - exit ; exit 1 ; }
+}
+
+cldfuncsinit()
+{
+for CLD_FUNC in CLD_VARS CLD_MOUNT CLD_TERMINAL CLD_UMOUNT CLD_DEPLOY CLD_DEPLOY_NOTTY 
+do
+declare $CLD_FUNC=${!CLD_FUNC}
+echo $CLD_FUNC=${!CLD_FUNC}
+declare -f ${!CLD_FUNC} | sed -e 's#sshpass -p "$PWD" ##g' -e 's#PWD=$(.*##g' -e 's#2>\&1##g'
+done
+}
+
+defaultvarsinit()
+{
+SERVER_BACKUP_DIR=${SERVER_BACKUP_DIR:-'/backup'}
+cat << EOCLDINIT
+SERVER_BACKUP_DIR='${SERVER_BACKUP_DIR}'
+CRON='${CRON}'
+KEEPLAST='${KEEPLAST}'
+EOCLDINIT
+cat << 'EODATE'
+DATE=$(date +%Y-%m-%d_%H-%M)
+EODATE
+cat << 'EOTIMEOUTS'
+TIMEOUT=64800
+TIMEOUT_NOTTY=64800
+EOTIMEOUTS
+}
+
+makemethoddir()
+{
+cat << 'EOMKBACKUPDIR'
+mkdir -p ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD} &>/dev/null
+EOMKBACKUPDIR
+}
+
+keeplastrotate()
+{
+cat << 'EOKEEPLASTROTATE'
+[ "${SERVER_BACKUP_DIR}" ] || { echo SERVER_BACKUP_DIR IS NOT DEFINED - exit ; exit 1 ; }
+[ "${INSTANCE}" ] || { echo INSTANCE IS NOT DEFINED - exit ; exit 1 ; }
+[ "${BACKUP_METHOD}" ] || { echo BACKUP_METHOD IS NOT DEFINED - exit ; exit 1 ; }
+[ "${KEEPLAST}" ] || { echo KEEPLAST IS NOT DEFINED - exit ; exit 1 ; }
+ls -h ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} -d -h | head -n -${KEEPLAST} | xargs -I ^ rm -rf ^
+find ${SERVER_BACKUP_DIR}/${INSTANCE}/ -type d -empty -exec rmdir {} \;
+EOKEEPLASTROTATE
+}
+
+cat << EOREPORT
+Deploy backup methods $(date +%F):
+----------------------------
+
+Instances:
+EOREPORT
+
+############## Deploy begin ##############
+for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
+do
+(
+definevarsdir || continue
+definemethods || continue
+echo
+echo "${INSTANCE}"
+INSTANCE_GROUP_FUNCS
+for BACKUP_METHOD in ${BACKUP_METHODS}
+do
+validatemethod
+loadmethodvars
+defineserver 
+/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOCLD${RANDID}
+mkdir /root/cld/backup -p &>/dev/null
+
+cat > /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} << 'EOBACKUP'${RANDID}
+INSTANCE=${INSTANCE}
+BACKUP_METHOD=${BACKUP_METHOD}
+
+### CLD init ###s
+$(cldfuncsinit)
+################
+
+### CLD default variables ###
+$(defaultvarsinit)
+#############################
+
+### Create method backup dir ###
+$(makemethoddir)
+################################
+
+### CLD instance variables ###
+$(cat ${BACKUP_VARS_DIR}/${BACKUP_METHOD})
+##############################
+
+### CLD backup method ###
+$(cat /var/cld/modules/backup/methods/${BACKUP_METHOD}/backup)
+#########################
+
+### Rotating backups ###
+$(keeplastrotate)
+########################
+EOBACKUP${RANDID}
+chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+
+cat > /etc/cron.d/cld-backup-${BACKUP_METHOD}-${INSTANCE} << 'EOCRON'${RANDID}
+${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
+EOCRON${RANDID}
+chmod 600 /etc/cron.d/cld-backup-${BACKUP_METHOD}-${INSTANCE}
+EOCLD${RANDID}
+done
+) &
+done
+
+wait
