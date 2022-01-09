@@ -10,7 +10,7 @@ def backup_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    file_list = bash('find /var/cld/modules/backup/data -type f | sort').split('\n') + '/etc/cron.d/cld-backup'
+    file_list = bash('find /var/cld/modules/backup/data -type f | sort').split('\n') + ['/etc/cron.d/cld-backup']
     files = {}
     for file in file_list:
       if os.path.exists(file) != True:
