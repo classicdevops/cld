@@ -23,6 +23,7 @@
 #modules
 /modules/*
 !/modules/access/
+!/modules/backup/
 !/modules/spamcheck/
 !/modules/doc/
 !/modules/dns/

@@ -9,11 +9,15 @@ $2                         Password
 --tools=cld,cldx           List of classicdevops tools comma separated - cld,cld-mount,cldx,cldxmount is default
 --modules=access,dns       List of classicdevops modules comma separated - empty is default
 --groups=default,prod,dev  List of CLD groups comma separated - not required
+--instanceuser             Create CLD user based on existing instance (providing access between server and other security reasons)
+--groupuser                Create CLD user based on existing instances group (providing access between server and other security reasons)
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-useradd johndoe P45Sw0Rd
 cld-useradd johndoe P45Sw0Rd --tools=cld,cldx -modules=access,dns -g=default,prod,dev
+cld-useradd --instanceuser
+cld-useradd --groupuser
 EOL
 )
 source /var/cld/bin/include/cldfuncs
@@ -21,20 +25,26 @@ source /var/cld/bin/include/cldfuncs
 for i in $(expr "$(echo "$@")" : '\([A-Za-z0-9 /.,@_=+-]\+\)')
 do
 case $i in
--t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"       ;;
--m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}" ;;
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"    ;;
--*)                                                ;;
-*) let ii++; declare ARG$ii=${i}                   ;;
+-t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"                 ;;
+-m=*|-modules=*|--modules=*) CLD_MODULES="${i#*=}"           ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"              ;;
+-i|-instanceuser|--instanceuser) INSTANCE_USER=1             ;;
+-G|-groupuser|--groupuser) GROUP_USER=1                      ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"                    ;;
+-*)                                                          ;;
+*) let ii++; declare ARG$ii=${i}                             ;;
 esac
 done
 
 CLD_USER=$ARG1
+[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cld-modules,cld-mount,cld-umount,cldx,cldxmount,cldxumount"
+# useradd ${CLD_USER} --shell /bin/bash
+
+
+cld-user-create() {
 [ "$CLD_USER" ] || echoexit1 CLD user is not defined
 CLD_USER_PASSWORD=$ARG2
 [ "$CLD_USER_PASSWORD" ] || CLD_USER_PASSWORD=$(passwordgen)
-[ "$CLD_TOOLS" ] || CLD_TOOLS="cld,cld-modules,cld-mount,cld-umount,cldx,cldxmount,cldxumount"
-# useradd ${CLD_USER} --shell /bin/bash
 grep -q "^${CLD_USER}:" /var/cld/creds/passwd && echoexit1 User ${CLD_USER} already exist - exit
 sed -i -e '$a\' /var/cld/creds/passwd
 echo "${CLD_USER}:::${CLD_MODULES}:${CLD_TOOLS}:${CLD_GROUPS}" >> /var/cld/creds/passwd
@@ -43,3 +53,101 @@ echo user: ${CLD_USER}
 echo password: ${CLD_USER_PASSWORD}
 echo
 echo For additional permissions edit file /var/cld/creds/passwd
+}
+
+##########################################################################
+if [ "${INSTANCE_USER}" = 1 ] ; then
+echo "Please select instance to create associated user"
+select INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$CLD_ALL_GROUPS_ARG")
+do
+  CLD_USER=cldi-${INSTANCE}
+  echo "Creating user $CLD_USER"
+  cld-user-create
+  mkdir -p /home/${CLD_USER}/.ssh &>/dev/null
+  CLD_LOGS
+  if [ "$INSTANCE" ]
+  then
+    INSTANCE_GROUP_FUNCS
+    $CLD_VARS
+    echo
+    $CLD_DEPLOY_NOTTY << 'EOINSTKEY' | egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' | awk -v INSTANCE=${INSTANCE} '{print $0" # key of instance "INSTANCE}' >> /home/${CLD_USER}/.ssh/authorized_keys_tmp
+    [ -f ~/.ssh/id_rsa.pub ] || ssh-keygen -t ed25519 -b 4096 -P "" -f ~/.ssh/id_rsa 1>&2
+    egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' ~/.ssh/id_rsa.pub
+EOINSTKEY
+      break
+  else
+    echo "you choosed incorrect instance, please try again and type digits only"
+  fi
+done
+unalias mv &>/dev/null
+egrep -qo --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys_tmp && mv /home/${CLD_USER}/.ssh/authorized_keys_tmp /home/${CLD_USER}/.ssh/authorized_keys
+chown -R ${CLD_USER}: /home/${CLD_USER}/.ssh
+chmod 700 /home/${CLD_USER}/.ssh
+chmod 600 /home/${CLD_USER}/.ssh/authorized_keys
+
+##########################################################################
+elif [ "${GROUP_USER}" = 1 ] ; then
+echo
+    if [ "${CLD_ALL_GROUPS}" = "1" ]
+    then
+      if  [ "$(user_is_admin $SUDO_USER)" = "0" ] ; then
+      CLD_FILTER_GROUPS="$(find /var/cld/access/groups/ -mindepth 1 -maxdepth 1 | cut -d / -f 6 | grep "${CLD_GROUPS}")"
+      else
+      CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
+      fi
+    else
+      CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
+    fi
+
+ALLOWED_GROUPS=$(
+for CLD_FILTER_GROUP in ${CLD_FILTER_GROUPS}
+do
+grep -qs "1" /var/cld/access/groups/${CLD_FILTER_GROUP}/type || echo ${CLD_FILTER_GROUP}
+done
+)
+
+[ "$ALLOWED_GROUPS" ] || { echo ALLOWED GROUPS for user $SUDO_USER not defined ; exit 1 ; }
+
+    if ! [ "$CLD_GROUP" ] ; then
+    echo "Please choose group to edit instance list"
+    select CLD_GROUP in ${ALLOWED_GROUPS}
+    do
+      CLD_LOGS
+      if [ "$CLD_GROUP" ]
+      then
+        break
+      fi
+    done
+    fi
+
+CLD_USER=cldg-${CLD_GROUP}
+echo "Creating user $CLD_USER"
+cld-user-create
+mkdir -p /home/${CLD_USER}/.ssh &>/dev/null
+
+echo Waiting for parsing all instances group SSH keys
+for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$CLD_ALL_GROUPS_ARG")
+do
+  CLD_LOGS
+      if [ "$INSTANCE" ] ; then
+(
+    INSTANCE_GROUP_FUNCS
+    $CLD_VARS
+    $CLD_DEPLOY_NOTTY << 'EOINSTKEY' | egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' | awk -v INSTANCE=${INSTANCE} '{print $0" # key of instance "INSTANCE}' >> /home/${CLD_USER}/.ssh/authorized_keys_tmp
+    [ -f ~/.ssh/id_rsa.pub ] || ssh-keygen -t ed25519 -b 4096 -P "" -f ~/.ssh/id_rsa 1>&2
+    egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' ~/.ssh/id_rsa.pub
+EOINSTKEY
+) &
+      fi
+done
+wait
+unalias mv &>/dev/null
+egrep -qo --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys_tmp && mv /home/${CLD_USER}/.ssh/authorized_keys_tmp /home/${CLD_USER}/.ssh/authorized_keys
+chown -R ${CLD_USER}: /home/${CLD_USER}/.ssh
+chmod 700 /home/${CLD_USER}/.ssh
+chmod 600 /home/${CLD_USER}/.ssh/authorized_keys
+
+##########################################################################
+else
+cld-user-create
+fi

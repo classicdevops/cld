@@ -20,7 +20,7 @@ It is important to note that all the above functionality is available not only i
 Below is a list of the DNS-module initial variables.
 
 | Variable | Description |
-| ------ | ----------- |
+| :------- | :----------- |
 | CLOUDFLARE | variable responsible for initializing the DNS module. |
 | CFACC | email address of the account connected to the DNS module. |
 | CFKEY | API key generated in the CloudFlare panel |

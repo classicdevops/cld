@@ -1,0 +1,7 @@
+MYSQL_HOST="1.2.3.4"
+MYSQL_USER="backup"
+MYSQL_PASSWORD="HetgPDbDyBuDJBdaHXzbe"
+MYSQL_SOURCE="$(wget -qO- ipinfo.io/ip)"
+#CRON="0 0 * * *" # Default - "0 0 * * *"
+#SERVER="backup1.example.com_1.2.3.4_22_root" # Default first from backup server list
+#SERVER_BACKUP_DIR="/backup" # Backup server backup directory - default - /backup

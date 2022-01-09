@@ -38,6 +38,8 @@ export MAIN_CLD_KEY="$(cat /root/.ssh/id_rsa.pub)"
 
 [ "${MAIN_CLD_KEY}" ] || { echo Main CLD SSH key is not defined - probably you need generate it with ssh-keygen commad - exit ; exit 1 ; }
 
+echo "${MAIN_CLD_KEY}" | egrep -q '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' || { echo Main CLD SSH key is not valid - check /root/.ssh/id_rsa.pub - exit ; exit 1 ; }
+
 generate_access_map
 
 for CLD_USER in ${ALL_CLD_USERS}
@@ -54,7 +56,7 @@ if [ "$VM" ]
 then
 INSTANCE_GROUP_FUNCS
 $CLD_VARS
-export TIMEOUT_NOTTY=30
+export TIMEOUT_NOTTY=45
 (
 $CLD_DEPLOY_NOTTY << EOSSH
 $(cld_sshkey_deploy)

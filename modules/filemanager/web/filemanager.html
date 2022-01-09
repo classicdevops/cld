@@ -186,6 +186,18 @@
             </div>
           </div>
         `)
+
+        document.querySelector('#'+id).addEventListener("keydown", event => {
+          const isCtrlS = event.ctrlKey && event.key.toLowerCase() === "s"
+          if (!isCtrlS) {
+            return
+          }
+
+          event.preventDefault()
+
+          savefile(fileid.toString(), '/admin/savefile')
+        })
+
         aceactivate(fileid);
         $('#'+id+'-content').resizable({
           alsoResize: ".modal-dialog",
