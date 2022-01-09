@@ -16,6 +16,10 @@ def backup_index():
       if os.path.exists(file) != True:
         bash('touch '+vld(file))
       files[file] = open(file).read()
+    if os.stat("/etc/cron.d/cld-backup").st_size == 0:
+      open("/etc/cron.d/cld-backup", "a").write('#0 0 * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null')
+    if os.stat("/var/cld/modules/backup/data/servers").st_size == 0:
+      open("/var/cld/modules/backup/data/servers", "a").write('#backup1.example.com_1.2.3.4_22_root,/backup')
     cld_instances = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --all').split('\n')
     cld_groups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     methods = [os.path.basename(name) for name in os.listdir("/var/cld/modules/backup/methods/") if os.path.isdir('/var/cld/modules/backup/methods/'+name)]

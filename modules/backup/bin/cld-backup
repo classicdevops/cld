@@ -83,6 +83,7 @@ done
 
 defaultvarsinit()
 {
+[ "${SERVER_BACKUP_DIR}" ] || SERVER_BACKUP_DIR=$(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | grep "${BACKUP_SERVER}" | head -n 1 | cut -d ',' -f 2)
 SERVER_BACKUP_DIR=${SERVER_BACKUP_DIR:-'/backup'}
 cat << EOCLDINIT
 SERVER_BACKUP_DIR='${SERVER_BACKUP_DIR}'
