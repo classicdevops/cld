@@ -1,0 +1,192 @@
+<html lang="en">
+   <head>
+      <title>CLD Web - Backup</title>
+      {% include 'html/include/head.html' %}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ext-modelist.js"></script>
+   </head>
+   <body>
+      <div class="page-container">
+         {% include 'html/include/navbar.html' %}
+          <script>
+             var editor = [];
+             function aceactivate(file)
+             {
+             var modelist = ace.require("ace/ext/modelist")
+             var acemode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
+             if (acemode == "ace/mode/text") { acemode = "ace/mode/sh"};
+             ace.edit(file+'Pre', {
+                 theme: "ace/theme/monokai",
+                 keyboardHandler: "ace/keyboard/sublime",
+                 foldStyle: "markbeginend",
+                 mode: acemode,
+                 maxLines: 40,
+                 minLines: 5,
+                 fontSize: 16,
+                 wrap: true,
+                 showPrintMargin: false,
+                 autoScrollEditorIntoView: true,
+                 highlightSelectedWord: true
+             });
+             editor[file+'Pre'] = ace.edit(file+'Pre');
+             editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+             $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+             editor[file+'Pre'].getSession().on('change', function () {
+                $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+             });
+             }
+             function savefile(id, url) {
+                     $.ajax({
+                         url : url,
+                         type: "POST",
+                         data : $('#'+id).serialize(),
+                         cache: false,
+                         processData:false,
+                         success: function (data) {
+                             $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                             });
+                             console.log('File saved');
+                             },
+                         error: function (data) {
+                             $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                             });
+                             console.log('An error occurred while saving data');
+                             }
+                     })
+             }
+             function deletefile(id, url) {
+                     $.ajax({
+                         url : url,
+                         type: "POST",
+                         data : $('#'+id).serialize(),
+                         cache: false,
+                         processData:false,
+                         success: function (data) {
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                             });
+                             console.log('File deleted');
+                             $('#'+id+'div').remove();
+                             },
+                         error: function (data) {
+                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
+                             sleep(500).then(() => {
+                             $('#'+id+'-button-del').addClass('btn-danger').removeClass('btn-warning');
+                             });
+                             console.log('An error occurred while deleting file');
+                             }
+                     })
+             }
+             function newfile(inputid) {
+                    var file = '/var/cld/modules/backup/'+document.getElementById(inputid).value;
+                    var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+                    $('#filesedit').prepend(`
+                    <div id="`+fileid+`div">
+                    <form id="`+fileid+`">
+                       <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                       <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                    </form>
+                    <div class="prefile">`+file+`<button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '/admin/deletefile')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                    <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2">Save `+file+`</button><br><br>
+                    </div>
+                    `);
+                    aceactivate(fileid);
+            }
+            function newbackup(type, object, method) {
+                    var file = '/var/cld/modules/backup/data/'+type+'/'+document.getElementById(object).value+'/'+document.getElementById(method).value;
+                    var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+                    $('#filesedit').prepend(`
+                    <div id="`+fileid+`div">
+                    <form id="`+fileid+`">
+                       <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                       <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                    </form>
+                    <div class="prefile">`+file+`<button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '/admin/deletefile')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                    <pre id="`+fileid+`Pre"></pre>
+                    <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2">Save `+file+`</button>
+                    <br><br>
+                    </div>
+                    `);
+                    $.ajax({
+                       url : `/backup/method/${document.getElementById(method).value}/example`,
+                       type: "GET",
+                       cache: false,
+                       processData:false,
+                       success: function (data) {
+                           $('#'+fileid+'Pre').append(data);
+                           console.log('Example file loaded');
+                           aceactivate(fileid);
+                           },
+                       error: function (data) {
+                           console.log('Example file loaded');
+                           aceactivate(fileid);
+                           }
+                    })
+            }
+          </script>
+        <div class="container"><br><br>
+             <h4 class="panel-title">
+                Classic backup module
+             </h4><br><br>
+                <h4 class="panel-title">
+                  Create backup for group:
+                </h4>
+                <form style="display: -webkit-inline-box;" onsubmit="newbackup('groups','inputgroup', 'groupmethod');return false;">
+                  <pre style="padding: 7;margin-right: -5px;border-radius: 4px 0px 0px 4px;max-height: 34px;overflow: hidden;">/var/cld/modules/backup/data/groups/</pre>
+                  <select type="text" class="form-control" id="inputgroup" style="width: fit-content;min-width: 100px;padding-top: 3px;border-radius: 0px;margin-right: -1px;" required="">
+                  {% for cld_group in cld_groups %}
+                    <option value="{{ cld_group }}">{{ cld_group }}</option>
+                  {% endfor %}
+                  </select>
+                  <select type="text" class="form-control" id="groupmethod" style="width: fit-content;min-width: 100px;padding-top: 3;border-radius: 0px;margin-right: 4px;" required="">
+                  {% for method in methods %}
+                    <option value="{{ method }}">{{ method }}</option>
+                  {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                </form><br>
+                <h4 class="panel-title">
+                  Create backup for instance:
+                </h4>
+                <form style="display: -webkit-inline-box;" onsubmit="newbackup('instances','inputinstance', 'instancemethod');return false;">
+                  <pre style="padding: 7;margin-right: -5px;border-radius: 4px 0px 0px 4px;max-height: 34px;overflow: hidden;">/var/cld/modules/backup/data/instances/</pre>
+                  <select type="text" class="form-control" id="inputinstance" style="width: fit-content;min-width: 300px;padding-top: 3px;border-radius: 0px;margin-right: -1px;" required="">
+                  {% for cld_instance in cld_instances %}
+                    <option value="{{ cld_instance }}">{{ cld_instance }}</option>
+                  {% endfor %}
+                  </select>
+                  <select type="text" class="form-control" id="instancemethod" style="width: fit-content;min-width: 100px;padding-top: 3;border-radius: 0px;margin-right: 4px;" required="">
+                  {% for method in methods %}
+                    <option value="{{ method }}">{{ method }}</option>
+                  {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                </form>
+                <section id="filesedit">
+                  {% for file in files %}
+                  {% set fileid = file.replace('/', '_').replace('.', '_') %}
+                  <div id="{{ fileid }}div">
+                  <form id="{{ fileid }}">
+                     <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
+                     <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                  </form>
+                  <div class="prefile">{{ file }}<button id="{{ fileid }}-button-del" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                  <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
+                  <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button>
+                  <br><br>
+                  <script>
+                     aceactivate('{{ fileid }}')
+                  </script>
+                  </div>
+                  {% endfor %}   
+                </section>
+        </div>
+      </div>
+   </body>
+</html>

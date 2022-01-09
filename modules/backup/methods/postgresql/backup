@@ -1,0 +1,1 @@
+PGPASSWORD="${POSTGRE_PASSWORD}" pg_dumpall --host=${POSTGRE_HOST} --username=${POSTGRE_USER} --clean | gzip > ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/dumpall.sql.gz
