@@ -122,9 +122,17 @@ parsebackupmethod()
 {
 cat << 'EOPARSE'
 METHOD_SET=$(du -h $(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} | tail -1))
+METHOD_COPYCOUNT=$(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} | wc -w)
 METHOD_SIZE=$(awk '{print $1}' <<< "${METHOD_SET}")
 METHOD_DATE=$(echo "${METHOD_SET}" | rev | cut -d / -f 2 | rev | cut -d _ -f 1)
-echo "${BACKUP_METHOD}: ${METHOD_DATE} - ${METHOD_SIZE}"
+if [ "${METHOD_SET}" = "" ]; then
+METHOD_STATUS="FAIL"
+elif [ "${METHOD_DATE}" != "${REPORT_DATE}" ]; then
+METHOD_STATUS="OUTDATED"
+elif [ "${METHOD_DATE}" = "${REPORT_DATE}" ]; then
+METHOD_STATUS="OK"
+fi
+echo "${BACKUP_METHOD}: ${METHOD_DATE} - ${METHOD_COPYCOUNT} - ${METHOD_SIZE} - ${METHOD_STATUS}"
 EOPARSE
 }
 
@@ -141,8 +149,10 @@ done
 EOSTORAGEPARSE
 }
 
+REPORT_DATE=$(date +%F)
+
 cat << EOREPORT
-Backup report $(date +%F):
+Backup report ${REPORT_DATE}:
 ----------------------------
 
 Instances:

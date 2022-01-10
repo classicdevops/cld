@@ -18,7 +18,7 @@ def backup_index():
       else:
           open(req_file, 'a').close()
     if os.stat("/etc/cron.d/cld-backup").st_size == 0:
-      open("/etc/cron.d/cld-backup", "a").write('#0 0 * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null')
+      open("/etc/cron.d/cld-backup", "a").write('#* * * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null # uncomment this cron to enable backup script deploy')
     if os.stat("/var/cld/modules/backup/data/servers").st_size == 0:
       open("/var/cld/modules/backup/data/servers", "a").write('#backup1.example.com_1.2.3.4_22_root,/backup')
     file_list = bash('find /var/cld/modules/backup/data -mindepth 2 -type f | sort').split('\n') + req_files

@@ -142,7 +142,7 @@ defineserver
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOCLD${RANDID}
 mkdir /root/cld/backup -p &>/dev/null
 
-cat > /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} << 'EOBACKUP'${RANDID}
+cat > /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp << 'EOBACKUP'${RANDID}
 INSTANCE=${INSTANCE}
 BACKUP_METHOD=${BACKUP_METHOD}
 
@@ -170,7 +170,13 @@ $(cat /var/cld/modules/backup/methods/${BACKUP_METHOD}/backup)
 $(keeplastrotate)
 ########################
 EOBACKUP${RANDID}
+
+unset mv &>/dev/null
+if [ "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} | awk {print $1})" != "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp | awk {print $1})" ]
+then
+mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+fi
 
 cat > /etc/cron.d/cld-backup-${BACKUP_METHOD}-${INSTANCE} << 'EOCRON'${RANDID}
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
