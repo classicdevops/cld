@@ -181,6 +181,7 @@ defineserver
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOCLD > /var/cld/tmp/backup/report_${REPORTID}/${INSTANCE}/${BACKUP_METHOD}
 INSTANCE=${INSTANCE}
 BACKUP_METHOD=${BACKUP_METHOD}
+REPORT_DATE=${REPORT_DATE}
 
 ### CLD default variables ###
 $(defaultvarsinit)
