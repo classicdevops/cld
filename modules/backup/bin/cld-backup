@@ -172,8 +172,12 @@ $(keeplastrotate)
 EOBACKUP${RANDID}
 
 unset mv &>/dev/null
-if [ "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')" != "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp  2>/dev/null| awk '{print $1}')" ]
-then
+CURRENT_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')
+NEW_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp  2>/dev/null | awk '{print $1}')
+if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
+mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+elif ! [ -d /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} ]; then
 mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 fi
