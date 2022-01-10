@@ -24,10 +24,11 @@ def backup_index():
     file_list = bash('find /var/cld/modules/backup/data -mindepth 2 -type f | sort').split('\n') + req_files
     files = {}
     for file in file_list:
-      if os.path.exists(file):
-          os.utime(file, None)
-      else:
-          open(file, 'a').close()
+      if file != '':
+        if os.path.exists(file):
+            os.utime(file, None)
+        else:
+            open(file, 'a').close()
       files[file] = open(file).read()
     cld_instances = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --all').split('\n')
     cld_groups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
