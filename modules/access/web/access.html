@@ -129,15 +129,15 @@
                      <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file }}</textarea>
                      <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
                   </form>
-                  <div class="prefile">{{ file }}</div>
+                  <div class="prefile">{{ file }}<button id="{{ fileid }}-button-del" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
                   <pre id="{{ fileid }}Pre">{{ files[file] }}</pre>
-                  <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2" style="max-width: 45%;">Save {{ file }}</button>
-                  <button id="{{ fileid }}-button" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger bt mb-2" style="float: right;max-width: 45%;">Delete {{ file }}</button><br><br>
+                  <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file }}</button>
+                  <br><br>
                   <script>
                      aceactivate('{{ fileid }}')
                   </script>
                   </div>
-                  {% endfor %}   
+                  {% endfor %}  
                 </section>
         </div>
       </div>
