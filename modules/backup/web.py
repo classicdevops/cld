@@ -11,12 +11,12 @@ def backup_index():
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     req_files = ['/var/cld/modules/backup/data/servers','/etc/cron.d/cld-backup']
+    os.makedirs('/var/cld/modules/backup/data', mode = 0o700, exist_ok=True)
     for req_file in req_files:
       if os.path.exists(req_file):
           os.utime(req_file, None)
       else:
           open(req_file, 'a').close()
-    os.makedirs('/var/cld/modules/backup/data', mode = 0o700, exist_ok=True)
     if os.stat("/etc/cron.d/cld-backup").st_size == 0:
       open("/etc/cron.d/cld-backup", "a").write('#0 0 * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null')
     if os.stat("/var/cld/modules/backup/data/servers").st_size == 0:
