@@ -29,7 +29,7 @@ def backup_index():
             os.utime(file, None)
         else:
             open(file, 'a').close()
-      files[file] = open(file).read()
+        files[file] = open(file).read()
     cld_instances = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --all').split('\n')
     cld_groups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     methods = [os.path.basename(name) for name in os.listdir("/var/cld/modules/backup/methods/") if os.path.isdir('/var/cld/modules/backup/methods/'+name)]
