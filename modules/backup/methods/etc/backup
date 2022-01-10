@@ -1,5 +1,5 @@
 [ "${DIR_LIST}" ] || DIR_LIST="/etc"
-EXCLUDE_LIST="${EXCLUDE_LIST:-'*.log,*.gz'}"
+EXCLUDE_LIST="${EXCLUDE_LIST:-'*.log,*.gz,*/selinux/targeted/*'}"
 $CLD_VARS
 for BACKUP_ITEM in $(tr ',' ' ' <<< "${DIR_LIST}")
 do
