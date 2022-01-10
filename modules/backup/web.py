@@ -10,15 +10,16 @@ def backup_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    req_files = ['/var/cld/modules/backup/data/servers','/etc/cron.d/cld-backup']
+    req_files = ['/var/cld/modules/backup/data/servers','/etc/cron.d/cld_backup']
     os.makedirs('/var/cld/modules/backup/data', mode = 0o700, exist_ok=True)
     for req_file in req_files:
       if os.path.exists(req_file):
           os.utime(req_file, None)
+          os.open('filepath', os.O_CREAT | os.O_WRONLY, 0o600)
       else:
           open(req_file, 'a').close()
-    if os.stat("/etc/cron.d/cld-backup").st_size == 0:
-      open("/etc/cron.d/cld-backup", "a").write('#* * * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null # uncomment this cron to enable backup script deploy')
+    if os.stat("/etc/cron.d/cld_backup").st_size == 0:
+      open("/etc/cron.d/cld_backup", "a").write('#* * * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null # uncomment this cron to enable backup script deploy')
     if os.stat("/var/cld/modules/backup/data/servers").st_size == 0:
       open("/var/cld/modules/backup/data/servers", "a").write('#backup1.example.com_1.2.3.4_22_root,/backup')
     file_list = bash('find /var/cld/modules/backup/data -mindepth 2 -type f | sort').split('\n') + req_files
