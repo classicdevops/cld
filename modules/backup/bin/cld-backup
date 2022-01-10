@@ -172,7 +172,7 @@ $(keeplastrotate)
 EOBACKUP${RANDID}
 
 unset mv &>/dev/null
-if [ "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} | awk {print $1})" != "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp | awk {print $1})" ]
+if [ "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')" != "$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp  2>/dev/null| awk '{print $1}')" ]
 then
 mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
