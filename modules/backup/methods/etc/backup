@@ -1,0 +1,7 @@
+[ "${DIR_LIST}" ] || DIR_LIST="/etc"
+EXCLUDE_LIST="${EXCLUDE_LIST:-'*.log,*.gz'}"
+$CLD_VARS
+for BACKUP_ITEM in $(tr ',' ' ' <<< "${DIR_LIST}")
+do
+$CLD_DEPLOY_NOTTY <<< "tar czf - ${BACKUP_ITEM}" > ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${BACKUP_ITEM//\//_}.tar.gz $(echo $EXCLUDE_LIST | tr ',' '\n' | xargs -I ^ echo -n "--exclude=^ ")
+done
