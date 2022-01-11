@@ -200,12 +200,13 @@ done
 wait
 for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1 | sort -u)
 do
-/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON
+/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << 'EOBACKUPCRON'
 CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
 NEW_HASH=$(md5sum /root/cld/cld_backup_cron  2>/dev/null | sort | awk '{print $1}')
 if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
 unset mv &>/dev/null
-rm -f /etc/cron.d/cld_backup &>/dev/null ; mv /root/cld/cld_backup_cron /etc/cron.d/cld_backup
+rm -f /etc/cron.d/cld_backup &>/dev/null
+mv /root/cld/cld_backup_cron /etc/cron.d/cld_backup
 chmod 600 /etc/cron.d/cld_backup
 else
 rm -f /root/cld/cld_backup_cron
