@@ -42,15 +42,15 @@ showcreds()
 if  [ "$CLD_USER_ROLE" = "0" -a "$SHOW_PASS" = "1" ]
 then
     echo
-    for CRED in $(declare -f $CLD_VARS | grep "=" | cut -d = -f 1)
+    for CRED in $(declare -f $CLD_VARS | grep "=" | grep -v "[\|]" | cut -d = -f 1)
     do
       test ${!CRED} && echo $(echo $CRED | sed -e 's#^VM$#instance#g' -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#' -e 's#PWD#password:#') ${!CRED}
     done
 else
     echo
-    for CRED in $(declare -f $CLD_VARS | grep "="| grep -v "PWD" | cut -d = -f 1)
+    for CRED in $(declare -f $CLD_VARS | grep "=" | grep -v "PWD\|[\|]" | cut -d = -f 1)
     do
-      test ${!CRED} && echo $(echo $CRED | sed -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#') ${!CRED}
+      [ "${!CRED}" ] && echo $(echo $CRED | sed -e 's#^VM$#instance#g' -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#') ${!CRED}
     done
 fi
 }
