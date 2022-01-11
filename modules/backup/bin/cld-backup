@@ -146,10 +146,10 @@ do
 validatemethod
 loadmethodvars
 defineserver 
-/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOCLD${RANDID}
+/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOCLD
 mkdir /root/cld/backup -p &>/dev/null
 
-cat > /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp << 'EOBACKUP'${RANDID}
+cat > /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp << 'EOBACKUP'
 #!/bin/bash
 INSTANCE=${INSTANCE}
 BACKUP_METHOD=${BACKUP_METHOD}
@@ -177,7 +177,7 @@ $(cat /var/cld/modules/backup/methods/${BACKUP_METHOD}/backup)
 ### Rotating backups ###
 $(keeplastrotate)
 ########################
-EOBACKUP${RANDID}
+EOBACKUP
 
 unset mv &>/dev/null
 CURRENT_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')
@@ -189,26 +189,26 @@ elif ! [ -d /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} ]; then
 mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 fi
-cat >> /root/cld/cld_backup_cron << 'EOCRON'${RANDID}
+cat >> /root/cld/cld_backup_cron << 'EOCRON'
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
-EOCRON${RANDID}
-chmod 600 /root/cld/cld_backup_cron
-EOCLD${RANDID}
+EOCRON
+EOCLD
 done
 ) &
 done
 
 wait
-for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1)
+for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1 | sort -u)
 do
-/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON${RANDID}
+/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON
 CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
 NEW_HASH=$(md5sum /root/cld/cld_backup_cron  2>/dev/null | sort | awk '{print $1}')
 if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
 unset mv &>/dev/null
 rm -f /etc/cron.d/cld_backup &>/dev/null ; mv /root/cld/cld_backup_cron /etc/cron.d/cld_backup
+chmod 600 /etc/cron.d/cld_backup
 else
 rm -f /root/cld/cld_backup_cron
 fi
-EOBACKUPCRON${RANDID}
+EOBACKUPCRON
 done
