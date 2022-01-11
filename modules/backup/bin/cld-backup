@@ -125,7 +125,7 @@ Deploy backup methods $(date +%F):
 Instances:
 EOREPORT
 
-for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers)
+for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1)
 do
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON
 rm -f /root/cld/cld_backup_cron &>/dev/null
@@ -199,7 +199,7 @@ done
 done
 
 wait
-for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers)
+for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1)
 do
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON${RANDID}
 CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
