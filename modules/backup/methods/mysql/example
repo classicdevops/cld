@@ -6,3 +6,14 @@ MYSQL_SOURCE="$(wget -qO- ipinfo.io/ip)"
 #CRON="0 0 * * *" # Default - "0 0 * * *"
 #SERVER="backup1.example.com_1.2.3.4_22_root" # Default first from backup server list
 #SERVER_BACKUP_DIR="/backup" # Backup server backup directory - default - /backup
+#Print command to create user
+cat << EONOTICE
+###MYSQL/PERCONA
+CREATE USER ${MYSQL_USER}@'${MYSQL_SOURCE}' IDENTIFIED BY '${MYSQL_PASSWORD}';
+GRANT ALL ON *.* TO ${MYSQL_USER}@'${MYSQL_SOURCE}';
+ALTER USER ${MYSQL_USER}@'${MYSQL_SOURCE}' IDENTIFIED WITH mysql_native_password BY '${MYSQL_PASSWORD}'; FLUSH PRIVILEGES;
+#
+###MARIADB
+GRANT ALL ON *.* TO ${MYSQL_USER}@'${MYSQL_SOURCE}' IDENTIFIED BY '${MYSQL_PASSWORD}';
+##### THEN PRESS ENTER TO CONTINUE
+EONOTICE

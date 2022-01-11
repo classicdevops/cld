@@ -5,3 +5,15 @@ MONGO_PASSWORD="ySRDCjYjvMZw9d91QxQV6"
 #CRON="0 0 * * *" # Default - "0 0 * * *"
 #SERVER="backup1.example.com_1.2.3.4_22_root" # Default first from backup server list
 #SERVER_BACKUP_DIR="/backup" # Backup server backup directory - default - /backup
+
+#Print command to create user
+cat << EONOTICE
+mongo admin --eval "
+db.createUser(
+  {
+    user: '${MONGO_USER}',
+    pwd: '${MONGO_PASSWORD}',
+    roles: [ { role: 'userAdminAnyDatabase', db: 'admin' }, 'readWriteAnyDatabase' ]
+  }
+)"
+EONOTICE
