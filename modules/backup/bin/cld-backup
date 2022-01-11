@@ -192,6 +192,8 @@ done
 done
 
 wait
+for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers)
+do
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON${RANDID}
 CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
 NEW_HASH=$(md5sum /root/cld/cld_backup_cron  2>/dev/null | sort | awk '{print $1}')
@@ -202,3 +204,4 @@ else
 rm -f /root/cld/cld_backup_cron
 fi
 EOBACKUPCRON${RANDID}
+done
