@@ -1,12 +1,1 @@
-cat << EONOTICE
-###PERCONA
-CREATE USER ${MYSQL_USER}@'${MYSQL_SOURCE}' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL ON *.* TO ${MYSQL_USER}@'${MYSQL_SOURCE}';
-ALTER USER ${MYSQL_USER}@'${MYSQL_SOURCE}' IDENTIFIED WITH mysql_native_password BY '${MYSQL_PASSWORD}'; FLUSH PRIVILEGES;
-#
-###MARIADB
-GRANT ALL ON *.* TO ${MYSQL_USER}@'${MYSQL_SOURCE}' IDENTIFIED BY '${MYSQL_PASSWORD}';
-##### THEN PRESS ENTER TO CONTINUE
-EONOTICE
-
 /usr/bin/ionice -c3 mydumper --host=${MYSQL_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} -o ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD} --compress --triggers --events --routines --build-empty-files --less-locking --use-savepoints --success-on-1146 --compress-protocol --threads=1 --verbose=3
