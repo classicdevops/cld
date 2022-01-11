@@ -143,6 +143,7 @@ defineserver
 mkdir /root/cld/backup -p &>/dev/null
 
 cat > /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp << 'EOBACKUP'${RANDID}
+#!/bin/bash
 INSTANCE=${INSTANCE}
 BACKUP_METHOD=${BACKUP_METHOD}
 

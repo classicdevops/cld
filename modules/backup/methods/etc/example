@@ -1,6 +1,6 @@
 #DIR_LIST="/etc/nginx/,/var/lib/postgre/" # default - /etc
 #EXCLUDE_LIST="*.log,*.gz" # Default - "*.log,*.gz,*/selinux/targeted/*" - allow to be empty ""
-#KEEPLAST='7' # Default - '7'
+#KEEPLAST='7' # How many copies will remain after rotation - default - '7'
 #CRON="0 0 * * *" # Default - "0 0 * * *"
 #SERVER="backup1.example.com_1.2.3.4_22_root" # Default first from backup server list
 #SERVER_BACKUP_DIR="/backup" # Backup server backup directory - default - /backup

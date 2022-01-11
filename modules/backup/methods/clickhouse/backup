@@ -1,0 +1,22 @@
+install-clickhouse-backup()
+{
+wget https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.2.1/clickhouse-backup.tar.gz
+tar -zxvf clickhouse-backup.tar.gz
+cp clickhouse-backup/clickhouse-backup /usr/local/bin/
+}
+[ -f /usr/local/bin/clickhouse-backup ] || install-clickhouse-backup
+CLICKHOUSE_USER="${CLICKHOUSE_USER:-default}"
+CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-localhost}"
+CLICKHOUSE_PORT="${CLICKHOUSE_PORT:-9000}"
+CLICKHOUSE_PATH="${CLICKHOUSE_PATH:-/var/lib/clickhouse}"
+cat > /etc/clickhouse-backup/config.yml << EOCLICKHOUSE
+clickhouse:
+username: ${CLICKHOUSE_USER}
+password: "${CLICKHOUSE_PASSWORD}"
+host: ${CLICKHOUSE_HOST}
+port: ${CLICKHOUSE_PORT}
+data_path: "${CLICKHOUSE_PATH}"
+general:
+remote_storage: none
+backups_to_keep_local: 1
+EOCLICKHOUSE

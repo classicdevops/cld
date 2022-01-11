@@ -123,7 +123,7 @@ parsebackupmethod()
 cat << 'EOPARSE'
 METHOD_COPYCOUNT=$(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} 2>/dev/null | wc -w)
 if [ "${METHOD_COPYCOUNT}" != "0" ]; then
-METHOD_SET=$(du -h $(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} | tail -1))
+METHOD_SET=$(du -hd 0 $(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} | tail -1))
 METHOD_SIZE=$(awk '{print $1}' <<< "${METHOD_SET}")
 METHOD_DATE=$(echo "${METHOD_SET}" | rev | cut -d / -f 2 | rev | cut -d _ -f 1)
 else
