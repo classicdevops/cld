@@ -55,7 +55,7 @@ BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/
 loadmethodvars()
 {
 source <(grep "^CRON=\|^KEEPLAST=" ${BACKUP_VARS_DIR}/${BACKUP_METHOD})
-CRON=${CRON:-'* * 0 0 0'}
+CRON=${CRON:-'0 0 * * *'}
 KEEPLAST=${KEEPLAST:-7}
 }
 
