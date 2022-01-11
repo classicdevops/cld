@@ -185,13 +185,23 @@ fi
 
 sed -i "/${BACKUP_METHOD}-${INSTANCE}/d" /etc/cron.d/cld_backup &>/dev/null
 echo 
-cat >> /etc/cron.d/cld_backup << 'EOCRON'${RANDID}
+cat >> /root/cld/cld_backup_cron << 'EOCRON'${RANDID}
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
 EOCRON${RANDID}
-chmod 600 /etc/cron.d/cld_backup
+chmod 600 /root/cld/cld_backup_cron
 EOCLD${RANDID}
 done
 ) &
 done
 
 wait
+/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON${RANDID}
+CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
+NEW_HASH=$(md5sum /root/cld/cld_backup_cron  2>/dev/null | sort | awk '{print $1}')
+if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
+unset mv &>/dev/null
+rm -f /etc/cron.d/cld_backup &>/dev/null ; mv /root/cld/cld_backup_cron /etc/cron.d/cld_backup
+else
+rm -f /root/cld/cld_backup_cron
+fi
+EOBACKUPCRON${RANDID}
