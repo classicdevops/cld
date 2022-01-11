@@ -183,10 +183,12 @@ mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKU
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 fi
 
-cat > /etc/cron.d/cld-backup-${BACKUP_METHOD}-${INSTANCE} << 'EOCRON'${RANDID}
+sed -i "/${BACKUP_METHOD}-${INSTANCE}/d" /etc/cron.d/cld_backup &>/dev/null
+echo 
+cat >> /etc/cron.d/cld_backup << 'EOCRON'${RANDID}
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
 EOCRON${RANDID}
-chmod 600 /etc/cron.d/cld-backup-${BACKUP_METHOD}-${INSTANCE}
+chmod 600 /etc/cron.d/cld_backup
 EOCLD${RANDID}
 done
 ) &
