@@ -182,9 +182,6 @@ elif ! [ -d /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} ]; then
 mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 fi
-
-sed -i "/${BACKUP_METHOD}-${INSTANCE}/d" /etc/cron.d/cld_backup &>/dev/null
-echo 
 cat >> /root/cld/cld_backup_cron << 'EOCRON'${RANDID}
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
 EOCRON${RANDID}
