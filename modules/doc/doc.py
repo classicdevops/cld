@@ -53,7 +53,7 @@ for modulepath in modules:
       tool = toolpath.split('/')[-1]
       print('tool: '+tool)
       print('toolpath: '+toolpath)
-      toolinfo = yaml.load(bash("grep -q '/var/cld/bin/include/cldfuncs' "+toolpath+" && HELPYAML=1 "+toolpath+" --help"), loader=Loader)
+      toolinfo = yaml.safe_load(bash("grep -q '/var/cld/bin/include/cldfuncs' "+toolpath+" && HELPYAML=1 "+toolpath+" --help"))
       try: tool_desc = toolinfo['Description']
       except: pass
       try: tool_args = toolinfo['Arguments']
