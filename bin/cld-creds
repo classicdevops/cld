@@ -50,7 +50,7 @@ else
     echo
     for CRED in $(declare -f $CLD_VARS | grep "="| grep -v "PWD" | cut -d = -f 1)
     do
-      test ${!CRED} && echo $(echo $CRED | sed -e 's#^VM$#instance#g' -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#') ${F}${!CRED}${F}
+      [ "${!CRED}" ] && echo $(echo $CRED | sed -e 's#^VM$#instance#g' -e 's#VMN#Host:#' -e 's#SRV#ip:#' -e 's#USR#user:#' -e 's#PRT#port:#') ${F}${!CRED}${F}
     done
 fi
 }
