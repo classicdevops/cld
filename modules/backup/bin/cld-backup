@@ -118,6 +118,43 @@ find ${SERVER_BACKUP_DIR}/${INSTANCE}/ -type d -empty -exec rmdir {} \;
 EOKEEPLASTROTATE
 }
 
+checkbackupscript()
+{
+echo "RANDID=${RANDID}"
+cat << 'EOCHECKBACKUPSCRIPT'
+unset mv &>/dev/null
+CURRENT_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')
+NEW_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp  2>/dev/null | awk '{print $1}')
+if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
+mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+elif ! [ -d /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} ]; then
+mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
+fi
+cat >> /root/cld/cld_backup_cron_${RANDID} << 'EOCRON'
+${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
+EOCRON
+EOCHECKBACKUPSCRIPT
+}
+
+checkcron()
+{
+echo "RANDID=${RANDID}"
+cat << 'EOCHECKCRON'
+CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
+NEW_HASH=$(md5sum /root/cld/cld_backup_cron_${RANDID}  2>/dev/null | sort | awk '{print $1}')
+if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
+unset mv &>/dev/null
+rm -f /etc/cron.d/cld_backup &>/dev/null
+mv /root/cld/cld_backup_cron_${RANDID} /etc/cron.d/cld_backup
+chmod 600 /etc/cron.d/cld_backup
+else
+rm -f /root/cld/cld_backup_cron_${RANDID}
+fi
+EOCHECKCRON
+}
+
 cat << EOREPORT
 Deploy backup methods $(date +%F):
 ----------------------------
@@ -128,7 +165,7 @@ EOREPORT
 # for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1)
 # do
 # /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON
-# rm -f /root/cld/cld_backup_cron &>/dev/null
+# rm -f /root/cld/cld_backup_cron_${RANDID} &>/dev/null
 # EOBACKUPCRON
 # done
 
@@ -179,19 +216,7 @@ $(keeplastrotate)
 ########################
 EOBACKUP
 
-unset mv &>/dev/null
-CURRENT_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')
-NEW_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp  2>/dev/null | awk '{print $1}')
-if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
-mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
-chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
-elif ! [ -d /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} ]; then
-mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
-chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
-fi
-cat >> /root/cld/cld_backup_cron << 'EOCRON'
-${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
-EOCRON
+$(checkbackupscript)
 EOCLD
 done
 ) &
@@ -200,16 +225,7 @@ done
 wait
 for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1 | sort -u)
 do
-/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << 'EOBACKUPCRON'
-CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort | awk '{print $1}')
-NEW_HASH=$(md5sum /root/cld/cld_backup_cron  2>/dev/null | sort | awk '{print $1}')
-if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
-unset mv &>/dev/null
-rm -f /etc/cron.d/cld_backup &>/dev/null
-mv /root/cld/cld_backup_cron /etc/cron.d/cld_backup
-chmod 600 /etc/cron.d/cld_backup
-else
-rm -f /root/cld/cld_backup_cron
-fi
+/var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON
+$(checkcron)
 EOBACKUPCRON
 done
