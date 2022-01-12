@@ -8,6 +8,8 @@ passwordgen()
 cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}
 }
 
+export RANDID=$(passwordgen 12)
+
 CLD_LOGS() {
 CLD_LOG_DATE=$(date +%F)
 if ! [ -d "/var/cld/log/session/${SUDO_USER}/${CLD_LOG_DATE}" ]
