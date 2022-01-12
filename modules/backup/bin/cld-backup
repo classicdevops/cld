@@ -148,8 +148,8 @@ checkcron()
 {
 echo "RUNDATE=${RUNDATE}"
 cat << 'EOCHECKCRON'
-CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | sort -u | awk '{print $1}')
-NEW_HASH=$(cat /root/cld/cron/${RUNDATE}/* 2>/dev/null | sort -u | md5sum | sort -u | awk '{print $1}')
+CURRENT_HASH=$(md5sum /etc/cron.d/cld_backup 2>/dev/null | awk '{print $1}')
+NEW_HASH=$(cat /root/cld/cron/${RUNDATE}/* 2>/dev/null | uniq | sort -nk 2 | md5sum | awk '{print $1}')
 if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
 unset mv &>/dev/null
 rm -f /etc/cron.d/cld_backup &>/dev/null
