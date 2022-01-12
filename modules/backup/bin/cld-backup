@@ -138,7 +138,7 @@ mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKU
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 fi
 [ -d /root/cld/cron ] || mkdir /root/cld/cron -p &>/dev/null
-cat >> /root/cld/cron/${BACKUP_METHOD}-${INSTANCE} << EOCRON
+cat > /root/cld/cron/${BACKUP_METHOD}-${INSTANCE} << EOCRON
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
 EOCRON
 EOCHECKBACKUPSCRIPT
