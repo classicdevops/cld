@@ -155,6 +155,7 @@ unset mv &>/dev/null
 rm -f /etc/cron.d/cld_backup &>/dev/null
 cat /root/cld/cron/* 2>/dev/null | sort -u > /etc/cron.d/cld_backup
 chmod 600 /etc/cron.d/cld_backup
+rm -f /root/cld/cron/* &>/dev/null
 else
 rm -f /root/cld/cld_backup_cron_${RUNDATE}
 fi
