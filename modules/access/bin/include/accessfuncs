@@ -172,6 +172,8 @@ cld_sshkey_deploy()
 local TMPLT_ID
 TMPLT_ID=$(passwordgen 5)
 cat << EOSSHDEPLOY${TMPLT_ID}
+[ -d ~/.ssh ] || mkdir ~/.ssh &>/dev/null
+chmod 700 ~/.ssh &>/dev/null
 cat > ~/.ssh/authorized_keys_tmp << 'EOUSERSSH${TMPLT_ID}'
 $(
 echo "${MAIN_CLD_KEY}" | awk -v date="${SSHKEY_DEPLOY_DATE}" '{print $0" # added by cld_sshkeysdeploy "date" - Main CLD SSH key"}'
