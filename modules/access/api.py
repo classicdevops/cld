@@ -3,7 +3,7 @@ def myip():
   if 'token' in request.args:
     if re.findall(r'(AppleWebKit|Chrome|Safari|KHTML|Gecko)', request.headers.get('User-Agent')):
       token = re.fullmatch(r'[A-Za-z0-9]+', request.args['token']).string
-      output = bash('FROM=API /var/cld/modules/access/bin/cld-activateiptoken '+str(remoteaddr())+' '+token)
+      output = bash('FROM=API /var/cld/modules/access/bin/cld-activateiptoken '+vld(remoteaddr())+' '+token)
       resp = Response(output, status=200, mimetype='text/plain')
       return resp
     else:

@@ -8,7 +8,7 @@ def note_index():
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
     userapitoken = apitokenbyuser(user)
-    notes = bash('find /var/cld/modules/note/data/ -maxdepth 1 -mindepth 1 -type d | cut -d / -f 7').split('\n')
+    notes = bash('find /var/cld/modules/note/data/ -maxdepth 1 -mindepth 1 -type d | cut -d / -f 7 | sort').split('\n')
     return render_template('modules/note/note.html', username=user, notes=notes, cld_domain=cld_domain, userapitoken=userapitoken)
 
 @app.route("/note/<note>/files")
