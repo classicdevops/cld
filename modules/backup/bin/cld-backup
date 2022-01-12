@@ -153,7 +153,7 @@ NEW_HASH=$(cat /root/cld/cron/${RUNDATE}/* 2>/dev/null | uniq | sort -nk 2 | md5
 if [ "${CURRENT_HASH}" != "${NEW_HASH}" ]; then
 unset mv &>/dev/null
 rm -f /etc/cron.d/cld_backup &>/dev/null
-cat /root/cld/cron/${RUNDATE}/* 2>/dev/null | sort -u > /etc/cron.d/cld_backup
+cat /root/cld/cron/${RUNDATE}/* 2>/dev/null | uniq | sort -nk 2 > /etc/cron.d/cld_backup
 chmod 600 /etc/cron.d/cld_backup
 rm -f /root/cld/cron/${RUNDATE}/* &>/dev/null
 rmdir /root/cld/cron/${RUNDATE} &>/dev/null
