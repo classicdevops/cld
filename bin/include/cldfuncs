@@ -8,7 +8,7 @@ passwordgen()
 cat /dev/urandom | tr -dc abcdefjhgkmnopqrstuvwxyzABCDEFJHGKLMNPQRSTUVWXYZ1234567890 | head -c${1:-25}
 }
 
-export RANDID=$(passwordgen 12)
+export RUNDATE=$(date +%d%m%y%H%M%S)
 
 CLD_LOGS() {
 CLD_LOG_DATE=$(date +%F)
