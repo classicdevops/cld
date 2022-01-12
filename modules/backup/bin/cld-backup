@@ -120,7 +120,12 @@ EOKEEPLASTROTATE
 
 checkbackupscript()
 {
-echo "RANDID=${RANDID}"
+cat << EODEFINEVARS
+RANDID='${RANDID}'
+BACKUP_METHOD='${BACKUP_METHOD}'
+INSTANCE='${INSTANCE}'
+CRON='${CRON}'
+EODEFINEVARS
 cat << 'EOCHECKBACKUPSCRIPT'
 unset mv &>/dev/null
 CURRENT_HASH=$(md5sum /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} 2>/dev/null | awk '{print $1}')
@@ -132,7 +137,7 @@ elif ! [ -d /root/cld/backup/${BACKUP_METHOD}-${INSTANCE} ]; then
 mv -f /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}_tmp /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 chmod 700 /root/cld/backup/${BACKUP_METHOD}-${INSTANCE}
 fi
-cat >> /root/cld/cld_backup_cron_${RANDID} << 'EOCRON'
+cat >> /root/cld/cld_backup_cron_${RANDID} << EOCRON
 ${CRON} root bash -lc "/root/cld/backup/${BACKUP_METHOD}-${INSTANCE}"
 EOCRON
 EOCHECKBACKUPSCRIPT
