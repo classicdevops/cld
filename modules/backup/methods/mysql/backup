@@ -5,6 +5,7 @@ if [ "${MYSQL_HOST}" = "127.0.0.1" -o "${MYSQL_HOST}" = "localhost" ]; then
     [ "${MYSQL_DATABASES}" ] || MYSQL_DATABASES="--all-databases"
     [ "${MYSQL_HOST}" = "127.0.0.1" ] && MYSQL_HOST="--host='${MYSQL_HOST}'"
     [ "${MYSQL_HOST}" = "localhost" ] && MYSQL_HOST=""
+    $CLD_VARS
     for MYSQL_DATABASE in $(tr ',' ' ' <<< "${MYSQL_DATABASES}")
     do
     $CLD_DEPLOY_NOTTY <<< "mysqldump --single-transaction ${MYSQL_HOST} --user=${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DATABASE}" > ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${MYSQL_DATABASE//-/}.tar.gz

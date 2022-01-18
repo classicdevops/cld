@@ -1,22 +1,41 @@
+TOOLDEPLOY=$(cat << 'EOTOOLDEPLOY'
 install-clickhouse-backup()
 {
 wget https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.2.1/clickhouse-backup.tar.gz
 tar -zxvf clickhouse-backup.tar.gz
 cp clickhouse-backup/clickhouse-backup /usr/local/bin/
+chmod 755 /usr/local/bin/clickhouse-backup
 }
 [ -f /usr/local/bin/clickhouse-backup ] || install-clickhouse-backup
+EOTOOLDEPLOY
+)
+
 CLICKHOUSE_USER="${CLICKHOUSE_USER:-default}"
-CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-localhost}"
-CLICKHOUSE_PORT="${CLICKHOUSE_PORT:-9000}"
-CLICKHOUSE_PATH="${CLICKHOUSE_PATH:-/var/lib/clickhouse}"
-cat > /etc/clickhouse-backup/config.yml << EOCLICKHOUSE
+[ "${CLICKHOUSE_PASSWORD}" ] && CLICKHOUSE_PASSWORD="  password: '${CLICKHOUSE_PASSWORD}'"
+[ "${CLICKHOUSE_HOST}" ] && CLICKHOUSE_HOST="  host: '${CLICKHOUSE_HOST}'"
+[ "${CLICKHOUSE_PORT}" ] && CLICKHOUSE_PORT="  port: '${CLICKHOUSE_PORT}'"
+
+CLICKHOUSE_CONFIG=$(grep -v "^$" << EOCLICKHOUSE
 clickhouse:
-username: ${CLICKHOUSE_USER}
-password: "${CLICKHOUSE_PASSWORD}"
-host: ${CLICKHOUSE_HOST}
-port: ${CLICKHOUSE_PORT}
-data_path: "${CLICKHOUSE_PATH}"
+  username: ${CLICKHOUSE_USER}
+${CLICKHOUSE_PASSWORD}
+${CLICKHOUSE_HOST}
+${CLICKHOUSE_PORT}
 general:
-remote_storage: none
-backups_to_keep_local: 1
+  remote_storage: none
+  backups_to_keep_local: 1
+  log_level: info
 EOCLICKHOUSE
+)
+
+$CLD_VARS
+$CLD_DEPLOY_NOTTY << EOCONFIG
+${TOOLDEPLOY}
+cat > /etc/clickhouse-backup/config.yml << 'EOBACKUPCONF'
+${CLICKHOUSE_CONFIG}
+EOBACKUPCONF
+EOCONFIG
+
+$CLD_DEPLOY_NOTTY <<< "/usr/local/bin/clickhouse-backup create"
+
+rsync -avP -e "ssh -p $PRT -T -o Compression=no -x -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" ${USR}@${SRV}:/var/lib/clickhouse/backup/ ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/

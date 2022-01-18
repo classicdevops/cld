@@ -5,3 +5,8 @@ CLICKHOUSE_PASSWORD="HetgPDbDyBuDJBdaHXzbe"
 #CRON="0 0 * * *" # Default - "0 0 * * *"
 #SERVER="backup1.example.com_1.2.3.4_22_root" # Default first from backup server list
 #SERVER_BACKUP_DIR="/backup" # Backup server backup directory - default - /backup
+cat << EOCLICKHOUSE
+clickhouse-client --query "CREATE USER ${USER} IDENTIFIED BY '${PASSWORD}'"
+clickhouse-client --query "SET allow_introspection_functions=1"
+clickhouse-client --query "GRANT ALL on *.* TO ${USER}"
+EOCLICKHOUSE
