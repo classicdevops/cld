@@ -1,4 +1,4 @@
-CLICKHOUSE_HOST="1.2.3.4"
+CLICKHOUSE_HOST="localhost"
 CLICKHOUSE_USER="backup"
 CLICKHOUSE_PASSWORD="HetgPDbDyBuDJBdaHXzbe"
 #KEEPLAST='7' # How many copies will remain after rotation - default - '7'

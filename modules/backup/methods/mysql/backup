@@ -1,1 +1,25 @@
-/usr/bin/ionice -c3 mydumper --host=${MYSQL_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} -o ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD} --compress --triggers --events --routines --build-empty-files --less-locking --use-savepoints --success-on-1146 --compress-protocol --threads=1 --verbose=3
+
+if [ "${MYSQL_HOST}" = "127.0.0.1" -o "${MYSQL_HOST}" = "localhost" ]; then
+    [ "${MYSQL_USER}" ] && MYSQL_USER="--user='${MYSQL_USER}'" || MYSQL_USER="--user='root'"
+    [ "${MYSQL_PASSWORD}" ] && MYSQL_PASSWORD="--password='${MYSQL_PASSWORD}'"
+    [ "${MYSQL_DATABASES}" ] || MYSQL_DATABASES="--all-databases"
+    [ "${MYSQL_HOST}" = "127.0.0.1" ] && MYSQL_HOST="--host='${MYSQL_HOST}'"
+    [ "${MYSQL_HOST}" = "localhost" ] && MYSQL_HOST=""
+    for MYSQL_DATABASE in $(tr ',' ' ' <<< "${MYSQL_DATABASES}")
+    do
+    $CLD_DEPLOY_NOTTY <<< "mysqldump --single-transaction ${MYSQL_HOST} --user=${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DATABASE}" > ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${MYSQL_DATABASE//-/}.tar.gz
+    done
+
+else
+
+    if [ "${MYSQL_DATABASES}" ]; then
+    for MYSQL_DATABASE in $(tr ',' ' ' <<< "${MYSQL_DATABASES}")
+    do
+    mkdir -p ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${MYSQL_DATABASE} &> /dev/null
+    ionice -c3 mydumper --host=${MYSQL_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --database=${MYSQL_DATABASE} -o ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${MYSQL_DATABASE} --compress --triggers --events --routines --build-empty-files --less-locking --use-savepoints --success-on-1146 --compress-protocol --threads=1 --verbose=3
+    done
+    else
+    ionice -c3 mydumper --host=${MYSQL_HOST} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} -o ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD} --compress --triggers --events --routines --build-empty-files --less-locking --use-savepoints --success-on-1146 --compress-protocol --threads=1 --verbose=3
+    fi
+
+fi
