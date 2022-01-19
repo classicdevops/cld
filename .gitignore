@@ -11,16 +11,12 @@
 #temp folder
 /tmp/
 
-#logs
-/log/
-/logs/
-
 #access
 /access/users/
 /access/groups/
 /access/users/admin/*
 
-#modules
+#built-in modules
 /modules/*
 !/modules/access/
 !/modules/backup/
@@ -34,43 +30,41 @@
 !/modules/telegramcloud/
 !/modules/zabbixcontrol/
 
+#built backup methods
+/modules/backup/methods/*
+!/modules/backup/methods/clickhouse/
+!/modules/backup/methods/etc/
+!/modules/backup/methods/files/
+!/modules/backup/methods/mongo/
+!/modules/backup/methods/mysql/
+!/modules/backup/methods/postgresql/
+
 #deploy
 /deploy/templates/*
 /deploy/deploys/*
 /deploy/actions/*
 /deploy/repo_list
-/devops/
-
-#certs
-/docker/xtermnginx/etc/nginx/ssl
 
 #security
 /api/accesslist
 
-#web
+#web staff
 /web/modules/*
 /web/flask_session/*
 /web/html/include/cld_tier*
+
 #legacy simlink
 /ext_srv
-
-#socket files
-/noVNC/sockets/
-/xtermjs/sockets/
 
 #cloudmaker module
 /cm/data/
 /cm/tmp/
 /cm/LOCK
 
-#sessid file with validating rules
-/docker/*/etc/nginx/conf.d/sessid
-
-#node modules
-*/node_modules/
-
-#screenlogs
-*screenlog.0*
+#logs
+/log/
+/logs/
+*screenlog.*
 
 #pycache
 *__pycache__*
