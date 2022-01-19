@@ -131,7 +131,9 @@ METHOD_SET=""
 METHOD_SIZE="0"
 METHOD_DATE="NEVER DONE"
 fi
-if [ "${METHOD_SET}" = "" ]; then
+if [ "${METHOD_SIZE}" = "4.0K" ]; then
+METHOD_STATUS="EMPTY"
+elif [ "${METHOD_SET}" = "" ]; then
 METHOD_STATUS="FAIL"
 elif [ "${METHOD_DATE}" != "${REPORT_DATE}" ]; then
 METHOD_STATUS="OUTDATED"
