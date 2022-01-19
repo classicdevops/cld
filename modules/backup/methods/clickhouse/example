@@ -1,6 +1,5 @@
-CLICKHOUSE_HOST="localhost"
-CLICKHOUSE_USER="backup"
-CLICKHOUSE_PASSWORD="HetgPDbDyBuDJBdaHXzbe"
+CLICKHOUSE_USER="default" # Default is empty "default"
+#CLICKHOUSE_PASSWORD="HetgPDbDyBuDJBdaHXzbe" # Default is empty ""
 #KEEPLAST='7' # How many copies will remain after rotation - default - '7'
 #CRON="0 0 * * *" # Default - "0 0 * * *"
 #SERVER="backup1.example.com_1.2.3.4_22_root" # Default first from backup server list

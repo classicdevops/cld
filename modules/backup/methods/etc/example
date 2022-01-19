@@ -1,4 +1,4 @@
-#DIR_LIST="/etc/nginx/,/var/lib/postgre/" # default - /etc
+#DIR_LIST="/etc/nginx/,/var/lib/postgre/" # default - /etc/
 #EXCLUDE_LIST="*.log,*.gz" # Default - "*.log,*.gz,*/selinux/targeted/*" - allow to be empty ""
 #KEEPLAST='7' # How many copies will remain after rotation - default - '7'
 #CRON="0 0 * * *" # Default - "0 0 * * *"
