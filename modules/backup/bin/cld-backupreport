@@ -123,7 +123,11 @@ parsebackupmethod()
 cat << 'EOPARSE'
 METHOD_COPYCOUNT=$(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} 2>/dev/null | wc -w)
 if [ "${METHOD_COPYCOUNT}" != "0" ]; then
-METHOD_SET=$(du -hd 0 $(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} | tail -1))
+METHOD_DIR=$(ls -hd ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} | tail -1)
+METHOD_SET=$(du -hd 0 ${METHOD_DIR})
+METHOD_RAW_SIZE1=$(du -d 0 ${METHOD_DIR})
+sleep 1s
+METHOD_RAW_SIZE2=$(du -d 0 ${METHOD_DIR})
 METHOD_SIZE=$(awk '{print $1}' <<< "${METHOD_SET}")
 METHOD_DATE=$(echo "${METHOD_SET}" | rev | cut -d / -f 2 | rev | cut -d _ -f 1)
 else
@@ -138,6 +142,8 @@ elif [ "${METHOD_SET}" = "" ]; then
 METHOD_STATUS="FAIL"
 elif [ "${METHOD_DATE}" != "${REPORT_DATE}" ]; then
 METHOD_STATUS="OUTDATED"
+elif [ "${METHOD_RAW_SIZE1}" != "${METHOD_RAW_SIZE2}" ]; then
+METHOD_STATUS="INPROGRESS"
 elif [ "${METHOD_DATE}" = "${REPORT_DATE}" ]; then
 METHOD_STATUS="OK"
 fi
