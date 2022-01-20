@@ -1,0 +1,24 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+
+if grep -q "^BACKUPMODULE=" /var/cld/creds/creds
+then
+    echo -n ""
+else
+    echo "Are you using BACKUPMODULE ?" 
+    select ANSWER in yes no
+    do
+        if [ "${ANSWER}" == "yes" ]
+            then
+                BACKUP_SERVER_SET=$(cat /var/cld/creds/creds_dns_cf_api_list 2>/dev/null)
+                [ "$BACKUP_SERVER_SET" ] || init-string 'BACKUP_SERVER|backup1.example.com|[A-Za-z0-9@._-]+' 'BACKUP_SERVER_DIR|/backup|[A-Za-z0-9._/-]+' --file=/var/cld/modules/backup/data/servers
+                echo BACKUPMODULE=1 >> /var/cld/creds/creds
+                break
+        elif [ "${ANSWER}" == "no" ]
+            then
+                echo BACKUPMODULE=0 >> /var/cld/creds/creds
+                break
+        fi
+    done
+fi
+
