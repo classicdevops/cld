@@ -26,13 +26,13 @@ done
 
 if [ "$DEPLOY" != "" -a "$ACTION" != "" ]
 then
-ls /var/cld/deploy/actions/${DEPLOY}/${ACTION}/deploy_log/ | wc -w
-cat /var/cld/deploy/actions/${DEPLOY}/${ACTION}/test_status/status_log | head -1 | cut -d ' ' -f 1 2>/dev/null | grep '/' || echo -
-grep -qs "DONE=1" /var/cld/deploy/actions/${DEPLOY}/${ACTION}/vars && echo done || echo unfinished
+ls /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION}/deploy_log/ | wc -w
+cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION}/test_status/status_log | head -1 | cut -d ' ' -f 1 2>/dev/null | grep '/' || echo -
+grep -qs "DONE=1" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION}/vars && echo done || echo unfinished
 elif [ "$DEPLOY" ]
 then
-ls -t /var/cld/deploy/actions/${DEPLOY}/* -d | rev | cut -d / -f 1 | rev
+ls -t /var/cld/modules/deploy/actions/${DEPLOY}/* -d | rev | cut -d / -f 1 | rev
 else
-ls /var/cld/deploy/actions/
+ls /var/cld/modules/deploy/actions/
 fi
 

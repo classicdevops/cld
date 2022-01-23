@@ -94,14 +94,14 @@ telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut 
 app = Flask(__name__)
 
 cldm={}
-for apifile in bash("ls /var/cld/{cm,deploy}/api.py /var/cld/modules/*/api.py").split('\n'):
+for apifile in bash("ls /var/cld/modules/*/api.py").split('\n'):
   cldmodule=bash('echo '+vld(apifile)+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule)
   exec(open(apifile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
 exec(bash('''
-for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -maxdepth 1 -name 'cld*')
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ -type f -maxdepth 1 -name 'cld*')
 do
 CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)

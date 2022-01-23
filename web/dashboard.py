@@ -62,7 +62,7 @@ def allowutilityusers(cldutility):
 
 def uservisiblemodules(user):
   usermodules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
-  webmodules = bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
+  webmodules = bash('ls /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   if "ALL" in usermodules:
     if os.path.isfile('/var/cld/access/users/'+vld(user)+'/showonlymodules'):
       modulesinfile = open('/var/cld/access/users/'+vld(user)+'/showonlymodules').read().strip().split('\n')
@@ -79,7 +79,7 @@ def uservisiblemodules(user):
 
 def getusermodules(user):
   usermodules = bash('''awk -F ":" '{print $1":"$4}' /var/cld/creds/passwd | grep "^'''+vld(user)+''':" | cut -d : -f 2''').split(',')
-  webmodules = bash('ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
+  webmodules = bash('ls /var/cld/modules/*/web.py 2>/dev/null | rev | cut -d / -f 2 | rev').split('\n')
   if "ALL" in usermodules:
     return webmodules
   else:
@@ -142,7 +142,7 @@ log.setLevel(logging.ERROR)
 webmodule = {}
 #include code from web.py of modules
 cldm={}
-for webfile in bash("ls /var/cld/{cm,deploy}/web.py /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
+for webfile in bash("ls /var/cld/modules/*/web.py 2>/dev/null").split('\n'):
   cldmodule=bash('echo '+vld(webfile)+' | rev | cut -d / -f 2 | rev')
   cldm[cldmodule]=cldmodule
   print(cldmodule, flush=True)
@@ -154,7 +154,7 @@ rm -f /var/cld/web/modules/*
 mkdir /var/cld/web/modules &>/dev/null
 rm -f /var/cld/web/html/include/cld_tier.html
 ln -s /var/cld/creds/cld_tier /var/cld/web/html/include/cld_tier.html
-for WEB_TEMPLATE_PATH in $(ls -d /var/cld/{cm,deploy}/web /var/cld/modules/*/web 2>/dev/null)
+for WEB_TEMPLATE_PATH in $(ls -d /var/cld/modules/*/web 2>/dev/null)
 do
 WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
 ln -s ${WEB_TEMPLATE_PATH} /var/cld/web/modules/${WEB_MODULE}
@@ -163,7 +163,7 @@ done
 
 #generate help endpoints for each CLD tool
 exec(bash('''
-for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -maxdepth 1 -name 'cld*')
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ -type f -maxdepth 1 -name 'cld*')
 do
 CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
@@ -198,7 +198,7 @@ else:
 
 #generate webapi endpoints for each CLD tool
 exec(bash('''
-for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -maxdepth 1 -name 'cld*')
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ -type f -maxdepth 1 -name 'cld*')
 do
 CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)

@@ -130,7 +130,7 @@ for botfile in bash("ls /var/cld/modules/*/bot.py").split('\n'):
   exec(open(botfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
 exec(bash('''
-for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ /var/cld/cm/bin/ /var/cld/deploy/bin/ -type f -maxdepth 1 -name 'cld*')
+for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ -type f -maxdepth 1 -name 'cld*')
 do
 CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
 CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)

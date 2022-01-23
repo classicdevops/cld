@@ -23,7 +23,7 @@ case $i in
 esac
 done
 
-CLD_TOOLS_LIST=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
+CLD_TOOLS_LIST=$(ls /var/cld/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
 rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 1 | rev | head -c -1 | tr '\n' ',' | cat - <(echo) > /var/cld/creds/tools_list
 rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev | head -c -1 | tr '\n' ',' | cat - <(echo) > /var/cld/creds/modules_list
 
@@ -87,7 +87,7 @@ then
         echo 0 > /var/cld/access/users/${USER_NAME}/role
     fi
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
-    CLD_UTILS=$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
+    CLD_UTILS=$(ls /var/cld/bin/* /var/cld/modules/*/bin/* -pd | grep -v include)
     for CLD_UTIL in ${CLD_UTILS}
     do 
         CLD_UTIL_NAME=$(echo $CLD_UTIL | rev | cut -d / -f 1 | rev)
@@ -100,7 +100,7 @@ then
     echo 0 > /var/cld/access/users/${USER_NAME}/role
     sed -i '/cld/d' /home/${USER_NAME}/.bashrc
     CLD_UTILS=$(cat << EOUTILS | sort -u
-$(ls /var/cld/bin/* /var/cld/deploy/bin/* /var/cld/cm/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
+$(ls /var/cld/bin/* /var/cld/modules/*/bin/* -pd | grep -v include | grep "$(echo $USER_UTILITES | tr ',' '\n' | tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n' )")
 $(for CLD_MODULE in $(tr ',' '\n' <<< ${USER_MODULES})
 do
 if [ "$CLD_MODULE" == "cld" ]; then

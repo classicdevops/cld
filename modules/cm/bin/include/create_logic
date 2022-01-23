@@ -49,9 +49,9 @@ else
  echo "Please Select the OS and use format cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1
 fi
 
-source /var/cld/cm/bin/include/template_vars
-source /var/cld/cm/bin/include/template_logic
-source /var/cld/cm/bin/include/template_functions
+source /var/cld/modules/cm/bin/include/template_vars
+source /var/cld/modules/cm/bin/include/template_logic
+source /var/cld/modules/cm/bin/include/template_functions
 
 if [ "$STORAGE_TYPE" = "" ] ; then
  echo "Please Select the STORAGE_TYPE and use format cm-create OS NAME CPU RAM DISK IP GATE" ; exit 1

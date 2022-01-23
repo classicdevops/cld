@@ -15,8 +15,8 @@ cld-cmcontrol --cmd=start --id=10001 --hyper=HPR-pve-1_1.2.3.4_22_root
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-source /var/cld/cm/bin/include/dc_funcs
-source /var/cld/cm/bin/include/create_funcs
+source /var/cld/modules/cm/bin/include/dc_funcs
+source /var/cld/modules/cm/bin/include/create_funcs
 
 for i in ${CLDOPTS}
 do
@@ -34,7 +34,7 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 if [ "$KVM_ID" != "" -a "$HPR" != "" ]
 then
-KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
+KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/modules/cm/tmp/kvm_list | grep "$(cut -d _ -f 1 <<< "$HPR")")
 [ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_$(cut -d _ -f 1 <<< "$HPR")")
 fi
 
@@ -129,6 +129,6 @@ else
 echoexit1 Target hypervisor for deploy script is not defined - exit
 fi
 
-/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & 
-/var/cld/cm/bin/cld-cm &>/dev/null &
+/var/cld/modules/cm/bin/cld-cm --json --nocache &>/dev/null & 
+/var/cld/modules/cm/bin/cld-cm &>/dev/null &
 wait

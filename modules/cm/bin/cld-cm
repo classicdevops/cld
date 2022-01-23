@@ -20,7 +20,7 @@ EOL
 )
 
 source /var/cld/bin/include/cldfuncs
-source /var/cld/cm/bin/include/create_funcs
+source /var/cld/modules/cm/bin/include/create_funcs
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
 ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
@@ -69,4 +69,4 @@ source <(echo -n get-kvm-list-json "$ARG1" "$ARG2" "$ARG3" ${JSON_BEAUTY_ARG})
 else
 get-kvm-list | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3"
 fi
-grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cm \-\-json.+\-\-nocache" | grep -qs root || echo '* * * * * root /var/cld/cm/bin/cld-cm --json --nocache &>/dev/null' >> /etc/cron.d/cld
+grep -vs "^#" /etc/cron.d/* | egrep -s "cld-cm \-\-json.+\-\-nocache" | grep -qs root || echo '* * * * * root /var/cld/modules/cm/bin/cld-cm --json --nocache &>/dev/null' >> /etc/cron.d/cld

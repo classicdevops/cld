@@ -5,7 +5,7 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 --template=templatename            Name of template
---repoupdate                       Update template list from connected repository list in file /var/cld/deploy/repo_list
+--repoupdate                       Update template list from connected repository list in file /var/cld/modules/deploy/repo_list
 --deploy=deployname                Name of deploy
 --clouds=srv_1.2.3.4               Instance pattern or list comma separated
 --groups=GROUP1,GROUP2             Filtering by instance groups
@@ -49,7 +49,7 @@ fi
 
 [ "$TEMPLATE" ] || { echo template not defined ; exit 1 ; }
 
-test "$DEPLOY" && source /var/cld/deploy/templates/${TEMPLATE}/vars
+test "$DEPLOY" && source /var/cld/modules/deploy/templates/${TEMPLATE}/vars
 
 for i in ${CLDOPTS}
 do
@@ -75,8 +75,8 @@ done
 
 create-deploy()
 {
-stat /var/cld/deploy/deploys/${TEMPLATE} &>/dev/null && DEPLOY_EXIST=1
-DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
+stat /var/cld/modules/deploy/deploys/${TEMPLATE} &>/dev/null && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/modules/deploy/deploys/${TEMPLATE}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
 test "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" && let "DEPLOY_ID++"
 test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TEMPLATE}"
 
@@ -85,10 +85,10 @@ test "$DEPLOY_ID" && DEPLOY_NAME="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY_NAME="${TE
 [ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=600
 [ "$RETRY" ] || RETRY=1
 
-mkdir -p /var/cld/deploy/deploys/ &>/dev/null
-cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY_NAME}
-test "${CLOUDS}" && echo "${CLOUDS}" > /var/cld/deploy/deploys/${DEPLOY_NAME}/clouds
-cat > /var/cld/deploy/deploys/${DEPLOY_NAME}/vars << EOVARS
+mkdir -p /var/cld/modules/deploy/deploys/ &>/dev/null
+cp -r /var/cld/modules/deploy/templates/${TEMPLATE} /var/cld/modules/deploy/deploys/${DEPLOY_NAME}
+test "${CLOUDS}" && echo "${CLOUDS}" > /var/cld/modules/deploy/deploys/${DEPLOY_NAME}/clouds
+cat > /var/cld/modules/deploy/deploys/${DEPLOY_NAME}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
 CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
@@ -105,28 +105,28 @@ NEXT_DEPLOY_ARGS="${NEXT_DEPLOY_ARGS}"
 DEBUG="${DEBUG}"
 CRON="${CRON}"
 EOVARS
-ls /var/cld/deploy/deploys/${DEPLOY_NAME}/* | cat
+ls /var/cld/modules/deploy/deploys/${DEPLOY_NAME}/* | cat
 }
 
 create-template()
 {
-[ -d /var/cld/deploy/templates/${TEMPLATE} ] && { echo Template ${TEMPLATE} exist ; exit 1 ; }
-mkdir -p /var/cld/deploy/templates/${TEMPLATE} &>/dev/null
+[ -d /var/cld/modules/deploy/templates/${TEMPLATE} ] && { echo Template ${TEMPLATE} exist ; exit 1 ; }
+mkdir -p /var/cld/modules/deploy/templates/${TEMPLATE} &>/dev/null
 
 test "$DESCRIPTION" || DESCRIPTION=0
 
-touch /var/cld/deploy/templates/${TEMPLATE}/script
+touch /var/cld/modules/deploy/templates/${TEMPLATE}/script
 
 test "$BACKUP" || BACKUP=0
-test "${BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/backup_files
+test "${BACKUP}" == 1 && touch /var/cld/modules/deploy/templates/${TEMPLATE}/backup_files
 
 test "$CUSTOM_BACKUP" || CUSTOM_BACKUP=0
-test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_backup_script
-test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/deploy/templates/${TEMPLATE}/custom_restore_script
+test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/modules/deploy/templates/${TEMPLATE}/custom_backup_script
+test "${CUSTOM_BACKUP}" == 1 && touch /var/cld/modules/deploy/templates/${TEMPLATE}/custom_restore_script
 
 # test "$TEST" || TEST=0
 # test "${TEST}" == 1 && 
-touch /var/cld/deploy/templates/${TEMPLATE}/test_script
+touch /var/cld/modules/deploy/templates/${TEMPLATE}/test_script
 
 [ "$TIMEOUT" ] || TIMEOUT=600
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=600
@@ -139,7 +139,7 @@ test "$DEBUG" || DEBUG=0
 
 echo "$CRON" | egrep -q "^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|[0-6]\*\-[0-6]|[0-6])$" || CRON=0
 
-cat > /var/cld/deploy/templates/${TEMPLATE}/vars << EOVARS
+cat > /var/cld/modules/deploy/templates/${TEMPLATE}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
 BACKUP="${BACKUP}"
 CUSTOM_BACKUP="${CUSTOM_BACKUP}"
@@ -156,7 +156,7 @@ DEBUG="${DEBUG}"
 CRON="${CRON}"
 EOVARS
 
-ls /var/cld/deploy/templates/${TEMPLATE}/* | cat
+ls /var/cld/modules/deploy/templates/${TEMPLATE}/* | cat
 }
 
 update-templates-from-repo()
@@ -164,13 +164,13 @@ update-templates-from-repo()
 stat /tmp/temprepos &>/dev/null && rm -rf /tmp/temprepos/
 mkdir /tmp/temprepos &>/dev/null
 cd /tmp/temprepos
-for TEMPLATE_REPO in $(cat /var/cld/deploy/repo_list)
+for TEMPLATE_REPO in $(cat /var/cld/modules/deploy/repo_list)
 do
   git clone $TEMPLATE_REPO
   TEMPLATE_REPO_NAME=$(echo "${TEMPLATE_REPO}" | rev | cut -d . -f 2- | cut -d / -f -1 | rev)
   for TEMPLATE in $(ls -d ${TEMPLATE_REPO_NAME}/*/ | sed 's#/$##g')
   do
-    rsync -avP ${TEMPLATE} /var/cld/deploy/templates/ --delete
+    rsync -avP ${TEMPLATE} /var/cld/modules/deploy/templates/ --delete
   done
 done
 }

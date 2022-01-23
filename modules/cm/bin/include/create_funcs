@@ -1,18 +1,18 @@
 get-last-vmid ()
 {
-mkdir -p /var/cld/cm/tmp/ &>/dev/null
-truncate -s 0 /var/cld/cm/tmp/last_vmid
+mkdir -p /var/cld/modules/cm/tmp/ &>/dev/null
+truncate -s 0 /var/cld/modules/cm/tmp/last_vmid
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 (
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-timeout 20 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk 'NR>1 {print $1}' | grep -v '^500' >> /var/cld/cm/tmp/last_vmid
+timeout 20 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk 'NR>1 {print $1}' | grep -v '^500' >> /var/cld/modules/cm/tmp/last_vmid
 )
 done
 wait
-sort -nu /var/cld/cm/tmp/last_vmid | tail -1
+sort -nu /var/cld/modules/cm/tmp/last_vmid | tail -1
 }
 
 KVMS_USER_ALLOWED() {
@@ -56,8 +56,8 @@ ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -2 | tail -1)
 ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -3 | tail -1)
 
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
-mkdir -p /var/cld/cm/tmp &>/dev/null
-rm -f /var/cld/cm/tmp/kvm_list.tmp &>/dev/null
+mkdir -p /var/cld/modules/cm/tmp &>/dev/null
+rm -f /var/cld/modules/cm/tmp/kvm_list.tmp &>/dev/null
 for VM in $(CLOUDS_USER_ALLOWED | grep -i "^$HYPERVISOR_NAME_PREFIX")
 do
 (
@@ -65,19 +65,19 @@ HPRNM=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print $2"_"$1"_"hpr}' | grep -v '_500' >> /var/cld/cm/tmp/kvm_list.tmp
+timeout 30 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "qm list" 2>/dev/null | awk -v hpr=${HPRNM} 'NR>1 {print $2"_"$1"_"hpr}' | grep -v '_500' >> /var/cld/modules/cm/tmp/kvm_list.tmp
 ) &
 done
 wait
 unalias mv &>/dev/null
-mv -f /var/cld/cm/tmp/kvm_list.tmp /var/cld/cm/tmp/kvm_list &>/dev/null
+mv -f /var/cld/modules/cm/tmp/kvm_list.tmp /var/cld/modules/cm/tmp/kvm_list &>/dev/null
 if [ "$(user_is_admin ${SUDO_USER})" = "0" ]
 then
-grep "$(KVMS_USER_ALLOWED)" /var/cld/cm/tmp/kvm_list
+grep "$(KVMS_USER_ALLOWED)" /var/cld/modules/cm/tmp/kvm_list
 else
 KVMS_ALLOWED="$(KVMS_USER_ALLOWED)"
 KVMS_ALLOWED_COUNT=$(wc -w <<< "${KVMS_ALLOWED}")
-[ "${KVMS_ALLOWED_COUNT}" -gt "0" ] && grep "$KVMS_ALLOWED" /var/cld/cm/tmp/kvm_list || echo -n
+[ "${KVMS_ALLOWED_COUNT}" -gt "0" ] && grep "$KVMS_ALLOWED" /var/cld/modules/cm/tmp/kvm_list || echo -n
 fi
 }
 
@@ -86,10 +86,10 @@ get-kvm-list-json()
 unalias mv &>/dev/null
 HYPERVISOR_NAME_PREFIX=${HYPERVISOR_NAME_PREFIX:-HPR}
 DATEID=$(date +%S%N | head -c 4)
-mkdir -p /var/cld/cm/tmp &>/dev/null
-[ -f "$/var/cld/cm/tmp/kvm_json" ] || touch /var/cld/cm/tmp/kvm_json
-KVM_LIST_FILE_STRINGS=$(grep -o '"hypervisor":' /var/cld/cm/tmp/kvm_json | wc -w)
-KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/cm/tmp/kvm_json)))
+mkdir -p /var/cld/modules/cm/tmp &>/dev/null
+[ -f "$/var/cld/modules/cm/tmp/kvm_json" ] || touch /var/cld/modules/cm/tmp/kvm_json
+KVM_LIST_FILE_STRINGS=$(grep -o '"hypervisor":' /var/cld/modules/cm/tmp/kvm_json | wc -w)
+KVM_SEC_FILE_CHANGED=$(($(date +%s) - $(date +%s -r /var/cld/modules/cm/tmp/kvm_json)))
 if [ "$KVM_LIST_FILE_STRINGS" -lt "1" -o "$KVM_SEC_FILE_CHANGED" -ge "90" -o "$NOCACHE" -eq "1" ]
 then
 PARSING_SCRIPT=$(cat << 'EOPARSING'
@@ -155,19 +155,19 @@ HPRNM=`echo $VM | cut -d "_" -f 1`
 SRV=`echo $VM | cut -d "_" -f 2`
 PRT=`echo $VM | cut -d "_" -f 3`
 USR=`echo $VM | cut -d "_" -f 4`
-timeout 25 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << EOSSH | tr '\r' '\n' >> /var/cld/cm/tmp/kvm_json_${DATEID}
+timeout 25 ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "sudo bash -s" << EOSSH | tr '\r' '\n' >> /var/cld/modules/cm/tmp/kvm_json_${DATEID}
 HPRNM=${HPRNM}
 ${PARSING_SCRIPT}
 EOSSH
 ) &
 done
 wait
-cat /var/cld/cm/tmp/kvm_json_${DATEID} | tr -d '\r\n' | sed 's#},$#}#g' | cat <(echo -n '[') - <(echo -n ']') > /var/cld/cm/tmp/kvm_json_${DATEID}_full
-rm -f /var/cld/cm/tmp/kvm_json_${DATEID} &>/dev/null
-unalias mv &>/dev/null ; mv -f /var/cld/cm/tmp/kvm_json_${DATEID}_full /var/cld/cm/tmp/kvm_json
-cat /var/cld/cm/tmp/kvm_json
+cat /var/cld/modules/cm/tmp/kvm_json_${DATEID} | tr -d '\r\n' | sed 's#},$#}#g' | cat <(echo -n '[') - <(echo -n ']') > /var/cld/modules/cm/tmp/kvm_json_${DATEID}_full
+rm -f /var/cld/modules/cm/tmp/kvm_json_${DATEID} &>/dev/null
+unalias mv &>/dev/null ; mv -f /var/cld/modules/cm/tmp/kvm_json_${DATEID}_full /var/cld/modules/cm/tmp/kvm_json
+cat /var/cld/modules/cm/tmp/kvm_json
 else
-cat /var/cld/cm/tmp/kvm_json
+cat /var/cld/modules/cm/tmp/kvm_json
 fi
 }
 

@@ -20,8 +20,10 @@
 /modules/*
 !/modules/access/
 !/modules/backup/
+!/modules/cm/
 !/modules/spamcheck/
 !/modules/doc/
+!/modules/deploy/
 !/modules/dns/
 !/modules/lead/
 !/modules/note/

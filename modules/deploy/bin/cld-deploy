@@ -38,7 +38,7 @@ cld-deploy --run --deploy=deployname --backup=1 --backuplist=/etc/nginx/ --async
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-source /var/cld/deploy/bin/include/deployfuncs
+source /var/cld/modules/deploy/bin/include/deployfuncs
 unalias cp &>/dev/null
 
 ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\--' | head -1)
@@ -95,14 +95,14 @@ echo "Please enter the deploy name using only A-Z a-z 0-9 - symbols"
 read DEPLOY
 done
 
-[ -d /var/cld/deploy/deploys/${DEPLOY} ] && DEPLOY_EXIST=1
-DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${DEPLOY}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
+[ -d /var/cld/modules/deploy/deploys/${DEPLOY} ] && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/modules/deploy/deploys/${DEPLOY}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
 [ "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" ] && let "DEPLOY_ID++"
 [ "$DEPLOY_ID" ] && DEPLOY="${DEPLOY}_${DEPLOY_ID}"
-mkdir -p /var/cld/deploy/deploys/${DEPLOY}
+mkdir -p /var/cld/modules/deploy/deploys/${DEPLOY}
 
 defaultvars
-cat > /var/cld/deploy/deploys/${DEPLOY}/vars << EOVARS
+cat > /var/cld/modules/deploy/deploys/${DEPLOY}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
 CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
@@ -129,7 +129,7 @@ if  [ "$TEMPLATE" = "" ]
 then
 echo "Please choose template:"
 echo
-select TEMPLATE_SELECT in $(ls /var/cld/deploy/templates/)
+select TEMPLATE_SELECT in $(ls /var/cld/modules/deploy/templates/)
 do
 [ "$TEMPLATE_SELECT" ] && TEMPLATE=$TEMPLATE_SELECT
 [ "$TEMPLATE_SELECT" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
@@ -137,16 +137,16 @@ do
 done
 fi
 
-[ -d /var/cld/deploy/deploys/${TEMPLATE} ] && DEPLOY_EXIST=1
-DEPLOY_ID=$(ls -d /var/cld/deploy/deploys/${TEMPLATE}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
+[ -d /var/cld/modules/deploy/deploys/${TEMPLATE} ] && DEPLOY_EXIST=1
+DEPLOY_ID=$(ls -d /var/cld/modules/deploy/deploys/${TEMPLATE}_* 2>/dev/null | tail -1 | egrep -o "_[0-9]+$" | tr -d _)
 test "$DEPLOY_ID" != "" -o "$DEPLOY_EXIST" == "1" && let "DEPLOY_ID++"
 test "$DEPLOY_ID" && DEPLOY="${TEMPLATE}_${DEPLOY_ID}" || DEPLOY="${TEMPLATE}"
 
-[ -d /var/cld/deploy/deploys ] || mkdir -p /var/cld/deploy/deploys
-cp -r /var/cld/deploy/templates/${TEMPLATE} /var/cld/deploy/deploys/${DEPLOY}
+[ -d /var/cld/modules/deploy/deploys ] || mkdir -p /var/cld/modules/deploy/deploys
+cp -r /var/cld/modules/deploy/templates/${TEMPLATE} /var/cld/modules/deploy/deploys/${DEPLOY}
 
 defaultvars
-cat > /var/cld/deploy/deploys/${DEPLOY}/vars << EOVARS
+cat > /var/cld/modules/deploy/deploys/${DEPLOY}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
 CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
@@ -181,8 +181,8 @@ do
 done
 fi
 
-[ -d /var/cld/deploy/deploys/${DEPLOY} ] || echoexit1 Deploy is not exist
-[ "$DEPLOY" ] && source /var/cld/deploy/deploys/${DEPLOY}/vars
+[ -d /var/cld/modules/deploy/deploys/${DEPLOY} ] || echoexit1 Deploy is not exist
+[ "$DEPLOY" ] && source /var/cld/modules/deploy/deploys/${DEPLOY}/vars
 
 for i in ${CLDOPTS}
 do
@@ -215,17 +215,17 @@ then
     CLD_DEPLOY_VARIABLES=$(echo "${CLD_DEPLOY_VARIABLES}" | tr ',' '\n' | egrep "^[A-Za-z0-9_-]+=")
 fi
 
-[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && BACKUP_LIST="$(cat /var/cld/deploy/deploys/${DEPLOY}/backup_list 2>/dev/null)"
+[ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && BACKUP_LIST="$(cat /var/cld/modules/deploy/deploys/${DEPLOY}/backup_list 2>/dev/null)"
 
-[ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
+[ "$CLOUDS" ] || CLOUDS="$(cat /var/cld/modules/deploy/deploys/${DEPLOY}/clouds 2>/dev/null)"
 [ "$CLOUDS" == "" -a "$RUN" == "1" ] && echoexit1 "CLOUDS is not defined"
 
 ACTION_PREFIX=$(date +%d%m%Y_%H-%M-%S)
 ACTION_NAME=${DEPLOY}_${ACTION_PREFIX}
-mkdir -p /var/cld/deploy/actions/${DEPLOY} &>/dev/null
-cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}
-[ "$CLOUDS" ] && echo "${CLOUDS}" > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
-[ "$BACKUP_LIST" ] && echo "${BACKUP_LIST}" > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
+mkdir -p /var/cld/modules/deploy/actions/${DEPLOY} &>/dev/null
+cp -r /var/cld/modules/deploy/deploys/${DEPLOY} /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}
+[ "$CLOUDS" ] && echo "${CLOUDS}" > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+[ "$BACKUP_LIST" ] && echo "${BACKUP_LIST}" > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
 
 [ "$RETRY" ] || RETRY=1
 [ "$TEST_PRINT" ] || TEST_PRINT=0
@@ -233,7 +233,7 @@ cp -r /var/cld/deploy/deploys/${DEPLOY} /var/cld/deploy/actions/${DEPLOY}/${ACTI
 [ "$TEST_TIMEOUT" ] || TEST_TIMEOUT=120
 [ "$BACKUP_TIMEOUT" ] || BACKUP_TIMEOUT=120
 
-cat > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars << EOVARS
+cat > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars << EOVARS
 DESCRIPTION="${DESCRIPTION}"
 CLD_GROUPS="${CLD_GROUPS}"
 BACKUP="${BACKUP}"
@@ -254,30 +254,30 @@ EOVARS
 
 if [ "$RUN" != "1" ]
 then
-echo Action config: "$(echo;cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars)"
+echo Action config: "$(echo;cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars)"
 echo
 select DEPLOY_CONFIG_SELECT in continue edit
 do
 [ "$DEPLOY_CONFIG_SELECT" == "continue" ] && echo -n ""
-[ "$DEPLOY_CONFIG_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
+[ "$DEPLOY_CONFIG_SELECT" == "edit" ] && nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
 [ "$DEPLOY_CONFIG_SELECT" == "continue" -o "$DEPLOY_CONFIG_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
 [ "$DEPLOY_CONFIG_SELECT" == "continue" -o "$DEPLOY_CONFIG_SELECT" == "edit" ] && break
 done
 fi
 
-source /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
+source /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
 [ "${RETRY}" == "0" ] && RETRY=1
 
 if [ "$BACKUP" == "1" -a "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list -a "$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list 2>/dev/null | wc -w)" != "0" ]
+    if [ -f /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list -a "$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list 2>/dev/null | wc -w)" != "0" ]
     then
-    echo Backup file list is: "$(echo;cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list)" || \
+    echo Backup file list is: "$(echo;cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list)" || \
     echo
     select BACKUP_LIST_SELECT in continue edit
     do
     [ "$BACKUP_LIST_SELECT" == "continue" ] && echo -n ""
-    [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
+    [ "$BACKUP_LIST_SELECT" == "edit" ] && nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
     echo -e "\e[48;5;6m          \e[K\e[00m"
     break
     done
@@ -287,7 +287,7 @@ then
     do
         if [ "$BACKUP_LIST_SELECT" == "edit" ] 
         then
-        cat > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list << 'EOBACKULIST'
+        cat > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list << 'EOBACKULIST'
 ##################################
 # Backup file and directory list #
 # example usage:                 #
@@ -295,8 +295,8 @@ then
 # /etc/ssh/                      #
 ##################################
 EOBACKULIST
-        nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
-        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
+        nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
+        sed -i -e "/^$/d" -e "/^#/d"  /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
@@ -306,14 +306,14 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds -a "$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds 2>/dev/null | wc -w)" != "0" ]
+    if [ -f /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds -a "$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds 2>/dev/null | wc -w)" != "0" ]
         then
-        echo Instance list is: "$(echo;cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds)"
+        echo Instance list is: "$(echo;cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds)"
         echo
         select INSTANCE_LIST_SELECT in continue edit
         do
         [ "$INSTANCE_LIST_SELECT" == "continue" ] && echo -n ""
-        [ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+        [ "$INSTANCE_LIST_SELECT" == "edit" ] && nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
         [ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
         [ "$INSTANCE_LIST_SELECT" == "continue" -o "$INSTANCE_LIST_SELECT" == "edit" ] && break
         done
@@ -323,7 +323,7 @@ then
     do
         if [ "$INSTANCE_LIST_SELECT" == "edit" ] 
         then
-        cat > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds << 'EOINSTANCELIST'
+        cat > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds << 'EOINSTANCELIST'
 ####################################
 # Instance list                    #
 # example usage:                   #
@@ -332,9 +332,9 @@ then
 # .*                               #
 ####################################
 EOINSTANCELIST
-        nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
-        sed -i -e "/^$/d" -e "/^#/d" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
-        sed -i -e "/^$/d" -e "/^#/d" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+        nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+        sed -i -e "/^$/d" -e "/^#/d" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
+        sed -i -e "/^$/d" -e "/^#/d" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
@@ -344,14 +344,14 @@ fi
 
 if [ "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script -a "$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script 2>/dev/null | wc -w)" != "0" ]
+    if [ -f /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script -a "$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script 2>/dev/null | wc -w)" != "0" ]
         then
-        echo Deploy script is: "$(echo;cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script)"
+        echo Deploy script is: "$(echo;cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script)"
         echo
         select DEPLOY_SCRIPT_SELECT in continue edit
         do
         [ "$DEPLOY_SCRIPT_SELECT" == "continue" ] && echo -n ""
-        [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script
+        [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] && nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script
         [ "$DEPLOY_SCRIPT_SELECT" == "continue" -o "$DEPLOY_SCRIPT_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
         [ "$DEPLOY_SCRIPT_SELECT" == "continue" -o "$DEPLOY_SCRIPT_SELECT" == "edit" ] && break
         done
@@ -361,7 +361,7 @@ then
     do
         if [ "$DEPLOY_SCRIPT_SELECT" == "edit" ] 
         then
-        cat > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script << 'EOINSTANCELIST'
+        cat > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script << 'EOINSTANCELIST'
 ####################################
 # Deploy script                    #
 # example usage:                   #
@@ -372,7 +372,7 @@ then
 # Or it will put in deploy log     #
 ####################################
 EOINSTANCELIST
-        nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script
+        nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
@@ -382,14 +382,14 @@ fi
 
 if [ "$TEST" == 1 -a "$RUN" != "1" ]
 then
-    if [ -f /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script -a "$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script 2>/dev/null | wc -w)" != "0" ]
+    if [ -f /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script -a "$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script 2>/dev/null | wc -w)" != "0" ]
         then
-        echo Test script is: "$(echo;cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script)"
+        echo Test script is: "$(echo;cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script)"
         echo
         select TEST_SCRIPT_SELECT in continue edit
         do
         [ "$TEST_SCRIPT_SELECT" == "continue" ] && echo -n ""
-        [ "$TEST_SCRIPT_SELECT" == "edit" ] && nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
+        [ "$TEST_SCRIPT_SELECT" == "edit" ] && nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
         [ "$TEST_SCRIPT_SELECT" == "continue" -o "$TEST_SCRIPT_SELECT" == "edit" ] && echo -e "\e[48;5;6m          \e[K\e[00m"
         [ "$TEST_SCRIPT_SELECT" == "continue" -o "$TEST_SCRIPT_SELECT" == "edit" ] && break
         done
@@ -399,7 +399,7 @@ then
     do
         if [ "$TEST_SCRIPT_SELECT" == "edit" ] 
         then
-        cat > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script << 'EOINSTANCELIST'
+        cat > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script << 'EOINSTANCELIST'
 #########################################################
 # # Test script                                         #
 # # Test status will track exit code of last command    #
@@ -416,8 +416,8 @@ then
 # [ "$status1" = "0" -a "$status2" = "0" ]              #
 #########################################################
 EOINSTANCELIST
-        nano /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
-        sed -i -e "/^$/d" -e "/^#/d" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
+        nano /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
+        sed -i -e "/^$/d" -e "/^#/d" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script
         echo -e "\e[48;5;6m          \e[K\e[00m"
         break
         fi
@@ -425,11 +425,11 @@ EOINSTANCELIST
     fi
 fi
 
-CLOUDS="$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds)"
-DEPLOY_SCRIPT="$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script)"
-[ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script)"
+CLOUDS="$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/clouds)"
+DEPLOY_SCRIPT="$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/script)"
+[ "$TEST" == "1" ] && DEPLOY_TEST_SCRIPT="$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_script)"
 [ "$ASYNC" == 1 ] && BACKGROUND='&>/dev/null &'
-[ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list)"
+[ "$BACKUP" == 1 ] && BACKUP_LIST="$(cat /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_list)"
 [ "$BACKUP" == 1 -a "$BACKUP_LIST" == "" ] && echoexit1 "BACKUP_LIST is not defined"
 
 OUTPUT_FORMAT_STDERR=$(cat << 'EOUTPUT'
@@ -496,7 +496,7 @@ EOL
           exit 0
         elif [ "$APPROVE_CASE" == "Save and exit" ]
         then
-          cp /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
+          cp /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/* /var/cld/modules/deploy/deploys/${DEPLOY}/ &>/dev/null
           exit 0
         fi
     done
@@ -580,36 +580,36 @@ EOSOURCE
 done
 if [ "$BACKGROUND" ]
 	then
-	    while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars && break ; sleep 1s ; done &>/dev/null &
+	    while :; do ps axfu | grep -v grep | grep "tee -a /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/" || DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars && break ; sleep 1s ; done &>/dev/null &
     else
-        DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
+        DONE=1 ; test "$DONE" == 1 && echo "DONE=1" >> /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/vars
 fi
 [ "$BACKUP" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check backups status ; wait")
 if [ "$BACKUP" == "1" ]
     then
-        AMOUNT_BACKUP_PASSED=$(grep -l "BACKUP_OK" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/* | wc -l)
+        AMOUNT_BACKUP_PASSED=$(grep -l "BACKUP_OK" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/* | wc -l)
         AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -w)
         if [ "${AMOUNT_BACKUP_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
-            echo BACKUP_STATUS=0 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status
+            echo BACKUP_STATUS=0 > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status
             echo ${AMOUNT_BACKUP_PASSED}/${AMOUNT_INSTANCES} backup completed
             echo
         else
-            echo BACKUP_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status 
+            echo BACKUP_STATUS=1 > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status 
             echo -e "\e[01;31m${AMOUNT_BACKUP_PASSED}\e[00m/${AMOUNT_INSTANCES} backups completed"
             echo
-        fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status_log
+        fi | tee -a  /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/backup_log/status_log
 fi
 [ "$TEST" == "1" -a "$ASYNC" == "1" ] && source <(echo "echo Waiting for deploy end before check tests status ; wait")
 if [ "$TEST" == "1" ]
     then
         if [ "$TEST_PRINT" == "1" ]
         then
-            for PRINT_LOG in $(ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/*)
+            for PRINT_LOG in $(ls /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_log/*)
             do
                 TEST_INSTANCE=$(basename "${PRINT_LOG}")
                 echo -e "Test script output of $TEST_INSTANCE\e[48;5;6m          \e[K\e[00m"
-                if grep -q "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${TEST_INSTANCE}
+                if grep -q "^0$" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/${TEST_INSTANCE}
                 then
                 { echo -en "\033[0;32m" ; cat ${PRINT_LOG} ; echo -e "\e[K\e[00m" ; }
                 else
@@ -618,26 +618,26 @@ if [ "$TEST" == "1" ]
                 echo
             done
         fi
-        AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | wc -l)
+        AMOUNT_TEST_PASSED=$(grep -l "^0$" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | wc -l)
         AMOUNT_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | wc -w)
         if [ "${AMOUNT_TEST_PASSED}" == "${AMOUNT_INSTANCES}" ] 
         then 
-            echo TEST_STATUS=0 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status
+            echo TEST_STATUS=0 > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status
             echo ${AMOUNT_TEST_PASSED}/${AMOUNT_INSTANCES} tests passed
         else
-            echo TEST_STATUS=1 > /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status	
+            echo TEST_STATUS=1 > /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status	
             echo -e "\e[01;31m${AMOUNT_TEST_PASSED}\e[00m/${AMOUNT_INSTANCES} tests passed\nFailed deploy logs:"
-            # for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v "$(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 8)" || ls /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/ | grep -v "^status$\|^status_log$")
-            for FAILED_INSTANCE in $(grep -l "^1$" /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 9 | grep -v "^status$\|^status_log$\|^test_status$")
+            # for FAILED_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | grep "${CLOUDS}" | grep -v "$(grep -l "^1$" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 8)" || ls /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/ | grep -v "^status$\|^status_log$")
+            for FAILED_INSTANCE in $(grep -l "^1$" /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/* | cut -d / -f 9 | grep -v "^status$\|^status_log$\|^test_status$")
             do
-            echo "$(du -b /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "int($1/1024)"Kb"}')"
+            echo "$(du -b /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/deploy_log/${FAILED_INSTANCE} | awk '{print $2" "int($1/1024)"Kb"}')"
             done | sort -k2 -n
-        fi | tee -a  /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status_log
+        fi | tee -a  /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/test_status/status_log
         echo
 fi
 [ "$NEXT_DEPLOY" ] && source <(cat << EONEXTDEPLOY
 $([ "$NEXT_DEPLOY_WAIT" == "1" ] && echo "echo Waiting for deploy end before start next deploy; echo ; wait")
-/var/cld/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $([ "$NEXT_DEPLOY_ARGS" ] && echo "${NEXT_DEPLOY_ARGS}")
+/var/cld/modules/deploy/bin/cld-deploy --deploy="${NEXT_DEPLOY}" $([ "$NEXT_DEPLOY_ARGS" ] && echo "${NEXT_DEPLOY_ARGS}")
 EONEXTDEPLOY
 )
 [ "$BACKGROUND" ] && disown &>/dev/null
@@ -646,10 +646,10 @@ then
     echo "Save this action to deploy?"
     select SAVE_DEPLOY in yes no
     do
-    [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
+    [ "$SAVE_DEPLOY" == "yes" ] && cp /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/* /var/cld/modules/deploy/deploys/${DEPLOY}/ &>/dev/null
     [ "$SAVE_DEPLOY" ] && echo done && break
     done
 elif [ "$RUN" != "1" -a "$CREATE_NEW" == "1" ]
 then    
-    cp /var/cld/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/* /var/cld/deploy/deploys/${DEPLOY}/ &>/dev/null
+    cp /var/cld/modules/deploy/actions/${DEPLOY}/${ACTION_PREFIX}/* /var/cld/modules/deploy/deploys/${DEPLOY}/ &>/dev/null
 fi

@@ -131,7 +131,7 @@ def cmd_cld_${MODULE_NAME}_test(message):
         cmd_args = str(re.match('^[A-z0-9.,@=/ -]+$', cmd_args).string)
     except:
         pass
-    print('sudo -u '+user+' sudo FROM=BOT /var/cld/deploy/bin/cld-${MODULE_NAME}test '+cmd_args, flush=True)
+    print('sudo -u '+user+' sudo FROM=BOT /var/cld/modules/deploy/bin/cld-${MODULE_NAME}test '+cmd_args, flush=True)
     return bot_bash_stream('echo Print some test arguments to demostrate custom bot command: '+cmd_args, message)
 
 EOBOT

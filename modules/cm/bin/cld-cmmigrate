@@ -19,8 +19,8 @@ cld-cmmigrate --id=10001 --source=HPR-pve-1_1.2.3.4_22_root --dest=HPR-pve-2_2.3
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-source /var/cld/cm/bin/include/dc_funcs
-source /var/cld/cm/bin/include/create_funcs
+source /var/cld/modules/cm/bin/include/dc_funcs
+source /var/cld/modules/cm/bin/include/create_funcs
 
 for i in ${CLDOPTS}
 do
@@ -41,7 +41,7 @@ init-load-constants HYPERVISOR_NAME_PREFIX\|HPR
 
 if [ "$KVM_ID" != "" -a "$SOURCE_HPR" != "" ]
 then
-KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/cm/tmp/kvm_list | grep "_${SOURCE_HPR}")
+KVM_SET=$(grep -s "_${KVM_ID}_" /var/cld/modules/cm/tmp/kvm_list | grep "_${SOURCE_HPR}")
 [ "${KVM_SET}" ] || KVM_SET=$(get-kvm-list 2>/dev/null | grep "_${KVM_ID}$" | grep "_${SOURCE_HPR}")
 fi
 
@@ -139,7 +139,7 @@ SOURCE_HPR_USER=$(cut -d "_" -f 4 <<< ${SOURCE_HPR})
 
 HPR_DC=$(/var/cld/modules/dns/bin/cld-geo ${DEST_HPR_IP} | grep '"org":' | cut -d '"' -f 4 | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 
-source /var/cld/cm/bin/include/migrate_vars
+source /var/cld/modules/cm/bin/include/migrate_vars
 
 cat << EOL
 COMMANDS FOR DEBUG:
@@ -272,6 +272,6 @@ EOSSH
 echo
 echo "Migration of  $KVM_NAME completed - you need check everything and delete source ZFS partition at $DEST_HPR yourself"
 
-/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & 
-/var/cld/cm/bin/cld-cm &>/dev/null &
+/var/cld/modules/cm/bin/cld-cm --json --nocache &>/dev/null & 
+/var/cld/modules/cm/bin/cld-cm &>/dev/null &
 wait

@@ -304,7 +304,7 @@ rsync -avzP /var/cld/setup/creds /var/cld/
 #set path
 sed -i '/PATH/d' /root/.bashrc ; 
 cat >> /root/.bashrc << 'EOBASHRC'
-export CLD_PATH="/var/cld/bin:/var/cld/deploy/bin:/var/cld/cm/bin:$(echo -n "$(ls -d /var/cld/modules/*/bin)" | tr "\n" :)"
+export CLD_PATH="/var/cld/bin:$(echo -n "$(ls -d /var/cld/modules/*/bin)" | tr "\n" :)"
 PATH="$PATH:$CLD_PATH"
 EOBASHRC
 

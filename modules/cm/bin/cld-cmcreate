@@ -31,22 +31,22 @@ cld-cmcreate --hyper=HPR-dc-1-n0000001 --os=CENTOS8 --name=srv1.example.com --cp
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-source /var/cld/cm/bin/include/bot
-source /var/cld/cm/bin/include/create_funcs
-source /var/cld/cm/bin/include/create_vars
-mkdir -p /var/log/cld/cm /var/cld/cm/data &>/dev/null
+source /var/cld/modules/cm/bin/include/bot
+source /var/cld/modules/cm/bin/include/create_funcs
+source /var/cld/modules/cm/bin/include/create_vars
+mkdir -p /var/log/cld/cm /var/cld/modules/cm/data &>/dev/null
 echo  "`date` - ${@:0}" >> /var/log/cld/cm/cmd_create.log
-touch /var/cld/cm/LOCK
-CMLOCK=$(cat /var/cld/cm/LOCK)
-[ -d "/var/cld/cm/data" ] || mkdir -p /var/cld/cm/data &>/dev/null
-[ -f "/var/cld/cm/data/queue_create" ] || touch /var/cld/cm/data/queue_create
+touch /var/cld/modules/cm/LOCK
+CMLOCK=$(cat /var/cld/modules/cm/LOCK)
+[ -d "/var/cld/modules/cm/data" ] || mkdir -p /var/cld/modules/cm/data &>/dev/null
+[ -f "/var/cld/modules/cm/data/queue_create" ] || touch /var/cld/modules/cm/data/queue_create
 
 
-if grep -q "1" /var/cld/cm/LOCK
-    then echo "${@:0}" >> /var/cld/cm/data/queue_create
+if grep -q "1" /var/cld/modules/cm/LOCK
+    then echo "${@:0}" >> /var/cld/modules/cm/data/queue_create
     if [ "$RUN" = "1" ]
         then
-        echoexit0 Lock detected - task added to the /var/cld/cm/data/queue_create - exit
+        echoexit0 Lock detected - task added to the /var/cld/modules/cm/data/queue_create - exit
         else
         echo LOCK detected, do you want FORCE UNLOCK ?
         select LOCK in yes no
@@ -54,14 +54,14 @@ if grep -q "1" /var/cld/cm/LOCK
             if [ "$LOCK" == "yes" ]
                 then
                 echo
-                sed -i '$ d' /var/cld/cm/data/queue_create
+                sed -i '$ d' /var/cld/modules/cm/data/queue_create
                 else
                 exit 0
             fi
             break
             done
     fi
-    else echo 1 > /var/cld/cm/LOCK
+    else echo 1 > /var/cld/modules/cm/LOCK
 fi
 
 ROOTPASSWORD=""
@@ -286,17 +286,17 @@ SSH_KEYS=$(cat /root/.ssh/id_rsa.pub)
 # REQ_DISK=$(echo "$DISK*0.6" | bc | cut -d '.' -f 1)
 
 # ### HYPERVISOR SELECTOR RATING ALGORITM START
-# rm -f /var/cld/cm/tmp/select_hyper_list ; rm -f /var/cld/cm/tmp/choice_hyper_list
-# touch /var/cld/cm/tmp/select_hyper_list ; touch /var/cld/cm/tmp/choice_hyper_list
-# for HPR_RES in $(cat /var/cld/cm/dc/${DC}/res_hyper_list | grep -vf /var/cld/cm/dc/${DC}/hyper_list_ignore)
+# rm -f /var/cld/modules/cm/tmp/select_hyper_list ; rm -f /var/cld/modules/cm/tmp/choice_hyper_list
+# touch /var/cld/modules/cm/tmp/select_hyper_list ; touch /var/cld/modules/cm/tmp/choice_hyper_list
+# for HPR_RES in $(cat /var/cld/modules/cm/dc/${DC}/res_hyper_list | grep -vf /var/cld/modules/cm/dc/${DC}/hyper_list_ignore)
 #  do
 #  HPR_CPU=$(echo "$HPR_RES" | cut -d '_' -f 2)
 #  HPR_MEMORY=$(echo "$HPR_RES" | cut -d '_' -f 3)
 #  HPR_DISK=$(echo "$HPR_RES" | cut -d '_' -f 4)
-#  if [[ "$REQ_CPU" -lt "$HPR_CPU" && "$REQ_MEMORY" -lt "$HPR_MEMORY" && "$REQ_DISK" -lt "$HPR_DISK" ]]; then echo "$HPR_RES" >> /var/cld/cm/tmp/select_hyper_list ; fi
+#  if [[ "$REQ_CPU" -lt "$HPR_CPU" && "$REQ_MEMORY" -lt "$HPR_MEMORY" && "$REQ_DISK" -lt "$HPR_DISK" ]]; then echo "$HPR_RES" >> /var/cld/modules/cm/tmp/select_hyper_list ; fi
 # done
 
-# for HPR_RES in $(cat /var/cld/cm/tmp/select_hyper_list)
+# for HPR_RES in $(cat /var/cld/modules/cm/tmp/select_hyper_list)
 # do
 #  HPR_CPU=$(echo "$HPR_RES" | cut -d '_' -f 2)
 #  HPR_MEMORY=$(echo "$HPR_RES" | cut -d '_' -f 3)
@@ -307,10 +307,10 @@ SSH_KEYS=$(cat /root/.ssh/id_rsa.pub)
 #  RATE_REQ_CPU=$(echo "$MORE_REQ_CPU*1" | bc | cut -d '.' -f 1)
 #  RATE_SCORE=$(expr $RATE_REQ_CPU + $MORE_REQ_MEMORY)
 #  HPR_SCORE=$(echo "$HPR_RES" | awk '{print $1}')
-#  if [[ "$MORE_REQ_CPU" -gt 1 && "$MORE_REQ_MEMORY" -gt 3 && "$MORE_REQ_DISK" -gt 5 ]]; then echo "$RATE_SCORE $HPR_SCORE"  >> /var/cld/cm/tmp/choice_hyper_list ; fi
+#  if [[ "$MORE_REQ_CPU" -gt 1 && "$MORE_REQ_MEMORY" -gt 3 && "$MORE_REQ_DISK" -gt 5 ]]; then echo "$RATE_SCORE $HPR_SCORE"  >> /var/cld/modules/cm/tmp/choice_hyper_list ; fi
 # done
 # ### HYPERVISOR SELECTOR RATING ALGORITM END
-# if [ "$DC" = "*" ] ; then DC=`grep -l $(awk '{print $2}' /var/cld/cm/tmp/choice_hyper_list | cut -d _ -f 1) /var/cld/cm/dc/*/hyper_list | awk -F '/' '{print $5}'` ; fi
+# if [ "$DC" = "*" ] ; then DC=`grep -l $(awk '{print $2}' /var/cld/modules/cm/tmp/choice_hyper_list | cut -d _ -f 1) /var/cld/modules/cm/dc/*/hyper_list | awk -F '/' '{print $5}'` ; fi
 
 #DETECT VARIABLES
 HPR_NAME=$(echo ${HYPERVISOR} | cut -d '_' -f 1)
@@ -321,8 +321,8 @@ fi
 HPR_PORT=$(echo ${HYPERVISOR} | cut -d '_' -f 3)
 HPR_USER=$(echo ${HYPERVISOR} | cut -d '_' -f 4)
 HPR_DC=$(echo ${HPR_NAME} | cut -d '-' -f 2)
-# echo $STORAGE | grep -q "^$" && STORAGE=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 2)
-# echo $STORAGE_TYPE | grep -q "^$" && STORAGE_TYPE=$(cat /var/cld/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 1)
+# echo $STORAGE | grep -q "^$" && STORAGE=$(cat /var/cld/modules/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 2)
+# echo $STORAGE_TYPE | grep -q "^$" && STORAGE_TYPE=$(cat /var/cld/modules/cm/tmp/choice_hyper_list | sort -nr | awk '{print $2}' | head -1 | cut -d '_' -f 5 | cut -d ':' -f 1)
 
 NTWRK=$(echo $GATEWAY | sed -r "s#([0-9]+\.[0-9]+\.[0-9]+).*#\1.`echo $GATEWAY | cut -d '.' -f 4 | xargs -I ^ expr ^ - 1`#g")
 BRDCST=$(echo $GATEWAY | sed -r "s#([0-9]+\.[0-9]+\.[0-9]+).*#\1.255#g")
@@ -330,14 +330,14 @@ CIDR=$(whatmask $IPADDR/$NTMASK | grep 'CIDR' | awk '{ print $4  }')
 
 DC_PROVIDER=$HPR_DC
 
-# source /var/cld/cm/bin/include/dc_functions
-# source /var/cld/cm/bin/include/dc_vars
+# source /var/cld/modules/cm/bin/include/dc_functions
+# source /var/cld/modules/cm/bin/include/dc_vars
 # if echo "$DC_PROVIDER" | grep --quiet "caovh" ; then
 #  caovh-creds
 #  HPR_NAME=$(caovh-get-servicename-by-ip)
 #  caovh-move-ip
 #  GATEWAY=$(caovh-get-gateway-by-servicename)
-#  MACADDR=$(grep $IPADDR /var/cld/cm/dc/caovh_ip_list | cut -d _ -f 2)
+#  MACADDR=$(grep $IPADDR /var/cld/modules/cm/dc/caovh_ip_list | cut -d _ -f 2)
 #  DC_CONFIGURE_KVM=$CAOVH_CONFIGURE_KVM
 #  DC_OS_CONFIGURATION=$CAOVH_OS_CONFIGURATION
 # else
@@ -346,9 +346,9 @@ DC_PROVIDER=$HPR_DC
 #  DC_OS_CONFIGURATION=""
 # fi
 
-source /var/cld/cm/bin/include/autologin_vars
-source /var/cld/cm/bin/include/privatenet_vars
-source /var/cld/cm/bin/include/create_logic
+source /var/cld/modules/cm/bin/include/autologin_vars
+source /var/cld/modules/cm/bin/include/privatenet_vars
+source /var/cld/modules/cm/bin/include/create_logic
 
 ### DEBUG MODE
 DEBUG_CMD=$(cat << EOL
@@ -362,7 +362,7 @@ cat << EOL
 $DEBUG_CMD
 EOL
 )
-echo $DEBUG | grep -q YES && truncate -s 0 /var/cld/cm/LOCK
+echo $DEBUG | grep -q YES && truncate -s 0 /var/cld/modules/cm/LOCK
 echo $DEBUG | grep -q YES && exit 1
 
 echo $DEBUG | grep -q YES || (
@@ -387,18 +387,18 @@ if [ "$ANSWER" = "y" ]
 then
 echo
 else
-truncate -s 0 /var/cld/cm/LOCK
+truncate -s 0 /var/cld/modules/cm/LOCK
 exit 1
 fi
 fi
 
-echo "${VMID}" > /var/cld/cm/data/last_vmid
+echo "${VMID}" > /var/cld/modules/cm/data/last_vmid
 
 LOG_FILE=/var/log/cld/cm/${VMID}_create.log
 
-echo "{\"vmid\":\"$VMID\",\"cpu\":\"$VMCPU\",\"ram\":\"$VMMEMORY\",\"disk\":\"$DISK\",\"received\":\"1\",\"keys\":\"$SSH_KEYS\",\"dc\":\"$DC\",\"os\":\"$OS\",\"name\":\"$VMNAME\",\"ip\":\"$IPADDR\",\"gate\":\"$GATEWAY\",\"netmask\":\"$NTMASK\",\"password\":\"$ROOTPASSWORD\",\"storage\":\"$STORAGE\",\"storage_type\":\"$STORAGE_TYPE\",\"mac\":\"$MACADDR\"}" >> /var/cld/cm/data/vms_info
+echo "{\"vmid\":\"$VMID\",\"cpu\":\"$VMCPU\",\"ram\":\"$VMMEMORY\",\"disk\":\"$DISK\",\"received\":\"1\",\"keys\":\"$SSH_KEYS\",\"dc\":\"$DC\",\"os\":\"$OS\",\"name\":\"$VMNAME\",\"ip\":\"$IPADDR\",\"gate\":\"$GATEWAY\",\"netmask\":\"$NTMASK\",\"password\":\"$ROOTPASSWORD\",\"storage\":\"$STORAGE\",\"storage_type\":\"$STORAGE_TYPE\",\"mac\":\"$MACADDR\"}" >> /var/cld/modules/cm/data/vms_info
 
-echo "${VMID}_${HPR}_${HPR_PORT}" >> /var/cld/cm/data/vmid_hyper_list
+echo "${VMID}_${HPR}_${HPR_PORT}" >> /var/cld/modules/cm/data/vmid_hyper_list
 
 cat >> ${LOG_FILE} << EOLOG
 $CMD_CREATE_SET
@@ -421,20 +421,20 @@ fi
 #Get VMMAC after create
 VMMAC=`ssh -q -p $HPR_PORT -o "StrictHostKeyChecking no" ${HPR_USER}@$HPR "sudo grep net0 /etc/pve/qemu-server/${VMID}.conf | egrep -o \"([0-9A-Z]{2}\:){5}[0-9A-Z]{2}\""`
 
-truncate -s 0 /var/cld/cm/LOCK
+truncate -s 0 /var/cld/modules/cm/LOCK
 
-/var/cld/cm/bin/cld-cm --json --nocache &>/dev/null & 
-/var/cld/cm/bin/cld-cm &>/dev/null &
+/var/cld/modules/cm/bin/cld-cm --json --nocache &>/dev/null & 
+/var/cld/modules/cm/bin/cld-cm &>/dev/null &
 wait
 
-cat /var/cld/cm/data/queue_create
+cat /var/cld/modules/cm/data/queue_create
 
-if [ "$(cat /var/cld/cm/data/queue_create | wc -w)" -le "3" ]
+if [ "$(cat /var/cld/modules/cm/data/queue_create | wc -w)" -le "3" ]
 then
  exit 0
 else
-CMD_CREATE="`head -1 /var/cld/cm/data/queue_create`"
+CMD_CREATE="`head -1 /var/cld/modules/cm/data/queue_create`"
 [ "$(echo "$CMD_CREATE" | wc -w)" -le "3" ] && continue
-sed -i '1d' /var/cld/cm/data/queue_create
+sed -i '1d' /var/cld/modules/cm/data/queue_create
 echo ${CMD_CREATE} | bash
 fi
