@@ -98,4 +98,5 @@ Below is a list of the Backup-module initial variables.
 | Variable | Description |
 | :------- | :----------- |
 | BACKUPMODULE | variable responsible for initializing the Backup module. |
-| BACKUP_SERVER_SET | a mandatory parameter for the initialization and operation of the Backup module, specifying the server where backups will be performed (subsequently, the parameter can be updated, additional backup servers can be added) |
+| BACKUP_SERVER_SET | a mandatory parameter combined from variables BACKUP_SERVER and BACKUP_SERVER_DIR with comma separator for the initialization and operation of the Backup module, specifying the server where backups will be performed (subsequently, the parameter can be updated, additional backup servers can be added) |
+
