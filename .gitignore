@@ -1,8 +1,9 @@
 #creds
 /creds/
 
-#cld modules generated data
+#cld modules generated data and temp
 /modules/*/data/
+/modules/*/tmp/
 
 #local files
 *.local
@@ -12,9 +13,7 @@
 /tmp/
 
 #access
-/access/users/
-/access/groups/
-/access/users/admin/*
+/access/
 
 #built-in modules
 /modules/*
@@ -32,7 +31,7 @@
 !/modules/telegramcloud/
 !/modules/zabbixcontrol/
 
-#built backup methods
+#built-in backup methods
 /modules/backup/methods/*
 !/modules/backup/methods/clickhouse/
 !/modules/backup/methods/etc/
@@ -42,10 +41,10 @@
 !/modules/backup/methods/postgresql/
 
 #deploy
-/deploy/templates/*
-/deploy/deploys/*
-/deploy/actions/*
-/deploy/repo_list
+/modules/deploy/templates/*
+/modules/deploy/deploys/*
+/modules/deploy/actions/*
+/modules/deploy/repo_list
 
 #security
 /api/accesslist
@@ -55,13 +54,11 @@
 /web/flask_session/*
 /web/html/include/cld_tier*
 
-#legacy simlink
+#legacy symlink
 /ext_srv
 
 #cloudmaker module
-/cm/data/
-/cm/tmp/
-/cm/LOCK
+/modules//cm/LOCK
 
 #logs
 /log/
