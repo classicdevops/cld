@@ -31,6 +31,7 @@ def backup_index():
         else:
             open(file, 'a').close()
         files[file] = open(file).read()
+    bash('''[ -d /var/cld/modules/backup/data/groups ] || mkdir -p /var/cld/modules/backup/data/groups ; [ -d /var/cld/modules/backup/data/instances ] || mkdir -p /var/cld/modules/backup/data/instances''')
     instances_files = path_to_dict('/var/cld/modules/backup/data/instances')
     groups_files = path_to_dict('/var/cld/modules/backup/data/groups')
     configs = {"instances": instances_files, "groups": groups_files}

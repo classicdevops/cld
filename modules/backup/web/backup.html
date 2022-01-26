@@ -169,7 +169,7 @@
                   <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
                 <section id="configtabs">
-                {% for config_name in configs['instances']['dirs'] %}
+                {% for config_name in configs['instances']['dirs'] + configs['instances']['dirs'] %}
                   <ul class="nav nav-tabs" id="{{ config_name['name'] }}" role="tablist" style="border-bottom: 0px;">
                        <li class="nav-item">
                           <a class="nav-link active" role="tab">{{ config_name['name'] }}</a>
