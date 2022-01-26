@@ -36,6 +36,19 @@ def stream_file(filepath, chunksize=8192):
       else:
         break
 
+def path_to_dict(path):
+    d = {'name': os.path.basename(path)}
+    if os.path.isdir(path):
+        d['type'] = "directory"
+        d['path'] = path
+        d['dirs'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir\
+(path)]
+    else:
+        d['path'] = path
+        d['type'] = "file"
+        d['content'] = open(path).read()
+    return d
+
 def check_pid(pid):
   try:
     os.kill(pid, 0)

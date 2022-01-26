@@ -1,6 +1,7 @@
 webmodule["backup"] = {}
 webmodule["backup"]["homename"] = "Backup"
 webmodule["backup"]["desc"] = "Classic backup"
+
 @app.route("/backup")
 def backup_index():
   if 'username' in session:
@@ -31,10 +32,13 @@ def backup_index():
         else:
             open(file, 'a').close()
         files[file] = open(file).read()
+    instances_files = path_to_dict('/var/cld/modules/backup/data/instances')
+    groups_files = path_to_dict('/var/cld/modules/backup/data/groups')
+    configs = {"instances": instances_files, "groups": groups_files}
     cld_instances = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --all').split('\n')
     cld_groups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     methods = [os.path.basename(name) for name in os.listdir("/var/cld/modules/backup/methods/") if os.path.isdir('/var/cld/modules/backup/methods/'+name)]
-    return render_template('modules/backup/backup.html', username=user, files=files, cld_instances=cld_instances, cld_groups=cld_groups, methods=methods)
+    return render_template('modules/backup/backup.html', username=user, files=files, cld_instances=cld_instances, cld_groups=cld_groups, methods=methods, instances_files=instances_files, groups_files=groups_files)
 
 @app.route("/backup/method/<method>/example")
 def backup_get_file(method):
