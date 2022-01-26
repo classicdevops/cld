@@ -55,7 +55,7 @@ BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/
 
 loadmethodvars()
 {
-source <(grep "^CRON=\|^KEEPLAST=" ${BACKUP_VARS_DIR}/${BACKUP_METHOD})
+source <(grep "^CRON=\|^KEEPLAST=\|^SERVER_BACKUP_DIR=\|^SERVER=" ${BACKUP_VARS_DIR}/${BACKUP_METHOD})
 CRON=${CRON:-'* * 0 0 0'}
 KEEPLAST=${KEEPLAST:-7}
 }
@@ -65,9 +65,9 @@ defineserver()
 [ "${SERVER}" ] || SERVER=$(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | head -n 1 | cut -d ',' -f 1)
 BACKUP_SERVER=$(CLOUDS_USER_ALLOWED "${SERVER}" "$CLD_ALL_GROUPS_ARG" | head -n 1)
 [ "${BACKUP_SERVER}" ] || { echo BACKUP_SERVER is not defined - check /var/cld/modules/backup/data/servers or backup method variables - try --all argument - exit ; exit 1 ; }
-[ "${BACKUP_SERVER_DIR}" ] || BACKUP_SERVER_DIR=$(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | grep "^${SERVER}" | head -n 1 | cut -d ',' -f 2)
-if ! egrep -q "^/.+" <<< "${BACKUP_SERVER_DIR}"; then
-BACKUP_SERVER_DIR="/backup"
+[ "${SERVER_BACKUP_DIR}" ] || SERVER_BACKUP_DIR=$(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | grep "^${SERVER}" | head -n 1 | cut -d ',' -f 2)
+if ! egrep -q "^/.+" <<< "${SERVER_BACKUP_DIR}"; then
+SERVER_BACKUP_DIR="/backup"
 fi
 }
 
