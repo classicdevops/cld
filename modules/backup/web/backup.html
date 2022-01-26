@@ -86,7 +86,7 @@
              function newfile(inputid) {
                     var file = '/var/cld/modules/backup/'+document.getElementById(inputid).value;
                     var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-                    $('#filesedit').prepend(`
+                    $('#configtabs').prepend(`
                     <div id="`+fileid+`div">
                     <form id="`+fileid+`">
                        <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
@@ -101,7 +101,7 @@
             function newbackup(type, object, method) {
                     var file = '/var/cld/modules/backup/data/'+type+'/'+document.getElementById(object).value+'/'+document.getElementById(method).value;
                     var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-                    $('#filesedit').prepend(`
+                    $('#configtabs').prepend(`
                     <div id="`+fileid+`div">
                     <form id="`+fileid+`">
                        <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
@@ -168,6 +168,41 @@
                   </select>
                   <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
+                <section id="configtabs">
+                {% for config_name in configs['instances']['dirs'] %}
+                  <ul class="nav nav-tabs" id="{{ config_name['name'] }}" role="tablist" style="border-bottom: 0px;">
+                       <li class="nav-item">
+                          <a class="nav-link active" role="tab">{{ config_name['name'] }}</a>
+                       </li>
+                  {% for file in config_name['dirs'] %}
+                  {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                  <li class="nav-item {% if loop.index == 1 %}active{% endif %}" id="{{ fileid }}-li">
+                    <a class="nav-link" id="{{ fileid }}-tab" data-toggle="tab" href="#{{ fileid }}-content" role="tab" aria-controls="{{ fileid }}" aria-selected="false" aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}">{{ file['name'] }}</a>
+                  </li>
+                  {% endfor %}
+                  </ul>
+                    <div class="tab-content" id="{{ config_name['name'] }}">
+                  {% for file in config_name['dirs'] %}
+                  {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                        <div class="tab-pane fade{% if loop.index == 1 %} active in{% endif %}" id="{{ fileid }}-content" role="tabpanel" aria-labelledby="{{ fileid }}-tab" style="padding: 0px;margin-top: -15px;">
+                        <div id="{{ fileid }}div">
+                        <form id="{{ fileid }}">
+                           <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file['path'] }}</textarea>
+                           <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                        </form>
+                        <div class="prefile" style="border: 1px solid #1e88e5;">{{ file['path'] }}<button id="{{ fileid }}-button-del" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                        <pre id="{{ fileid }}Pre">{{ file['content'] }}</pre>
+                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file['path'] }}</button>
+                        <br><br>
+                        <script>
+                           aceactivate('{{ fileid }}')
+                        </script>
+                        </div>
+                        </div>
+                  {% endfor %}
+                    </div>
+                {% endfor %}
+                </section>
                 <section id="filesedit">
                   {% for file in files %}
                   {% set fileid = file.replace('/', '_').replace('.', '_') %}
