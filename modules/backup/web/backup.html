@@ -184,7 +184,7 @@
                     <div class="tab-content" id="{{ config_name['name'] }}">
                   {% for file in config_name['dirs'] %}
                   {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
-                        <div class="tab-pane fade{% if loop.index == 1 %} active in{% endif %}" id="{{ fileid }}-content" role="tabpanel" aria-labelledby="{{ fileid }}-tab" style="padding: 0px;margin-top: -15px;">
+                        <div class="tab-pane fade{% if loop.index == 1 %} active in{% endif %}" id="{{ fileid }}-content" role="tabpanel" aria-labelledby="{{ fileid }}-tab" style="padding: 0px;margin-top: -14px;">
                         <div id="{{ fileid }}div">
                         <form id="{{ fileid }}">
                            <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file['path'] }}</textarea>
