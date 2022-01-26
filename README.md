@@ -245,7 +245,7 @@ Before the installation process, you should prepare the following information:
 ### Quick start
 ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
 The installation is starting with the command:
-```bash
+```
 bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdevops/cld/master/setup/install_cld.sh")
 ```
 
