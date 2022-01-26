@@ -230,6 +230,9 @@ for BACKUP_SERVER_SET in $(cat /var/cld/modules/backup/data/servers)
 do
 BACKUP_SERVER=$(cut -d ',' -f 1 <<< ${BACKUP_SERVER_SET})
 BACKUP_SERVER_DIRS=$(cut -d ',' -f 2- <<< ${BACKUP_SERVER_SET})
+if ! egrep -q "^/.+" <<< "${BACKUP_SERVER_DIRS}"; then
+BACKUP_SERVER_DIRS="/backup"
+fi
 echo
 echo "${BACKUP_SERVER}"
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOCLD${RANDID}
