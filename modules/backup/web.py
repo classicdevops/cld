@@ -38,7 +38,7 @@ def backup_index():
     cld_instances = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --all').split('\n')
     cld_groups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     methods = [os.path.basename(name) for name in os.listdir("/var/cld/modules/backup/methods/") if os.path.isdir('/var/cld/modules/backup/methods/'+name)]
-    return render_template('modules/backup/backup.html', username=user, files=files, cld_instances=cld_instances, cld_groups=cld_groups, methods=methods, instances_files=instances_files, groups_files=groups_files)
+    return render_template('modules/backup/backup.html', username=user, files=files, cld_instances=cld_instances, cld_groups=cld_groups, methods=methods, configs=configs)
 
 @app.route("/backup/method/<method>/example")
 def backup_get_file(method):
