@@ -159,7 +159,7 @@ EOBACKUPDIRS
 cat << 'EOSTORAGEPARSE'
 for BACKUP_SERVER_DIR in $(tr ',' ' ' <<< ${BACKUP_SERVER_DIRS})
 do
-echo ${BACKUP_SERVER_DIR} - $(df -h /backup --output=avail | tail -1 | tr -d ' ') free
+echo ${BACKUP_SERVER_DIR} - $(df -h ${BACKUP_SERVER_DIR} --output=avail | tail -1 | tr -d ' ') free
 done
 EOSTORAGEPARSE
 }
