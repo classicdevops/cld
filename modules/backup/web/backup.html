@@ -86,7 +86,7 @@
              function newfile(inputid) {
                     var file = '/var/cld/modules/backup/'+document.getElementById(inputid).value;
                     var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-                    $('#filesedit').prepend(`
+                    $('#configtabs').prepend(`
                     <div id="`+fileid+`div">
                     <form id="`+fileid+`">
                        <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
@@ -101,7 +101,7 @@
             function newbackup(type, object, method) {
                     var file = '/var/cld/modules/backup/data/'+type+'/'+document.getElementById(object).value+'/'+document.getElementById(method).value;
                     var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-                    $('#filesedit').prepend(`
+                    $('#configtabs').prepend(`
                     <div id="`+fileid+`div">
                     <form id="`+fileid+`">
                        <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
