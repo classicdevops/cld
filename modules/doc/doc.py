@@ -69,7 +69,7 @@ for modulepath in modules:
       initjson['paths'][tool]['options']['description'] = ''
       try: initjson['paths'][tool]['options']['description'] += tool_desc.replace('\n', '  \n')+'  \n'
       except: pass
-      try: initjson['paths'][tool]['options']['description'] += 'Arguments: <pre>'+tool_args+'</pre>'
+      try: initjson['paths'][tool]['options']['description'] += 'Arguments:   \n```  \n'+tool_args+'  \n```  \n'
       except: pass
       xitter = 0
       initjson['paths'][tool]['options']['x-codeSamples'] = []
