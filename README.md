@@ -101,25 +101,25 @@ CLD interfaces are methods of using tools or any additional functionality
 CLD standard interfaces:
 - CLI - the main working interface, the use of the interface is available through the shell Linux console, the connection is made via SSH, it is also possible to use it via a web terminal as part of the WEB interface
 - API - interface for accessing non-interactive scripts, access to scripts is validated by access lists and the user's personal token, additional arguments are translated as is, an example of use is `curl -s" https://yourcld.server.com/api/modules?token=y0urUserT0keN&args=-json"`, endpoints like `/api/all/` do not have validation by access lists, for example, they are used in `cld-myip`
-- BOT - an interface in the chat bot format for accessing non-interactive scripts, convenient for using when managing DNS, access lists, and so on, an example of use is `/setdns a subdomain.example.com 1.2.3.4`, at the moment only `Telegram` bots supported, `Discord`, `Mattermost` and `Slack` bot interfaces under developing
+- BOT - an interface in the chat bot format for accessing non-interactive scripts, convenient for using when managing DNS, access lists, backup reports and so on, an example of use is `/setdns a subdomain.example.com 1.2.3.4`, at the moment are `Telegram`, `Discord`, `MatterMost` and `Slack` integrations are supported
 - WEB - interface for access to any, including interactive scripts (using a web terminal), as well as to additional methods of system management, access is validated by access ip lists and by PAM for CLD users, the interface is available at the address - `https://yourcld.server.com/`
 
 ## Framework
 As per definition from wikipedia
 `Framework - a software platform that defines the structure of a software system; software that facilitates the development and integration of different components of a large software project.`
 The project is a kind of access and automation framework.
-To ensure the standard structure of the tools is used, the main bash library `/var/cld/bin/include/cldfuncs`, connected in all the tools "from the box", through the functions of this library, help unification is organized and, accordingly, general autodocumentation using the doc module for generating json and rendering via Redoc, as well as various auxiliary functions, access control, security, etc.
+To ensure the standard structure of the tools is used, the main bash library `/var/cld/bin/include/cldfuncs`, connected in all the built-in tools, through the functions of this library, help unification is organized and, accordingly, general autodocumentation using the doc module for generating json and rendering via Redoc, as well as various auxiliary functions, access control, security, etc.
 
 
 # Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
-- all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal telegram account id, as well as API token
+- all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal messenger account id, as well as API token
 - each user is authorized on the server to his PAM account
 - access to allowed servers is carried out using a single private SSH key or instance password
 - the list of servers allowed for connection for the user is determined both by specifying specific instances and according to the groups which shared for a user
 - SSH-key and passwords, with the help of which authorization takes place on remote nodes - are not available to the user, respectively, this data is reliably protected and cannot be compromised
 - access to the CLD management server (as well as to other nodes connected to the system) can be limited by the list of allowed ip addresses (access lists)
-- the formation of lists of IP addresses allowed for access is carried out using the telegram bot using the API, or through the built-in CLI utility
+- the formation of lists of IP addresses allowed for access is carried out using the chat bot together with API, or through the built-in CLI utility
 - in the process of working through the CLD, when connecting to the server, its root file system is mounted in `~/mnt/$instance`, this provides file access to the user to any available server through a single SFTP connection, as well as transfer and synchronization of files between servers without the need to create new ones direct connections
 - servers are divided into groups, available group types: manual and parsing
 - groups of type manual contain servers added manually
@@ -161,11 +161,11 @@ The basis of the project is a centralized system of SSH access based on PAM:
     - The number of requests for location `/api/all/` has a limit of `60 requests per minute`
 
 - **Bot**  
-  Telegram chat bot interface for executing utilities in non-interactive mode:
-  - Interface code in `Python`, using the `pytelegrambotapi` module as a basis
+  Telegram/Discord/MatterMost/Slack chat bot interface for executing utilities in non-interactive mode:
+  - Interface code for each chat bot interface in `Python`.
   - When sending a command to the chat/bot, it is directly executed with the passed arguments
-  - Example of command execution: `/command arguments`
-  - Access at the application level is validated based on the telegram id of users specified in the file/var/cld/creds/passwd
+  - Example of command execution: `/command arguments` (first symbol can be different at MatterMost and Slack)
+  - Access at the application level is validated based on the messendger id of users specified in the file `/var/cld/creds/passwd`
   - Output from the utility execution is made in real time by updating the bot's response message
   - When starting the BOT interface (`systemd` service `cld-bot`), the following is executed:
      - Search for all available utilities and generate code for each utility with the corresponding command (by analogy with the API, "cld-" in the name is truncated)
@@ -192,30 +192,30 @@ The basis of the project is a centralized system of SSH access based on PAM:
 ## Access validation factors for each interface:
 - **CLI** - `PAM authorization`, `access module`, `access matrix` and `sudoers`
 - **API** - `token/access module`, `access list` at the nginx level, `access matrix` and `sudoers`
-- **Telegram bot** - `userid`, `permissions matrix` and `sudoers`
+- **Bot** - `userid`, `permissions matrix` and `sudoers`
 - **Web** - `cookie`, `access module`, `access list` at the nginx level, `access matrix` and `sudoers`
 
 Thus, the main priorities of CLD are the safety of users and maintained servers, unprecedented transparency work of engineers, increasing the efficiency of personnel, as well as automation of processes and work scenarios.
 
 # Modular concept
-The internal structure of the CLD includes a system of modules that allows you to significantly expand the basic functionality and provide the ability to quickly integrate with external services. Below is a list and brief description of several modules that are included in the CLD:
+The internal structure of the CLD includes a system of modules that allows you to significantly expand the basic functionality and provide the ability to quickly integrate with external services. Below is a list and brief description of several built-in modules:
 - `access` - control access to network ports by allowed/denied address lists on all servers
+- `backup` - backup of CLD instances files, databases and configurations
 - `cm` - create/manage/migrate KVM to Proxmox Virtual Environment
 - `deploy` - deploy bash scripts with support for backups, tests and everything you need to deploy thousands of servers
-- `dns` - cloudflare integration and DNS management across multiple accounts
+- `dns` - CloudFlare integration and DNS management across multiple accounts
 - `doc` - core of self-documenting system concept - generating documentation based on parsing readme files and help information of all existing modules and scripts
-- `etcbackup` - backup of CLD instances configuration
 
-The system is designed in such a way that the addition of new functional modules for any purpose occurs as quickly as possible due to unification and automatic code generation for API and telegram bot, already now in production on a number of projects up to 50 local modules are used that provide the most diverse functionality and automation, in including complex CI/CD.
-Access to modules via CLI, bot telegram, API and via the web interface is separately configured for each user.
+The system is designed in such a way that the addition of new functional modules for any purpose occurs as quickly as possible due to unification and automatic code generation for API and messenger bots, already now in production on a number of projects up to one hundred local modules are used that provide the most diverse functionality and automation, in including complex CI/CD.
+Access to modules via CLI, Chat bots, API and via the web interface is separately configured for each user.
 
 # Framework
 `ClassicDevOps` is home to all your infrastructure scripts where they are always at hand
 
 CLD framework script is:
-- Available through various CLI, API, Telegram bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
+- Available through various CLI, API, Chat bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
 - Has a generated help for all interfaces from one or more variables specified at the beginning of the script (`HELP_DESC`, `HELP_ARGS`, `HELP_EXAMPLES`)
-- Safely shared separately or as part of the entire module for any user (including telegram user or telegram chat)
+- Securely shared separately or as part of the entire module for any user (including messenger user or group chat)
 - Easily used in API for example for build/deployment in the pipeline (API works in stream mode - new lines are displayed in the response as they are executed)
 - Over time, new scripts of local modules are developed faster and faster using a similar structure and framework functions
 - Works reliably and safely - due to unification and security features, there is no need for hardcode even with tight deadlines
@@ -235,12 +235,17 @@ CLD framework script is:
 Before the installation process, you should prepare the following information:
 - For interfaces **(**to use tools through any available interfaces**)**:
 	- `Web` - DNS name for WEB/API (cld.example.com)
-	- `Chat bot` - Telegram bot token (Bot can be created via http://t.me/BotFather)
+	- `Chat bot`
+    - Telegram bot token (http://t.me/BotFather)
+    - Discord bot token (https://discord.com/developers/applications)
+    Extended license:
+      - MatterMost url, port, team, bot token (https://example.com/yourteam/integrations/bots)
+      - Slack app token, bot token (https://example.slack.com/apps/manage)
 
 - For modules **(**to use modules functionality like create/resize/migrate KVM, create/delete/update DNS records, etc**)**:
 	- `cm` - API credentials of supported bare metal hosting providers `OVH`/`Online.net`/`Hetzner`
 	- `dns` - Credentianals of CloudFlare account (`login`, `API key`, `user ID`)
-	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `link for Zabbix API`)
+	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `url for Zabbix API`)
 
 ### Quick start
 ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
