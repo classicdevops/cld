@@ -238,7 +238,7 @@ Before the installation process, you should prepare the following information:
 	- `Chat bot`
     - Telegram bot token (http://t.me/BotFather)
     - Discord bot token (https://discord.com/developers/applications)
-    Extended license:
+    - Extended license:
       - MatterMost url, port, team, bot token (https://example.com/yourteam/integrations/bots)
       - Slack app token, bot token (https://example.slack.com/apps/manage)
 
