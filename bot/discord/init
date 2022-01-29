@@ -1,0 +1,20 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+
+if ! grep -q "^DISCORD=" /var/cld/creds/creds
+then
+    echo "Are you using Discord ?" 
+    select ANSWER in yes no
+    do
+        if [ "${ANSWER}" == "yes" ]
+            then
+                init-load-constants DISCORD_BOT_TOKEN\|QTqhVEZUmbj6rBAEzoetk5d6GEwZ63qQv2zdmqNjrzmMqk9dj4u2j0MzFw8 || echo skipped
+                echo DISCORD=1 >> /var/cld/creds/creds
+                break
+        elif [ "${ANSWER}" == "no" ]
+            then
+                echo DISCORD=0 >> /var/cld/creds/creds
+                break
+        fi
+    done
+fi

@@ -1,0 +1,19 @@
+[Unit]
+Description=ClassicDevOps Discord bot interface service
+After=multi-user.target
+PartOf=cld.service
+
+[Service]
+WorkingDirectory=/var/cld/bot/discord
+Type=simple
+ExecStart=/usr/bin/python38 /var/cld/bot/discord/dcbot.py
+RemainAfterExit=no
+Restart=always
+RestartSec=2
+StartLimitBurst=999999
+StartLimitInterval=0
+KillMode=process
+
+
+[Install]
+WantedBy=multi-user.target
