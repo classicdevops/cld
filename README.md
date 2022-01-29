@@ -186,7 +186,7 @@ The basis of the project is a centralized system of SSH access based on PAM:
     - Search for web.py files in the root of each module, this code is executed as is, as part of the whole interface
       - When web.py is found at the root of a module, a symlink is created to the `/var/cld/web/modules/${MODULE}/web` directory along the path `/var/cld/web/modules/${MODULE}` to access the static files of the module outside the Flask directory of the application
   - Each displayed block of the module on the main page of the interface is generated when web.py is detected and leads to the index endpoint specified by web.py in the module code
-    - The name and description of modules are read from the properties of the webmodule object specified in the web.py file of each module, you can see an example in the module documentation file `/var/cld/modules/doc/web.py`
+    - The name and description of modules are read from the properties of the webmodule object specified in the web.py file of each module, you can see as an example in the documentation module - file `/var/cld/modules/doc/web.py`
     - The module logo is displayed if found at `/var/cld/web/modules/${MODULE}/content/logo.svg`, otherwise a standard image is displayed
 
 ## Access validation factors for each interface:
@@ -210,7 +210,7 @@ The system is designed in such a way that the addition of new functional modules
 Access to modules via CLI, Chat bots, API and via the web interface is separately configured for each user.
 
 # Framework
-`ClassicDevOps` is home to all your infrastructure scripts where they are always at hand
+`ClassicDevOps` is home to all your infrastructure scripts where it's always at hand
 
 CLD framework script is:
 - Available through various CLI, API, Chat bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
@@ -218,7 +218,7 @@ CLD framework script is:
 - Securely shared separately or as part of the entire module for any user (including messenger user or group chat)
 - Easily used in API for example for build/deployment in the pipeline (API works in stream mode - new lines are displayed in the response as they are executed)
 - Over time, new scripts of local modules are developed faster and faster using a similar structure and framework functions
-- Works reliably and safely - due to unification and security features, there is no need for hardcode even with tight deadlines
+- Works reliably and securely - due to unification and security features, there is no need for hardcode even with tight deadlines
 - The script can be in any language (including compiled ones) - it will also be available through any interface (do not forget to write help available through the -h argument for access through the web interface)
 - Can be set to cron, for example, to update groups of instances (centralized release and further renewal of certificates on balancers), as well as for monitoring/parsing and sequential start/restart of various services on groups of instances in complex systems with a regulated startup protocol)
 
@@ -234,8 +234,8 @@ CLD framework script is:
 ### Data required for interfaces and modules
 Before the installation process, you should prepare the following information:
 - For interfaces **(**to use tools through any available interfaces**)**:
-	- `Web` - DNS name for WEB/API (cld.example.com)
-	- `Chat bot`
+	- `Web`/`API` - DNS name for WEB and API (cld.example.com)
+	- `Chat bot`:
     - Telegram bot token (http://t.me/BotFather)
     - Discord bot token (https://discord.com/developers/applications)
     - Extended license:
