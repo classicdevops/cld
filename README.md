@@ -5,15 +5,23 @@ This project does not set itself the goal of replacing any existing automation t
 The main components of the system are bash-based utilities, API, chat bots and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
 
-|Centralized access system|____________________________________________________________________________________|
-|-|-|
-| <p><br>The basis of the project is a centralized system of SSH access based on PAM:</p><ul><li>all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal Messenger account id, as well as API token</li><li>each user is authorized on the server to his PAM account</li><li>access to allowed servers is carried out using a single private SSH key or instance password</li><li>the list of servers allowed for connection for the user is determined both by specifying specific instances and according to the groups which shared for a user</li><li>SSH-key and passwords, with the help of which authorization takes place on remote nodes are not available to the user, respectively, this data is reliably protected and cannot be compromised</li></ul> | <video src="https://user-images.githubusercontent.com/45525349/151830815-7d65b165-d52e-432e-be14-985e8b047bc5.mp4"></video> |
+#### Centralized access system
+<table>
+  <tr>
+    <td>
+The basis of the project is a centralized system of SSH access based on PAM:
 
-<details open>
-<summary>Show animation</summary>
-
-![cld_intro](https://classicdevops.com/assets/video/cld_basis.mp4)
-</details>
+- all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal Messenger account id, as well as API token
+- each user is authorized on the server to his PAM account
+- access to allowed servers is carried out using a single private SSH key or instance password
+- the list of servers allowed for connection for the user is determined both by specifying specific instances and according to the groups which shared for a user
+- SSH-key and passwords, with the help of which authorization takes place on remote nodes are not available to the user, respectively, this data is reliably protected and cannot be compromised
+    </td>
+    <td width="55%">
+      <video src="https://user-images.githubusercontent.com/45525349/151830815-7d65b165-d52e-432e-be14-985e8b047bc5.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
 
 # Support policy
 
