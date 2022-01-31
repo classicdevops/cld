@@ -8,10 +8,10 @@ To access any tool, several factor validation operates for the user, at the appl
 
 # Use cases
 ## Centralized access system
-<table style="max-width: 650px;">
+<table style="max-width: 700px;">
   <tr style="border:none">
     <td width="60%" style="border:none">
-      <video src="https://user-images.githubusercontent.com/45525349/151851153-cf9e00df-aa21-4832-849f-c019f8b57c46.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;    max-width: 650px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+      <video src="https://user-images.githubusercontent.com/45525349/151851153-cf9e00df-aa21-4832-849f-c019f8b57c46.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
     </td>
   </tr>
 </table>
@@ -28,7 +28,7 @@ This video example shows how a user tries to access instances, demonstrates how 
 
 
 ## Protection of all servers on any hosting
-<table style="max-width: 650px;">
+<table style="max-width: 700px;">
   <tr style="border:none">
     <td width="60%" style="border:none">
       <video src="https://user-images.githubusercontent.com/45525349/151851153-cf9e00df-aa21-4832-849f-c019f8b57c46.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
