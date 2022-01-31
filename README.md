@@ -5,10 +5,9 @@ This project does not set itself the goal of replacing any existing automation t
 The main components of the system are bash-based utilities, API, chat bots and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
 
-<img align="right" src="https://classicdevops.com/assets/video/cld_basis.mp4" type="video/mp4" loop="" autoplay="">
-
 <details open>
 <summary>Show animation</summary>
+
 ![cld_intro](https://classicdevops.com/gif/cld_intro.gif)
 </details>
 
