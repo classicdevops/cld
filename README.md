@@ -7,7 +7,7 @@ To access any tool, several factor validation operates for the user, at the appl
 
 
 # Use cases
-#### Centralized access system
+## Centralized access system
 <table>
   <tr>
     <td>
@@ -28,7 +28,7 @@ This video example shows how a user tries to access instances, demonstrates how 
 </table>
 
 
-#### Protection of all servers on any hosting
+## Protection of all servers on any hosting
 <table>
   <tr>
     <td>
