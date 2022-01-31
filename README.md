@@ -5,6 +5,8 @@ This project does not set itself the goal of replacing any existing automation t
 The main components of the system are bash-based utilities, API, chat bots and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
 
+
+# Use cases
 #### Centralized access system
 <table>
   <tr>
@@ -16,12 +18,37 @@ The basis of the project is a centralized system of SSH access based on PAM:
 - access to allowed servers is carried out using a single private SSH key or instance password
 - the list of servers allowed for connection for the user is determined both by specifying specific instances and according to the groups which shared for a user
 - SSH-key and passwords, with the help of which authorization takes place on remote nodes are not available to the user, respectively, this data is reliably protected and cannot be compromised
+
+This video example shows how a user tries to access instances, demonstrates how admin using a dashboard shares one instance for the user, and then a group of instances, also demonstrates the operation of an interactive SSH gate
     </td>
     <td width="55%">
       <video src="https://user-images.githubusercontent.com/45525349/151830815-7d65b165-d52e-432e-be14-985e8b047bc5.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
     </td>
   </tr>
 </table>
+
+
+#### Protection of all servers on any hosting
+<table>
+  <tr>
+    <td>
+Access to all servers is protected by trusted IP address lists
+
+- access to the CLD management server (as well as to all instances connected to the system) can be limited by the list of allowed ip addresses (access lists)
+- the access module provides the ability to update user addresses using a bot in messengers (telegram, discord, mattermost, slack)
+- users can generate their personal VPN key to access the CLD server and instances
+- trusted lists are deployed by cron, as well as by watcher after changes in the lists on the CLD server
+- the list of protected ports is configurable, and separate port lists can be configured for any group or instances
+
+This demonstration shows a user trying to connect to the server, the connection is refused until the user adds his ip address through the bot in the messenger using the link in the api containing the generated one-time token
+    </td>
+    <td width="55%">
+      <video src="https://user-images.githubusercontent.com/45525349/151851153-cf9e00df-aa21-4832-849f-c019f8b57c46.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+
+
 
 # Support policy
 
