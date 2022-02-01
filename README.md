@@ -48,6 +48,125 @@ Access to all servers is protected by trusted IP address lists
 This demonstration shows a user trying to connect to the server, the connection is refused until the user adds his ip address through the bot in the messenger using the link in the api containing the generated one-time token
 
 
+## CloudFlare integration
+<table style="max-width: 700px; margin: 30px auto">
+  <tr style="border:none">
+    <td width="60%" style="border:none">
+      <video src="https://user-images.githubusercontent.com/45525349/151921860-df302a18-c4f0-48e2-a8a9-e327a245adc9.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+DNS management for domain zones simultaneously in multiple accounts
+
+- Viewing, editing and deleting DNS records of any domain with the ability to enable proxying at any CLD interface
+- Ability to set any CloudFlare settings for the domain, as well as reset the CDN cache
+- Backing up DNS zones of all connected accounts
+- Bulk domains switching from one IP address to another with auto detection of which domains are directed to the current IP address
+- Support tools for viewing geo and whois
+- Tool for mass issuance of wildcard certificates for all domains in all connected CloudFlare accounts
+
+In order to demonstrate the equivalent use of different interfaces, a user views value of DNS record for a domain in terminal, then deletes it in a messenger using chat bot and sets DNS record to a different type of address in the terminal
+
+## SFTP single access point
+<table style="max-width: 700px; margin: 30px auto">
+  <tr style="border:none">
+    <td width="60%" style="border:none">
+      <video src="https://user-images.githubusercontent.com/45525349/151921929-6993b796-bbd9-4fc0-b43a-2a4f3f820ff9.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+Users able to get filesystem access of any available instance
+
+- All file operations performed by the user are logged to `/var/cld/log/session/$user/$date/$instance_sftp_$time.gz`
+- There are 2 utilities, cld-mount (interactive) and cldxmount (the first instance is selected after filtering)
+- Custom mount functions provide file access for any kind of servers, containers, and so on by any protocols
+- This tool provides the ability to copy / sync / move data between servers without direct access in between
+
+The current example shows how the user mounts the file system of the remote server, checks the mount status in the command line interface and checks the access to files through the SFTP client connected to the CLD server
+
+## Instance list parsing groups
+<table style="max-width: 700px; margin: 30px auto">
+  <tr style="border:none">
+    <td width="60%" style="border:none">
+      <video src="https://user-images.githubusercontent.com/45525349/151921967-b62c11c9-6987-4f86-9276-d76c0e3c1e75.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+Parsing public cloud providers, hypervisors, container orchestration systems or anything else to group instance list with custom parsing scripts
+
+- Group type "parsing" have custom script, it will continuously synchronize instance list to group, so you always have single point access to all your infrastructure instances wherever it are
+- Parsing any public cloud providers fully customizable - it can use API or CLI third party tools installed on CLD server, parsing script have not limited at all
+- Built-in parsing groups: AWS cloud, Google cloud, Hetzner cloud, DigitalOcean, Azure cloud, Scaleway cloud, OVH cloud, Proxmox LXC containers, Docker containers, Kubernetes containers
+- The group parsing model combines well with various automation and security tools, as well as with continuously trusted IP lists deploy and SSH authorized keys deploy
+
+The video demonstrates how the user checks the list of instances in the Hetzner group, then activates the group type parsing with the corresponding script in the CLD admin panel, creates a new cloud in the Hetzner Cloud panel, once the server is created, it can be accessed from the CLD
+
+## KVM Cloud management
+<table style="max-width: 700px; margin: 30px auto">
+  <tr style="border:none">
+    <td width="60%" style="border:none">
+      <video src="https://user-images.githubusercontent.com/45525349/151922026-5055929b-856d-4fe5-a02d-fb798a5bd7e9.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+Creation, management and migration of KVM clouds on PVE hypervisors
+
+- Interactive creation of KVM clouds with a choice of operating system, processor cores, amount of RAM, amount of disk space and network configuration
+- Single point management of clouds on all hypervisors (it does not matter if they are not in a cluster, in different DCs, and so on), commands are available: start, stop, pause, resume and delete
+- PVE hypervisor deployment script with network configuration (vmbr0 and vmbr1 bridging), storage configuration - support for 3 types of storages: ZFS, LVM, QCOW2, and so on
+- Interactive cloud migration between hypervisors via pve-zsync, preliminary phased synchronization before switching (automatic migration of type addresses is supported for some hosting providers)
+- Parsing the availability of backups for all hypervisors with a clear daily report in the messenger
+
+The video demonstrates interactive creation using the CLD web terminal, after creation, the user checks the status of the cloud, gets SSH access through the web interface and checks the settings and resources specified during creation
+
+## Custom modules for any functionality
+<table style="max-width: 700px; margin: 30px auto">
+  <tr style="border:none">
+    <td width="60%" style="border:none">
+      <video src="https://user-images.githubusercontent.com/45525349/151922104-18a715f7-670d-44f9-950c-68dea607b611.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+Support of custom modules to expand the capabilities of the system
+
+- Interactive creation of a module template, with a custom API method, a module editing web page and an example of a shell tool
+- Modules are located along the path /var/cld/modules/, a module may contain:
+  - tools `bin/cld-*`
+  - custom methods of the interfaces `./{api,bot,web}.py`
+  - custom WEB interface files `web/${module}.html`, `web/content/somefile.{css,js,svg}` and so on
+  - documentation file `./README.md`
+  - data of custom modules is recommended to be stored in the directory ./data
+- Custom methods of the module interfaces can be related to each other, for example, as it is implemented in the built-in access module
+- Module tools can be written in any programming language, including compiled ones
+- The CLD interfaces code for the standard launch of the module's tools is generated automatically when the systemd interfaces services are restarted, as well as the code of the user methods is parsing and loading into the interfaces automatically
+
+The video demonstrates how the administrator creates a new module, then makes a new tool for complex application deployment and launches it using the chat bot interface in the messenger
+
+## Backup for any case
+<table style="max-width: 700px; margin: 30px auto">
+  <tr style="border:none">
+    <td width="60%" style="border:none">
+      <video src="https://user-images.githubusercontent.com/45525349/151922168-665d0df7-44c9-493b-ad7c-7f9e04389501.mp4" type="video/mp4" loop="" autoplay="" muted="" playsinline="true" style="min-width:289px;width:100%;box-shadow:0 6px 15px 0 rgb(69 65 78 / 15%);border-radius:10px"></video>
+    </td>
+  </tr>
+</table>
+Organizing backup system for configurations, files, and databases
+
+- Independent backup methods for servers
+- Ability to set unique parameters, such as credentials for databases, paths to backup directories, backup execution time, the number of stored copies, a list of files, excluding extensions and backup server for each method
+- Backups are performing at remote backup servers
+- Backup process is optimized for multi thread copy data
+- Built-in backup methods:
+  - ETC Backup: backup of configuration files located in the /etc/ or another configuration directories
+  - Files Backup: backup files and entire file directories, allows you to quickly and conveniently configure the backup of the necessary elements
+  - MongoDB Backup: flexible, customizable backup of databases of any size powered by MongoDB
+  - ClickHouse Backup: flexible custom backup of databases of any size managed by ClickHouse-Server
+  - MySQL Backup: flexible, customizable backup of databases of any size running MySQL, In addition, it is possible to perform local and remote backups
+  - PostgreSQL Backup: flexible, customizable backup of databases of any size powered by PostgreSQL
+- CLD users able to create their own backup methods such as built-in placed at /var/cld/modules/backup/methods
+
+The video demonstrates creating configurations for backup methods for a couple of instances and generating a report in the messenger
+
 
 # Support policy
 
