@@ -10,6 +10,8 @@ To access any tool, several factor validation operates for the user, at the appl
 Here are a few of the many use cases with a brief description to visualize the application of the system.
 
 ## Centralized access system
+The basis of the project is a centralized system of SSH access based on PAM:
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -17,8 +19,6 @@ Here are a few of the many use cases with a brief description to visualize the a
     </td>
   </tr>
 </table>
-
-The basis of the project is a centralized system of SSH access based on PAM:
 
 - all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal Messenger account id, as well as API token
 - each user is authorized on the server to his PAM account
@@ -30,6 +30,8 @@ This video example shows how a user tries to access instances, demonstrates how 
 
 
 ## Protection of all servers on any hosting
+Access to all servers is protected by trusted IP address lists
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -37,7 +39,6 @@ This video example shows how a user tries to access instances, demonstrates how 
     </td>
   </tr>
 </table>
-Access to all servers is protected by trusted IP address lists
 
 - access to the CLD management server (as well as to all instances connected to the system) can be limited by the list of allowed ip addresses (access lists)
 - the access module provides the ability to update user addresses using a bot in messengers (telegram, discord, mattermost, slack)
@@ -49,6 +50,8 @@ This demonstration shows a user trying to connect to the server, the connection 
 
 
 ## CloudFlare integration
+DNS management for domain zones simultaneously in multiple accounts
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -56,7 +59,6 @@ This demonstration shows a user trying to connect to the server, the connection 
     </td>
   </tr>
 </table>
-DNS management for domain zones simultaneously in multiple accounts
 
 - Viewing, editing and deleting DNS records of any domain with the ability to enable proxying at any CLD interface
 - Ability to set any CloudFlare settings for the domain, as well as reset the CDN cache
@@ -68,6 +70,8 @@ DNS management for domain zones simultaneously in multiple accounts
 In order to demonstrate the equivalent use of different interfaces, a user views value of DNS record for a domain in terminal, then deletes it in a messenger using chat bot and sets DNS record to a different type of address in the terminal
 
 ## SFTP single access point
+Users able to get filesystem access of any available instance
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -75,7 +79,6 @@ In order to demonstrate the equivalent use of different interfaces, a user views
     </td>
   </tr>
 </table>
-Users able to get filesystem access of any available instance
 
 - All file operations performed by the user are logged to `/var/cld/log/session/$user/$date/$instance_sftp_$time.gz`
 - There are 2 utilities, cld-mount (interactive) and cldxmount (the first instance is selected after filtering)
@@ -85,6 +88,8 @@ Users able to get filesystem access of any available instance
 The current example shows how the user mounts the file system of the remote server, checks the mount status in the command line interface and checks the access to files through the SFTP client connected to the CLD server
 
 ## Instance list parsing groups
+Parsing public cloud providers, hypervisors, container orchestration systems or anything else to group instance list with custom parsing scripts
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -92,7 +97,6 @@ The current example shows how the user mounts the file system of the remote serv
     </td>
   </tr>
 </table>
-Parsing public cloud providers, hypervisors, container orchestration systems or anything else to group instance list with custom parsing scripts
 
 - Group type "parsing" have custom script, it will continuously synchronize instance list to group, so you always have single point access to all your infrastructure instances wherever it are
 - Parsing any public cloud providers fully customizable - it can use API or CLI third party tools installed on CLD server, parsing script have not limited at all
@@ -102,6 +106,8 @@ Parsing public cloud providers, hypervisors, container orchestration systems or 
 The video demonstrates how the user checks the list of instances in the Hetzner group, then activates the group type parsing with the corresponding script in the CLD admin panel, creates a new cloud in the Hetzner Cloud panel, once the server is created, it can be accessed from the CLD
 
 ## KVM Cloud management
+Creation, management and migration of KVM clouds on PVE hypervisors
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -109,7 +115,6 @@ The video demonstrates how the user checks the list of instances in the Hetzner 
     </td>
   </tr>
 </table>
-Creation, management and migration of KVM clouds on PVE hypervisors
 
 - Interactive creation of KVM clouds with a choice of operating system, processor cores, amount of RAM, amount of disk space and network configuration
 - Single point management of clouds on all hypervisors (it does not matter if they are not in a cluster, in different DCs, and so on), commands are available: start, stop, pause, resume and delete
@@ -120,6 +125,8 @@ Creation, management and migration of KVM clouds on PVE hypervisors
 The video demonstrates interactive creation using the CLD web terminal, after creation, the user checks the status of the cloud, gets SSH access through the web interface and checks the settings and resources specified during creation
 
 ## Custom modules for any functionality
+Support of custom modules to expand the capabilities of the system
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -127,7 +134,6 @@ The video demonstrates interactive creation using the CLD web terminal, after cr
     </td>
   </tr>
 </table>
-Support of custom modules to expand the capabilities of the system
 
 - Interactive creation of a module template, with a custom API method, a module editing web page and an example of a shell tool
 - Modules are located along the path /var/cld/modules/, a module may contain:
@@ -143,6 +149,8 @@ Support of custom modules to expand the capabilities of the system
 The video demonstrates how the administrator creates a new module, then makes a new tool for complex application deployment and launches it using the chat bot interface in the messenger
 
 ## Backup for any case
+Organizing backup system for configurations, files, and databases
+
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -150,7 +158,6 @@ The video demonstrates how the administrator creates a new module, then makes a 
     </td>
   </tr>
 </table>
-Organizing backup system for configurations, files, and databases
 
 - Independent backup methods for servers
 - Ability to set unique parameters, such as credentials for databases, paths to backup directories, backup execution time, the number of stored copies, a list of files, excluding extensions and backup server for each method
@@ -166,7 +173,6 @@ Organizing backup system for configurations, files, and databases
 - CLD users able to create their own backup methods such as built-in placed at /var/cld/modules/backup/methods
 
 The video demonstrates creating configurations for backup methods for a couple of instances and generating a report in the messenger
-
 
 # Support policy
 
