@@ -7,6 +7,8 @@ To access any tool, several factor validation operates for the user, at the appl
 
 
 # Use cases
+Here are a few of the many use cases with a brief description to visualize the application of the system.
+
 ## Centralized access system
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
