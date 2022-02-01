@@ -62,7 +62,7 @@ We are continuously parsing full list of questions by these tags and will answer
 # Terms
 
 ## CLD server
-Server based on OS Linux with installed copy of CLD `Open source` or CLD `Basic`/`Business`/`Premium`/`Enterprise` software
+Server based on OS Linux with installed CLD software
 
 ## Instance
 Linux-based server added to the CLD group as a string by the default delimeter '\_' `example.example_1.2.3.4_22_user`, the delimeter can be configured for individual groups with appropriate changes to the supported custom functions
