@@ -15,7 +15,7 @@ def bash(cmd):
   return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
 
 def vld(cld_variable):
-  return re.match('(^[A-z0-9.,@:=/_ -]+?$|^$)', cld_variable).string
+  return re.match('(^[A-z0-9.,@:=/_ -]+?$|^$)', str(cld_variable)).string
 
 discord_bot_token = bash('''grep DISCORD_BOT_TOKEN= /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 
