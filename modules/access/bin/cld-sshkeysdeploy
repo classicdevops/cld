@@ -66,5 +66,4 @@ fi
 done
 
 wait
-rm -rf /var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID} &>/dev/null
 ##############  Deploy end  ##############
