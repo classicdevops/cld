@@ -240,9 +240,13 @@ sleep 0.1s
 done
 
 wait
+echo Done
+echo
+echo Deploy crons
 for BACKUP_SERVER in $(grep -v "^$\|^#" /var/cld/modules/backup/data/servers | cut -d ',' -f 1 | sort -u)
 do
 /var/cld/bin/cldx-bash-notty ${BACKUP_SERVER} ${CLD_ALL_GROUPS_ARG} << EOBACKUPCRON
 $(checkcron)
 EOBACKUPCRON
 done
+echo Done
