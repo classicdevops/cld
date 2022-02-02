@@ -159,7 +159,7 @@ Organizing backup system for configurations, files, and databases
   </tr>
 </table>
 
-- Independent backup methods for servers
+- Independent backup methods for any instance
 - Ability to set unique parameters, such as credentials for databases, paths to backup directories, backup execution time, the number of stored copies, a list of files, excluding extensions and backup server for each method
 - Backups are performing at remote backup servers
 - Backup process is optimized for multi thread copy data
