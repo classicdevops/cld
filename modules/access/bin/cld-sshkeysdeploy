@@ -42,6 +42,8 @@ echo "${MAIN_CLD_KEY}" | egrep -q '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3}
 
 head -1 /var/cld/tmp/auditor/current_access_map | egrep -q "/var/cld/tmp/access_instances_[A-Za-z0-9]{7}"  && CLD_FILTER_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map) || generate_access_map
 
+ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
+
 for CLD_USER in ${ALL_CLD_USERS}
 do
 export sshkeys_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< "${CLD_USER}")="$([ -f "/home/${CLD_USER}/.ssh/authorized_keys" ] && egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' /home/${CLD_USER}/.ssh/authorized_keys)"
