@@ -40,7 +40,9 @@ export MAIN_CLD_KEY="$(cat /root/.ssh/id_rsa.pub)"
 
 echo "${MAIN_CLD_KEY}" | egrep -q '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' || { echo Main CLD SSH key is not valid - check /root/.ssh/id_rsa.pub - exit ; exit 1 ; }
 
-generate_access_map
+head -1 /var/cld/tmp/auditor/current_access_map | egrep -q "/var/cld/tmp/access_instances_[A-Za-z0-9]{7}"  && CLD_FILTER_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map) || generate_access_map
+
+ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
 
 for CLD_USER in ${ALL_CLD_USERS}
 do
@@ -66,5 +68,4 @@ fi
 done
 
 wait
-rm -rf /var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID} &>/dev/null
 ##############  Deploy end  ##############
