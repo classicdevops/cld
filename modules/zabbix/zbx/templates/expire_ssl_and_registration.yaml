@@ -1,0 +1,90 @@
+zabbix_export:
+  version: '5.4'
+  date: '2022-02-03T18:31:39Z'
+  groups:
+    -
+      uuid: df69cb4c179f4c92acbe0b11f081d7c5
+      name: adsdoctor
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: e3a35c7b431846bd870f393c1633f851
+      template: 'Check ssl'
+      name: 'Check ssl'
+      groups:
+        -
+          name: adsdoctor
+        -
+          name: Templates
+      items:
+        -
+          uuid: b3916398d5f6461692bddc29d543c54b
+          name: 'Check SSL certificate {HOST.DNS}'
+          type: EXTERNAL
+          key: 'checkssl.sh["{HOST.DNS}"]'
+          delay: 5m
+          units: days
+          request_method: POST
+          triggers:
+            -
+              uuid: 8f8d80b18ee44c1aa075d5593e1c2855
+              expression: 'last(/Check ssl/checkssl.sh["{HOST.DNS}"])<=1'
+              name: 'DANGER SSL Certificate for {HOST.DNS} will expire in {ITEM.VALUE1}'
+              priority: DISASTER
+            -
+              uuid: 537d373496924f7885681cf291f45129
+              expression: 'last(/Check ssl/checkssl.sh["{HOST.DNS}"])<=7'
+              name: 'SSL Certificate for {HOST.DNS} will expire in {ITEM.VALUE1}'
+              priority: AVERAGE
+        -
+          uuid: fdc2f1ff4d6f412e8099551209677327
+          name: 'Current timestamp'
+          type: EXTERNAL
+          key: 'date["+%s"]'
+          delay: 1h
+          value_type: FLOAT
+        -
+          uuid: 524ea17578c4495abfaf2bec3a98f182
+          name: 'Domain expire days {HOST.DNS}'
+          type: CALCULATED
+          key: domain_expire_days
+          delay: 15m
+          value_type: FLOAT
+          params: '(last(//domain_expire_timestamp)-last(//date["+%s"]))/60/60/24'
+          preprocessing:
+            -
+              type: REGEX
+              parameters:
+                - '^(\-?[0-9]+).+'
+                - \1
+          triggers:
+            -
+              uuid: ec07e0393f1b42fda034ed5e94d2a171
+              expression: 'last(/Check ssl/domain_expire_days)<=1'
+              name: 'DANGER Domain registration for {HOST.DNS} will expire in {ITEM.VALUE1}'
+              priority: DISASTER
+            -
+              uuid: ee0d20277e42490690ef242035d1ce51
+              expression: 'last(/Check ssl/domain_expire_days)<=7'
+              name: 'Domain registration for {HOST.DNS} will expire in {ITEM.VALUE1}'
+              priority: AVERAGE
+        -
+          uuid: e4a174c2216345cd824777e2809641b2
+          name: 'Domain expire timestamp'
+          type: HTTP_AGENT
+          key: domain_expire_timestamp
+          delay: 24h
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.expires
+          timeout: 1m
+          url: 'http://api.whois.vu/'
+          query_fields:
+            -
+              name: q
+              value: '{HOST.DNS}'

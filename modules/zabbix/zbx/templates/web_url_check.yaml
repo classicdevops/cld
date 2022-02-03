@@ -1,0 +1,41 @@
+zabbix_export:
+  version: '5.4'
+  date: '2022-02-03T18:26:22Z'
+  groups:
+    -
+      uuid: df69cb4c179f4c92acbe0b11f081d7c5
+      name: adsdoctor
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: 597d1db97b2e44329baeb64e0e6be139
+      template: 'Check web'
+      name: 'Check web'
+      groups:
+        -
+          name: adsdoctor
+        -
+          name: Templates
+      httptests:
+        -
+          uuid: f5d78a1b65134adf827cdddd684ba1ea
+          name: '{HOSTNAME}'
+          agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.78.2 (KHTML, like Gecko) Version/7.0.6 Safari/537.78.2'
+          authentication: BASIC
+          http_user: admin@mail.com
+          http_password: '123'
+          steps:
+            -
+              name: 'Open site'
+              url: '{$URL}'
+              timeout: 30s
+              required: '{$PATTERN}'
+              status_codes: '200'
+  triggers:
+    -
+      uuid: 916571579a8841818ad6e2261c41c585
+      expression: 'find(/Check web/web.test.error[{HOSTNAME}],,"iregexp",".*")<>0 and last(/Check web/web.test.fail[{HOSTNAME}])<>0 and last(/Check web/web.test.fail[{HOSTNAME}],#2)<>0'
+      name: 'check {$URL} was completed with error: {ITEM.VALUE1}'
+      priority: DISASTER

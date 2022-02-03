@@ -29,7 +29,7 @@
 !/modules/etcbackup/
 !/modules/filemanager/
 !/modules/telegramcloud/
-!/modules/zabbixcontrol/
+!/modules/zabbix/
 
 #built-in backup methods
 /modules/backup/methods/*
