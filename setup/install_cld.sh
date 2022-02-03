@@ -238,6 +238,58 @@ ln -fs /usr/bin/python3.9 /usr/bin/python3
 ln -fs /usr/bin/pip3.9 /usr/bin/pip3
 }
 
+system_setup_c9()
+{
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+setenforce 0
+systemctl stop firewalld
+systemctl disable firewalld
+iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F  ; iptables -t mangle -F  ; iptables -F ; iptables -X
+yum config-manager --set-enabled powertools
+yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
+wget http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+yum install -y remi-release-8.rpm
+rm -f remi-release-8.rpm
+yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse fuse-sshfs strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc openvpn --skip-broken
+cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://nginx.org/packages/mainline/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+EONGINX
+yum install -y nginx
+
+yum install python39 python39-pip  -y
+pip3.9 install cryptography flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
+
+yum install python*-crypto python*-cryptography certbot python3-certbot-dns-cloudflare --skip-broken -y
+
+pip3.9 install certbot certbot-dns-cloudflare
+pip3.9 install cryptography zope.interface
+
+dnf install https://kojipkgs.fedoraproject.org//packages/whatmask/1.2/27.fc34/x86_64/whatmask-1.2-27.fc34.x86_64.rpm -y
+
+dnf group install "Development Tools" -y
+cd /usr/src
+git clone https://github.com/andre-simon/ansifilter.git
+cd ansifilter/
+make
+make install
+ln -fs /usr/bin/python3.9 /usr/bin/python3
+ln -fs /usr/bin/pip3.9 /usr/bin/pip3
+}
+
 system_setup_d9()
 {
 #install base soft
@@ -352,10 +404,15 @@ system_setup_c7
 sysctl_setup
 bash_conf
 cld_install
-elif grep --quiet 'CentOS Linux 8\|CentOS Stream' /etc/*-release ; then
+elif grep --quiet 'CentOS Linux 8\|CentOS Stream 8' /etc/*-release ; then
 sysctl_setup
 bash_conf
 system_setup_c8
+cld_install
+elif grep --quiet 'CentOS Linux 9\|CentOS Stream 9' /etc/*-release ; then
+sysctl_setup
+bash_conf
+system_setup_c9
 cld_install
 elif grep --quiet 'xenial\|yakkety' /etc/*-release ; then
 sysctl_setup
