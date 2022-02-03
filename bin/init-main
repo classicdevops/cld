@@ -36,6 +36,14 @@ then
     done
 fi
 
+for CHECKDIR in /var/cld/log /var/cld/tmp
+do
+if ! [ -d ${CHECKDIR} ]; then
+chattr -i /var/cld
+mkdir -p ${CHECKDIR}
+chattr +i /var/cld
+fi
+done
 
 cat > /etc/systemd/system/cld-api.service << EOL
 [Unit]
@@ -151,7 +159,6 @@ StartLimitBurst=99999
 [Install]
 WantedBy=multi-user.target
 EOL
-
 
 systemctl daemon-reload
 systemctl disable cld &>/dev/null
