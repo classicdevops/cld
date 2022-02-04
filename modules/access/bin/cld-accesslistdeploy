@@ -269,9 +269,7 @@ ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/ipt
 EOACCESSDEPLOY
 )
 
-hostslist()
-{
-cat << EOHOSTLIST
+GENERAL_HOST_LIST=$(cat << EOHOSTLIST
 cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
 $(
 echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
@@ -286,6 +284,13 @@ grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+
 CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
 )
 EOHOSTSACCESS
+EOHOSTLIST
+)
+
+hostslist()
+{
+cat << EOHOSTLIST
+${GENERAL_HOST_LIST}
 EOHOSTLIST
 }
 
