@@ -34,6 +34,26 @@ then
     do
         ${INIT}
     done
+    if ! grep -q "^NETWORK_SECURITY=" /var/cld/creds/creds
+    then
+        echo "Select network security policy" 
+        select ANSWER in general private paranoid
+        do
+            if [ "${ANSWER}" == "general" ]; then
+                echo NETWORK_SECURITY=general >> /var/cld/creds/creds
+                break
+            elif [ "${ANSWER}" == "private" ]; then
+                echo NETWORK_SECURITY=private >> /var/cld/creds/creds
+                break
+            elif [ "${ANSWER}" == "paranoid" ]; then
+                echo NETWORK_SECURITY=paranoid >> /var/cld/creds/creds
+                break
+            else
+                echo NETWORK_SECURITY=general >> /var/cld/creds/creds
+                break
+            fi
+        done
+    fi
 fi
 
 for CHECKDIR in /var/cld/log /var/cld/tmp

@@ -1,7 +1,6 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
-/var/cld/bot/telegram/init
 
 if grep -q "^MIKROTIK=" /var/cld/creds/creds
 then
