@@ -289,11 +289,13 @@ cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/acces
 cat > /etc/openvpn/ovpnipinit << 'EOL'
 #!/bin/bash
 USER_SET=$1
-USER_NAME=$(cut -d - -f 1 <<< ${USER_SET})
+USER_NAMESET=$(cut -d - -f 1 <<< ${USER_SET})
+USER_CLD_NAME=$(cut -d '@' -f 1 <<< ${USER_NAMESET})
+USER_BOT_NAME=$(cut -d '@' -f 2 <<< ${USER_NAMESET})
 USER_ID=$(cut -d - -f 2- <<< ${USER_SET})
 USER_IP=$(journalctl -eu openvpn@server_${USER_SET}.service | grep "Peer Connection Initiated with" | tail -1 | cut -d ']' -f 4 | cut -d : -f 1)
 
-FROM=BOT /var/cld/modules/access/bin/cld-myipbot ${USER_ID} ${USER_NAME} ${USER_IP}
+sudo -u ${USER_CLD_NAME} FROM=BOT sudo /var/cld/modules/access/bin/cld-myipbot ${USER_ID} ${USER_BOT_NAME} ${USER_IP}
 EOL
 chmod 700 /etc/openvpn/ovpnipinit
 
