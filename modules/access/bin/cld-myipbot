@@ -34,17 +34,17 @@ done
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
 if  ! echo ${ARG3} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$"; then 
     export TOKEN="$(passwordgen 35)"
-    echo "${TOKEN}_${ARG1}_${SUDO_UESR}@${ARG2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myip_tokens
+    echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myip_tokens
     echo "To add your IP address to the white list, please visit: 
 https://${CLD_DOMAIN}/api/all/myipinit?token=${TOKEN}"
 exit 0
 else
     if grep -q ${ARG1} /var/cld/modules/access/data/myips; then
-        sed -i "s#.*${ARG1}.*#${ARG3}_${ARG1}_${SUDO_UESR}@${ARG2}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips
-        echo "private IP ${ARG3} successfully updated for user ${SUDO_UESR}@${ARG2}"
+        sed -i "s#.*${ARG1}.*#${ARG3}_${ARG1}_${SUDO_USER}@${ARG2}_`TZ=Europe/Moscow date +%F-%H-%M`#g" /var/cld/modules/access/data/myips
+        echo "private IP ${ARG3} successfully updated for user ${SUDO_USER}@${ARG2}"
     else
-        echo "${ARG3}_${ARG1}_${SUDO_UESR}@${ARG2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myips
-        echo "private IP ${ARG3} successfully added to access list for user ${SUDO_UESR}@${ARG2}"
+        echo "${ARG3}_${ARG1}_${SUDO_USER}@${ARG2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myips
+        echo "private IP ${ARG3} successfully added to access list for user ${SUDO_USER}@${ARG2}"
     fi
     updateaccesslists
 fi
