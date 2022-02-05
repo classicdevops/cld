@@ -156,7 +156,7 @@ done | sort -u
 EOUSERSSH${TMPLT_ID}
 $([ "${SKIP_MANUAL_ADDED_KEYS}" ] || echo 'grep -v "cld_sshkeysdeploy" ~/.ssh/authorized_keys >> ~/.ssh/authorized_keys_tmp')
 chmod 600 ~/.ssh/authorized_keys_tmp
-[ -f "~/.ssh/authorized_keys" ] && PREV_SSHKEYS_HASH="\$(cat ~/.ssh/authorized_keys | grep -v "^#\|^\$" | cut -d '#' -f 1 | sort -u | md5sum | awk '{print \$1}')" || PREV_SSHKEYS_HASH="NONE"
+[ -f ~/.ssh/authorized_keys ] && PREV_SSHKEYS_HASH="\$(cat ~/.ssh/authorized_keys | grep -v "^#\|^\$" | cut -d '#' -f 1 | sort -u | md5sum | awk '{print \$1}')" || PREV_SSHKEYS_HASH="NONE"
 NEW_SSHKEYS_HASH="\$(cat ~/.ssh/authorized_keys_tmp | grep -v "^#\|^\$" | cut -d '#' -f 1 | sort -u | md5sum | awk '{print \$1}')"
 if [ "\${PREV_SSHKEYS_HASH}" != "\${NEW_SSHKEYS_HASH}" ]; then
 unalias mv &>/dev/null
