@@ -41,8 +41,7 @@ def path_to_dict(path):
     if os.path.isdir(path):
         d['type'] = "directory"
         d['path'] = path
-        d['dirs'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir\
-(path)]
+        d['dirs'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
     else:
         d['path'] = path
         d['type'] = "file"
