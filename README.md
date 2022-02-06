@@ -377,7 +377,7 @@ The basis of the project is a centralized system of SSH access based on PAM:
   - As the text editor in the web interface uses the [Ace Cloud9 Editor](https://github.com/ajaxorg/ace), it comes with the following license:
       <details>
       <summary>Ace Cloud9 Editor license</summary>
-  
+
       Copyright (c) 2010, Ajax.org B.V.
       All rights reserved.
 
