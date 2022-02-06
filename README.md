@@ -7,6 +7,10 @@ To access any tool, several factor validation operates for the user, at the appl
 
 # Use cases
 Here are a few of the many use cases with a brief description to visualize the application of the system.
+The CLD usage example screencasts below use the following software:
+- Termius as an SSH client
+- Chromium based browser
+- Telegram messenger client
 
 ## Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
