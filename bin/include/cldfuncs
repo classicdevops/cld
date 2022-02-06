@@ -307,7 +307,11 @@ if ! [ "${!CONSTANT}" ]; then
     echo
     done
   else
-    VALUE="${DEFAULT_VALUE}"
+    if egrep -q '^\$\(' <<< "${DEFAULT_VALUE}"; then
+      VALUE=$(eval echo "${DEFAULT_VALUE}")
+    else
+      VALUE="${DEFAULT_VALUE}"
+    fi
   fi
 sed -i '/^'${CONSTANT}'=/d' ${CREDSFILE}
 echo "${CONSTANT}=\"${VALUE}\"" >> ${CREDSFILE}
