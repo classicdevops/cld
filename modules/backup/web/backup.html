@@ -67,12 +67,15 @@
                          cache: false,
                          processData:false,
                          success: function (data) {
-                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-danger');
                              sleep(500).then(() => {
-                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                                console.log('File deleted');
+                                $('#'+id+'div').remove();
+                                let parentli = $('#'+id+'-li').closest('ul');
+                                $('#'+id+'-li').remove();
+                                parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
+                                parentli.children('li').children('a')[1] || parentli.remove();
                              });
-                             console.log('File deleted');
-                             $('#'+id+'div').remove();
                              },
                          error: function (data) {
                              $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
