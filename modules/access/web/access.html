@@ -68,9 +68,9 @@
                          processData:false,
                          success: function (data) {
                              $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
-                             sleep(500).then(() => {
+                             sleep(100).then(() => {
                                  $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
-                                 sleep(500).then(() => {
+                                 sleep(100).then(() => {
                                         console.log('File deleted');
                                         $('#'+id+'div').remove();
                                         let parentli = $('#'+id+'-li').closest('ul');
