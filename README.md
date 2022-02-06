@@ -27,6 +27,7 @@ The basis of the project is a centralized system of SSH access based on PAM:
 </table>
 </details>
 
+
 - all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal Messenger account id, as well as API token
 - each user is authorized on the server to his PAM account
 - access to allowed servers is carried out using a single private SSH key or instance password
@@ -50,6 +51,7 @@ Access to all servers is protected by trusted IP address lists
 </table>
 </details>
 
+
 - access to the CLD management server (as well as to all instances connected to the system) can be limited by the list of allowed ip addresses (access lists)
 - the access module provides the ability to update user addresses using a bot in messengers (telegram, discord, mattermost, slack)
 - users can generate their personal VPN key to access the CLD server and instances
@@ -72,6 +74,7 @@ DNS management for domain zones simultaneously in multiple accounts
   </tr>
 </table>
 </details>
+
 
 - Viewing, editing and deleting DNS records of any domain with the ability to enable proxying at any CLD interface
 - Ability to set any CloudFlare settings for the domain, as well as reset the CDN cache
@@ -117,6 +120,7 @@ Parsing public cloud providers, hypervisors, container orchestration systems or 
 </table>
 </details>
 
+
 - Group type "parsing" have custom script, it will continuously synchronize instance list to group, so you always have single point access to all your infrastructure instances wherever it are
 - Parsing any public cloud providers fully customizable - it can use API or CLI third party tools installed on CLD server, parsing script have not limited at all
 - Built-in parsing groups: AWS cloud, Google cloud, Hetzner cloud, DigitalOcean, Azure cloud, Scaleway cloud, OVH cloud, Proxmox LXC containers, Docker containers, Kubernetes containers
@@ -137,6 +141,7 @@ Creation, management and migration of KVM clouds on PVE hypervisors
   </tr>
 </table>
 </details>
+
 
 - Interactive creation of KVM clouds with a choice of operating system, processor cores, amount of RAM, amount of disk space and network configuration
 - Single point management of clouds on all hypervisors (it does not matter if they are not in a cluster, in different DCs, and so on), commands are available: start, stop, pause, resume and delete
@@ -159,6 +164,7 @@ Support of custom modules to expand the capabilities of the system
   </tr>
 </table>
 </details>
+
 
 - Interactive creation of a module template, with a custom API method, a module editing web page and an example of a shell tool
 - Modules are located along the path /var/cld/modules/, a module may contain:
@@ -186,6 +192,7 @@ Organizing backup system for configurations, files, and databases
   </tr>
 </table>
 </details>
+
 
 - Independent backup methods for any instance
 - Ability to set unique parameters, such as credentials for databases, paths to backup directories, backup execution time, the number of stored copies, a list of files, excluding extensions and backup server for each method
@@ -449,9 +456,12 @@ CLD framework script is:
 ### Recommended system requirements:
 - Virtualization: `KVM`/`Bare metal`
 - Supported OS: `Centos` 7/8, `Debian` 9/10
-- CPU: `1` cores
-- RAM: `2` Gb
-- Disk space: `20` Gb
+- CPU: `1` cores 
+  - `1` more core for every 500 next instances
+- RAM: `2` Gb 
+  - `1`Gb more RAM for every 500 next instances
+- Disk space: `20` Gb 
+  - `10`Gb more disk space for every 500 next instances
 - Direct public ip address
 
 ### Data required for interfaces and modules
@@ -471,7 +481,7 @@ Before the installation process, you should prepare the following information:
 	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `url for Zabbix API`)
 
 ### Quick start
-ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
+ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8 Stream, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ```
 bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdevops/cld/master/setup/install_cld.sh")
