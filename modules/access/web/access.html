@@ -69,10 +69,13 @@
                          success: function (data) {
                              $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
                              sleep(500).then(() => {
-                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                                 $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                                 sleep(500).then(() => {
+                                        console.log('File deleted');
+                                        $('#'+id+'div').remove();
+                                        $('#'+id+'-li').remove();
+                                 });
                              });
-                             console.log('File deleted');
-                             $('#'+id+'div').remove();
                              },
                          error: function (data) {
                              $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
