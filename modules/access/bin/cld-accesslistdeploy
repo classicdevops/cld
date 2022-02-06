@@ -322,12 +322,14 @@ EOHOSTLIST
 privatehostlist()
 {
 cat << EOPRIVATEHOSTLIST
+cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
 ${COMMON_IPS}
 $(for ACCESSLISTUSER in $(cat ${CLD_FILTER_DIR}/instances/${INSTANCE})
 do
 ACCESSLIST_VAR="accesslist_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${ACCESSLISTUSER})"
 echo "${!ACCESSLIST_VAR}"
 done | sort -u)
+EOHOSTSACCESS
 EOPRIVATEHOSTLIST
 }
 
