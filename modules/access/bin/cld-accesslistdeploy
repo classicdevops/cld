@@ -362,7 +362,7 @@ $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
 $CLD_DEPLOY_NOTTY << EOSSH
-$(cld_host_list)
+$($cld_host_list)
 $([ -d "/var/cld/modules/access/data/instances/$INSTANCE" ] && instancelistgen $INSTANCE || echo "$CLD_ACCESS_LIST_DEFAULT")
 $CLD_ACCESS_DEPLOY
 EOSSH
