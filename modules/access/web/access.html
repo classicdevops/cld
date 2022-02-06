@@ -67,19 +67,14 @@
                          cache: false,
                          processData:false,
                          success: function (data) {
-                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
-                             sleep(100).then(() => {
-                                 $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
-                                 sleep(100).then(() => {
-                                        console.log('File deleted');
-                                        $('#'+id+'div').remove();
-                                        let parentli = $('#'+id+'-li').closest('ul');
-                                        $('#'+id+'-li').remove();
-                                        sleep(100).then(() => {
-                                            parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
-                                            parentli.children('li').children('a')[1] || parentli.remove();
-                                        });
-                                 });
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-danger');
+                             sleep(500).then(() => {
+                                console.log('File deleted');
+                                $('#'+id+'div').remove();
+                                let parentli = $('#'+id+'-li').closest('ul');
+                                $('#'+id+'-li').remove();
+                                parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
+                                parentli.children('li').children('a')[1] || parentli.remove();
                              });
                              },
                          error: function (data) {
