@@ -76,7 +76,8 @@
                                         let parentli = $('#'+id+'-li').closest('ul');
                                         $('#'+id+'-li').remove();
                                         sleep(100).then(() => {
-                                            parentli.children('li').children('a')[1].click();
+                                            parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
+                                            parentli.children('li').children('a')[1] || parentli.remove();
                                         });
                                  });
                              });
