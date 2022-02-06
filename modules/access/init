@@ -2,10 +2,29 @@
 source /var/cld/bin/include/cldfuncs
 grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
 
-if grep -q "^MIKROTIK=" /var/cld/creds/creds
+if ! grep -q "^NETWORK_POLICY=" /var/cld/creds/creds
 then
-	echo -n ""
-else
+    echo "Select network security policy" 
+    select ANSWER in general private paranoid
+    do
+        if [ "${ANSWER}" == "general" ]; then
+            echo NETWORK_POLICY=general >> /var/cld/creds/creds
+            break
+        elif [ "${ANSWER}" == "private" ]; then
+            echo NETWORK_POLICY=private >> /var/cld/creds/creds
+            break
+        elif [ "${ANSWER}" == "paranoid" ]; then
+            echo NETWORK_POLICY=paranoid >> /var/cld/creds/creds
+            break
+        else
+            echo NETWORK_POLICY=general >> /var/cld/creds/creds
+            break
+        fi
+    done
+fi
+
+if ! grep -q "^MIKROTIK=" /var/cld/creds/creds
+then
 	echo "Are you using MIKROTIK ?" 
 	select ANSWER in yes no
 	do

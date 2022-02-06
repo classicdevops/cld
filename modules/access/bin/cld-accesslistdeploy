@@ -24,6 +24,7 @@ source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/access/bin/include/accessfuncs
 
 grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
+init-load-constant --constant=NETWORK_POLICY --example=general --regex="(general|private|paranoid)" --default=general
 init-load-constants CLD_IP\|1.2.3.4
 
 for i in ${CLDOPTS}
