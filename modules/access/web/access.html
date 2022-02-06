@@ -73,7 +73,11 @@
                                  sleep(500).then(() => {
                                         console.log('File deleted');
                                         $('#'+id+'div').remove();
+                                        let parentli = $('#'+id+'-li').closest('ul');
                                         $('#'+id+'-li').remove();
+                                        sleep(100).then(() => {
+                                            parentli.children('li').children('a')[1].click();
+                                        });
                                  });
                              });
                              },
