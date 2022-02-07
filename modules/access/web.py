@@ -51,6 +51,8 @@ def access_index():
         if re.search("^NETWORK_POLICY=", line):
             networkpolicy = line.split('=')[1].replace('"', '').replace("'", '').strip()
             break
+    try: networkpolicy
+    except: networkpolicy="general"
     return render_template('modules/access/access.html', username=user, files=files, cld_instances=cld_instances, cld_groups=cld_groups, examples=examples, configs=configs, tabsets=tabsets, networkpolicy=networkpolicy)
 
 @app.route("/access/example/<example>")
