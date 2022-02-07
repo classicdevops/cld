@@ -11,9 +11,12 @@ def access_index():
     user = session['username']
     checkresult = checkpermswhiteip(cldmodule, 'NOTOOL', user, remoteaddr())
     if checkresult[0] != "granted": return Response("403", status=403, mimetype='application/json')
-    req_files = ['/etc/cron.d/cld_access']
+    ipfiles = ['/var/cld/modules/access/data/myips', '/var/cld/modules/access/data/enabledips', '/var/cld/modules/access/data/banips']
+    defaultfiles = ['/var/cld/creds/protected_ports', '/var/cld/creds/local_nets', '/var/cld/creds/local_nets6']
+    tokenfiles = ['/var/cld/modules/access/data/myip_tokens', '/var/cld/modules/access/data/myip_token_chats', '/var/cld/modules/access/data/myvpn_tokens', '/var/cld/modules/access/data/myvpn_token_chats']
     os.makedirs('/var/cld/modules/access/data', mode = 0o700, exist_ok=True)
-    for req_file in req_files:
+    req_files = ['/etc/cron.d/cld_access']
+    for req_file in req_files + ipfiles + defaultfiles + tokenfiles:
       if os.path.exists(req_file):
           os.utime(req_file, None)
           os.open('filepath', os.O_CREAT | os.O_WRONLY, 0o600)
@@ -36,13 +39,10 @@ def access_index():
     cld_instances = bash('sudo -u '+vld(user)+' sudo FROM=CLI /var/cld/bin/cld --list --all').split('\n')
     cld_groups = [os.path.basename(name) for name in os.listdir("/var/cld/access/groups/") if os.path.isdir('/var/cld/access/groups/'+name)]
     examples = [os.path.basename(name) for name in os.listdir("/var/cld/modules/access/examples/") if os.path.isfile('/var/cld/modules/access/examples/'+name)]
-    ipfiles = ['/var/cld/modules/access/data/myips', '/var/cld/modules/access/data/enabledips', '/var/cld/modules/access/data/banips']
     ipconfigs = { "name": " Access IP lists", "dirs": [] }
     ipconfigs["dirs"] = [path_to_dict(ipfile) for ipfile in ipfiles]
-    defaultfiles = ['/var/cld/creds/protected_ports', '/var/cld/creds/local_nets', '/var/cld/creds/local_nets6']
     defaultsettings = { "name": " Default settings", "dirs": [] }
     defaultsettings["dirs"] = [path_to_dict(defaultfile) for defaultfile in defaultfiles]
-    tokenfiles = ['/var/cld/modules/access/data/myip_tokens', '/var/cld/modules/access/data/myip_token_chats', '/var/cld/modules/access/data/myvpn_tokens', '/var/cld/modules/access/data/myvpn_token_chats']
     tokenlists = { "name": " Stored token lists", "dirs": [] }
     tokenlists["dirs"] = [path_to_dict(tokenfile) for tokenfile in tokenfiles]
     tabsets = [ipconfigs, defaultsettings, tokenlists]
