@@ -24,7 +24,8 @@ source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/access/bin/include/accessfuncs
 
 grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
-init-load-constants CLD_IP\|1.2.3.4
+init-load-constant --constant=NETWORK_POLICY --example=general --regex="(general|private|paranoid)" --default=general
+init-load-constant --constant=CLD_IP --example=1.2.3.4 --default='$(wget -qO- ipinfo.io/ip)'
 
 for i in ${CLDOPTS}
 do
@@ -42,24 +43,9 @@ CLD_GROUPS=${CLD_GROUPS:-default}
 [ "$CLD_ALLOW_GROUPS" ] || CLD_ALLOW_GROUPS=${CLD_GROUPS:-default}
 
 CLD_ACCESS_LIST=$(cat << EOACCESSLIST
-cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
-$(
-echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
-echo "$CLD_IP" | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | awk '{print "sshd: "$1" # CLD ip"}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
-echo "::1" | awk '{print "sshd: ["$1"] # localhost"}'
-echo "$CLD_IP" | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+" | awk '{print "sshd: ["$1"] # CLD ip"}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
-)
-EOHOSTSACCESS
-
 cat > /etc/hosts.deny.tmp << 'EOHOSTSBAN'
 $(
-grep -svh "^$\|^#" /var/cld/modules/access/data/blackips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
+grep -svh "^$\|^#" /var/cld/modules/access/data/banips | awk -F"_" '{print "sshd: "$1" # black ip of "$2}'
 )
 EOHOSTSBAN
 cat > /etc/hosts.ports.tmp << 'EOHOSTSPORTS'
@@ -284,9 +270,73 @@ ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/ipt
 EOACCESSDEPLOY
 )
 
+GENERAL_HOST_LIST=$(cat << EOHOSTLIST
+cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
+$(
+echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
+echo "$CLD_IP" | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | awk '{print "sshd: "$1" # CLD ip"}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
+echo "::1" | awk '{print "sshd: ["$1"] # localhost"}'
+echo "$CLD_IP" | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+" | awk '{print "sshd: ["$1"] # CLD ip"}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
+CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
+)
+EOHOSTSACCESS
+EOHOSTLIST
+)
+
+if [ "${NETWORK_POLICY}" != "general" ]; then
+head -1 /var/cld/tmp/auditor/current_access_map | egrep -q "/var/cld/tmp/access_instances_[A-Za-z0-9]{7}"  && CLD_FILTER_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map) || generate_access_map
+ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
+for CLD_USER in ${ALL_CLD_USERS}
+do
+export accesslist_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< "${CLD_USER}")="$(
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/myips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
+)"
+
+COMMON_IPS="$(
+echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
+echo "$CLD_IP" | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | awk '{print "sshd: "$1" # CLD ip"}' 
+echo "::1" | awk '{print "sshd: ["$1"] # localhost"}'
+echo "$CLD_IP" | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+" | awk '{print "sshd: ["$1"] # CLD ip"}'
+)"   
+done
+cld_host_list=privatehostlist
+else
+cld_host_list=generalhostlist
+fi
+
+generalhostlist()
+{
+cat << EOHOSTLIST
+${GENERAL_HOST_LIST}
+EOHOSTLIST
+}
+
+privatehostlist()
+{
+cat << EOPRIVATEHOSTLIST
+cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
+${COMMON_IPS}
+$(for ACCESSLISTUSER in $(cat ${CLD_FILTER_DIR}/instances/${INSTANCE})
+do
+ACCESSLIST_VAR="accesslist_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< ${ACCESSLISTUSER})"
+echo "${!ACCESSLIST_VAR}"
+done | sort -u)
+EOHOSTSACCESS
+EOPRIVATEHOSTLIST
+}
+
 if [ "$(echo $CLD_GROUPS | grep -o "default")" = "default" -a  "$(echo $CLD_ALLOW_GROUPS | grep -o "default")" = "default" ]
 then
 cat << EOL | bash
+$(generalhostlist)
 $([ -d "/var/cld/modules/access/data/instances/cld" ] && instancelistgen cld || echo "$CLD_ACCESS_LIST")
 $CLD_ACCESS_DEPLOY
 EOL
@@ -304,16 +354,18 @@ else
 CLD_ACCESS_LIST_DEFAULT="$CLD_ACCESS_LIST"
 fi
 
-for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
+for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
 do
-if [ "$VM" ]
+VM="${INSTANCE}"
+if [ "$INSTANCE" ]
 then
 INSTANCE_GROUP_FUNCS
 $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
 $CLD_DEPLOY_NOTTY << EOSSH
-$([ -d "/var/cld/modules/access/data/instances/$VM" ] && instancelistgen $VM || echo "$CLD_ACCESS_LIST_DEFAULT")
+$($cld_host_list)
+$([ -d "/var/cld/modules/access/data/instances/$INSTANCE" ] && instancelistgen $INSTANCE || echo "$CLD_ACCESS_LIST_DEFAULT")
 $CLD_ACCESS_DEPLOY
 EOSSH
 ) &

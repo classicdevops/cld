@@ -67,12 +67,15 @@
                          cache: false,
                          processData:false,
                          success: function (data) {
-                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-danger');
                              sleep(500).then(() => {
-                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                                console.log('File deleted');
+                                $('#'+id+'div').remove();
+                                let parentli = $('#'+id+'-li').closest('ul');
+                                $('#'+id+'-li').remove();
+                                parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
+                                parentli.children('li').children('a')[1] || parentli.remove();
                              });
-                             console.log('File deleted');
-                             $('#'+id+'div').remove();
                              },
                          error: function (data) {
                              $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
@@ -100,27 +103,149 @@
                     `);
                     aceactivate(fileid);
             }
+            function newconfig(type, object, config) {
+                    var file = '/var/cld/modules/access/data/'+type+'/'+document.getElementById(object).value+'/'+document.getElementById(config).value;
+                    var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+                    $('#configtabs').prepend(`
+                    <div id="`+fileid+`div">
+                    <form id="`+fileid+`">
+                       <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                       <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                    </form>
+                    <div class="prefile">`+file+`<button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                    <pre id="`+fileid+`Pre"></pre>
+                    <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save `+file+`</button>
+                    <br><br>
+                    </div>
+                    `);
+                    $.ajax({
+                       url : `/access/example/${document.getElementById(config).value}`,
+                       type: "GET",
+                       cache: false,
+                       processData:false,
+                       success: function (data) {
+                           $('#'+fileid+'Pre').append(data);
+                           console.log('Example file loaded');
+                           aceactivate(fileid);
+                           },
+                       error: function (data) {
+                           console.log('Example file loaded');
+                           aceactivate(fileid);
+                           }
+                    })
+            }
           </script>
         <div class="container"><br><br>
              <h4 class="panel-title">
                 Classic Firewall
-             </h4><br><br>
+             </h4>
+                <section style="margin: 20px 0px;">
+                Network policy: <span class="badge badge-primary" style="font-size: 14px;border-radius: 4px;background: #337ab7;">{{ networkpolicy }}</span>
+                </section>
                 <h4 class="panel-title">
-                   Create exception file for cld group:
+                   Create exception config for cld group:
                 </h4>
-                <form style="display: -webkit-inline-box;" onsubmit="newfile('groupinput');return false;">
-                <pre style="padding: 7;margin-right: -5px;" id="groupinputpre">/var/cld/modules/access/data/groups/</pre>
-                <input type="text" class="form-control" id="groupinput" placeholder="default/{protected_ports,local_nets,etc...}" style="width: 85%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
-                <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
-                </form>
+                <form style="display: -webkit-inline-box;" onsubmit="newconfig('groups','inputgroup', 'groupmethod');return false;">
+                  <pre style="padding: 7;margin-right: -5px;border-radius: 4px 0px 0px 4px;max-height: 34px;overflow: hidden;">/var/cld/modules/access/data/groups/</pre>
+                  <select type="text" class="form-control" id="inputgroup" style="width: fit-content;min-width: 100px;padding-top: 3px;border-radius: 0px;margin-right: -1px;" required="">
+                  {% for cld_group in cld_groups %}
+                    <option value="{{ cld_group }}">{{ cld_group }}</option>
+                  {% endfor %}
+                  </select>
+                  <select type="text" class="form-control" id="groupmethod" style="width: fit-content;min-width: 100px;padding-top: 3;border-radius: 0px;margin-right: 4px;" required="">
+                  {% for example in examples %}
+                    <option value="{{ example }}">{{ example }}</option>
+                  {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                </form><br>
                 <h4 class="panel-title">
-                   Create exception file for cld instance:
+                   Create exception config for cld instance:
                 </h4>
-                <form style="display: -webkit-inline-box;" onsubmit="newfile('instanceinput');return false;">
-                <pre style="padding: 7;margin-right: -5px;" id="instanceinputpre">/var/cld/modules/access/data/instances/</pre>
-                <input type="text" class="form-control" id="instanceinput" placeholder="instance_1.1.1.1_22_root/{protected_ports,local_nets,etc...}" style="width: 85%;padding-top: 3;border-radius: 0px 4px 4px 0px;" required="">
-                <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+                <form style="display: -webkit-inline-box;" onsubmit="newconfig('instances','inputinstance', 'instancemethod');return false;">
+                  <pre style="padding: 7;margin-right: -5px;border-radius: 4px 0px 0px 4px;max-height: 34px;overflow: hidden;">/var/cld/modules/access/data/instances/</pre>
+                  <select type="text" class="form-control" id="inputinstance" style="width: fit-content;min-width: 300px;padding-top: 3px;border-radius: 0px;margin-right: -1px;" required="">
+                  {% for cld_instance in cld_instances %}
+                    <option value="{{ cld_instance }}">{{ cld_instance }}</option>
+                  {% endfor %}
+                  </select>
+                  <select type="text" class="form-control" id="instancemethod" style="width: fit-content;min-width: 100px;padding-top: 3;border-radius: 0px;margin-right: 4px;" required="">
+                  {% for example in examples %}
+                    <option value="{{ example }}">{{ example }}</option>
+                  {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
+                <section id="configtabs">
+                {% for config_name in configs['instances']['dirs'] + configs['groups']['dirs'] %}
+                  <ul class="nav nav-tabs" id="{{ config_name['name'] }}" role="tablist" style="border-bottom: 0px;">
+                       <li class="nav-item">
+                          <a class="nav-link active" role="tab">{{ config_name['name'] }}</a>
+                       </li>
+                  {% for file in config_name['dirs'] %}
+                  {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                  <li class="nav-item {% if loop.index == 1 %}active{% endif %}" id="{{ fileid }}-li">
+                    <a class="nav-link" id="{{ fileid }}-tab" data-toggle="tab" href="#{{ fileid }}-content" role="tab" aria-controls="{{ fileid }}" aria-selected="false" aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}">{{ file['name'] }}</a>
+                  </li>
+                  {% endfor %}
+                  </ul>
+                    <div class="tab-content" id="{{ config_name['name'] }}">
+                  {% for file in config_name['dirs'] %}
+                  {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                        <div class="tab-pane fade{% if loop.index == 1 %} active in{% endif %}" id="{{ fileid }}-content" role="tabpanel" aria-labelledby="{{ fileid }}-tab" style="padding: 0px;margin-top: -14px;">
+                        <div id="{{ fileid }}div">
+                        <form id="{{ fileid }}">
+                           <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file['path'] }}</textarea>
+                           <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                        </form>
+                        <div class="prefile" style="border: 1px solid #1e88e5;">{{ file['path'] }}<button id="{{ fileid }}-button-del" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                        <pre id="{{ fileid }}Pre">{{ file['content'] }}</pre>
+                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file['path'] }}</button>
+                        <br><br>
+                        <script>
+                           aceactivate('{{ fileid }}')
+                        </script>
+                        </div>
+                        </div>
+                  {% endfor %}
+                    </div>
+                {% endfor %}
+                </section>
+                {% for tabset in tabsets %}
+                <section>
+                  <ul class="nav nav-tabs" id="{{ tabset['name'] }}" role="tablist" style="border-bottom: 0px;">
+                       <li class="nav-item">
+                          <a class="nav-link active" role="tab">{{ tabset['name'] }}</a>
+                       </li>
+                  {% for file in tabset['dirs'] %}
+                  {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                  <li class="nav-item {% if loop.index == 1 %}active{% endif %}" id="{{ fileid }}-li">
+                    <a class="nav-link" id="{{ fileid }}-tab" data-toggle="tab" href="#{{ fileid }}-content" role="tab" aria-controls="{{ fileid }}" aria-selected="false" aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}">{{ file['name'] }}</a>
+                  </li>
+                  {% endfor %}
+                  </ul>
+                    <div class="tab-content" id="{{ tabset['name'] }}">
+                  {% for file in tabset['dirs'] %}
+                  {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                        <div class="tab-pane fade{% if loop.index == 1 %} active in{% endif %}" id="{{ fileid }}-content" role="tabpanel" aria-labelledby="{{ fileid }}-tab" style="padding: 0px;margin-top: -14px;">
+                        <div id="{{ fileid }}div">
+                        <form id="{{ fileid }}">
+                           <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file['path'] }}</textarea>
+                           <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                        </form>
+                        <div class="prefile" style="border: 1px solid #1e88e5;">{{ file['path'] }}<button id="{{ fileid }}-button-del" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                        <pre id="{{ fileid }}Pre">{{ file['content'] }}</pre>
+                        <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file['path'] }}</button>
+                        <br><br>
+                        <script>
+                           aceactivate('{{ fileid }}')
+                        </script>
+                        </div>
+                        </div>
+                  {% endfor %}
+                    </div>
+                </section>
+                {% endfor %}
                 <section id="filesedit">
                   {% for file in files %}
                   {% set fileid = file.replace('/', '_').replace('.', '_') %}

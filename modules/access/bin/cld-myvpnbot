@@ -21,8 +21,13 @@ source /var/cld/bin/include/cldfuncs
 [ "${FROM}" != "BOT" ] && cldhelp
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB CLD_DOMAIN\|cldapi.yourdomain.com
 
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '\-' | head -2 | tail -1)
+for i in ${CLDOPTS}
+do
+  case $i in
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
+done
 
 for i in ${CLDOPTS}
 do
@@ -35,7 +40,7 @@ done
 if [ "$VPN_REGEN" = "1" ]
 then
 
-VPN_ID=${ARG2}-${ARG1}
+VPN_ID=${SUDO_USER}@${ARG2}-${ARG1}
 if [ "$VPN_ID" ]
 then
 rm -f /etc/openvpn/*${VPN_ID}*
@@ -48,5 +53,5 @@ fi
 
 [ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
 
-export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${ARG2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - download link: 
+export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - download link: 
 https://${CLD_DOMAIN}/api/myvpnget?token=${TOKEN}"

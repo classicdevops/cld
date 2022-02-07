@@ -245,12 +245,11 @@ setenforce 0
 systemctl stop firewalld
 systemctl disable firewalld
 iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F  ; iptables -t mangle -F  ; iptables -F ; iptables -X
-yum config-manager --set-enabled powertools
-yum install -y http://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/e/epel-release-8-10.el8.noarch.rpm
-wget http://rpms.remirepo.net/enterprise/remi-release-8.rpm
-yum install -y remi-release-8.rpm
-rm -f remi-release-8.rpm
-yum install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse fuse-sshfs strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc openvpn --skip-broken
+dnf config-manager --set-enabled powertools
+dnf dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+
+dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y
+dnf install -y pwgen sshpass deltarpm psmisc e2fsprogs net-tools openssl yum-utils wget nano ntpdate patch telnet bind-utils expect nscd which ltrace mc sudo iftop ncdu htop ntp zip unzip pigz iotop sysstat lsof fuse fuse-sshfs strace atop multitail apg yum-plugin-replace mailx bash-completion git wget jq ansifilter certbot screen sipcalc openvpn --skip-broken
 cat > /etc/yum.repos.d/nginx.repo << 'EONGINX'
 [nginx-stable]
 name=nginx stable repo
@@ -268,12 +267,12 @@ enabled=1
 gpgkey=https://nginx.org/keys/nginx_signing.key
 module_hotfixes=true
 EONGINX
-yum install -y nginx
+dnf install -y nginx
 
-yum install python39 python39-pip  -y
+dnf install python39 python39-pip  -y
 pip3.9 install cryptography flask redis python-pam Image flask_session flask_socketio pytelegrambotapi lxml
 
-yum install python*-crypto python*-cryptography certbot python3-certbot-dns-cloudflare --skip-broken -y
+dnf install python*-crypto python*-cryptography certbot python3-certbot-dns-cloudflare --skip-broken -y
 
 pip3.9 install certbot certbot-dns-cloudflare
 pip3.9 install cryptography zope.interface
@@ -409,7 +408,7 @@ sysctl_setup
 bash_conf
 system_setup_c8
 cld_install
-elif grep --quiet 'CentOS Linux 9\|CentOS Stream 9' /etc/*-release ; then
+elif grep --quiet 'CentOS Stream 9' /etc/*-release ; then
 sysctl_setup
 bash_conf
 system_setup_c9

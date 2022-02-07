@@ -67,12 +67,15 @@
                          cache: false,
                          processData:false,
                          success: function (data) {
-                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-warning');
+                             $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-danger');
                              sleep(500).then(() => {
-                             $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-success');
+                                console.log('File deleted');
+                                $('#'+id+'div').remove();
+                                let parentli = $('#'+id+'-li').closest('ul');
+                                $('#'+id+'-li').remove();
+                                parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
+                                parentli.children('li').children('a')[1] || parentli.remove();
                              });
-                             console.log('File deleted');
-                             $('#'+id+'div').remove();
                              },
                          error: function (data) {
                              $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
@@ -168,6 +171,7 @@
                   </select>
                   <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
                 </form>
+                <br>
                 <section id="configtabs">
                 {% for config_name in configs['instances']['dirs'] + configs['groups']['dirs'] %}
                   <ul class="nav nav-tabs" id="{{ config_name['name'] }}" role="tablist" style="border-bottom: 0px;">

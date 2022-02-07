@@ -280,6 +280,46 @@ else
 fi
 }
 
+init-load-constant()
+{
+[ "$LOAD_CONSTANT" ] || LOAD_CONSTANT=60
+local i ii
+for i in "$@"
+do
+  case $i in
+    -d=*|-default=*|--default=*) DEFAULT_VALUE="${i#*=}" ;;
+    -f=*|-file=*|--file=*) CREDSFILE="${i#*=}"           ;;
+    -r=*|-regex=*|--regex=*) REGEX_VALUE="${i#*=}"       ;;
+    -c=*|-constant=*|--constant=*) CONSTANT="${i#*=}"    ;;
+    -e=*|-example=*|--example=*) EXAMPLE="${i#*=}"       ;;
+    *)                                                   ;;
+  esac
+done
+[ "$CREDSFILE" ] || export CREDSFILE=/var/cld/creds/creds
+[ "$REGEX_VALUE" ] || export REGEX_VALUE='[A-Za-z0-9/:.@%_,\ -]+'
+source <(grep "^${CONSTANT}=" ${CREDSFILE})
+if ! [ "${!CONSTANT}" ]; then
+  if ! [ "${DEFAULT_VALUE}" ]; then
+    while ! egrep -q "^${REGEX_VALUE}$" <<< "$VALUE"
+    do
+    echo -e "Please enter the VALUE for ${CONSTANT} constant using $(echo -n "${REGEX_VALUE}") - symbols\nEXAMPLE: ${EXAMPLE}"
+    echo -n "#: " ; read -t ${LOAD_CONSTANT} VALUE || return 1
+    echo
+    done
+  else
+    if egrep -q '^\$\(' <<< "${DEFAULT_VALUE}"; then
+      VALUE=$(eval echo "${DEFAULT_VALUE}")
+    else
+      VALUE="${DEFAULT_VALUE}"
+    fi
+  fi
+sed -i '/^'${CONSTANT}'=/d' ${CREDSFILE}
+echo "${CONSTANT}=\"${VALUE}\"" >> ${CREDSFILE}
+source <(echo "${CONSTANT}=\"${VALUE}\"")
+unset VALUE
+fi
+}
+
 init-load-constants()
 {
 [ "$LOAD_CONSTANT" ] || LOAD_CONSTANT=60
@@ -289,7 +329,7 @@ CONSTANT=$(cut -d '|' -f 1 <<< ${CONSTANT_SET})
 EXAMPLE=$(grep '|' <<< ${CONSTANT_SET} | cut -d '|' -f 2)
 CREDSFILE=$(egrep ".*|.*|.*" <<< ${CONSTANT_SET} | cut -d '|' -f 3)
 [ "$CREDSFILE" ] || export CREDSFILE=/var/cld/creds/creds
-source <(grep "${CONSTANT}=" ${CREDSFILE})
+source <(grep "^${CONSTANT}=" ${CREDSFILE})
 if ! [ "${!CONSTANT}" ]
 then
   while ! [[ "$VALUE" =~  ^[A-Za-z0-9/:.@%_,\ -]+$ ]]
@@ -298,7 +338,7 @@ echo -e "Please enter the VALUE for ${CONSTANT} constant using [A-Za-z0-9/:._ -]
 echo -n "#: " ; read -t ${LOAD_CONSTANT} VALUE || return 1
 echo
 done
-sed -i '/'${CONSTANT}'/d' ${CREDSFILE}
+sed -i '/^'${CONSTANT}'=/d' ${CREDSFILE}
 echo "${CONSTANT}=\"${VALUE}\"" >> ${CREDSFILE}
 source <(echo "${CONSTANT}=\"${VALUE}\"")
 unset VALUE

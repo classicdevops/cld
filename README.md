@@ -5,13 +5,19 @@ This project does not set itself the goal of replacing any existing automation t
 The main components of the system are bash-based utilities, API, chat bots and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
 To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
 
-
 # Use cases
 Here are a few of the many use cases with a brief description to visualize the application of the system.
+
+The CLD usage example screencasts below use the following software:
+- Termius as an SSH client
+- Chromium based browser
+- Telegram messenger client
 
 ## Centralized access system
 The basis of the project is a centralized system of SSH access based on PAM:
 
+<details open>
+<summary>Centralized access system demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -19,6 +25,8 @@ The basis of the project is a centralized system of SSH access based on PAM:
     </td>
   </tr>
 </table>
+</details>
+
 
 - all CLD users work according to the internal access matrix and have customizable permissions, they can be assigned personal Messenger account id, as well as API token
 - each user is authorized on the server to his PAM account
@@ -32,6 +40,8 @@ This video example shows how a user tries to access instances, demonstrates how 
 ## Protection of all servers on any hosting
 Access to all servers is protected by trusted IP address lists
 
+<details open>
+<summary>Protection of all servers on any hosting demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -39,6 +49,8 @@ Access to all servers is protected by trusted IP address lists
     </td>
   </tr>
 </table>
+</details>
+
 
 - access to the CLD management server (as well as to all instances connected to the system) can be limited by the list of allowed ip addresses (access lists)
 - the access module provides the ability to update user addresses using a bot in messengers (telegram, discord, mattermost, slack)
@@ -52,6 +64,8 @@ This demonstration shows a user trying to connect to the server, the connection 
 ## CloudFlare integration
 DNS management for domain zones simultaneously in multiple accounts
 
+<details>
+<summary>CloudFlare integration demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -59,6 +73,8 @@ DNS management for domain zones simultaneously in multiple accounts
     </td>
   </tr>
 </table>
+</details>
+
 
 - Viewing, editing and deleting DNS records of any domain with the ability to enable proxying at any CLD interface
 - Ability to set any CloudFlare settings for the domain, as well as reset the CDN cache
@@ -72,6 +88,8 @@ In order to demonstrate the equivalent use of different interfaces, a user views
 ## SFTP single access point
 Users able to get filesystem access of any available instance
 
+<details>
+<summary>SFTP single access point demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -79,6 +97,7 @@ Users able to get filesystem access of any available instance
     </td>
   </tr>
 </table>
+</details>
 
 - All file operations performed by the user are logged to `/var/cld/log/session/$user/$date/$instance_sftp_$time.gz`
 - There are 2 utilities, cld-mount (interactive) and cldxmount (the first instance is selected after filtering)
@@ -90,6 +109,8 @@ The current example shows how the user mounts the file system of the remote serv
 ## Instance list parsing groups
 Parsing public cloud providers, hypervisors, container orchestration systems or anything else to group instance list with custom parsing scripts
 
+<details>
+<summary>Instance list parsing groups demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -97,6 +118,8 @@ Parsing public cloud providers, hypervisors, container orchestration systems or 
     </td>
   </tr>
 </table>
+</details>
+
 
 - Group type "parsing" have custom script, it will continuously synchronize instance list to group, so you always have single point access to all your infrastructure instances wherever it are
 - Parsing any public cloud providers fully customizable - it can use API or CLI third party tools installed on CLD server, parsing script have not limited at all
@@ -108,6 +131,8 @@ The video demonstrates how the user checks the list of instances in the Hetzner 
 ## KVM Cloud management
 Creation, management and migration of KVM clouds on PVE hypervisors
 
+<details>
+<summary>KVM Cloud management demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -115,6 +140,8 @@ Creation, management and migration of KVM clouds on PVE hypervisors
     </td>
   </tr>
 </table>
+</details>
+
 
 - Interactive creation of KVM clouds with a choice of operating system, processor cores, amount of RAM, amount of disk space and network configuration
 - Single point management of clouds on all hypervisors (it does not matter if they are not in a cluster, in different DCs, and so on), commands are available: start, stop, pause, resume and delete
@@ -127,6 +154,8 @@ The video demonstrates interactive creation using the CLD web terminal, after cr
 ## Custom modules for any functionality
 Support of custom modules to expand the capabilities of the system
 
+<details>
+<summary>Custom modules for any functionality demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -134,6 +163,8 @@ Support of custom modules to expand the capabilities of the system
     </td>
   </tr>
 </table>
+</details>
+
 
 - Interactive creation of a module template, with a custom API method, a module editing web page and an example of a shell tool
 - Modules are located along the path /var/cld/modules/, a module may contain:
@@ -151,6 +182,8 @@ The video demonstrates how the administrator creates a new module, then makes a 
 ## Backup for any case
 Organizing backup system for configurations, files, and databases
 
+<details>
+<summary>Backup for any case demo screencast (click to expand)</summary>
 <table style="max-width: 700px; margin: 30px auto">
   <tr style="border:none">
     <td width="60%" style="border:none">
@@ -158,6 +191,8 @@ Organizing backup system for configurations, files, and databases
     </td>
   </tr>
 </table>
+</details>
+
 
 - Independent backup methods for any instance
 - Ability to set unique parameters, such as credentials for databases, paths to backup directories, backup execution time, the number of stored copies, a list of files, excluding extensions and backup server for each method
@@ -294,63 +329,95 @@ The basis of the project is a centralized system of SSH access based on PAM:
 - the console output of all connections to the system's servers is logged into the session log, it is possible to track what the user performed, as well as what he saw in the console at any time in any session, the ability to view current sessions is also available, this allows you to see on the screen the same thing that he sees user, for example it can be useful for L3/L2 engineers to help L2/L1 engineers with technical questions.
 
 # Interfaces:
-- **CLI**  
-  The main interface for working with the CLD system, many main scripts have support for working in an interactive mode designed to work through the CLI
-  - CLI launch is validated by user aliases in `~/.bashrc`
-  - Each alias contains sudo launch
-  - List of aliases and allowed CLD utilities in `/etc/sudoers` - generated by the `cld-initpasswd` utility according to the access matrix `/var/cld/creds/passwd`
-  - When a module is enabled for a user, all the utilities of the module are added to the aliases and `/etc/sudoers` of this user
+## CLI
+The main interface for working with the CLD system, many main scripts have support for working in an interactive mode designed to work through the CLI
+- CLI launch is validated by user aliases in `~/.bashrc`
+- Each alias contains sudo launch
+- List of aliases and allowed CLD utilities in `/etc/sudoers` - generated by the `cld-initpasswd` utility according to the access matrix `/var/cld/creds/passwd`
+- When a module is enabled for a user, all the utilities of the module are added to the aliases and `/etc/sudoers` of this user
 
-- **API**  
-  Interface for accessing non-interactive tools via Web API:
-  - The interface code is written in `Python`, using the `Flask` framework
-  - Request example: `https://cld.example.com/api/${TOOL}?token=${USER_TOKEN}&args=${ARGUMENTS}`
-  - User tokens are stored in the file `/var/cld/creds/passwd` and are available to each user in the profile section of the web interface
-  - At the time of the request, the execution of the utility is initiated with the arguments provided in the request
-  - Output from the execution of the utility is performed in streaming mode as it is - you can watch the progress in real time
-  - Custom endpoint and API functions available
-  - When starting the API interface (`systemd` service `cld-api`), the following is executed:
-    - Search for all available utilities and generate code for each utility with the appropriate endpoint (truncated by "cld-" in the name)
-    - Search for api.py files in the root of each module, this code is executed as is, as part of the entire interface
-  - An example of using custom endpoints and functions can be viewed in the access module - file `/var/cld/modules/access/api.py`
-  - Location `/api/`:
-  - Available only at addresses allowed through the access module in the system
-    - Endpoint autogeneration for utilities occurs for this location
-    - The file with allowed ip addresses for `nginx` is generated in the file `/etc/nginx/accesslist`
-  - Location `/api/all/`:
-    - Available for all types of addresses, except those in the prohibited list:
-    - Can only be used for custom endpoints
-      - An example of use is presented in the above api.py access module file
-    - The number of requests for location `/api/all/` has a limit of `60 requests per minute`
+## API 
+Interface for accessing non-interactive tools via Web API:
+- The interface code is written in `Python`, using the `Flask` framework
+- Request example: `https://cld.example.com/api/${TOOL}?token=${USER_TOKEN}&args=${ARGUMENTS}`
+- User tokens are stored in the file `/var/cld/creds/passwd` and are available to each user in the profile section of the web interface
+- At the time of the request, the execution of the utility is initiated with the arguments provided in the request
+- Output from the execution of the utility is performed in streaming mode as it is - you can watch the progress in real time
+- Custom endpoint and API functions available
+- When starting the API interface (`systemd` service `cld-api`), the following is executed:
+  - Search for all available utilities and generate code for each utility with the appropriate endpoint (truncated by "cld-" in the name)
+  - Search for api.py files in the root of each module, this code is executed as is, as part of the entire interface
+- An example of using custom endpoints and functions can be viewed in the access module - file `/var/cld/modules/access/api.py`
+- Location `/api/`:
+- Available only at addresses allowed through the access module in the system
+  - Endpoint autogeneration for utilities occurs for this location
+  - The file with allowed ip addresses for `nginx` is generated in the file `/etc/nginx/accesslist`
+- Location `/api/all/`:
+  - Available for all types of addresses, except those in the prohibited list:
+  - Can only be used for custom endpoints
+    - An example of use is presented in the above api.py access module file
+  - The number of requests for location `/api/all/` has a limit of `60 requests per minute`
 
-- **Bot**  
-  Telegram/Discord/MatterMost/Slack chat bot interface for executing utilities in non-interactive mode:
-  - Interface code for each chat bot interface in `Python`.
-  - When sending a command to the chat/bot, it is directly executed with the passed arguments
-  - Example of command execution: `/command arguments` (first symbol can be different at MatterMost and Slack)
-  - Access at the application level is validated based on the messendger id of users specified in the file `/var/cld/creds/passwd`
-  - Output from the utility execution is made in real time by updating the bot's response message
-  - When starting the BOT interface (`systemd` service `cld-bot`), the following is executed:
-     - Search for all available utilities and generate code for each utility with the corresponding command (by analogy with the API, "cld-" in the name is truncated)
-    - Search for bot.py files in the root of each module, this code is executed as is, as part of the whole interface
-  - Custom commands and functions of the Bot interface are available
-  - An example of using custom commands and functions can be viewed in the access module - file `/var/cld/modules/access/bot.py`
-  - To share individual modules/utilities for a whole chat, you need to create a separate user in the CLD and assign it the chat id of this group
+## Bot
+Telegram/Discord/MatterMost/Slack chat bot interface for executing utilities in non-interactive mode:
+- Interface code for each chat bot interface in `Python`.
+- When sending a command to the chat/bot, it is directly executed with the passed arguments
+- Example of command execution: `/command arguments` (first symbol can be different at MatterMost and Slack)
+- Access at the application level is validated based on the messendger id of users specified in the file `/var/cld/creds/passwd`
+- Output from the utility execution is made in real time by updating the bot's response message
+- When starting the BOT interface (`systemd` service `cld-bot`), the following is executed:
+   - Search for all available utilities and generate code for each utility with the corresponding command (by analogy with the API, "cld-" in the name is truncated)
+  - Search for bot.py files in the root of each module, this code is executed as is, as part of the whole interface
+- Custom commands and functions of the Bot interface are available
+- An example of using custom commands and functions can be viewed in the access module - file `/var/cld/modules/access/bot.py`
+- To share individual modules/utilities for a whole chat, you need to create a separate user in the CLD and assign it the chat id of this group
 
-- **Web**  
-  Auxiliary interface for working with the system
-  - The interface code is written in `Python` using the `Flask` framework as well as the `SocketIO` module
-  - Provides many system management functions
-  - Has access to all CLI elements including interactively
-    - Web terminal in the browser is implemented using `XtermJS` and `SocketIO`
-  - Allows you to work with the system via web terminal without using SSH client at all
-  - When starting the WEB interface (`systemd` service `cld-web`), the following is executed:
-    - Search for all available utilities and generate code for each utility with the corresponding endpoint
-    - Search for web.py files in the root of each module, this code is executed as is, as part of the whole interface
-      - When web.py is found at the root of a module, a symlink is created to the `/var/cld/web/modules/${MODULE}/web` directory along the path `/var/cld/web/modules/${MODULE}` to access the static files of the module outside the Flask directory of the application
-  - Each displayed block of the module on the main page of the interface is generated when web.py is detected and leads to the index endpoint specified by web.py in the module code
-    - The name and description of modules are read from the properties of the webmodule object specified in the web.py file of each module, you can see as an example in the documentation module - file `/var/cld/modules/doc/web.py`
-    - The module logo is displayed if found at `/var/cld/web/modules/${MODULE}/content/logo.svg`, otherwise a standard image is displayed
+## Web
+Auxiliary interface for working with the system
+- The interface code is written in `Python` using the `Flask` framework as well as the `SocketIO` module
+- Provides many system management functions
+- Has access to all CLI elements including interactively
+  - Web terminal in the browser is implemented using `XtermJS` and `SocketIO`
+- Allows you to work with the system via web terminal without using SSH client at all
+- When starting the WEB interface (`systemd` service `cld-web`), the following is executed:
+  - Search for all available utilities and generate code for each utility with the corresponding endpoint
+  - Search for web.py files in the root of each module, this code is executed as is, as part of the whole interface
+    - When web.py is found at the root of a module, a symlink is created to the `/var/cld/web/modules/${MODULE}/web` directory along the path `/var/cld/web/modules/${MODULE}` to access the static files of the module outside the Flask directory of the application
+- Each displayed block of the module on the main page of the interface is generated when web.py is detected and leads to the index endpoint specified by web.py in the module code
+  - The name and description of modules are read from the properties of the webmodule object specified in the web.py file of each module, you can see as an example in the documentation module - file `/var/cld/modules/doc/web.py`
+  - The module logo is displayed if found at `/var/cld/web/modules/${MODULE}/content/logo.svg`, otherwise a standard image is displayed
+- As the text editor in the web interface uses the [Ace Cloud9 Editor](https://github.com/ajaxorg/ace), it comes with the following license:
+  <details>
+  <summary>Ace Cloud9 Editor license</summary>
+
+  ```
+  Copyright (c) 2010, Ajax.org B.V.
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+      * Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+      * Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+      * Neither the name of Ajax.org B.V. nor the
+        names of its contributors may be used to endorse or promote products
+        derived from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ```
+
+  </details>
 
 ## Access validation factors for each interface:
 - **CLI** - `PAM authorization`, `access module`, `access matrix` and `sudoers`
@@ -389,9 +456,12 @@ CLD framework script is:
 ### Recommended system requirements:
 - Virtualization: `KVM`/`Bare metal`
 - Supported OS: `Centos` 7/8, `Debian` 9/10
-- CPU: `1` cores
-- RAM: `2` Gb
-- Disk space: `20` Gb
+- CPU: `1` cores 
+  - `1` more core for every 500 next instances
+- RAM: `2` Gb 
+  - `1`Gb more RAM for every 500 next instances
+- Disk space: `20` Gb 
+  - `10`Gb more disk space for every 500 next instances
 - Direct public ip address
 
 ### Data required for interfaces and modules
@@ -411,7 +481,7 @@ Before the installation process, you should prepare the following information:
 	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `url for Zabbix API`)
 
 ### Quick start
-ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8, because work in this distribution is very well tested in production
+ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8 Stream, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ```
 bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdevops/cld/master/setup/install_cld.sh")

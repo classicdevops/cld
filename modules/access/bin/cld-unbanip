@@ -12,17 +12,33 @@ cld-unbanip 1.2.3.4
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-mkdir -p /var/cld/modules/access/data/ &>/dev/null
-echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || echo "ip address is incorrect please fix it and try again"
-echo ${1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$" || exit 1
-grep -q "${1}" /var/cld/modules/access/data/banips && (sed -i '/'${1}'/d' /var/cld/modules/access/data/banips && echo "ip ${F}${1}${F} successfully deleted from ban list") || echo "ip ${F}${1}${F} not in ban list"
 
-UNBAN_IP=$1
+for i in ${CLDOPTS}
+do
+  case $i in
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
+done
+
+mkdir -p /var/cld/modules/access/data/ &>/dev/null
+if ! echo ${ARG1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$"; then
+    echo "ip address is incorrect please fix it and try again"
+    exit 1
+else
+    if grep -q "${ARG1}" /var/cld/modules/access/data/banips; then
+        sed -i '/'${ARG1}'/d' /var/cld/modules/access/data/banips && echo "ip ${ARG1} successfully deleted from ban list"
+    else
+        echo "ip ${ARG1} not in ban list"
+    fi
+fi
+
+UNBAN_IP=${ARG1}
 egrep -q "^([a-f0-9:]+:+)+[a-f0-9]+$" <<< ${UNBAN_IP} && UNBAN_IP=$(sipcalc ${UNBAN_IP} | grep "^Expanded" | cut -d '-' -f 2 | tr -d ' ')
 source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
 RULE_ID=$(cf-firewall-rules-ip-ban-get | jq ".result[] | select(.mode == \"block\" and .configuration.value == \"${UNBAN_IP}\")" | jq -r .id)
-cf-firewall-rules-ip-ban-del ${RULE_ID} | grep -q '"success": true' && echo "ip ${1} successfully unbanned by CloudFlare for account ${CFACC}"
+cf-firewall-rules-ip-ban-del ${RULE_ID} | grep -q '"success": true' && echo "ip ${ARG1} successfully unbanned by CloudFlare for account ${CFACC}"
 done
