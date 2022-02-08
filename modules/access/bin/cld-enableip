@@ -25,6 +25,8 @@ do
   esac
 done
 
+[ "$ARG2" ] || { echo comment is not defined - exit ; exit 1 ; }
+
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 if ! echo ${ARG1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$"; then
     echo "ip address is incorrect please fix it and try again"
