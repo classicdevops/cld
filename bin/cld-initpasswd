@@ -120,7 +120,7 @@ EOUTILS
         echo "alias ${CLD_UTIL_NAME}='sudo FROM=CLI ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
     done
     sed -i '/^'${USER_NAME}' /d' /etc/sudoers
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
+    [ "${$CLD_UTILS}" ] && echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
 elif [ "$USER_MODULES" == "NONE" -o "$USER_UTILITES" == "NONE" ]
 then
     echo 0 > /var/cld/access/users/${USER_NAME}/role
