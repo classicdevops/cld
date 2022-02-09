@@ -160,8 +160,6 @@ EOPORTS
 )
 fi
 
-echo ${HOSTNAME}
-
 iptables-save | grep -q cldaccess || iptables -A INPUT -m comment --comment cldaccess
 ip6tables-save | grep -q cldaccessv6 || ip6tables -A INPUT -m comment --comment cldaccessv6
 
@@ -266,6 +264,7 @@ fi
 
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
+echo ${HOSTNAME} - done
 ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/iptables_access) accesslist
 EOACCESSDEPLOY
 )
