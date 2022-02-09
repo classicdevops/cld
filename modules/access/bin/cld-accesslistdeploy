@@ -264,7 +264,6 @@ fi
 
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
-echo ${HOSTNAME} - done
 ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/iptables_access) accesslist
 EOACCESSDEPLOY
 )
@@ -362,7 +361,7 @@ INSTANCE_GROUP_FUNCS
 $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
-$CLD_DEPLOY_NOTTY << EOSSH
+$CLD_DEPLOY_NOTTY << EOSSH && echo "${INSTANCE} - done" || echo "${INSTANCE} - FAIL"
 $($cld_host_list)
 $([ -d "/var/cld/modules/access/data/instances/$INSTANCE" ] && instancelistgen $INSTANCE || echo "$CLD_ACCESS_LIST_DEFAULT")
 $CLD_ACCESS_DEPLOY
