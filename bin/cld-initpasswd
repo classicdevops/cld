@@ -28,6 +28,7 @@ rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 1 | rev | head -c -1 | tr '\n' ',' | cat
 rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev | head -c -1 | tr '\n' ',' | cat - <(echo) > /var/cld/creds/modules_list
 
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
+egrep -q 'Defaults\ +env_keep\ +\+=\ +\"BOTSOURCE\"' /etc/sudoers || echo 'Defaults env_keep += "BOTSOURCE"' >> /etc/sudoers
 [ "$CLDUSER" ] && USER_SETS=$(grep -v "^#" /var/cld/creds/passwd | grep "^${CLDUSER}:") || USER_SETS=$(grep -v "^#" /var/cld/creds/passwd)
 for USER_SET in ${USER_SETS}
 do
@@ -120,7 +121,7 @@ EOUTILS
         echo "alias ${CLD_UTIL_NAME}='sudo FROM=CLI ${CLD_UTIL}'" >> /home/${USER_NAME}/.bashrc
     done
     sed -i '/^'${USER_NAME}' /d' /etc/sudoers
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
+    [ "${CLD_UTILS}" ] && echo "${USER_NAME} ALL=(ALL) NOPASSWD:NOSETENV: $(for i in $CLD_UTILS ; do echo -n "$i, " ; done | sed -r 's/\,\ $//g')" >> /etc/sudoers
 elif [ "$USER_MODULES" == "NONE" -o "$USER_UTILITES" == "NONE" ]
 then
     echo 0 > /var/cld/access/users/${USER_NAME}/role

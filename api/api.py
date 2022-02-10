@@ -12,8 +12,16 @@ import datetime
 from urllib.request import urlopen
 import os
 
+def customattr(s,n,v):
+  class a(type(s)):
+    def ttr(self,n,v):
+      setattr(self,n,v)
+      return self
+  return a(s).ttr(n,v)
+
 def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
+  initproc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
+  return customattr(initproc.communicate()[0].decode('utf8').strip(), 'status', initproc.returncode)
 
 def vld(cld_variable):
   return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
@@ -124,9 +132,19 @@ def cmd_${CLD_UTIL//[.-]/_}():
     try: 
       if str(int(request.args['bg'])) == '1': bg = ' &>/dev/null &'
     except: pass
+    mode = 'stream'
+    try: mode = str(re.match('^[a-z]+$', request.args['mode']).string)
+    except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
-    #cmdoutput = bash('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg)
-    return Response(bashstream('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg, output), status=200, mimetype='text/'+output)
+    if mode == "track":
+      cmdoutput = bash('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg)
+      if cmdoutput.status == 0:
+        respstatus = 200
+      else:
+        respstatus = 500
+      return Response(cmdoutput, status=respstatus, mimetype='text/plain')
+    else:
+      return Response(bashstream('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg, output), status=200, mimetype='text/'+output)
 
 EOL
 done

@@ -160,8 +160,6 @@ EOPORTS
 )
 fi
 
-echo ${HOSTNAME}
-
 iptables-save | grep -q cldaccess || iptables -A INPUT -m comment --comment cldaccess
 ip6tables-save | grep -q cldaccessv6 || ip6tables -A INPUT -m comment --comment cldaccessv6
 
@@ -354,7 +352,7 @@ else
 CLD_ACCESS_LIST_DEFAULT="$CLD_ACCESS_LIST"
 fi
 
-for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
+for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_ACCESS_GROUP}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG" | sort -u)
 do
 VM="${INSTANCE}"
 if [ "$INSTANCE" ]
@@ -363,7 +361,7 @@ INSTANCE_GROUP_FUNCS
 $CLD_VARS
 export TIMEOUT_NOTTY=30
 (
-$CLD_DEPLOY_NOTTY << EOSSH
+$CLD_DEPLOY_NOTTY << EOSSH && echo "${INSTANCE} - done" || echo "${INSTANCE} - FAIL"
 $($cld_host_list)
 $([ -d "/var/cld/modules/access/data/instances/$INSTANCE" ] && instancelistgen $INSTANCE || echo "$CLD_ACCESS_LIST_DEFAULT")
 $CLD_ACCESS_DEPLOY

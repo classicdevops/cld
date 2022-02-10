@@ -106,18 +106,22 @@ def cmd_getid(message):
     return bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
 def allowmodule(cldmodule):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+vld(cldmodule)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
+  return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$4}' | grep "'''+vld(cldmodule)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
 
 def allowutility(cldutility):
-  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
+  return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$5}' | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
 
 def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
+  if user_id_str == chat_id_str:
+    botsource = "direct"
+  else:
+    botsource = "group"
   if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
-    return ["granted", user_id_str]
+    return ["granted", user_id_str, botsource]
   elif chat_id_str in allowmodule(cldmodule) or chat_id_str in allowutility(cldutility):
-    return ["granted", chat_id_str]
+    return ["granted", chat_id_str, botsource]
   else:
     bot.send_message(chat_id_str, str("user id is "+user_id_str+", access denied for "+user_name))
     return ["denied", "DENIED"]
@@ -146,8 +150,8 @@ def cmd_${CLD_UTIL//[.-]/_}(message):
         cmd_args=cmd_args+" "+re.match('^[A-z0-9.,@*=/:_-]+$', arg).string
     except:
       pass
-    print('sudo -u '+user+' sudo FROM=BOT ${CLD_FILE} '+cmd_args, flush=True)
-    return bot_bash_stream("sudo -u "+user+" sudo FROM=BOT "+vld('${CLD_FILE}')+" "+cmd_args, message)
+    print('sudo -u '+user+' sudo FROM=BOT BOTSOURCE='+checkresult[2]+' ${CLD_FILE} '+cmd_args, flush=True)
+    return bot_bash_stream("sudo -u "+user+" sudo FROM=BOT BOTSOURCE="+checkresult[2]+" "+vld('${CLD_FILE}')+" "+cmd_args, message)
 
 EOL
 done

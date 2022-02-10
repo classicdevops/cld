@@ -25,12 +25,14 @@ do
   esac
 done
 
+[ "$ARG2" ] || { echo comment is not defined - exit ; exit 1 ; }
+
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 if ! echo ${ARG1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$"; then
     echo "ip address is incorrect please fix it and try again"
     exit 1
 else
-    if grep -q "${ARG1}" /var/cld/modules/access/data/enabledips; then
+    if grep -q "${ARG1}_${SUDO_USER}" /var/cld/modules/access/data/enabledips; then
         echo "ip ${ARG1} already enabled in access list"
     else
         echo "${ARG1}_${SUDO_USER}@${ARG2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/enabledips && echo "ip ${ARG1} successfully added to access list with comment ${ARG2}"
