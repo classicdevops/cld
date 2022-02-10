@@ -1,5 +1,5 @@
 #!/bin/bash
-[ "$SUDO_USER" ] && export SUDO_USER=${SUDO_USER} || { export SUDO_USER=admin ; export FROM=CLI ; }
+[ "$SUDO_USER" ] && export SUDO_USER=${SUDO_USER} || { export SUDO_USER=admin ; [ "${FROM}" ] || export FROM=CLI ; }
 
 CLDOPTS="$(expr "$(tr '\n' ' ' <<< "${@}")" : '\([A-Za-z0-9/ :.,@_=+^*-]\+\)' 2>/dev/null | tr ' ' '\n')"
 
