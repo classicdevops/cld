@@ -135,7 +135,6 @@ User id:     {message.author.id}
 Channel:     {message.channel}
 Channel id:  {message.channel.id}
 Server:      {message.guild}
-Server id:   {message.guild.id}
 ```''')
 
 bot.run(discord_bot_token)
