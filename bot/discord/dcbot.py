@@ -68,13 +68,13 @@ def allowmodule(cldmodule):
 def allowutility(cldutility):
   return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
 
-def checkperms(cldmodule, cldutility, user_id, chat_id):
+def checkperms(cldmodule, cldutility, user_id, chat_id, server_id):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
-  if user_id_str == chat_id_str:
-    botsource = "direct"
-  else:
+  if server_id:
     botsource = "group"
+  else:
+    botsource = "direct"
   if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
     return ["granted", user_id_str, botsource]
   elif chat_id_str in allowmodule(cldmodule) or chat_id_str in allowutility(cldutility):
@@ -99,11 +99,13 @@ CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
 cat << EOL
 @bot.command(name='${CLD_UTIL/cld-/}')
 async def cmd_${CLD_UTIL//[.-]/_}(message, *args):
+  try: server_id = message.guild.id
+  except: server_id = None
   cmd_args=''
   try: 
     for arg in args: cmd_args=cmd_args+" "+re.match('^[A-z0-9.,@=/:_-]+$', arg).string
   except: pass
-  checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.author.id, message.channel.id)
+  checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.author.id, message.channel.id, server_id)
   if checkresult[0] != "granted": return await message.reply(str("user id is "+str(message.author.id)+", access denied for "+str(message.author).replace('#','-')))
   user = bash('grep "[:,]'+checkresult[1]+'[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
   await bot_bash_stream("sudo -u "+user+" sudo FROM=BOT BOTSOURCE="+checkresult[2]+" "+vld('${CLD_FILE}')+" "+cmd_args, message)
@@ -129,12 +131,15 @@ async def cmd_passwd(message, *args):
 
 @bot.command(name='getid', help='Current identifier information')
 async def cmd_getid(message, *args):
+    try: server_id = message.guild.id
+    except: server_id = None
     await message.reply(f'''```
 User:        {message.author}
 User id:     {message.author.id}
 Channel:     {message.channel}
 Channel id:  {message.channel.id}
 Server:      {message.guild}
+Server id:   {server_id}
 ```''')
 
 bot.run(discord_bot_token)
