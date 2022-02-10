@@ -71,10 +71,14 @@ def allowutility(cldutility):
 def checkperms(cldmodule, cldutility, user_id, chat_id):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
+  if user_id_str == chat_id_str:
+    botsource = "direct"
+  else:
+    botsource = "group"
   if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
-    return ["granted", user_id_str]
+    return ["granted", user_id_str, botsource]
   elif chat_id_str in allowmodule(cldmodule) or chat_id_str in allowutility(cldutility):
-    return ["granted", chat_id_str]
+    return ["granted", chat_id_str, botsource]
   else:
     return ["denied", "DENIED"]
 
@@ -99,10 +103,10 @@ async def cmd_${CLD_UTIL//[.-]/_}(message, *args):
   try: 
     for arg in args: cmd_args=cmd_args+" "+re.match('^[A-z0-9.,@=/:_-]+$', arg).string
   except: pass
-  checkresult = checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.author.id, message.channel.id)
+  checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.author.id, message.channel.id)
   if checkresult[0] != "granted": return await message.reply(str("user id is "+str(message.author.id)+", access denied for "+str(message.author).replace('#','-')))
   user = bash('grep "[:,]'+checkresult[1]+'[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1')
-  await bot_bash_stream("sudo -u "+user+" sudo FROM=BOT "+vld('${CLD_FILE}')+" "+cmd_args, message)
+  await bot_bash_stream("sudo -u "+user+" sudo FROM=BOT BOTSOURCE="+checkresult[2]+" "+vld('${CLD_FILE}')+" "+cmd_args, message)
 
 EOL
 done

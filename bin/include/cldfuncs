@@ -391,6 +391,29 @@ echo "${CLOUD::-1}" >> ${FILE}
 
 cldhelp()
 {
+local i ii
+for i in "$@"
+do
+  case $i in
+    -ra|-realapi|--realapi) REALAPI="1"                  ;;
+    *)                                                   ;;
+  esac
+done
+if [ "${REALAPI}" = "1" ]; then
+  if [ "${FROM}" = "CLI" -o "${FROM}" = "WEB" -o "${FROM}" = "API" ]; then
+    HELPAPITOKEN="$(sudo -u ${SUDO_USER} sudo /var/cld/bin/cld-getpasswd --user=${SUDO_USER} --api)"
+  elif [ "${FROM}" = "BOT" ]; then
+    if [ "${BOTSOURCE}" = "direct" ]; then
+      HELPAPITOKEN="$(sudo -u ${SUDO_USER} sudo /var/cld/bin/cld-getpasswd --user=${SUDO_USER} --api)"
+    else
+      HELPAPITOKEN="y0urUserT0keN"
+    fi
+  else
+    HELPAPITOKEN="y0urUserT0keN"
+  fi
+else
+  HELPAPITOKEN="y0urUserT0keN"
+fi
 [ "$HELPYAML" = "1" ] && export YAMLCORRECTOR=' |'
 (
 source <(grep CLD_DOMAIN /var/cld/creds/creds)
@@ -424,8 +447,8 @@ then
 [ "$ONLYPATTERN" ] || awk '{print "     "$0}' <<< /${STRING//cld-/}
 elif [ "${METHOD}" == "API" ]
 then
-[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "API" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | sed 's# #%20#g' | awk '{print "     curl -s "$0}'
-[ "$ONLYPATTERN" ] || awk '{print "     curl -s "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=y0urUserT0keN&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2- | sed 's# #%20#g')"\" | sed 's#&args="$#"#g'
+[ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "API" && cut -d '#' -f 1 <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=${HELPAPITOKEN}&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)"\" | sed 's# #%20#g' | awk '{print "     curl -s "$0}'
+[ "$ONLYPATTERN" ] || awk '{print "     curl -s "$0}' <<< \""https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/api/$(awk -F " " '{print $1}' <<< ${STRING//cld-/})?token=${HELPAPITOKEN}&args=$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2- | sed 's# #%20#g')"\" | sed 's#&args="$#"#g'
 elif [ "${METHOD}" == "WEB" ]
 then
 [ "$ONLYPATTERN" ] && grep -q "$ONLYPATTERN" <<< "WEB" && cut -d '#' -f 1 <<< "https://$([ "$CLD_DOMAIN" ] && echo $CLD_DOMAIN || echo cld.example.com)/tool/$(awk -F " " '{print $1}' <<< ${STRING})/$(awk -F " " '{$1=""; print $0}' <<< ${STRING} | cut -b 2-)" | awk '{print "     "$0}'
@@ -591,9 +614,10 @@ exit 0
 for i in ${CLDOPTS}
 do
 case $i in
--h|-help|--help) cldhelp        ;;
--v|-version|--version) version  ;;
--kill|--kill) killcldtool       ;;
+-h|-help|--help) cldhelp                  ;;
+-ha|-helpapi|--helpapi) cldhelp --realapi ;;
+-v|-version|--version) version            ;;
+-kill|--kill) killcldtool                 ;;
 *) ;;
 esac
 done

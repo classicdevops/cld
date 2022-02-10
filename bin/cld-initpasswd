@@ -28,6 +28,7 @@ rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 1 | rev | head -c -1 | tr '\n' ',' | cat
 rev <<< "$CLD_TOOLS_LIST" | cut -d / -f 3- | rev | sort -u | rev | cut -d / -f 1 | rev | head -c -1 | tr '\n' ',' | cat - <(echo) > /var/cld/creds/modules_list
 
 egrep -q 'Defaults\ +env_keep\ +\+=\ +\"FROM\"' /etc/sudoers || echo 'Defaults env_keep += "FROM"' >> /etc/sudoers
+egrep -q 'Defaults\ +env_keep\ +\+=\ +\"BOTSOURCE\"' /etc/sudoers || echo 'Defaults env_keep += "BOTSOURCE"' >> /etc/sudoers
 [ "$CLDUSER" ] && USER_SETS=$(grep -v "^#" /var/cld/creds/passwd | grep "^${CLDUSER}:") || USER_SETS=$(grep -v "^#" /var/cld/creds/passwd)
 for USER_SET in ${USER_SETS}
 do
