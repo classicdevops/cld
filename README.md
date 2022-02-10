@@ -342,7 +342,16 @@ Interface for accessing non-interactive tools via Web API:
 - Request example: `https://cld.example.com/api/${TOOL}?token=${USER_TOKEN}&args=${ARGUMENTS}`
 - User tokens are stored in the file `/var/cld/creds/passwd` and are available to each user in the profile section of the web interface
 - At the time of the request, the execution of the utility is initiated with the arguments provided in the request
-- Output from the execution of the utility is performed in streaming mode as it is - you can watch the progress in real time
+- Required get arguments:
+  - `token` - API token key of CLD user
+- Available get arguments:
+  - `args` - command line arguments will pass to the CLD tool as is via symbols regex filter
+  - `output` - "plain" or "html" - if "html" value will convert color console output to color html - default is plain
+  - `mode` - example `?token=${USER_TOKEN}&args=${ARGUMENTS}&mode=track`
+    - "stream" - output will streaming line by line in realtime so you can watch progress but response code will always 200 - default value
+    - "track" - output will available only after CLD tool work done, response code depend on CLD tool return code:
+      - return code "0" - response code will 200
+      - otherwise response code will 500 - can be useful for CI/CD systems to track status of API request
 - Custom endpoint and API functions available
 - When starting the API interface (`systemd` service `cld-api`), the following is executed:
   - Search for all available utilities and generate code for each utility with the appropriate endpoint (truncated by "cld-" in the name)
