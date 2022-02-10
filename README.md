@@ -57,6 +57,10 @@ Access to all servers is protected by trusted IP address lists
 - users can generate their personal VPN key to access the CLD server and instances
 - trusted lists are deployed by cron, as well as by watcher after changes in the lists on the CLD server
 - the list of protected ports is configurable, and separate port lists can be configured for any group or instances
+- network security policy across all instances works in 3 mods: general, private and paranoid
+  - general - all CLD users trusted IP addresses have network access to all protected ports at instances - default value
+  - private - specific network permission policy for each instance in accordance with the access map
+  - paranoid - as "private", but all external connections to the CLD server are closed, even for `/api/all`, updating the trusted IP address is possible only through a VPN connection, an established SSH connection through the CLI and through a messenger with IP- address as an argument
 
 This demonstration shows a user trying to connect to the server, the connection is refused until the user adds his ip address through the bot in the messenger using the link in the api containing the generated one-time token
 
