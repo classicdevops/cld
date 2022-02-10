@@ -63,18 +63,18 @@ async def bot_bash_stream(cmd, chat):
   return print('Command '+cmd+' completed', flush=True)
 
 def allowmodule(cldmodule):
-  return set(bash('''awk -F ":" '{print $2":"$4}' /var/cld/creds/passwd | grep "'''+vld(cldmodule)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
+  return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$4}' | grep "'''+vld(cldmodule)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
 
 def allowutility(cldutility):
-  return set(bash('''awk -F ":" '{print $2":"$5}' /var/cld/creds/passwd | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
+  return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$5}' | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
 
 def checkperms(cldmodule, cldutility, user_id, chat_id, server_id):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
-  if server_id:
-    botsource = "group"
-  else:
+  if server_id == None:
     botsource = "direct"
+  else:
+    botsource = "group"
   if user_id_str in allowmodule(cldmodule) or user_id_str in allowutility(cldutility):
     return ["granted", user_id_str, botsource]
   elif chat_id_str in allowmodule(cldmodule) or chat_id_str in allowutility(cldutility):
