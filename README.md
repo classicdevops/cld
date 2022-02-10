@@ -349,8 +349,8 @@ Interface for accessing non-interactive tools via Web API:
   - `output` - "plain" or "html" - if "html" value will convert color console output to color html - default is plain
   - `mode` - example `?token=${USER_TOKEN}&args=${ARGUMENTS}&mode=track`
     - "stream" - output will streaming line by line in realtime so you can watch progress but response code will always 200 - default value
-    - "track" - output will available only after CLD tool work done, response code depend on CLD tool return code:
-      - return code "0" - response code will 200
+    - "track" - output as plain/text will available only after CLD tool work done, response code depend on CLD tool return code:
+      - if CLD tool return code is 0 (no errors) - API response code will 200
       - otherwise response code will 500 - can be useful for CI/CD systems to track status of API request
 - Custom endpoint and API functions available
 - When starting the API interface (`systemd` service `cld-api`), the following is executed:
