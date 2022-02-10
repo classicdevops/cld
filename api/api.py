@@ -20,6 +20,9 @@ def customattr(s,n,v):
   return a(s).ttr(n,v)
 
 def bash(cmd):
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
+
+def bashapi(cmd):
   initproc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   return customattr(initproc.communicate()[0].decode('utf8').strip(), 'status', initproc.returncode)
 
@@ -137,7 +140,7 @@ def cmd_${CLD_UTIL//[.-]/_}():
     except: pass
     print('sudo -u '+user+' sudo FROM=API ${CLD_FILE} '+cmd_args+bg, flush=True)
     if mode == "track":
-      cmdoutput = bash('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg)
+      cmdoutput = bashapi('sudo -u '+user+' sudo FROM=API '+vld("${CLD_FILE}")+' '+cmd_args+tgout+bg)
       if cmdoutput.status == 0:
         respstatus = 200
       else:
