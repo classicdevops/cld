@@ -68,7 +68,7 @@ def allowmodule(cldmodule):
 def allowutility(cldutility):
   return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$5}' | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
 
-def checkperms(cldmodule, cldutility, user_id, chat_id, server_id: False):
+def checkperms(cldmodule, cldutility, user_id, chat_id, server_id = False):
   user_id_str=str(user_id)
   chat_id_str=str(chat_id)
   if server_id == None:
