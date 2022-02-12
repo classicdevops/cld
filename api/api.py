@@ -12,6 +12,9 @@ import datetime
 from urllib.request import urlopen
 import os
 
+def bash(cmd):
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
+
 def customattr(s,n,v):
   class a(type(s)):
     def ttr(self,n,v):
@@ -19,15 +22,12 @@ def customattr(s,n,v):
       return self
   return a(s).ttr(n,v)
 
-def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
-
 def bashapi(cmd):
   initproc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   return customattr(initproc.communicate()[0].decode('utf8').strip(), 'status', initproc.returncode)
 
 def vld(cld_variable):
-  return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
+  return re.match('(^[A-z0-9.,@:=/_ -]+?$|^$)', str(cld_variable)).string
 
 ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1')
 if ansifiltercheck == "0":
