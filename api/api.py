@@ -102,7 +102,22 @@ def userbytoken(token):
 
 cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
-app = Flask(__name__)
+template_dir = os.path.abspath('/var/cld/api')
+
+#recreate symlinks to templates in external directories for this dashboard.py
+bash('''
+rm -f /var/cld/api/modules/*
+mkdir /var/cld/api/modules &>/dev/null
+rm -f /var/cld/api/html/include/cld_tier.html
+ln -s /var/cld/creds/cld_tier /var/cld/api/html/include/cld_tier.html
+for WEB_TEMPLATE_PATH in $(ls -d /var/cld/modules/*/api 2>/dev/null)
+do
+WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
+ln -s ${WEB_TEMPLATE_PATH} /var/cld/api/modules/${WEB_MODULE}
+done
+''')
+
+app = Flask(__name__, template_folder=template_dir)
 
 cldm={}
 for apifile in bash("ls /var/cld/modules/*/api.py").split('\n'):

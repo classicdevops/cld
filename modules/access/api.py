@@ -18,7 +18,7 @@ def myvpninit():
       token = re.fullmatch(r'[A-Za-z0-9]+', request.args['token']).string
       text = 'CLD VPN key generating...'
       link = f'/api/myvpnget?token={token}'
-      render_template('templates/preloader.html', text=text, link=link)
+      render_template('modules/access/preloader.html', text=text, link=link)
     else:
       return Response('403', status=403, mimetype='text/plain')
   else:
