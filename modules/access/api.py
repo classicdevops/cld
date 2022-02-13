@@ -20,7 +20,7 @@ def myvpninit():
       successtext = 'CLD VPN key generated successfully'
       failtext = 'Link expired'
       link = f'/api/myvpnget?token={token}'
-      return render_template('modules/access/preloader.html', text=text, link=link)
+      return render_template('modules/access/preloader.html', text=text, successtext=successtext, failtext=failtext, link=link)
     else:
       return Response('403', status=403, mimetype='text/plain')
   else:
