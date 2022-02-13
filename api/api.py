@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
-from flask import abort, request
+from flask import abort, request, render_template
 import requests
 from flask import g
 from flask import Response
