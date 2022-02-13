@@ -17,6 +17,8 @@ def myvpninit():
     if re.findall(r'(AppleWebKit|Chrome|Safari|KHTML|Gecko)', request.headers.get('User-Agent')):
       token = re.fullmatch(r'[A-Za-z0-9]+', request.args['token']).string
       text = 'CLD VPN key generating...'
+      successtext = 'CLD VPN key generated successfully'
+      failtext = 'Link expired'
       link = f'/api/myvpnget?token={token}'
       return render_template('modules/access/preloader.html', text=text, link=link)
     else:

@@ -94,9 +94,13 @@ fetch('{{ link }}').then((res) => {
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);
+  let target = $('.loader');
+  target.html('{{ successtext }}');
+  target.css('color','green');
+  target.addClass('noafter').addClass('nobefore');
 }).catch(() => {
   let target = $('.loader');
-  target.html('Link expired');
+  target.html('{{ failtext }}');
   target.css('color','red');
   target.addClass('noafter').addClass('nobefore');
 });
