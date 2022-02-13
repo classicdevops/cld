@@ -9,6 +9,7 @@ HELP_ARGS=$(cat << 'EOL'
 $1                       Messenger user id
 $2                       Messenger user name
 --regen                  Regeneration OpenVPN key - delete existed
+--noinet                 Switch VPN to AUTH mode without push gateway and no passing traffic through CLD server
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
