@@ -359,7 +359,7 @@ export CLD_PATH="/var/cld/bin:$(echo -n "$(ls -d /var/cld/modules/*/bin)" | tr "
 PATH="$PATH:$CLD_PATH"
 EOBASHRC
 
-HOSTIP=$(wget -qO- ipinfo.io/ip)
+HOSTIP=$(wget -qO- ip.cldcloud.com)
 sed -i "s#your.host.or.ip#${HOSTIP}#g" /var/cld/creds/creds
 /var/cld/bin/init-main
 echo

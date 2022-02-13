@@ -84,7 +84,7 @@ if [ "$VPN_ID" = "" ] ; then exit 1 ; fi ; echo $VPN_ID
 if [ "$PORT" = "" ] ; then PORT=$(grep port /etc/openvpn/server*.conf | cut -d ' ' -f 2 | sort -n | tail -1) ; let "PORT++" ; fi ; echo $PORT
 if [ "$PORT" = "1" ] ; then PORT=1194 ; fi ; echo $PORT
 if [ "$NETWORK" = "" ] ; then NETWORK=$(grep server /etc/openvpn/server*.conf | cut -d ' ' -f 2 | grep 10 | cut -d '.' -f 3 | egrep -o "[0-9]+" | sort -n | tail -1) ; let "NETWORK++" ; fi ; echo $NETWORK
-if [ "$VPN_IP" = "" ] ; then VPN_IP=$(wget -qO- ipinfo.io/ip) ; fi ; echo $VPN_IP
+if [ "$VPN_IP" = "" ] ; then VPN_IP=$(wget -qO- ip.cldcloud.com) ; fi ; echo $VPN_IP
 
 export VPN_IP
 export VPN_ID
@@ -250,7 +250,7 @@ systemctl -f enable openvpn@server_${VPN_ID}.service
 systemctl start openvpn@server_${VPN_ID}.service
 systemctl restart openvpn@server_${VPN_ID}.service
 
-export SERVERIP=$(wget -qO- ipinfo.io/ip)
+export SERVERIP=$(wget -qO- ip.cldcloud.com)
 mkdir /var/cld/tmp/ovpn/user-configs/ -p
 cd /var/cld/tmp/ovpn/user-configs/
 mkdir /var/cld/tmp/ovpn/user-configs/files/

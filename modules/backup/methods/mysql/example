@@ -1,7 +1,7 @@
 MYSQL_HOST="1.2.3.4" # if MySQL behind firewall you can use 127.0.0.1 or localhost(socket) then backup will perform via SSH by mysqldump
 MYSQL_USER="backup" # default is "root"
 MYSQL_PASSWORD="HetgPDbDyBuDJBdaHXzbe" # can be empty for localhost backup
-MYSQL_SOURCE="$(wget -qO- ipinfo.io/ip)" # can be commented for localhost backup
+MYSQL_SOURCE="$(wget -qO- ip.cldcloud.com)" # can be commented for localhost backup
 #MYSQL_DATABASES="database1,database2" # default is empty "" for all databases
 #KEEPLAST='7' # How many copies will remain after rotation - default - '7'
 #CRON="0 0 * * *" # Default - "0 0 * * *"
