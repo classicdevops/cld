@@ -14,7 +14,8 @@ EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-myvpn #BOT
-cld-myvpn --regen #BOT
+cld-myvpn -regen #BOT
+cld-myvpn -regen -noinet #BOT
 EOL
 )
 HELP_ONLY="BOT"
