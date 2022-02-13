@@ -50,6 +50,6 @@ fi
 
 sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myip_tokens /var/cld/modules/access/data/myip_token_chats &>/dev/null
 
-[ "${TG_GROUP}" != "" -a "${MESSAGE_ID}" != "" ] && curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`ip added - token cleared\`" &>/dev/null
-
 updateaccesslists
+
+[ "${TG_GROUP}" != "" -a "${MESSAGE_ID}" != "" ] && curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`ip added - token cleared\`" &>/dev/null
