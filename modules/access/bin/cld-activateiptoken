@@ -14,6 +14,8 @@ EOL
 )
 HELP_ONLY="API"
 source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/include/accessfuncs
+
 [ "${FROM}" != "API" ] && cldhelp
 
 for i in ${CLDOPTS}
