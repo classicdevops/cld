@@ -102,11 +102,13 @@ export DHKS=4096
 
 checkvpnmode()
 {
-[ "${VPN_MODE}" != "AUTH" ] && cat << 'EOVPNMODE' || echo -n ''
+if [ "${VPN_MODE}" != "AUTH"  -a "${NETWORK_POLICY}" = "general" ]; then
+cat << 'EOVPNMODE' || echo -n ''
 push "redirect-gateway def1 bypass-dhcp"
 push "dhcp-option DNS 1.1.1.1"
-push "dhcp-option DNS 1.0.0.1"'
+push "dhcp-option DNS 1.0.0.1"
 EOVPNMODE
+fi
 }
 
 cat > /etc/openvpn/server_${VPN_ID}.conf << EOALL
@@ -217,15 +219,17 @@ cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys_${VPN_ID}/
 INET_DEVICE=$(ip route show | grep default | egrep -o "dev\ [A-Za-z0-9]+\ " | cut -d ' ' -f 2)
 
 export SERVERIP=$(wget -qO- ip.cldcloud.com)
+
+if [ "${VPN_MODE}" != "AUTH"  -a "${NETWORK_POLICY}" = "general" ]; then
 cat > /etc/openvpn/iptables_${VPN_ID}.rules << EOTABLES
 iptables -A FORWARD -s 10.8.${NETWORK}.0/24 -j ACCEPT -m comment --comment cldovpn
 iptables -t nat -A POSTROUTING -s 10.8.${NETWORK}.0/24 -j SNAT --to ${NETIP} -m comment --comment cldovpn
 EOTABLES
+fi
 
 mkdir /root/sbin
 cat > /root/sbin/cld_ovpn_iptables << 'EOIPTABLES'
 #!/bin/bash
-iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F ; iptables -t mangle -F
 iptables-save | grep -v "cldovpn" | iptables-restore ; source <(cat /etc/openvpn/iptables_*.rules)
 EOIPTABLES
 

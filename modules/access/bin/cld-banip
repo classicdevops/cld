@@ -16,6 +16,7 @@ cld-banip 1.2.3.4 somereason
 EOL
 )
 source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/include/accessfuncs
 
 for i in ${CLDOPTS}
 do
@@ -27,7 +28,7 @@ done
 
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
 
-if ! echo ${ARG1} | egrep -q "^(((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3})|(([a-f0-9:]+:+)+[a-f0-9]+))$"; then
+if ! echo ${ARG1} | egrep -q "^(${IPV4REGEX}|${IPV6REGEX})$"; then
     echo "ip address is incorrect please fix it and try again"
     exit 1
 else
