@@ -97,6 +97,8 @@ ntpdate 0.nl.pool.ntp.org 1.nl.pool.ntp.org &
 
 cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
 
+export DH_KEY_SIZE=2048
+
 cat > /etc/openvpn/server_${VPN_ID}.conf << EOALL
 port ${PORT}
 proto tcp
@@ -104,7 +106,7 @@ dev tun
 ca ca_${VPN_ID}.crt
 cert server_${VPN_ID}.crt
 key server_${VPN_ID}.key  # This file should be kept secret
-dh dh2048_${VPN_ID}.pem
+dh dh${DH_KEY_SIZE}_${VPN_ID}.pem
 server 10.8.${NETWORK}.0 255.255.255.0
 push "redirect-gateway def1 bypass-dhcp"
 push "dhcp-option DNS 1.1.1.1"
@@ -138,8 +140,8 @@ export KEY_DIR="\$EASY_RSA/keys_${VPN_ID}"
 echo NOTE: If you run ./clean-all, I will be doing a rm -rf on \$KEY_DIR
 export PKCS11_MODULE_PATH="dummy"
 export PKCS11_PIN="dummy"
-export DH_KEY_SIZE=2048
-export KEY_SIZE=2048
+export DH_KEY_SIZE=${DH_KEY_SIZE}
+export KEY_SIZE=${DH_KEY_SIZE}
 export CA_EXPIRE=3650
 export KEY_EXPIRE=3650
 
@@ -165,7 +167,7 @@ openssl dhparam -dsaparam -out ${KEY_DIR}/dh${DH_KEY_SIZE}.pem ${DH_KEY_SIZE}
 
 cd /etc/openvpn/easy-rsa/keys_${VPN_ID}
 unalias cp &>/dev/null
-cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/dh2048.pem /etc/openvpn/dh2048_${VPN_ID}.pem
+cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/dh${DH_KEY_SIZE}.pem /etc/openvpn/dh${DH_KEY_SIZE}_${VPN_ID}.pem
 cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/ca.crt /etc/openvpn/ca_${VPN_ID}.crt
 cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/server.crt /etc/openvpn/server_${VPN_ID}.crt
 cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/server.key /etc/openvpn/server_${VPN_ID}.key

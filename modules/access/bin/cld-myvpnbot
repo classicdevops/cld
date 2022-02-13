@@ -54,4 +54,4 @@ fi
 [ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
 
 export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - download link: 
-https://${CLD_DOMAIN}/api/myvpnget?token=${TOKEN}"
+https://${CLD_DOMAIN}/api/myvpninit?token=${TOKEN}"
