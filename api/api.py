@@ -108,7 +108,6 @@ template_dir = os.path.abspath('/var/cld/api')
 bash('''
 rm -f /var/cld/api/modules/*
 mkdir /var/cld/api/modules &>/dev/null
-rm -f /var/cld/api/html/include/cld_tier.html
 ln -s /var/cld/creds/cld_tier /var/cld/api/html/include/cld_tier.html
 for WEB_TEMPLATE_PATH in $(ls -d /var/cld/modules/*/api 2>/dev/null)
 do
