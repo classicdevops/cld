@@ -205,12 +205,12 @@ done
 echo "-A INPUT -m state --state RELATED,ESTABLISHED -m comment --comment cldaccess -j ACCEPT"
 for LOCAL_NET in $LOCAL_NETS
 do
-echo "-A INPUT -s ${LOCAL_NET}  -m comment --comment cldaccess -j CLDACCEPT"
+echo "-A INPUT -s ${LOCAL_NET} -m comment --comment cldaccess -j CLDACCEPT"
 done
 
 for IP in $ALLOWED_IPS
 do
-echo "-A INPUT -s ${IP}/32  -m comment --comment cldaccess -j CLDACCEPT"
+echo "-A INPUT -s ${IP}/32 -m comment --comment cldaccess -j CLDACCEPT"
 done
 )
 -A INPUT -m comment --comment cldaccess -j CLDDROP
