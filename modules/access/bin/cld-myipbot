@@ -35,7 +35,7 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 if  ! echo ${ARG3} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$"; then 
     export TOKEN="$(passwordgen 35)"
     echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_`TZ=Europe/Moscow date +%F-%H-%M`" >> /var/cld/modules/access/data/myip_tokens
-    echo "↓ To add your IP address to the white list, please CLICK link below: ↓
+    echo "To add your IP address to the access list, please CLICK link below: 
 https://${CLD_DOMAIN}/api/all/myipinit?token=${TOKEN}"
 exit 0
 else
