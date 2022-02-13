@@ -11,7 +11,7 @@ def cmd_myip(message):
     # return bot.delete_message(last_message.chat.id, last_message.message_id)
   elif re.findall(r'(-h|--help)$', message.text):
     cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myipbot -h')
-    return bot.send_message(message.chat.id, '```'+cmdoutput+'```', parse_mode='Markdown')
+    return bot.send_message(message.chat.id, '```\n'+cmdoutput+'\n```', parse_mode='Markdown')
   else:
     myip = 'TOKEN'
     cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myipbot '+vld(message.from_user.id)+' '+vld(message.from_user.username)+' '+vld(myip))
@@ -34,7 +34,7 @@ def cmd_myvpn(message):
       pass
   if re.findall(r'(-h|--help)$', message.text):
     cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myvpnbot -h')
-    return bot.send_message(message.chat.id, '```'+cmdoutput+'```', parse_mode='Markdown')
+    return bot.send_message(message.chat.id, '```\n'+cmdoutput+'\n```', parse_mode='Markdown')
   else:
     cmdoutput = bash('sudo -u '+vld(user)+' sudo FROM=BOT /var/cld/modules/access/bin/cld-myvpnbot '+vld(message.from_user.id)+' '+vld(message.from_user.username)+' '+cmd_args)
     last_message = bot.send_message(message.chat.id, cmdoutput, parse_mode='Markdown', disable_web_page_preview='true')
