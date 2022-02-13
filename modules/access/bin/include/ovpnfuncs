@@ -65,10 +65,11 @@ which ntpdate || package-install ntpdate
 for i in ${@:1}
 do
   case $i in
-    -p=*|-port=*|--port=*) PORT="${i#*=}" ;;
-    -n=*|-network=*|--network=*) NETWORK="${i#*=}" ;;
-    -i=*|-ip=*|--ip=*) VPN_IP="${i#*=}" ;;
-    -I=*|-id=*|--id=*) VPN_ID="${i#*=}" ;;
+    -p=*|-port=*|--port=*) PORT="${i#*=}"           ;;
+    -n=*|-network=*|--network=*) NETWORK="${i#*=}"  ;;
+    -i=*|-ip=*|--ip=*) VPN_IP="${i#*=}"             ;;
+    -I=*|-id=*|--id=*) VPN_ID="${i#*=}"             ;;
+    -m=*|-mode=*|--mode=*) VPN_MODE="${i#*=}"       ;;
     -*)                                             ;;
     *) let ii++; declare ARG$ii=${i}                ;;
   esac
@@ -99,6 +100,15 @@ cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
 
 export DHKS=4096
 
+checkvpnmode()
+{
+[ "${VPN_MODE}" != "AUTH" ] && cat << 'EOVPNMODE' || echo -n ''
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 1.1.1.1"
+push "dhcp-option DNS 1.0.0.1"'
+EOVPNMODE
+}
+
 cat > /etc/openvpn/server_${VPN_ID}.conf << EOALL
 port ${PORT}
 proto tcp
@@ -108,9 +118,7 @@ cert server_${VPN_ID}.crt
 key server_${VPN_ID}.key  # This file should be kept secret
 dh dh${DHKS}_${VPN_ID}.pem
 server 10.8.${NETWORK}.0 255.255.255.0
-push "redirect-gateway def1 bypass-dhcp"
-push "dhcp-option DNS 1.1.1.1"
-push "dhcp-option DNS 1.0.0.1"
+$(checkvpnmode)
 ;client-to-client
 duplicate-cn
 keepalive 10 120

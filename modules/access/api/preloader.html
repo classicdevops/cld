@@ -96,7 +96,7 @@ fetch('{{ link }}').then((res) => {
   window.URL.revokeObjectURL(url);
   let target = $('.loader');
   target.html('{{ successtext }}');
-  target.css('color','green');
+  target.css('color','limegreen');
   target.addClass('noafter').addClass('nobefore');
 }).catch(() => {
   let target = $('.loader');

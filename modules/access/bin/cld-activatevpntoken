@@ -33,6 +33,7 @@ init-load-constants CLD_DOMAIN\|cld.yourdomain.com TELEGRAM_BOT_TOKEN\|123456789
 TOKEN=$(cut -d _ -f 1 <<< ${TOKEN_SET})
 USERID=$(cut -d _ -f 2 <<< ${TOKEN_SET})
 USERNAME=$(cut -d _ -f 3 <<< ${TOKEN_SET})
+VPN_MODE=$(cut -d _ -f 4 <<< ${TOKEN_SET})
 
 CHAT_SET=$(grep "^${ARG1}_" /var/cld/modules/access/data/myvpn_token_chats)
 MESSAGE_ID=$(cut -d _ -f 2 <<< ${CHAT_SET})
@@ -46,7 +47,7 @@ if [ -f "${CLD_USER_VPN_FILE}" ]
 then
 echo ${CLD_USER_VPN_FILE}
 else
-ovpngenerate --id=${USERNAME}-${USERID}
+ovpngenerate --id=${USERNAME}-${USERID} --mode=${VPN_MODE}
 fi
 
 { grep -s "^server " /etc/openvpn/server_*.conf | awk '{print $2"/24"}' ; cat /var/cld/modules/access/data/instances/cld/local_nets ; } | sort -u > /var/cld/modules/access/data/instances/cld/local_nets.tmp ; mv -f /var/cld/modules/access/data/instances/cld/local_nets.tmp /var/cld/modules/access/data/instances/cld/local_nets
