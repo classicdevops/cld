@@ -9,11 +9,13 @@ HELP_ARGS=$(cat << 'EOL'
 $1                       Messenger user id
 $2                       Messenger user name
 --regen                  Regeneration OpenVPN key - delete existed
+--noinet                 Switch VPN to AUTH mode without push gateway and no passing traffic through CLD server
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-myvpn #BOT
-cld-myvpn --regen #BOT
+cld-myvpn -regen #BOT
+cld-myvpn -regen -noinet #BOT
 EOL
 )
 HELP_ONLY="BOT"
@@ -24,18 +26,14 @@ init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJv
 for i in ${CLDOPTS}
 do
   case $i in
-    -*)                                             ;;
-    *) let ii++; declare ARG$ii=${i}                ;;
+    -r|-regen|--regen) VPN_REGEN=1          ;;
+    -n|-noinet|--noinet) VPN_MODE="AUTH"    ;;
+    -*)                                     ;;
+    *) let ii++; declare ARG$ii=${i}        ;;
   esac
 done
 
-for i in ${CLDOPTS}
-do
-case $i in
--r|-regen|--regen) VPN_REGEN=1  ;;
-*) ;;
-esac
-done
+VPN_MODE=${VPN_MODE:-GATEWAY}
 
 if [ "$VPN_REGEN" = "1" ]
 then
@@ -53,5 +51,5 @@ fi
 
 [ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
 
-export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - download link: 
-https://${CLD_DOMAIN}/api/myvpnget?token=${TOKEN}"
+export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_${VPN_MODE}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - download link: 
+https://${CLD_DOMAIN}/api/myvpninit?token=${TOKEN}"

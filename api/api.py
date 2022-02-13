@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
-from flask import abort, request
+from flask import abort, request, render_template
 import requests
 from flask import g
 from flask import Response
@@ -12,6 +12,9 @@ import datetime
 from urllib.request import urlopen
 import os
 
+def bash(cmd):
+  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
+
 def customattr(s,n,v):
   class a(type(s)):
     def ttr(self,n,v):
@@ -19,15 +22,12 @@ def customattr(s,n,v):
       return self
   return a(s).ttr(n,v)
 
-def bash(cmd):
-  return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash').communicate()[0].decode('utf8').strip()
-
 def bashapi(cmd):
   initproc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, executable='/bin/bash')
   return customattr(initproc.communicate()[0].decode('utf8').strip(), 'status', initproc.returncode)
 
 def vld(cld_variable):
-  return re.match('(^[A-z0-9.,@=/_ -]+?$|^$)', cld_variable).string
+  return re.match('(^[A-z0-9.,@:=/_ -]+?$|^$)', str(cld_variable)).string
 
 ansifiltercheck = bash('which ansifilter &>/dev/null && echo 0 || echo 1')
 if ansifiltercheck == "0":
@@ -102,7 +102,20 @@ def userbytoken(token):
 
 cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
 telegram_bot_token = bash('''grep TELEGRAM_BOT_TOKEN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
-app = Flask(__name__)
+template_dir = os.path.abspath('/var/cld/api')
+
+#recreate symlinks to templates in external directories for this dashboard.py
+bash('''
+rm -f /var/cld/api/modules/*
+mkdir /var/cld/api/modules &>/dev/null
+for WEB_TEMPLATE_PATH in $(ls -d /var/cld/modules/*/api 2>/dev/null)
+do
+WEB_MODULE=$(rev <<< ${WEB_TEMPLATE_PATH} | cut -d / -f 2 | rev)
+ln -s ${WEB_TEMPLATE_PATH} /var/cld/api/modules/${WEB_MODULE}
+done
+''')
+
+app = Flask(__name__, template_folder=template_dir)
 
 cldm={}
 for apifile in bash("ls /var/cld/modules/*/api.py").split('\n'):

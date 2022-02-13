@@ -49,7 +49,8 @@
 #security
 /api/accesslist
 
-#web staff
+#api/web staff
+/api/modules/*
 /web/modules/*
 /web/flask_session/*
 /web/html/include/cld_tier*
