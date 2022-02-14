@@ -29,6 +29,7 @@ TOKEN_SET=$(grep "^${ARG1}_" /var/cld/modules/access/data/myvpn_tokens)
 [ "$TOKEN_SET" ] || { echo 403 ; exit 1 ; }
 
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
+init-load-constant --constant=NETWORK_POLICY --example=general --regex="(general|private|paranoid)" --default=general
 
 TOKEN=$(cut -d _ -f 1 <<< ${TOKEN_SET})
 USERID=$(cut -d _ -f 2 <<< ${TOKEN_SET})
@@ -41,7 +42,7 @@ TG_GROUP=$(cut -d _ -f 3 <<< ${CHAT_SET})
 
 sed -i "/${TOKEN}/d" /var/cld/modules/access/data/myvpn_tokens /var/cld/modules/access/data/myvpn_token_chats &>/dev/null
 
-CLD_USER_VPN_FILE=$(ls /var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_10.8.*.1_${USERNAME}-${USERID}.ovpn)
+CLD_USER_VPN_FILE=$(ls /var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_${USERNAME}-${USERID}.ovpn)
 
 if [ -f "${CLD_USER_VPN_FILE}" ]
 then

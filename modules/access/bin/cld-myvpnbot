@@ -9,7 +9,7 @@ HELP_ARGS=$(cat << 'EOL'
 $1                       Messenger user id
 $2                       Messenger user name
 --regen                  Regeneration OpenVPN key - delete existed
---noinet                 Switch VPN to AUTH mode without push gateway and no passing traffic through CLD server
+--noinet                 Switch VPN to AUTH mode without push gateway and no passing traffic through CLD server - forced value for non "general" network policy
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -51,5 +51,5 @@ fi
 
 [ -d "/var/cld/modules/access/data/ovpn" ] || mkdir -p /var/cld/modules/access/data/ovpn
 
-export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_${VPN_MODE}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - download link: 
+export TOKEN="$(passwordgen 35)" ; echo "${TOKEN}_${ARG1}_${SUDO_USER}@${ARG2}_${VPN_MODE}_`date +%F-%H-%M`" >> /var/cld/modules/access/data/myvpn_tokens ; echo "First request for generating OpenVPN key can take up to 3 minutes - CLICK download link: 
 https://${CLD_DOMAIN}/api/myvpninit?token=${TOKEN}"

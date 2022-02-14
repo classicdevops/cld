@@ -12,6 +12,7 @@ cld-unbanip 1.2.3.4
 EOL
 )
 source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/include/accessfuncs
 
 for i in ${CLDOPTS}
 do
@@ -22,7 +23,7 @@ do
 done
 
 mkdir -p /var/cld/modules/access/data/ &>/dev/null
-if ! echo ${ARG1} | egrep -q "^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})|(([a-f0-9:]+:+)+[a-f0-9]+)$"; then
+if ! echo ${ARG1} | egrep -q "^(${IPV4REGEX}|${IPV6REGEX})$"; then
     echo "ip address is incorrect please fix it and try again"
     exit 1
 else
@@ -34,7 +35,8 @@ else
 fi
 
 UNBAN_IP=${ARG1}
-egrep -q "^([a-f0-9:]+:+)+[a-f0-9]+$" <<< ${UNBAN_IP} && UNBAN_IP=$(sipcalc ${UNBAN_IP} | grep "^Expanded" | cut -d '-' -f 2 | tr -d ' ')
+egrep -q "^${IPV6REGEX}$" <<< ${UNBAN_IP} && UNBAN_IP=$(sipcalc ${UNBAN_IP} | grep "^Expanded" | cut -d '-' -f 2 | tr -d ' ')
+
 source /var/cld/modules/dns/bin/include/dnsfuncs
 for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do

@@ -23,9 +23,8 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/access/bin/include/accessfuncs
 
-grep -q CLD_IP /var/cld/creds/creds || { CLD_IP=$(wget -qO- ipinfo.io/ip) ; echo "CLD_IP=\"${CLD_IP}\"" >> /var/cld/creds/creds ; }
 init-load-constant --constant=NETWORK_POLICY --example=general --regex="(general|private|paranoid)" --default=general
-init-load-constant --constant=CLD_IP --example=1.2.3.4 --default='$(wget -qO- ipinfo.io/ip)'
+init-load-constant --constant=CLD_IP --example=1.2.3.4 --default='$(wget -qO- ip.cldcloud.com)'
 
 for i in ${CLDOPTS}
 do
@@ -69,7 +68,7 @@ EOACCESSLIST
 )
 
 CLD_ACCESS_DEPLOY=$(cat << 'EOACCESSDEPLOY'
-ALLOWED_IPS_LINES=$(egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" /etc/hosts.allow | wc -w)
+ALLOWED_IPS_LINES=$(egrep "${IPV4REGEX}" /etc/hosts.allow | wc -w)
 if [ "$ALLOWED_IPS_LINES" -ge "3" ] 
 then
 echo "sshd: ALL" >> /etc/hosts.deny.tmp
@@ -96,23 +95,28 @@ mkdir -p /root/sbin/ &>/dev/null
 
 cat > /root/sbin/iptables_access << 'EOIPTABLES'
 #!/bin/bash
+IPV4REGEX='((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3})'
+IPV4REGEXCIDR="${IPV4REGEX}(\/([0-9]|[1-2][0-9]|3[0-2]))"
+IPV6REGEX='s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*'
+IPV6REGEXCIDR="${IPV6REGEX}(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))"
+
 ALLOWED_IPS=$(cat << EOIPS
-$(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+$(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "${IPV4REGEX}")
 EOIPS
 )
 
 BAN_IPS=$(cat << EOIPS
-$(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+$(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "${IPV4REGEX}")
 EOIPS
 )
 
 ALLOWED_IPS6=$(cat << EOIPS
-$(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+")
+$(cat /etc/hosts.allow | awk '{print $2}' | sort -u | egrep -o "${IPV6REGEX}")
 EOIPS
 )
 
 BAN_IPS6=$(cat << EOIPS
-$(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+")
+$(cat /etc/hosts.deny | awk '{print $2}' | sort -u | egrep -o "${IPV6REGEX}")
 EOIPS
 )
 
@@ -142,7 +146,7 @@ EOPORTS
 )
 fi
 
-LOCAL_NETS="$(cat /etc/hosts.localnets)"
+LOCAL_NETS="$(egrep "^${IPV4REGEXCIDR}$" /etc/hosts.localnets)"
 if ! [ "$LOCAL_NETS" ]
 then
 LOCAL_NETS=$(cat << 'EOPORTS'
@@ -151,7 +155,7 @@ EOPORTS
 )
 fi
 
-LOCAL_NETS6="$(cat /etc/hosts.localnets6)"
+LOCAL_NETS6="$(egrep "^${IPV6REGEXCIDR}$" /etc/hosts.localnets6)"
 if ! [ "$LOCAL_NETS6" ]
 then
 LOCAL_NETS6=$(cat << 'EOPORTS'
@@ -162,6 +166,10 @@ fi
 
 iptables-save | grep -q cldaccess || iptables -A INPUT -m comment --comment cldaccess
 ip6tables-save | grep -q cldaccessv6 || ip6tables -A INPUT -m comment --comment cldaccessv6
+iptables-save | grep -q ":CLDACCEPT" || iptables -N CLDACCEPT
+iptables-save | grep -q ":CLDDROP" || iptables -N CLDDROP
+ip6tables-save | grep -q ":CLDACCEPT" || ip6tables -N CLDACCEPT
+ip6tables-save | grep -q ":CLDDROP" || ip6tables -N CLDDROP
 
 IPTABLES_STATE="$(iptables-save)"
 
@@ -197,16 +205,19 @@ done
 echo "-A INPUT -m state --state RELATED,ESTABLISHED -m comment --comment cldaccess -j ACCEPT"
 for LOCAL_NET in $LOCAL_NETS
 do
-echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j ACCEPT"
+echo "-A INPUT -s ${LOCAL_NET} -m comment --comment cldaccess -j CLDACCEPT"
 done
 
 for IP in $ALLOWED_IPS
 do
-echo "-A INPUT -s ${IP}/32 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j ACCEPT"
+echo "-A INPUT -s ${IP}/32 -m comment --comment cldaccess -j CLDACCEPT"
 done
 )
--A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j DROP
--A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j DROP
+-A INPUT -m comment --comment cldaccess -j CLDDROP
+-A CLDACCEPT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j ACCEPT
+-A CLDACCEPT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j ACCEPT
+-A CLDDROP -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j DROP
+-A CLDDROP -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccess -j DROP
 
 $SECOND_PART
 EOSTATE
@@ -238,16 +249,19 @@ done
 echo "-A INPUT -m state --state RELATED,ESTABLISHED -m comment --comment cldaccessv6 -j ACCEPT"
 for LOCAL_NET in $LOCAL_NETS6
 do
-echo "-A INPUT -s ${LOCAL_NET} -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j ACCEPT"
+echo "-A INPUT -s ${LOCAL_NET} -m comment --comment cldaccessv6 -j CLDACCEPT"
 done
 
 for IP in $ALLOWED_IPS6
 do
-echo "-A INPUT -s ${IP}/128 -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j ACCEPT"
+echo "-A INPUT -s ${IP}/128 -m comment --comment cldaccessv6 -j CLDACCEPT"
 done
 )
--A INPUT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j DROP
--A INPUT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j DROP
+-A INPUT -m comment --comment cldaccessv6 -j CLDDROP
+-A CLDACCEPT -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j ACCEPT
+-A CLDACCEPT -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j ACCEPT
+-A CLDDROP -p tcp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j DROP
+-A CLDDROP -p udp -m multiport --dports $(echo $ALLOWED_PORTS | tr ' ' ',') -m comment --comment cldaccessv6 -j DROP
 
 $SECOND_PART
 EOSTATEV6
@@ -272,15 +286,15 @@ GENERAL_HOST_LIST=$(cat << EOHOSTLIST
 cat > /etc/hosts.allow.tmp << 'EOHOSTSACCESS'
 $(
 echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
-echo "$CLD_IP" | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | awk '{print "sshd: "$1" # CLD ip"}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
+echo "$CLD_IP" | egrep -o "${IPV4REGEX}" | awk '{print "sshd: "$1" # CLD ip"}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "${IPV4REGEX}_" | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
 echo "::1" | awk '{print "sshd: ["$1"] # localhost"}'
-echo "$CLD_IP" | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+" | awk '{print "sshd: ["$1"] # CLD ip"}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_([a-f0-9:]+:+)+[a-f0-9]+" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
+echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk '{print "sshd: ["$1"] # CLD ip"}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV6REGEX}_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV6REGEX}_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
+CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "_${IPV6REGEX}" | awk -F"_" '{print "sshd: ["$2"] # auto enabled ip of "$1}'
 )
 EOHOSTSACCESS
 EOHOSTLIST
@@ -292,17 +306,17 @@ ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
 for CLD_USER in ${ALL_CLD_USERS}
 do
 export accesslist_$(sed -e 's#\.#__DOT__#g' -e 's#-#__DASH__#g' <<< "${CLD_USER}")="$(
-grep -h "_${CLD_USER}@" /var/cld/modules/access/data/myips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
-grep -h "_${CLD_USER}@" /var/cld/modules/access/data/enabledips | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
-grep -h "_${CLD_USER}@" /var/cld/modules/access/data/myips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
-grep -h "_${CLD_USER}@" /var/cld/modules/access/data/enabledips | egrep "([a-f0-9:]+:+)+[a-f0-9]+_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/myips | egrep "${IPV6REGEX}_" | awk -F"_" '{print "sshd: ["$1"] # private ip of "$3"-"$4}'
+grep -h "_${CLD_USER}@" /var/cld/modules/access/data/enabledips | egrep "${IPV6REGEX}_" | awk -F"_" '{print "sshd: ["$1"] # manual enabled ip of "$2}'
 )"
 
 COMMON_IPS="$(
 echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
-echo "$CLD_IP" | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | awk '{print "sshd: "$1" # CLD ip"}' 
+echo "$CLD_IP" | egrep -o "${IPV4REGEX}" | awk '{print "sshd: "$1" # CLD ip"}' 
 echo "::1" | awk '{print "sshd: ["$1"] # localhost"}'
-echo "$CLD_IP" | egrep -o "([a-f0-9:]+:+)+[a-f0-9]+" | awk '{print "sshd: ["$1"] # CLD ip"}'
+echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk '{print "sshd: ["$1"] # CLD ip"}'
 )"   
 done
 cld_host_list=privatehostlist
