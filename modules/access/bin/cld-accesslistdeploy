@@ -268,13 +268,13 @@ fi
 
 if grep -q "cldaccessv6" <<< "${IPTABLES_STATE6}"
 then
-FIRST_LINE=$(grep -nh cldaccessv6 <<< "${IPTABLES_STATE}" | head -1 | cut -d : -f 1)
-SECOND_LINE=$(grep -nh cldaccessv6 <<< "${IPTABLES_STATE}" | tail -1 | cut -d : -f 1)
-THIRD_LINE=$(grep -nh cldchainv6 <<< "${IPTABLES_STATE}" | head -1 | cut -d : -f 1)
-FOURTH_LINE=$(grep -nh cldchainv6 <<< "${IPTABLES_STATE}" | tail -1 | cut -d : -f 1)
-FIRST_PART=$(head -n $((${FIRST_LINE}-1)) <<< "${IPTABLES_STATE}")
-SECOND_PART=$(sed -n "$((${SECOND_LINE}+1)),$((${THIRD_LINE}-1))p;${THIRD_LINE}q" <<< "${IPTABLES_STATE}" | grep -v "cldchainv6")
-THIRD_PART=$(tail -n +$((${FOURTH_LINE}+1)) <<< "${IPTABLES_STATE}")
+FIRST_LINE=$(grep -nh cldaccessv6 <<< "${IPTABLES_STATE6}" | head -1 | cut -d : -f 1)
+SECOND_LINE=$(grep -nh cldaccessv6 <<< "${IPTABLES_STATE6}" | tail -1 | cut -d : -f 1)
+THIRD_LINE=$(grep -nh cldchainv6 <<< "${IPTABLES_STATE6}" | head -1 | cut -d : -f 1)
+FOURTH_LINE=$(grep -nh cldchainv6 <<< "${IPTABLES_STATE6}" | tail -1 | cut -d : -f 1)
+FIRST_PART=$(head -n $((${FIRST_LINE}-1)) <<< "${IPTABLES_STATE6}")
+SECOND_PART=$(sed -n "$((${SECOND_LINE}+1)),$((${THIRD_LINE}-1))p;${THIRD_LINE}q" <<< "${IPTABLES_STATE6}" | grep -v "cldchainv6")
+THIRD_PART=$(tail -n +$((${FOURTH_LINE}+1)) <<< "${IPTABLES_STATE6}")
 CURRENT_STATEV6_HASH=$(ip6tables-save | grep "cldaccessv6\|cldchainv6" | sort -u | md5sum | awk '{print $1}')
 NEW_STATEV6=$(cat << EOSTATEV6
 $FIRST_PART
