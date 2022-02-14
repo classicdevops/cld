@@ -67,7 +67,7 @@ mv /etc/hosts.localnets6.tmp /etc/hosts.localnets6
 EOACCESSLIST
 )
 
-#CLD_ACCESS_DEPLOY=$(cat << 'EOACCESSDEPLOY'
+CLD_ACCESS_DEPLOY=$(cat << 'EOACCESSDEPLOY'
 ALLOWED_IPS_LINES=$(egrep "${IPV4REGEX}" /etc/hosts.allow | wc -w)
 if [ "$ALLOWED_IPS_LINES" -ge "3" ] 
 then
@@ -93,7 +93,7 @@ chmod 644 /etc/cron.d/iptables_access
 
 mkdir -p /root/sbin/ &>/dev/null
 
-#cat > /root/sbin/iptables_access << 'EOIPTABLES'
+cat > /root/sbin/iptables_access << 'EOIPTABLES'
 #!/bin/bash
 IPV4REGEX='((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3})'
 IPV4REGEXCIDR="${IPV4REGEX}(\/([0-9]|[1-2][0-9]|3[0-2]))"
