@@ -50,6 +50,32 @@ EOL
 systemctl daemon-reload
 }
 
+checkvpnmode()
+{
+if [ "${VPN_MODE}" != "AUTH"  -a "${NETWORK_POLICY}" = "general" ]; then
+cat << 'EOVPNMODE' || echo -n ''
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 1.1.1.1"
+push "dhcp-option DNS 1.0.0.1"
+EOVPNMODE
+fi
+}
+
+ip2dec()
+{
+IP=$1;IPDEC=0
+for NUM in 3 2 1 0
+do
+((IPDEC+=${IP%%.*}*$((256**${NUM})))) ; IP=${IP#*.}
+done
+echo $IPDEC
+}
+
+dec2ip()
+{
+echo $(($(($(($((${1}/256))/256))/256))%256)).$(($(($((${1}/256))/256))%256)).$(($((${1}/256))%256)).$((${1}%256))
+}
+
 ovpngenerate()
 {
 
@@ -83,8 +109,19 @@ echo ${@:1} | grep -q '\-\-id=' || VPN_ID=""
 if [ "$VPN_ID" = "" ] ; then exit 1 ; fi ; echo $VPN_ID
 if [ "$PORT" = "" ] ; then PORT=$(grep port /etc/openvpn/server*.conf | cut -d ' ' -f 2 | sort -n | tail -1) ; let "PORT++" ; fi ; echo $PORT
 if [ "$PORT" = "1" ] ; then PORT=1194 ; fi ; echo $PORT
-if [ "$NETWORK" = "" ] ; then NETWORK=$(grep server /etc/openvpn/server*.conf | cut -d ' ' -f 2 | grep 10 | cut -d '.' -f 3 | egrep -o "[0-9]+" | sort -n | tail -1) ; let "NETWORK++" ; fi ; echo $NETWORK
-if [ "$VPN_IP" = "" ] ; then VPN_IP=$(wget -qO- ip.cldcloud.com) ; fi ; echo $VPN_IP
+
+if ! [ "$NETWORK" ] ; then
+NETWORK=$(grep server /etc/openvpn/server*.conf -h | grep "^server 10" | awk '{print $2}' |  sort -t . -n -k 1 -k 2 -k 3 -k 4 | tail -1)
+    if ! [ "$NETWORK" ] ; then
+        NETWORK=${NETWORK:-10.8.0.0}
+    else
+        let NETDEC=$(ip2dec $NETWORK)+16
+        NETWORK=$(dec2ip $NETDEC)
+    fi
+fi
+echo $NETWORK
+
+if ! [ "$VPN_IP" ] ; then VPN_IP=$(wget -qO- ip.cldcloud.com) ; fi ; echo $VPN_IP
 
 export VPN_IP
 export VPN_ID
@@ -100,17 +137,6 @@ cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
 
 export DHKS=4096
 
-checkvpnmode()
-{
-if [ "${VPN_MODE}" != "AUTH"  -a "${NETWORK_POLICY}" = "general" ]; then
-cat << 'EOVPNMODE' || echo -n ''
-push "redirect-gateway def1 bypass-dhcp"
-push "dhcp-option DNS 1.1.1.1"
-push "dhcp-option DNS 1.0.0.1"
-EOVPNMODE
-fi
-}
-
 cat > /etc/openvpn/server_${VPN_ID}.conf << EOALL
 port ${PORT}
 proto tcp
@@ -119,7 +145,7 @@ ca ca_${VPN_ID}.crt
 cert server_${VPN_ID}.crt
 key server_${VPN_ID}.key  # This file should be kept secret
 dh dh${DHKS}_${VPN_ID}.pem
-server 10.8.${NETWORK}.0 255.255.255.0
+server ${NETWORK} 255.255.255.240
 $(checkvpnmode)
 ;client-to-client
 duplicate-cn
@@ -222,9 +248,11 @@ export SERVERIP=$(wget -qO- ip.cldcloud.com)
 
 if [ "${VPN_MODE}" != "AUTH"  -a "${NETWORK_POLICY}" = "general" ]; then
 cat > /etc/openvpn/iptables_${VPN_ID}.rules << EOTABLES
-iptables -A FORWARD -s 10.8.${NETWORK}.0/24 -j ACCEPT -m comment --comment cldovpn
-iptables -t nat -A POSTROUTING -s 10.8.${NETWORK}.0/24 -j SNAT --to ${NETIP} -m comment --comment cldovpn
+    iptables -A FORWARD -s ${NETWORK}/28 -j ACCEPT -m comment --comment cldovpn
+    iptables -t nat -A POSTROUTING -s ${NETWORK}/28 -j SNAT --to ${NETIP} -m comment --comment cldovpn
 EOTABLES
+else
+    touch /etc/openvpn/iptables_${VPN_ID}.rules
 fi
 
 mkdir /root/sbin
@@ -289,7 +317,7 @@ cat ${BASE_CONFIG} <(echo -e '<ca>') ${KEY_DIR}/ca.crt \
 <(echo -e '</key>\n<tls-auth>') ${KEY_DIR}/ta_${VPN_ID}.key \
 <(echo -e '</tls-auth>') > ${OUTPUT_DIR}/id_${VPN_ID}.ovpn
 
-cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_10.8.${NETWORK}.1_${VPN_ID}.ovpn
+cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_${VPN_ID}.ovpn
 
 cat > /etc/openvpn/ovpnipinit << 'EOL'
 #!/bin/bash
@@ -306,6 +334,6 @@ chmod 700 /etc/openvpn/ovpnipinit
 
 } 1>&2
 
-[ -f "/var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_10.8.${NETWORK}.1_${VPN_ID}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_10.8.${NETWORK}.1_${VPN_ID}.ovpn" || echo 404
+[ -f "/var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_${VPN_ID}.ovpn" ] && echo "/var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_${VPN_ID}.ovpn" || echo 404
 
 }
