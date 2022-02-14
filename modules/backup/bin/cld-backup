@@ -156,7 +156,8 @@ chmod 600 /etc/cron.d/cld_backup
 rm -f /root/cld/cron/${RUNDATE}/* &>/dev/null
 rmdir /root/cld/cron/${RUNDATE} &>/dev/null
 else
-rm -f /root/cld/cld_backup_cron_${RUNDATE}
+rm -f /root/cld/cron/${RUNDATE}/* &>/dev/null
+rmdir /root/cld/cron/${RUNDATE} &>/dev/null
 fi
 EOCHECKCRON
 }
