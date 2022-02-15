@@ -12,11 +12,20 @@ cld-userdel johndoe
 EOL
 )
 source /var/cld/bin/include/cldfuncs
-CLDUSER=$1
+
+for i in ${CLDOPTS}
+do
+case $i in
+-*)                                                          ;;
+*) let ii++; declare ARG$ii=${i}                             ;;
+esac
+done
+
+CLDUSER=${ARG1}
 [ "$CLDUSER" ] || echoexit1 CLD user is not defined
 userdel ${CLDUSER}
 rm -rf /home/${CLDUSER}/
 rm -rf /var/cld/access/users/${CLDUSER}/
-sed -ir "/^${CLDUSER} ALL.*/d" /etc/sudoers
+sed -ir "/^${CLDUSER} ALL.*u/d" /etc/sudoers
 sed -i '/^'${CLDUSER}':/d' /etc/passwd
 sed -i '/^'${CLDUSER}':/d' /var/cld/creds/passwd

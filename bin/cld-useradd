@@ -22,7 +22,7 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for i in $(expr "$(echo "$@")" : '\([A-Za-z0-9 /.,@_=+-]\+\)')
+for i in ${CLDOPTS}
 do
 case $i in
 -t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"                 ;;

@@ -1,0 +1,27 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Lock user - Modifying record of user at /etc/shadow - restricts the ability to login to the CLD server by SSH and web interface 
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       User name
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-userlock johndoe
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+case $i in
+-*)                                                          ;;
+*) let ii++; declare ARG$ii=${i}                             ;;
+esac
+done
+
+CLD_USER=${ARG1}
+[ "$CLD_USER" ] || echoexit1 CLD user is not defined
+
+sed -i 's#^'${CLD_USER}':\$#'${CLD_USER}':!!\$#g' /etc/shadow
