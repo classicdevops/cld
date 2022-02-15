@@ -159,7 +159,7 @@ def logged_in(f):
       return f(*args, **kwargs)
     else:
       return redirect('/', code=302)
-    return decorated_func
+  return decorated_func
 
 def is_admin(f):
   @wraps(f)
@@ -172,7 +172,7 @@ def is_admin(f):
         return redirect('/', code=302)
     else:
       return redirect('/', code=302)
-    return decorated_func
+  return decorated_func
 
 webmodule = {}
 #include code from web.py of modules
