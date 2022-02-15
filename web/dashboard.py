@@ -3,6 +3,7 @@ from flask import Flask, abort, request, render_template, g, Response, send_from
 from flask_session import Session
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 from werkzeug.utils import secure_filename
+from functools import wraps
 import logging
 import re
 import os
@@ -150,6 +151,28 @@ app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
+
+def logged_in(f):
+  @wraps(f)
+  def decorated_func(*args, **kwargs):
+    if 'username' in session:
+      return f(*args, **kwargs)
+    else:
+      return redirect('/', code=302)
+    return decorated_func
+
+def is_admin(f):
+  @wraps(f)
+  def decorated_func(*args, **kwargs):
+    if 'username' in session:
+      if userisadmin(session['username']) == True:
+        return f(*args, **kwargs)
+      else:
+        session.pop('username', None)
+        return redirect('/', code=302)
+    else:
+      return redirect('/', code=302)
+    return decorated_func
 
 webmodule = {}
 #include code from web.py of modules
@@ -587,41 +610,39 @@ def toolkit():
 
 @app.route('/admin/')
 @app.route('/admin')
+@logged_in
+@is_admin
 def admin():
-  if 'username' in session:
-    username = session['username']
-    if userisadmin(session['username']) != True:
-      session.pop('username', None)
-      return redirect('/', code=302)
-    userlist = bash('ls /var/cld/access/users/').split('\n')
-    users = list()
-    for user in userlist:
-      userid = bash('grep ^'+vld(user)+': /etc/passwd | cut -d : -f 3')
-      role = bash('cat /var/cld/access/users/'+vld(user)+'/role').replace('\n', '')
-      groups = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 6')
-      status = bash("grep -q '"+vld(user)+":!' /etc/shadow && echo -n 0 || echo -n 1")
-      lastlogin = bash('''last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}' ''')
-      users.append(userid+";"+user+";"+role+";"+groups+";"+status+";"+lastlogin)
-    init_list = ['userid', 'user', 'role', 'groups', 'status', 'lastlogin']
-    for n, i in enumerate(users):
-      users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
-    grouplist = bash('ls /var/cld/access/groups/').split('\n')
-    groups = list()
-    for group in grouplist:
-      grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"')
-      groupusers = bash('egrep "[:,]'+vld(group)+'([:,]|$)" /var/cld/creds/passwd | cut -d : -f 1').replace('\n', ',')
-      cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+vld(group)+'/clouds | wc -l')
-      groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
-    init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
-    for n, i in enumerate(groups):
-      groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
-    file_list = ['/var/cld/creds/passwd', '/etc/cron.d/cld', '/var/cld/creds/creds', '/var/cld/creds/creds', '/var/cld/creds/protected_ports', '/var/cld/creds/local_nets']
-    files = {}
-    for file in file_list:
-      if os.path.exists(file) != True:
-        bash('touch '+vld(file))
-      files[file] = open(file).read()
-    return render_template('html/admin.html', username=username, users=users, groups=groups, files=files)
+  username = session['username']
+  userlist = bash('ls /var/cld/access/users/').split('\n')
+  users = list()
+  for user in userlist:
+    userid = bash('grep ^'+vld(user)+': /etc/passwd | cut -d : -f 3')
+    role = bash('cat /var/cld/access/users/'+vld(user)+'/role').replace('\n', '')
+    groups = bash('grep "^'+vld(user)+':" /var/cld/creds/passwd | cut -d : -f 6')
+    status = bash("grep -q '"+vld(user)+":!' /etc/shadow && echo -n 0 || echo -n 1")
+    lastlogin = bash('''last '''+vld(user)+''' -R | head -1 | awk '{$1=$2=""; print $0}' ''')
+    users.append(userid+";"+user+";"+role+";"+groups+";"+status+";"+lastlogin)
+  init_list = ['userid', 'user', 'role', 'groups', 'status', 'lastlogin']
+  for n, i in enumerate(users):
+    users[n] = {k:v for k,v in zip(init_list,users[n].split(';'))}
+  grouplist = bash('ls /var/cld/access/groups/').split('\n')
+  groups = list()
+  for group in grouplist:
+    grouptype = bash('grep -qs "1" /var/cld/access/groups/'+vld(group)+'/type && echo -n "parsing" || echo -n "manual"')
+    groupusers = bash('egrep "[:,]'+vld(group)+'([:,]|$)" /var/cld/creds/passwd | cut -d : -f 1').replace('\n', ',')
+    cloudcount = bash('grep -v "^#\|^$" /var/cld/access/groups/'+vld(group)+'/clouds | wc -l')
+    groups.append(group+";"+groupusers+";"+cloudcount+";"+grouptype)
+  init_group = ['group', 'groupusers', 'cloudcount', 'grouptype']
+  for n, i in enumerate(groups):
+    groups[n] = {k:v for k,v in zip(init_group,groups[n].split(';'))}
+  file_list = ['/var/cld/creds/passwd', '/etc/cron.d/cld', '/var/cld/creds/creds', '/var/cld/creds/creds', '/var/cld/creds/protected_ports', '/var/cld/creds/local_nets']
+  files = {}
+  for file in file_list:
+    if os.path.exists(file) != True:
+      bash('touch '+vld(file))
+    files[file] = open(file).read()
+  return render_template('html/admin.html', username=username, users=users, groups=groups, files=files)
 
 
 @app.route('/admin/savefile', methods=['POST'])
