@@ -120,9 +120,14 @@ fi
 
 if [ "$JSONFUNCOUT" == "1" ]
 then
-  for GROUP in ${CLD_FILTER_GROUPS}
+  for GROUP in ${CLD_FILTER_GROUPS} userInstances
   do
-    CLOUDS=$(cut -d _ -f -4 /var/cld/access/groups/${GROUP}/clouds | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
+    if [ "${GROUP}" = "userInstances" ]; then
+      INSTANCES_FILE="/var/cld/access/users/${SUDO_USER}/clouds"
+    else
+      INSTANCES_FILE="/var/cld/access/groups/${GROUP}/clouds"
+    fi
+    CLOUDS=$(cut -d _ -f -4 ${INSTANCES_FILE} | grep -vh "^$\|^#" 2>/dev/null | grep -i "$ARG1" | grep -i "$ARG2" | grep -i "$ARG3" | head -c -1)
     if [ "$(echo -n "$CLOUDS" | wc -w)" != "0" ]
     then
       cat << EOL | tr -d '\n'

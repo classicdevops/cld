@@ -22,7 +22,7 @@ EOL
 )
 source /var/cld/bin/include/cldfuncs
 
-for i in $(expr "$(echo "$@")" : '\([A-Za-z0-9 /.,@_=+-]\+\)')
+for i in ${CLDOPTS}
 do
 case $i in
 -t=*|-tools=*|--tools=*) CLD_TOOLS="${i#*=}"                 ;;
@@ -74,7 +74,7 @@ do
     [ -f ~/.ssh/id_rsa.pub ] || ssh-keygen -t ed25519 -b 4096 -P "" -f ~/.ssh/id_rsa 1>&2
     egrep -o --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9@._-]+)?' ~/.ssh/id_rsa.pub
 EOINSTKEY
-      break
+    break
   else
     echo "you choosed incorrect instance, please try again and type digits only"
   fi
@@ -84,6 +84,7 @@ egrep -qo --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9
 chown -R ${CLD_USER}: /home/${CLD_USER}/.ssh
 chmod 700 /home/${CLD_USER}/.ssh
 chmod 600 /home/${CLD_USER}/.ssh/authorized_keys
+/var/cld/bin/cld-userlock ${CLD_USER}
 
 ##########################################################################
 elif [ "${GROUP_USER}" = 1 ] ; then
@@ -146,6 +147,7 @@ egrep -qo --color=no '^ssh-(rsa|ed25519) AAAA[0-9A-Za-z+/]+[=]{0,3} ?([A-Za-z0-9
 chown -R ${CLD_USER}: /home/${CLD_USER}/.ssh
 chmod 700 /home/${CLD_USER}/.ssh
 chmod 600 /home/${CLD_USER}/.ssh/authorized_keys
+/var/cld/bin/cld-userlock ${CLD_USER}
 
 ##########################################################################
 else
