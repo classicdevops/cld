@@ -21,6 +21,7 @@ EOL
 HELP_ONLY="BOT"
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/access/bin/include/accessfuncs
+
 [ "${FROM}" != "BOT" ] && cldhelp
 
 for i in ${CLDOPTS}

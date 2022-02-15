@@ -762,15 +762,15 @@ def delgroup():
 @app.route('/admin/enableuser', methods=['GET'])
 @is_admin
 def enableuser():
-  enableuser = request.args['name']
-  bash('passwd --unlock '+vld(enableuser))
+  clduser = request.args['name']
+  bash(f'''sed -i 's#^'{vld(clduser)}':!!\$#'{vld(clduser)}':\$#g' /etc/shadow''')
   return redirect('/admin', code=302)
 
 @app.route('/admin/disableuser', methods=['GET'])
 @is_admin
 def disableuser():
-  disableuser = request.args['name']
-  bash('passwd --lock '+vld(disableuser))
+  clduser = request.args['name']
+  bash(f'''sed -i 's#^'{vld(clduser)}':\$#'{vld(clduser)}':!!\$#g' /etc/shadow''')
   return redirect('/admin', code=302)
 
 @app.route('/admin/usergroups/<name>', methods=['GET','POST'])

@@ -152,14 +152,14 @@ http {
 }
 EOL
 
-sed 's#DOMAIN#'$CLD_DOMAIN'#g' > /etc/nginx/conf.d/cld.conf << 'EOL'
-map $http_upgrade $connection_upgrade {
+cat > /etc/nginx/conf.d/cld.conf << EOL
+map \$http_upgrade \$connection_upgrade {
 default upgrade;
 '' close;
 }
-map $http_x_forwarded_proto $real_scheme {
-  default $http_x_forwarded_proto;
-  ''      $scheme;
+map \$http_x_forwarded_proto \$real_scheme {
+  default \$http_x_forwarded_proto;
+  ''      \$scheme;
 }
 upstream cldweb {
     server        127.0.0.1:8080;
@@ -168,7 +168,7 @@ upstream cldweb {
 upstream cldapi {
     server        127.0.0.1:8085;
 }
-limit_req_zone $binary_remote_addr zone=apiall:10m rate=1r/s;
+limit_req_zone \$binary_remote_addr zone=apiall:10m rate=1r/s;
 server  {
     listen 80;
     include sslgen.conf;
@@ -178,8 +178,8 @@ server  {
     add_header X-Content-Type-Options nosniff;
 
     location / {
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
+    if (\$real_scheme = http) {
+        return 301 https://\$host\$request_uri;
     }
     include accesslist;
     deny all;
@@ -188,49 +188,49 @@ server  {
     proxy_buffering           off;
     proxy_request_buffering   off;
     proxy_http_version        1.1;
-    proxy_set_header   Host   $host;
-    proxy_set_header   Upgrade $http_upgrade;
-    proxy_set_header   Connection $connection_upgrade;
-    proxy_set_header   X-Forwarded-For $remote_addr;
-    proxy_set_header   X-Forwarded-Proto $real_scheme;
+    proxy_set_header   Host   \$host;
+    proxy_set_header   Upgrade \$http_upgrade;
+    proxy_set_header   Connection \$connection_upgrade;
+    proxy_set_header   X-Forwarded-For \$remote_addr;
+    proxy_set_header   X-Forwarded-Proto \$real_scheme;
     }
 
     location /api {
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
+    if (\$real_scheme = http) {
+        return 301 https://\$host\$request_uri;
     }
     include accesslist;
     deny all;
-    rewrite ^/api(.*)$ $1 break;
+    rewrite ^/api(.*)$ \$1 break;
     proxy_pass                http://cldapi;
     proxy_redirect            off;
     proxy_buffering           off;
     proxy_request_buffering   off;
-    proxy_set_header   Host   $host;
-    proxy_set_header   X-Forwarded-For $remote_addr;
-    proxy_set_header   X-Forwarded-Proto $real_scheme;
+    proxy_set_header   Host   \$host;
+    proxy_set_header   X-Forwarded-For \$remote_addr;
+    proxy_set_header   X-Forwarded-Proto \$real_scheme;
     }
 
     location /api/all {
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
+    if (\$real_scheme = http) {
+        return 301 https://\$host\$request_uri;
     }
     add_header Access-Control-Allow-Origin *;
     limit_req zone=apiall burst=5 nodelay;
-    rewrite ^/api(.*)$ $1 break;
+    rewrite ^/api(.*)$ \$1 break;
     include /etc/nginx/deny.conf;
     proxy_pass                http://cldapi;
     proxy_redirect            off;
     proxy_buffering           off;
     proxy_request_buffering   off;
-    proxy_set_header   Host   $host;
-    proxy_set_header   X-Forwarded-For $remote_addr;
-    proxy_set_header   X-Forwarded-Proto $real_scheme;
+    proxy_set_header   Host   \$host;
+    proxy_set_header   X-Forwarded-For \$remote_addr;
+    proxy_set_header   X-Forwarded-Proto \$real_scheme;
     }
 
     location /documentation {
-    if ($real_scheme = http) {
-        return 301 https://$host$request_uri;
+    if (\$real_scheme = http) {
+        return 301 https://\$host$request_uri;
     }
     limit_req zone=apiall burst=5 nodelay;
     alias /var/www/cld/doc/;
