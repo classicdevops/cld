@@ -1,6 +1,7 @@
 #!/bin/bash
 source /var/cld/bin/include/cldfuncs
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com
+init-load-constant --constant=NETWORK_POLICY --example=general --regex="(general|private|paranoid)" --default=general
 
 mkdir /root/sbin/ &>/dev/null
 cat > /root/sbin/lets_auto_sign << 'EOCAT'
@@ -212,13 +213,19 @@ server  {
     }
 
     location /api/all {
+$(if [ "${NETWORK_POLICY}" = "paranoid" ]; then
+cat << EOPOLICY
+    include accesslist;
+    deny all;
+EOPOLICY
+fi)
+    include /etc/nginx/deny.conf;
     if (\$real_scheme = http) {
         return 301 https://\$host\$request_uri;
     }
     add_header Access-Control-Allow-Origin *;
     limit_req zone=apiall burst=5 nodelay;
     rewrite ^/api(.*)$ \$1 break;
-    include /etc/nginx/deny.conf;
     proxy_pass                http://cldapi;
     proxy_redirect            off;
     proxy_buffering           off;
@@ -229,6 +236,12 @@ server  {
     }
 
     location /documentation {
+$(if [ "${NETWORK_POLICY}" = "paranoid" ]; then
+cat << EOPOLICY
+    include accesslist;
+    deny all;
+EOPOLICY
+fi)
     if (\$real_scheme = http) {
         return 301 https://\$host$request_uri;
     }
