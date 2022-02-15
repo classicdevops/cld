@@ -155,7 +155,7 @@ log.setLevel(logging.ERROR)
 def logged_in(f):
   @wraps(f)
   def decorated_func(*args, **kwargs):
-    if session.get("username"):
+    if 'username' in session:
       return f(*args, **kwargs)
     else:
       return redirect('/', code=302)
@@ -164,8 +164,8 @@ def logged_in(f):
 def is_admin(f):
   @wraps(f)
   def decorated_func(*args, **kwargs):
-    if session.get("username"):
-      if userisadmin(session.get("username")) == True:
+    if 'username' in session:
+      if userisadmin(session['username']) == True:
         return f(*args, **kwargs)
       else:
         session.pop('username', None)
@@ -610,9 +610,12 @@ def toolkit():
 
 @app.route('/admin/')
 @app.route('/admin')
-@is_admin
 def admin():
+  if 'username' in session:
     username = session['username']
+    if userisadmin(session['username']) != True:
+      session.pop('username', None)
+      return redirect('/', code=302)
     userlist = bash('ls /var/cld/access/users/').split('\n')
     users = list()
     for user in userlist:
