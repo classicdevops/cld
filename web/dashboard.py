@@ -155,7 +155,7 @@ log.setLevel(logging.ERROR)
 def logged_in(f):
   @wraps(f)
   def decorated_func(*args, **kwargs):
-    if 'username' in session:
+    if session.get("username"):
       return f(*args, **kwargs)
     else:
       return redirect('/', code=302)
@@ -164,8 +164,8 @@ def logged_in(f):
 def is_admin(f):
   @wraps(f)
   def decorated_func(*args, **kwargs):
-    if 'username' in session:
-      if userisadmin(session['username']) == True:
+    if session.get("username"):
+      if userisadmin(session.get("username")) == True:
         return f(*args, **kwargs)
       else:
         session.pop('username', None)
