@@ -29,7 +29,7 @@ done
 [ -d /var/cld/modules/access/data ] || mkdir -p /var/cld/modules/access/data/ &>/dev/null
 
 IP=${ARG1}
-TOKEN_SET=$(grep "^${ARG2}_" /var/cld/modules/access/data/myip_tokens)
+TOKEN_SET=$(grep "^${ARG2}," /var/cld/modules/access/data/myip_tokens)
 [ "$TOKEN_SET" ] || { echo 403 ; exit 1 ; }
 
 init-load-constants TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
