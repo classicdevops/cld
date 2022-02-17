@@ -25,7 +25,7 @@ done
 
 [ -d /var/cld/modules/access/data ] || mkdir -p /var/cld/modules/access/data/ &>/dev/null
 
-TOKEN_SET=$(grep "^${ARG1}_" /var/cld/modules/access/data/myvpn_tokens)
+TOKEN_SET=$(grep "^${ARG1}," /var/cld/modules/access/data/myvpn_tokens)
 [ "$TOKEN_SET" ] || { echo 403 ; exit 1 ; }
 
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com TELEGRAM_BOT_TOKEN\|1234567890:AAEzBFqFii-uirfyG3PnygA0DAvJvRH7UzB
