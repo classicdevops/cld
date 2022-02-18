@@ -24,7 +24,7 @@ chattr +i /var/cld
 fi
 sleep 5s
 done
-)
+) &
 
 for AUDITOR_FILE in $(find  /var/cld/* /var/cld/bot/* /var/cld/modules/* -maxdepth 1 -type f -name 'auditor' 2>/dev/null)
 do
