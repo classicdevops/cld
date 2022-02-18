@@ -1,0 +1,24 @@
+if ! [ "${ACCESS_INIT_RUN}" ]; then
+source /var/cld/modules/access/bin/include/accessfuncs
+[ -f "/var/cld/tmp/auditor/prev_passwd_hash" ] || touch /var/cld/tmp/auditor/prev_passwd_hash
+ACCESS_INIT_RUN=1
+fi
+
+### Check permission matrix changes
+PASSWD_CURRENT_HASH=$(md5sum /var/cld/creds/passwd | cut -d ' ' -f 1)
+PASSWD_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_passwd_hash)
+echo "${PASSWD_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_passwd_hash
+
+ACCESS_CURRENT_HASH=$({ echo ${PASSWD_CURRENT_HASH} ; du -b -d 0 /var/cld/access/ /var/cld/creds/passwd ; } | md5sum | awk '{print $1}')
+ACCESS_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_access_hash)
+echo "${ACCESS_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_access_hash
+CURRENT_ACCESS_MAP_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map)
+
+if [ "$ACCESS_CURRENT_HASH" != "$ACCESS_PREVIOUS_HASH" -o "$(du -bd 0 ${CURRENT_ACCESS_MAP_DIR} | awk '{print $1}')" -lt "12300" ]
+then
+bash -lc "/var/cld/bin/cld-initpasswd"
+generate_access_map
+echo "${CLD_FILTER_DIR}" > /var/cld/tmp/auditor/current_access_map_tmp
+unset mv &>/dev/null
+mv -f /var/cld/tmp/auditor/current_access_map_tmp /var/cld/tmp/auditor/current_access_map
+fi
