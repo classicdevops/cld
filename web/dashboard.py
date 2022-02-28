@@ -158,7 +158,7 @@ def logged_in(f):
     if 'username' in session:
       return f(*args, **kwargs)
     else:
-      return redirect('/', code=302)
+      return redirect('/login', code=302)
   return decorated_func
 
 def is_admin(f):
