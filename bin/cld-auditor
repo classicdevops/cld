@@ -1,36 +1,15 @@
 #!/bin/bash
 HELP_DESC=$(cat << 'EOL'
-Continuous checks of system status and settings - running from systemd cld-auditor service
+Continuous running auditor files code with 5 seconds interval - running from systemd cld-auditor service
 EOL
 )
 
 source /var/cld/bin/include/cldfuncs
-source /var/cld/modules/access/bin/include/accessfuncs
 
 [ -d "/var/cld/tmp/auditor" ] || mkdir -p /var/cld/tmp/auditor
-[ -f "/var/cld/tmp/auditor/prev_passwd_hash" ] || touch /var/cld/tmp/auditor/prev_passwd_hash
 
-while :;
-do
-### Check permission matrix changes
-PASSWD_CURRENT_HASH=$(md5sum /var/cld/creds/passwd | cut -d ' ' -f 1)
-PASSWD_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_passwd_hash)
-echo "${PASSWD_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_passwd_hash
-
-ACCESS_CURRENT_HASH=$({ echo ${PASSWD_CURRENT_HASH} ; du -b -d 0 /var/cld/access/ /var/cld/creds/passwd ; } | md5sum | awk '{print $1}')
-ACCESS_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_access_hash)
-echo "${ACCESS_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_access_hash
-CURRENT_ACCESS_MAP_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map)
-
-if [ "$ACCESS_CURRENT_HASH" != "$ACCESS_PREVIOUS_HASH" -o "$(du -bd 0 ${CURRENT_ACCESS_MAP_DIR} | awk '{print $1}')" -lt "12300" ]
-then
-bash -lc "/var/cld/bin/cld-initpasswd"
-generate_access_map
-echo "${CLD_FILTER_DIR}" > /var/cld/tmp/auditor/current_access_map_tmp
-unset mv &>/dev/null
-mv -f /var/cld/tmp/auditor/current_access_map_tmp /var/cld/tmp/auditor/current_access_map
-fi
-
+(
+while :; do
 ### Security checks
 if [ "$(stat -c "%a" /var/cld)" != "700" ] 
 then
@@ -43,6 +22,18 @@ if ! [[ "$(lsattr -d /var/cld)" =~ ^[A-Za-z-]+i[A-Za-z-]+\ +/var/cld$ ]]
 then
 chattr +i /var/cld
 fi
-
 sleep 5s
 done
+) &
+
+for AUDITOR_FILE in $(find  /var/cld/* /var/cld/bot/* /var/cld/modules/* -maxdepth 1 -type f -name 'auditor' 2>/dev/null)
+do
+AUDITOR_FILE_CONTENT="$(cat ${AUDITOR_FILE})"
+(
+while :; do
+source <(echo "${AUDITOR_FILE_CONTENT}")
+sleep 5s
+done
+) &
+done
+wait

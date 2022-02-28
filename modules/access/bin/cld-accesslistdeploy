@@ -13,6 +13,7 @@ $3                             Third PATTERN filtering allowed instances
 --allowedgroups=GROUP1,GROUP2  Groups of instances which ip addresses will be added to accesslist together with /var/cld/modules/access/data/myips and /var/cld/modules/access/data/enabledips - default is the same as --groups or "default"
 --mikrotik                     Enable access list deploy to Mikrotik
 --all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
+--onupdate                     Flag for parsing cron by auditor service, if set at cron with that key - cron will execute after detected changes in module or tool relative files - see auditor file at root of module
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'

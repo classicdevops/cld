@@ -174,7 +174,7 @@ server  {
     listen 80;
     include sslgen.conf;
     access_log /var/log/nginx-main-access.log;
-    server_name DOMAIN;
+    server_name ${CLD_DOMAIN};
 
     add_header X-Content-Type-Options nosniff;
 
