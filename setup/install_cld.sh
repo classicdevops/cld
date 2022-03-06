@@ -378,8 +378,8 @@ echo
 echo
 cat << DEPLOYOUTPUT
 Thanks for choosing the CLD!
-The web panel is available at:
-"ttps://${CLD_DOMAIN} (the recommended method - make sure you have the correct DNS record, SSL will issued automatically in 1 minute after first request)
+CLD Dashboard is available at:
+"https://${CLD_DOMAIN} (the recommended method - make sure you have the correct DNS record, SSL will issued automatically in 1 minute after first request)
 and
 https://${HOSTIP} (some features may not be available with a self-signed certificate)
 

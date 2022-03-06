@@ -24,18 +24,15 @@ EOL
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
 
-ARG1=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -1)
-ARG2=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | head -2 | tail -1)
-ARG3=$(echo "${@:1}" | tr ' ' '\n' | grep -v '^\-' | tail -n +3 | tr '\n' ' ' | head -c -1)
-
 for i in ${CLDOPTS}
 do
-case $i in
--c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;;
--p|-proxy|--proxy) CFPROXY=1                ;;
--f|-force|--force) FORCE=1                  ;;
-*) ;;
-esac
+  case $i in
+    -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;;
+    -p|-proxy|--proxy) CFPROXY=1                ;;
+    -f|-force|--force) FORCE=1                  ;;
+    -*)                                         ;;
+    *) let ii++; declare ARG$ii=${i}            ;;
+  esac
 done
 
 TYPE=${ARG1^^}

@@ -63,12 +63,12 @@ EXTERNAL_TERMINAL() {
 sshpass -p "$PWD" ssh -q $VERBOSE -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV  | tee -a $CLD_LOG
 }
 
-[ "$TIMEOUT" ] || export TIMEOUT=60
+[ "$TIMEOUT" ] || export TIMEOUT=300
 EXTERNAL_DEPLOY() {
 timeout ${TIMEOUT} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o "RequestTTY force" -p $PRT $USR@$SRV "bash -s" 2>&1
 }
 
-[ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=60
+[ "$TIMEOUT_NOTTY" ] || export TIMEOUT_NOTTY=300
 EXTERNAL_DEPLOY_NOTTY() {
 timeout ${TIMEOUT_NOTTY} sshpass -p "$PWD" ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $PRT $USR@$SRV "bash -s" 2>&1 && return 0 || return 1
 }
