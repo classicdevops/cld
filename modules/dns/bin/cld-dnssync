@@ -9,6 +9,7 @@ $2                       Second PATTERN filtering allowed instances
 $3                       Third PATTERN filtering allowed instances
 --proxy                  Set up CloudFlare proxyfying
 --cfacc=youracc@at.cf    Email of your CloudFlare account - if you have several at /var/cld/creds/creds_dns_cf_api_list
+--ttl=60                 TTL of DNS records - default is 300
 --groups=GROUP1,GROUP2   Filtering by instance groups
 --all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 EOL
@@ -29,6 +30,7 @@ do
     -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"        ;;
     -p|-proxy|--proxy) CFPROXY=1                    ;;
     -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+    -t=*|-ttl=*|--ttl=*) DNS_TTL="${i#*=}"          ;;
     -a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
     -*)                                             ;;
     *) let ii++; declare ARG$ii=${i}                ;;
@@ -70,5 +72,5 @@ do
 /var/cld/modules/dns/bin/cld-setdns a ${DOMAIN} ${DOMAIN_DNS_IP_FOR_ADD} -force $([ "$CFPROXY" = "1" ] && echo "--proxy") $([ "$CFACC" ] && echo "--cfacc=${CFACC}")
 done
 
-echo DSP host records:
+echo DNS records:
 /var/cld/modules/dns/bin/cld-getdns $DOMAIN

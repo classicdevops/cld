@@ -9,6 +9,9 @@ then
   F='`'
   B='*'
 fi
+
+DNS_TTL=${DNS_TTL:-300}
+
 cf-dns-api-creds()
 {
 CFACC=`echo "${CFAPI}" | cut -d "_" -f 1`
@@ -64,7 +67,7 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_re
      -H "X-Auth-Key: $CFKEY" \
      -H "Content-Type: application/json" \
      --data "$(cat << EOL
-{"type":"${TYPE}","name":"$2","content":"${@:3}","ttl":1,"priority":10,"proxied":false}
+{"type":"${TYPE}","name":"$2","content":"${@:3}","ttl":${DNS_TTL},"priority":10,"proxied":false}
 EOL
 )" | jq .
 }
@@ -88,6 +91,10 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_re
      -H "X-Auth-Key: $CFKEY" \
      -H "Content-Type: application/json" \
      --data '{"type":"'${TYPE}'","name":"'$2'","content":"'$3'","ttl":1,"priority":10,"proxied":true}' | jq .
+     --data "$(cat << EOL
+{"type":"${TYPE}","name":"$2","content":"${3}","ttl":${DNS_TTL},"priority":10,"proxied":true}
+EOL
+)" | jq .
 }
 
 cf-dns-proxy-cname-record-add()
