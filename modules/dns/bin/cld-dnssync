@@ -35,7 +35,7 @@ do
   esac
 done
 
-[ "${DOMAIN}" ] || { echo DOMAIN is not defined - exit ; exit 1 }
+[ "${DOMAIN}" ] || { echo DOMAIN is not defined - exit ; exit 1 ; }
 
 echo DNS records synchronizing
 DOMAIN_DNS_IPS=$(/var/cld/modules/dns/bin/cld-getdns $DOMAIN | grep "^A" | awk '{print $3}')
