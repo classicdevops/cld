@@ -1,0 +1,76 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+DNS domain name A records synchronizer to ip addresses of filtered istances
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       First PATTERN filtering allowed instances
+$2                       Second PATTERN filtering allowed instances
+$3                       Third PATTERN filtering allowed instances
+--proxy                  Set up CloudFlare proxyfying
+--cfacc=youracc@at.cf    Email of your CloudFlare account - if you have several at /var/cld/creds/creds_dns_cf_api_list
+--ttl=60                 TTL of DNS records - default is 300
+--groups=GROUP1,GROUP2   Filtering by instance groups
+--all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-dnssync ^node --domain=app.example.com
+cld-dnssync -g=kubenodes -d=app.example.com --proxy
+cld-dnssync ^node -g=kube -d=app.example.com -p
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+  case $i in
+    -d=*|-domain=*|--domain=*) DOMAIN="${i#*=}"     ;;
+    -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"        ;;
+    -p|-proxy|--proxy) CFPROXY=1                    ;;
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+    -t=*|-ttl=*|--ttl=*) DNS_TTL="${i#*=}"          ;;
+    -a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
+done
+
+[ "${DOMAIN}" ] || { echo DOMAIN is not defined - exit ; exit 1 ; }
+
+echo DNS records synchronizing
+DOMAIN_DNS_IPS=$(/var/cld/modules/dns/bin/cld-getdns $DOMAIN | grep "^A" | awk '{print $3}')
+
+DOMAIN_INSTANCES=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
+
+DOMAIN_INSTANCE_IPS=$(cut -d _ -f 2 <<< "${DOMAIN_INSTANCES}" | sort -u)
+
+DOMAIN_DNS_IPS_FOR_DELETE=$(if [ "${DOMAIN_INSTANCE_IPS}" ]
+then
+echo "${DOMAIN_DNS_IPS}" | grep -v "${DOMAIN_INSTANCE_IPS}"
+else
+echo "${DOMAIN_DNS_IPS}"
+fi
+)
+
+for DOMAIN_DNS_IP_FOR_DELETE in ${DOMAIN_DNS_IPS_FOR_DELETE}
+do
+/var/cld/modules/dns/bin/cld-deldns a ${DOMAIN} ${DOMAIN_DNS_IP_FOR_DELETE}
+done
+
+DOMAIN_DNS_IPS_FOR_ADD=$(if [ "${DOMAIN_DNS_IPS}" ]
+then
+echo "${DOMAIN_INSTANCE_IPS}" | grep -v "${DOMAIN_DNS_IPS}"
+else
+echo "${DOMAIN_INSTANCE_IPS}"
+fi
+)
+
+for DOMAIN_DNS_IP_FOR_ADD in ${DOMAIN_DNS_IPS_FOR_ADD}
+do
+/var/cld/modules/dns/bin/cld-setdns a ${DOMAIN} ${DOMAIN_DNS_IP_FOR_ADD} -force $([ "$CFPROXY" = "1" ] && echo "--proxy") $([ "$CFACC" ] && echo "--cfacc=${CFACC}")
+done
+
+echo DNS records:
+/var/cld/modules/dns/bin/cld-getdns $DOMAIN
