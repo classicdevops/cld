@@ -334,7 +334,7 @@ $(
 echo "127.0.0.1" | awk '{print "sshd: "$1" # localhost"}'
 echo "$CLD_IP" | egrep -o "${IPV4REGEX}" | awk '{print "sshd: "$1" # CLD ip"}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -F"_" '{print "sshd: "$1" # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}?_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}_" | awk -F"_" '{print "sshd: "$1" # manual enabled ip of "$2}'
 CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "${IPV4REGEX}_" | awk -F"_" '{print "sshd: "$2" # auto enabled ip of "$1}'
 echo "::1" | awk '{print "sshd: ["$1"] # localhost"}'
 echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk '{print "sshd: ["$1"] # CLD ip"}'
