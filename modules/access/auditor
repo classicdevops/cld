@@ -14,7 +14,7 @@ ACCESS_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_access_hash)
 echo "${ACCESS_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_access_hash
 CURRENT_ACCESS_MAP_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map)
 
-if [ "$ACCESS_CURRENT_HASH" != "$ACCESS_PREVIOUS_HASH" -o "$([ -d "$CURRENT_ACCESS_MAP_DIR" ] && echo 0 || echo 1)" -eq "1" -o "$(du -bd 0 ${CURRENT_ACCESS_MAP_DIR} | awk '{print $1}')" -lt "12300" ]
+if [ "$ACCESS_CURRENT_HASH" != "$ACCESS_PREVIOUS_HASH" -o "$({ du -bd 0 ${CURRENT_ACCESS_MAP_DIR} 2>/dev/null || echo 0 ; } | awk '{print $1}')" -lt "12300" ]
 then
 bash -lc "/var/cld/bin/cld-initpasswd"
 generate_access_map
