@@ -128,6 +128,7 @@ PartOf=cld.service
 WorkingDirectory=/var/cld/tmp/auditor
 Type=simple
 ExecStart=/var/cld/bin/cld-auditor
+ExecStop=/var/cld/bin/cld-auditor --kill
 Restart=always
 RestartSec=2
 StartLimitBurst=999999
