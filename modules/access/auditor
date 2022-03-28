@@ -21,4 +21,6 @@ generate_access_map
 echo "${CLD_FILTER_DIR}" > /var/cld/tmp/auditor/current_access_map_tmp
 unset mv &>/dev/null
 mv -f /var/cld/tmp/auditor/current_access_map_tmp /var/cld/tmp/auditor/current_access_map
+ls -h /var/cld/tmp/access_instances_* -d -h | head -n -10 | xargs -I ^ rm -rf ^
+find /var/cld/tmp/access_instances_* -type d -empty -exec rmdir {} \;
 fi
