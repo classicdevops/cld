@@ -131,7 +131,7 @@ fi
 if ! [ "${USER_TOKEN}" ]
 then
     USER_TOKEN=$(echo $(< /dev/urandom tr -dc ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 | head -c${1:-25}))
-    sed -i -r 's#'${USER_NAME}':(.*?)::(.*?):(.*?)#'${USER_NAME}':\1:'${USER_TOKEN}':\2:\3#g' /var/cld/creds/passwd
+    sed -i -r 's#'${USER_NAME}':(.*?)::(.*?):(.*?):(.*?)#'${USER_NAME}':\1:'${USER_TOKEN}':\2:\3:\4#g' /var/cld/creds/passwd
 fi
 done
 for USER_PATH in $(ls /var/cld/access/users/* -d)
