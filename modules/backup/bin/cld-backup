@@ -111,7 +111,7 @@ cat << 'EOKEEPLASTROTATE'
 [ "${INSTANCE}" ] || { echo INSTANCE IS NOT DEFINED - exit ; exit 1 ; }
 [ "${BACKUP_METHOD}" ] || { echo BACKUP_METHOD IS NOT DEFINED - exit ; exit 1 ; }
 [ "${KEEPLAST}" ] || { echo KEEPLAST IS NOT DEFINED - exit ; exit 1 ; }
-ls -h ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} -d -h | head -n -${KEEPLAST} | xargs -I ^ rm -rf ^
+ls ${SERVER_BACKUP_DIR}/${INSTANCE}/*/${BACKUP_METHOD} -d -h -t | tail -n +$((${KEEPLAST}+1)) | xargs -I ^ rm -rf ^
 find ${SERVER_BACKUP_DIR}/${INSTANCE}/ -type d -empty -exec rmdir {} \;
 EOKEEPLASTROTATE
 }
