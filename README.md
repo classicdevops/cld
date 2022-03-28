@@ -362,11 +362,11 @@ Interface for accessing non-interactive tools via Web API:
   - Search for api.py files in the root of each module, this code is executed as is, as part of the entire interface
 - An example of using custom endpoints and functions can be viewed in the access module - file `/var/cld/modules/access/api.py`
 - Location `/api/`:
-- Available only at addresses allowed through the access module in the system
+  - Available only at addresses allowed through the access module in the system
   - Endpoint autogeneration for utilities occurs for this location
   - The file with allowed ip addresses for `nginx` is generated in the file `/etc/nginx/accesslist`
 - Location `/api/all/`:
-  - Available for all types of addresses, except those in the prohibited list:
+  - Available for all types of addresses, except those in the prohibited list
   - Can only be used for custom endpoints
     - An example of use is presented in the above api.py access module file
   - The number of requests for location `/api/all/` has a limit of `60 requests per minute`
@@ -453,7 +453,7 @@ The system is designed in such a way that the addition of new functional modules
 Access to modules via CLI, Chat bots, API and via the web interface is separately configured for each user.
 
 # Framework
-`ClassicDevOps` is home to all your infrastructure scripts where it's always at hand
+`CLD` it's home for all your infrastructure scripts where it's always at hand
 
 CLD framework script is:
 - Available through various CLI, API, Chat bot, Web - in accordance with the `access matrix` and `allowed lists` of ip addresses
@@ -494,7 +494,7 @@ Before the installation process, you should prepare the following information:
 	- `zabbix` - Zabbix access credentials (`login`, `password`, `domain`, `url for Zabbix API`)
 
 ### Quick start
-ClassicDevOps should be installing on a **clean** OS, it is recommended to use `Centos` 8 Stream, because work in this distribution is very well tested in production
+CLD should be installing on a **clean** OS, it is recommended to use `Centos` 8 Stream, because work in this distribution is very well tested in production
 The installation is starting with the command:
 ```
 bash -x <(wget -qO- "https://raw.githubusercontent.com/classicdevops/cld/master/setup/install_cld.sh")
