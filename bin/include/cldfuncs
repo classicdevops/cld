@@ -121,10 +121,18 @@ fi
 
 if [ "${CLD_GROUP_LIST}" = "1" ]; then
   if [ "${CLD_FILTER_GROUPS}" ]; then
-    echo "${CLD_FILTER_GROUPS}"
+    if [ "${JSONFUNCOUT}" = "1" ]; then
+      echo "${CLD_FILTER_GROUPS}"
+    else
+      echo "${CLD_FILTER_GROUPS}"
+    fi
     exit 0
   else
-    grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}"
+    if [ "${JSONFUNCOUT}" = "1" ]; then
+      grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}" | head -c -1 | jq -R -s -c 'split("\n")'
+    else
+      grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}"
+    fi
     exit 0
   fi
 fi
