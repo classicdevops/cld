@@ -607,7 +607,7 @@ def toolkit():
 @is_admin
 def admin():
   username = session['username']
-  userlist = bash('ls /var/cld/access/users/').split('\n')
+  userlist = bash('ls -h /var/cld/access/users/* -d -h | cut -d / -f 6').split('\n')
   users = list()
   for user in userlist:
     userid = bash('grep ^'+vld(user)+': /etc/passwd | cut -d : -f 3')

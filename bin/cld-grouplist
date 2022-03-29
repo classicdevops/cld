@@ -30,5 +30,7 @@ done
 [ "$JSON" == "1" ] && JSONARG='--json'
 [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
 [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='| jq .'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" -a "${CLD_GROUP_LIST}" = "1" ] && JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -C "split(\"\n\")"'
+[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" -a "${CLD_GROUP_LIST}" = "1" ] && JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
 
 source <(echo -n CLOUDS_USER_ALLOWED --grouplist "${JSONARG}" ${CLD_ALL_GROUPS_ARG} ${JSON_BEAUTY_ARG})
