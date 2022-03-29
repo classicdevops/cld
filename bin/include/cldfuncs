@@ -121,9 +121,11 @@ fi
 
 if [ "${CLD_GROUP_LIST}" = "1" ]; then
   if [ "${CLD_FILTER_GROUPS}" ]; then
-    return echo "${CLD_FILTER_GROUPS}"
+    echo "${CLD_FILTER_GROUPS}"
+    exit 0
   else
-    return grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}"
+    grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}"
+    exit 0
   fi
 fi
 
