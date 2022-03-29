@@ -94,13 +94,14 @@ fi
 }
 
 CLOUDS_USER_ALLOWED() {
-local i ii ARG1 ARG2 ARG3 CLD_ALL_GROUPS
+local i ii ARG1 ARG2 ARG3 CLD_ALL_GROUPS CLD_GROUP_LIST
 for i in "${@:1}"
 do
   case $i in
     -g=*|-groups=*|--groups=*) CLD_GROUPS=$(echo "${i#*=}"| tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n') ;;
     -j|-json|--json) JSONFUNCOUT=1                  ;;
     -a|-all|--all) CLD_ALL_GROUPS=1                 ;;
+    -gl|-grouplist|--grouplist) CLD_GROUP_LIST=1    ;;
     -*)                                             ;;
     *) let ii++; local ARG$ii=${i}                  ;;
   esac
@@ -116,6 +117,16 @@ then
   fi
 else
   CLD_FILTER_GROUPS="$(grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}")"
+fi
+
+if [ "${CLD_GROUP_LIST}" = "1" ]; then
+  if [ "${CLD_FILTER_GROUPS}" ]; then
+    echo "${CLD_FILTER_GROUPS}"
+    exit 0
+  else
+    grep "^${SUDO_USER}:" /var/cld/creds/passwd | cut -d : -f 6 | tr ',' '\n' | grep "${CLD_GROUPS}"
+    exit 0
+  fi
 fi
 
 if [ "$JSONFUNCOUT" == "1" ]
