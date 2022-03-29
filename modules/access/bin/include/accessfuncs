@@ -120,6 +120,20 @@ mv /etc/hosts.localnets6.tmp /etc/hosts.localnets6
 EOACCESSLIST
 }
 
+fullaccesslist()
+{
+echo "127.0.0.1" | awk '{print $1"/32 # localhost"}'
+echo "$CLD_IP" | egrep -o "${IPV4REGEX}" | awk '{print $1"/32 # CLD ip"}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -F"_" '{print $1"/32 # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}_" | awk -F"_" '{print $1"/32 # manual enabled ip of "$2}'
+CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "${IPV4REGEX}_" | awk -F"_" '{print $2"/32 # auto enabled ip of "$1}'
+echo "::1" | awk '{print $1"/128 # localhost"}'
+echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk '{print $1"/128 # CLD ip"}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV6REGEX}_" | awk -F"_" '{print $1"/128 # private ip of "$3"-"$4}'
+grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV6REGEX}_" | awk -F"_" '{print $1"/128 # manual enabled ip of "$2}'
+CLOUDS_USER_ALLOWED --groups="${CLD_ALLOW_GROUPS}" | egrep "${IPV6REGEX}_" | awk -F"_" '{print $2"/128 # auto enabled ip of "$1}'
+}
+
 updateaccesslists()
 {
     {
