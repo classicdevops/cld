@@ -32,7 +32,7 @@ case $i in
 esac
 done
 
-if [ "$cidr" == "1" ]; then
+if [ "$CIDR" == "1" ]; then
   CIDR_ARG='--cidr'
 fi
 
