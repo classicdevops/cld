@@ -122,12 +122,13 @@ EOACCESSLIST
 
 fullaccesslist()
 {
-local i ii ARG1 ARG2 ARG3 CIDR_OUTPUT CIDRV4 CIDRV6 CLD_GROUPS
+local i ii ARG1 ARG2 ARG3 CIDR_OUTPUT CIDRV4 CIDRV6 CLD_GROUPS CLD_ALL_GROUPS_ARG
 for i in "${@:1}"
 do
   case $i in
     -c|-cidr|--cidr) CIDR_OUTPUT=1  ;;
     -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+    -a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
     *)                              ;;
   esac
 done
@@ -140,12 +141,12 @@ echo "127.0.0.1" | awk -v cidr="${CIDRV4}" '{print $1cidr" # localhost"}'
 echo "$CLD_IP" | egrep -o "${IPV4REGEX}" | awk -v cidr="${CIDRV4}" '{print $1cidr" # CLD ip"}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $1cidr" # private ip of "$3"-"$4}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $1cidr" # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $2cidr" # auto enabled ip of "$1}'
+CLOUDS_USER_ALLOWED ${CLD_ALL_GROUPS_ARG} --groups="${CLD_GROUPS}" | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $2cidr" # auto enabled ip of "$1}'
 echo "::1" | awk -v cidr=${CIDRV6} '{print $1cidr" # localhost"}'
 echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk -v cidr=${CIDRV6} '{print $1cidr" # CLD ip"}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $1cidr" # private ip of "$3"-"$4}'
 grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $1cidr" # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $2cidr" # auto enabled ip of "$1}'
+CLOUDS_USER_ALLOWED ${CLD_ALL_GROUPS_ARG} --groups="${CLD_GROUPS}" | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $2cidr" # auto enabled ip of "$1}'
 }
 
 updateaccesslists()
