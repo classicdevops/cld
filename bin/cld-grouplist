@@ -30,7 +30,7 @@ done
 if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]; then
   JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -C "split(\"\n\")"'
 elif [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ]; then
-  JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
+  JSON_BEAUTY_ARG='| head -c -1 | jq -R -s "split(\"\n\")"'
 elif [ "$JSON" == "1" ]; then
   JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
 fi
