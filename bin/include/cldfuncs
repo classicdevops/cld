@@ -122,7 +122,7 @@ fi
 if [ "${CLD_GROUP_LIST}" = "1" ]; then
   if [ "${CLD_FILTER_GROUPS}" ]; then
     if [ "${JSONFUNCOUT}" = "1" ]; then
-      echo "${CLD_FILTER_GROUPS}"
+      echo "${CLD_FILTER_GROUPS}" | head -c -1 | jq -R -s -c 'split("\n")'
     else
       echo "${CLD_FILTER_GROUPS}"
     fi
