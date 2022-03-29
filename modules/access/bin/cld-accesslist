@@ -8,6 +8,7 @@ HELP_ARGS=$(cat << 'EOL'
 --noinfo                      No print address information
 --json                        Json outout option
 --beauty                      Using together with --json option to beautify json output
+--groups=GROUP1,GROUP2        Filtering by instance groups for
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
@@ -27,6 +28,7 @@ case $i in
 -b|-beauty|--beauty) JSON_BEAUTY=1                 ;;
 -c|-cidr|--cidr) CIDR=1                            ;;
 -n|-noinfo|--noinfo) NOINFO=1                      ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"    ;;
 -*)                                                ;;
 *) let ii++; declare ARG$ii=${i}                   ;;
 esac
@@ -62,4 +64,4 @@ elif [ "$JSON" == "1" ]; then
   JSON_BEAUTY_ARG='| jq -c .'
 fi
 
-source <(echo -n fullaccesslist ${CIDR_ARG} ${NOINFO_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
+source <(echo -n fullaccesslist --groups="${CLD_GROUPS}" ${CIDR_ARG} ${NOINFO_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})

@@ -127,7 +127,7 @@ for i in "${@:1}"
 do
   case $i in
     -c|-cidr|--cidr) CIDR_OUTPUT=1  ;;
-    -g=*|-groups=*|--groups=*) CLD_GROUPS=$(echo "${i#*=}"| tr '\n' ',' | sed 's#,#$,#g' | sed 's#^\$,##g' | tr ',' '\n') ;;
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
     *)                              ;;
   esac
 done
