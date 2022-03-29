@@ -1,0 +1,65 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Show trusted IP address list
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--cidr                        Show trusted list with CIDR's
+--noinfo                      No print address information
+--json                        Json outout option
+--beauty                      Using together with --json option to beautify json output
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-accesslist
+cld-accesslist --json
+cld-accesslist --cidr --noinfo
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+source /var/cld/modules/access/bin/include/accessfuncs
+
+for i in ${CLDOPTS}
+do
+case $i in
+-j|-json|--json) JSON=1                            ;;
+-b|-beauty|--beauty) JSON_BEAUTY=1                 ;;
+-c|-cidr|--cidr) CIDR=1                            ;;
+-n|-noinfo|--noinfo) NOINFO=1                      ;;
+-*)                                                ;;
+*) let ii++; declare ARG$ii=${i}                   ;;
+esac
+done
+
+if [ "$CIDR" == "1" ]; then
+  CIDR_ARG='--cidr'
+fi
+
+if [ "${JSON}" = "1" ]; then
+  if [ "${NOINFO}" != "1" ]; then
+JSON_ARG=$(cat << 'EOJSONARG'
+| head -c -1 | jq -R -s -c 'split("\n") | .[] | [ { "ip": sub(" # .*";""), "info": sub(".* # ";"") } ]' | jq -s add
+EOJSONARG
+)
+  elif [ "${NOINFO}" = "1" ]; then
+JSON_ARG=$(cat << 'EOJSONARG'
+| head -c -1 | jq -R -s -c 'split("\n") | .[] | [ sub(" # .*";"") ]' | jq -s add
+EOJSONARG
+)
+ fi
+else
+  if [ "${NOINFO}" = "1" ]; then
+    NOINFO_ARG='| cut -d "#" -f 1 | tr -d "\s"' 
+  fi
+fi
+
+if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]; then
+  JSON_BEAUTY_ARG='| jq -C .'
+elif [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ]; then
+  JSON_BEAUTY_ARG='| jq .'
+elif [ "$JSON" == "1" ]; then
+  JSON_BEAUTY_ARG='| jq -c .'
+fi
+
+source <(echo -n fullaccesslist ${CIDR_ARG} ${NOINFO_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
