@@ -27,11 +27,11 @@ case $i in
 esac
 done
 
-if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" -a "${CLD_GROUP_LIST}" == "1" ]; then
+if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]; then
   JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -C "split(\"\n\")"'
-elif [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" -a "${CLD_GROUP_LIST}" == "1" ]; then
+elif [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ]; then
   JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
-elif [ "$JSON" == "1" -a "${CLD_GROUP_LIST}" == "1" ]; then
+elif [ "$JSON" == "1" ]; then
   JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
 fi
 
