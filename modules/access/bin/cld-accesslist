@@ -46,6 +46,7 @@ EOJSONARG
 JSON_ARG=$(cat << 'EOJSONARG'
 | head -c -1 | jq -R -s -c 'split("\n") | .[] | [ sub(" # .*";"") ]' | jq -s add
 EOJSONARG
+)
  fi
 else
   if [ "${NOINFO}" = "1" ]; then
