@@ -4,9 +4,6 @@ Show list of groups
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
-$1                            First PATTERN filtering allowed groups
-$2                            Second PATTERN filtering allowed groups
-$3                            Third PATTERN filtering allowed groups
 --json                        Json outout option
 --beauty                      Using together with --json option to beautify json output
 EOL
@@ -24,13 +21,18 @@ do
 case $i in
 -j|-json|--json) JSON=1                            ;;
 -b|-beauty|--beauty) JSON_BEAUTY=1                 ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"          ;;
 -*)                                                ;;
 *) let ii++; declare ARG$ii=${i}                   ;;
 esac
 done
 
-[ "$JSON" == "1" ] && JSONARG='--json'
-[ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ] && JSON_BEAUTY_ARG='| jq . -C'
-[ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ] && JSON_BEAUTY_ARG='| jq .'
+if [ "$JSON_BEAUTY" == "1" -a "$FROM" == "API" ]; then
+  JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -C "split(\"\n\")"'
+elif [ "$JSON_BEAUTY" == "1" -a "$FROM" != "API" ]; then
+  JSON_BEAUTY_ARG='| head -c -1 | jq -R -s "split(\"\n\")"'
+elif [ "$JSON" == "1" ]; then
+  JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
+fi
 
-CLOUDS_USER_ALLOWED --grouplist
+source <(echo -n CLOUDS_USER_ALLOWED --grouplist ${CLD_ALL_GROUPS_ARG} ${JSON_BEAUTY_ARG})
