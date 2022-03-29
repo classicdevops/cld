@@ -35,4 +35,4 @@ elif [ "$JSON" == "1" -a "${CLD_GROUP_LIST}" == "1" ]; then
   JSON_BEAUTY_ARG='| head -c -1 | jq -R -s -c "split(\"\n\")"'
 fi
 
-source <(echo -n CLOUDS_USER_ALLOWED --grouplist "${JSONARG}" ${CLD_ALL_GROUPS_ARG} ${JSON_BEAUTY_ARG})
+source <(echo -n CLOUDS_USER_ALLOWED --grouplist ${CLD_ALL_GROUPS_ARG} ${JSON_BEAUTY_ARG})
