@@ -54,7 +54,7 @@ EOJSONARG
  fi
 else
   if [ "${NOINFO}" = "1" ]; then
-    NOINFO_ARG='| cut -d "#" -f 1 | tr -d "\s"' 
+    NOINFO_ARG='| cut -d "#" -f 1 | tr -d " "' 
   fi
 fi
 

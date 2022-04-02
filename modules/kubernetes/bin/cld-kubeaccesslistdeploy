@@ -1,0 +1,59 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+CLD kubernetes access list deploy to ingress config map
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--cluster=kubeprod              Kubernetes cluster name - default is current
+--map=nginx-ingress             Config map name - default is "nginx-ingress-ingress-nginx-controller"
+--namespace=default             Kubernetes namespace - default is "default"
+--key=whitelist-source-range    Name of the key in config map - default is "whitelist-source-range"
+--groups=group1,group2          Filtering access list by instance groups default is all allowed to user
+--all                           Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-kubeaccesslistdeploy
+cld-kubeaccesslistdeploy --cluster=kubeprod --configmap=nginx-ingress --namespace=cld --groups=default,kubeprod,kubedev
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+  case $i in
+    -c=*|-cluster=*|--cluster=*) CLUSTER_NAME="${i#*=}"   ;;
+    -m=*|-map=*|--map=*) CONFIG_MAP="${i#*=}"             ;;
+    -n=*|-namespace=*|--namespace=*) NAMESPACE="${i#*=}"  ;;
+    -k=*|-key=*|--key=*) KEY_NAME="${i#*=}"               ;;
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"       ;;
+    -a|-all|--all) CLD_ALL_GROUPS_ARG="--all"             ;;
+    -*)                                                   ;;
+    *) let ii++; declare ARG$ii=${i}                      ;;
+  esac
+done
+
+if [ "${CLUSTER_NAME}" ]; then
+CLUSTER_EXIST=$(grep -q -s ",${CLUSTER_SET}$" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
+[ "${CLUSTER_EXIST}" = "1" ] && CLUSTER_CONFIG="/var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME}"
+else
+CLUSTER_CONFIG="$(readlink -e /root/.kube/config)"
+CLUSTER_NAME=$(basename ${CLUSTER_CONFIG})
+fi
+
+CLUSTER_CONFIG_CHECK=$(grep -s -q "apiVersion" /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME} && echo 1 || echo 0)
+
+[ "${CLUSTER_CONFIG}" != "" -a "${CLUSTER_CONFIG_CHECK}" = "1" ] || { echo Cluster not exist - use cld-kubecluster to  check cluster set and try again - exit ; exit 1 ; }
+
+CONFIG_MAP=${CONFIG_MAP:-nginx-ingress-ingress-nginx-controller}
+NAMESPACE=${NAMESPACE:-default}
+KEY_NAME=${KEY_NAME:-whitelist-source-range}
+ACCESS_LIST="$(/var/cld/modules/access/bin/cld-accesslist --groups=${CLD_GROUPS} ${CLD_ALL_GROUPS_ARG}  --cidr --noinfo | head -c -1 | tr -d ' ' | tr '\n' ',')"
+
+[ "$ACCESS_LIST" ] || { echo access list is not defined - use cld-accesslist to check it - exit ; exit 1 ; }
+
+kubectl patch configmap/${CONFIG_MAP} -n ${NAMESPACE} --kubeconfig=${CLUSTER_CONFIG} --type merge -p "$(cat << EOL | sort -u
+{"data":{"${KEY_NAME}":"${ACCESS_LIST}"}}
+EOL
+)"
