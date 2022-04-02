@@ -18,6 +18,7 @@
 #built-in modules
 /modules/*
 !/modules/access/
+!/modules/ansible/
 !/modules/backup/
 !/modules/cm/
 !/modules/spamcheck/
@@ -28,6 +29,7 @@
 !/modules/note/
 !/modules/etcbackup/
 !/modules/filemanager/
+!/modules/kubernetes/
 !/modules/telegramcloud/
 !/modules/zabbix/
 

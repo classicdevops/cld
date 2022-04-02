@@ -1,0 +1,149 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+CLD configuration manager for kubectl
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Kubernetes cluster set contains master node instance string and cluster name with comma separator
+--set                    Choose kubernetes cluster configuration by master instance and cluster name as current for kubectl - default action
+--new                    Add new kubernetes cluster configuration by master instance and cluster name - default if cluster set not found
+--del                    Remove kubernetes cluster configuration
+--groups=group1,group2   Filtering by instance groups
+--all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-kubecluster
+cld-kubecluster m1.k8s.cld_1.2.3.4_22_root,prod
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+  case $i in
+    -s|-set|--set) SET_CLUSTER="1"                   ;;
+    -n|-new|--new) NEW_CLUSTER="1"                   ;;
+    -d|-del|--del) DEL_CLUSTER="1"                   ;;
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"  ;;
+    -a|-all|--all) CLD_ALL_GROUPS_ARG="--all"        ;;
+    -*)                                              ;;
+    *) let ii++; declare ARG$ii=${i}                 ;;
+  esac
+done
+
+choosecluster()
+{
+  echo Please choose cluster set or create new one:
+  select CLUSTER_SET in $(grep -v "^#\|^$" /var/cld/modules/kubernetes/data/clustersets) $([ "${DEL_CLUSTER}" != "1" ] && echo NEW_CLUSTER_SET)
+  do
+    [ "${CLUSTER_SET}" = "NEW_CLUSTER_SET" ] && newclusterdata
+    [ "${CLUSTER_SET}" ] && break
+  done
+}
+
+chooseaction()
+{
+  echo Please choose action:
+  select ACTION in new_cluster switch_cluster delete_cluster
+  do
+  if [ "${ACTION}" = "new_cluster" ]; then
+    NEW_CLUSTER="1"
+  elif [ "${ACTION}" = "switch_cluster" ]; then
+    SET_CLUSTER="1"
+  elif [ "${ACTION}" = "delete_cluster" ]; then
+    DEL_CLUSTER="1"
+  fi
+    break
+  done
+}
+
+newclusterdata()
+{
+REGEX_INSTANCE_PATTERN='[A-Za-z0-9._-]+'
+INSTANCE_PATTERN_REGEX="m1.k8s.cld OR 1.2.3.4"
+while ! egrep -q "^${REGEX_INSTANCE_PATTERN}$" <<< "$INSTANCE_PATTERN"
+do
+echo -e "Please enter the pattern to choose your kubernetes cluster master instance - use $(echo -n "${REGEX_INSTANCE_PATTERN}") - symbols\nEXAMPLE: ${INSTANCE_PATTERN_REGEX}"
+echo -n "#: " ; read -t 60 INSTANCE_PATTERN
+echo
+done
+echo "Please select target kubernetes cluster master instance"
+select MASTER_INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${INSTANCE_PATTERN}" "$CLD_ALL_GROUPS_ARG")
+do
+  grep -q "^${MASTER_INSTANCE}," /var/cld/modules/kubernetes/data/clustersets && { echo cluster master instance already exist in cluster sets - try again ; unset CLUSTER_NAME ; }
+  if ! [ "$MASTER_INSTANCE" ]
+  then
+    echo "you choosed incorrect instance, please try again and type digits only"
+  else
+    break
+  fi
+done
+
+REGEX_CLUSTER_NAME='[A-Za-z0-9-]+'
+CLUSTER_NAME_REGEX="kubeprod"
+while ! egrep -q "^${REGEX_CLUSTER_NAME}$" <<< "$CLUSTER_NAME"
+do
+echo -e "Please enter the custom cluster name - use $(echo -n "${REGEX_CLUSTER_NAME}") - symbols\nEXAMPLE: ${CLUSTER_NAME_REGEX}"
+echo -n "#: " ; read -t 60 CLUSTER_NAME
+echo
+grep -q ",${CLUSTER_NAME}$" /var/cld/modules/kubernetes/data/clustersets && { echo cluster name already exist in cluster sets - try again ; unset CLUSTER_NAME ; }
+done
+
+CLUSTER_SET="${MASTER_INSTANCE},${CLUSTER_NAME}"
+}
+
+newcluster()
+{
+  [ -d /var/cld/modules/kubernetes/data/kubectlconfig ] || mkdir -p /var/cld/modules/kubernetes/data/kubectlconfig &>/dev/null
+  /var/cld/bin/cldx-bash-notty -a ${MASTER_INSTANCE} <<< "cat /root/.kube/config" > /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME} || { echo kubectl config not found at ${MASTER_INSTANCE} by path /root/.kube/config - adding failed - exit ; exit 1 ; }
+  MASTER_INSTANCE_IP=$(cut -d _ -f 2 <<< ${MASTER_INSTANCE})
+  sed -r -i "s#(server: https://)[0-9.]+(:[0-9]+)#\1${MASTER_INSTANCE_IP}\2#g" /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME}
+  echo ${MASTER_INSTANCE},${CLUSTER_NAME} >> /var/cld/modules/kubernetes/data/clustersets
+  grep -s -q "apiVersion" /root/.kube/config || switchcluster
+}
+
+switchcluster()
+{
+  [ -d /root/.kube ] || mkdir -p /root/.kube &>/dev/null
+  [ -f /root/.kube/config ] && rm -f /root/.kube/config
+  ln -s /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME} /root/.kube/config
+}
+
+deletecluster()
+{
+  rm -f /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME}
+  sed -i "/^${CLUSTER_SET}$/d" /var/cld/modules/kubernetes/data/clustersets
+}
+
+
+if [ "${SET_CLUSTER}" = "" -a "${DEL_CLUSTER}" = "" -a "${NEW_CLUSTER}" = "" ]; then
+  chooseaction
+fi
+
+if [ "$ARG1" = "" ]; then
+  if [ "${NEW_CLUSTER}" = "1" ]; then
+    newclusterdata
+  else
+    choosecluster
+  fi
+fi
+
+[ "${CLUSTER_SET}" ] || CLUSTER_SET=${ARG1}
+MASTER_INSTANCE=$(cut -d , -f 1 <<< ${CLUSTER_SET})
+CLUSTER_NAME=$(cut -d , -f 2 <<< ${CLUSTER_SET})
+
+[ "${MASTER_INSTANCE}" ] || { echo Master instance failed to parse from cluster set - exit ; exit 1 ; }
+MASTER_INSTANCE=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${MASTER_INSTANCE}" "$CLD_ALL_GROUPS_ARG")
+[ "${MASTER_INSTANCE}" ] || { echo Master instance not found in CLD - add it or user --all argument - exit ; exit 1 ; }
+[ "${CLUSTER_NAME}" ] || { echo Cluster name failed to parse from cluster set - exit ; exit 1 ; }
+
+CLUSTER_SET_EXIST=$(grep -q -s "${CLUSTER_SET}" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
+
+if [ "${CLUSTER_SET_EXIST}" != "1" ]; then
+  newcluster
+elif [ "${CLUSTER_SET_EXIST}" = "1" ]; then
+  [ "${SET_CLUSTER}" = "1" ] && switchcluster
+  [ "${DEL_CLUSTER}" = "1" ] && deletecluster
+fi

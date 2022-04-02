@@ -401,6 +401,8 @@ source <(echo "CLOUD=\"${CLOUD}${VALUE}${DELIM}\"")
 unset VALUE
 fi
 done
+FILE_DIR=$(dirname ${${FILE}})
+[ -d "${FILE_DIR}" ] || mkdir -p ${FILE_DIR} &>/dev/null
 echo "${CLOUD::-1} written to file ${FILE}"
 echo "${CLOUD::-1}" >> ${FILE}
 }

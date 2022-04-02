@@ -1,0 +1,19 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+
+if ! grep -q "^KUBERNETES=" /var/cld/creds/creds
+then
+    echo "Are you using KUBERNETES ?" 
+    select ANSWER in yes no
+    do
+        if [ "${ANSWER}" == "yes" ]
+            then
+                /var/cld/modules/kubernetes/bin/cld-kubecluster --new && echo KUBERNETES=1 >> /var/cld/creds/creds || echo skipped - you can try again cld-kubecluster tool to add exist cluster or cld-initmain to run this question again
+                break
+        elif [ "${ANSWER}" == "no" ]
+            then
+                echo KUBERNETES=0 >> /var/cld/creds/creds
+                break
+        fi
+    done
+fi
