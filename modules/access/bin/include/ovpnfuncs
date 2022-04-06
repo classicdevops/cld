@@ -111,7 +111,7 @@ if [ "$PORT" = "" ] ; then PORT=$(grep port /etc/openvpn/server*.conf | cut -d '
 if [ "$PORT" = "1" ] ; then PORT=1194 ; fi ; echo $PORT
 
 if ! [ "$NETWORK" ] ; then
-NETWORK=$(grep server /etc/openvpn/server*.conf -h | grep "^server 10" | awk '{print $2}' |  sort -t . -n -k 1 -k 2 -k 3 -k 4 | tail -1)
+NETWORK=$(grep server /etc/openvpn/server*.conf -h | grep "^server 10" | awk '{print $2}' |  sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1)
     if ! [ "$NETWORK" ] ; then
         NETWORK=${NETWORK:-10.8.0.0}
     else
