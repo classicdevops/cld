@@ -35,7 +35,7 @@ do
 done
 
 if [ "${CLUSTER_NAME}" ]; then
-CLUSTER_EXIST=$(grep -q -s ",${CLUSTER_SET}$" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
+CLUSTER_EXIST=$(grep -q -s ",${CLUSTER_NAME}$" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
 [ "${CLUSTER_EXIST}" = "1" ] && CLUSTER_CONFIG="/var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME}"
 else
 CLUSTER_CONFIG="$(readlink -e /root/.kube/config)"
