@@ -96,6 +96,8 @@ CERTIFICATE=$(kubectl get secret ${SECRETNAME} -n ${NAMESPACE} -o "jsonpath={.da
 
 [ -d /var/cld/modules/kubernetes/data/kubectllimited ] || mkdir -p /var/cld/modules/kubernetes/data/kubectllimited
 cat > /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user << EOL
+mkdir ~/.kube
+cat > ~/.kube/config << EOKUBE
 apiVersion: v1
 kind: Config
 preferences: {}
@@ -121,5 +123,6 @@ contexts:
   name: ${NAMESPACE}
 
 current-context: ${NAMESPACE}
+EOKUBE
 EOL
 tail -n 1000 /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user*
