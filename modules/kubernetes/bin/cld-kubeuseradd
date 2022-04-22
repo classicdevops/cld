@@ -26,7 +26,7 @@ do
   esac
 done
 
-[ "${NAMESPACE}" ] || { echo NAMESPACE is not defined ; exit 1 }
+[ "${NAMESPACE}" ] || { echo NAMESPACE is not defined ; exit 1 ; }
 
 if [ "${CLUSTER_NAME}" ]; then
 CLUSTER_EXIST=$(grep -q -s ",${CLUSTER_NAME}$" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
