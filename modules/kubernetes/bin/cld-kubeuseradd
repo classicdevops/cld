@@ -44,7 +44,12 @@ SERVER=$(grep server: ${CLUSTER_CONFIG}  | awk '{print $2}')
 
 [ -f /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user ] && {
 echo User exist:
-tail -n 1000 /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user*
+cat << EOUSER
+mkdir ~/.kube
+cat > ~/.kube/config << EOKUBE
+$(cat /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user)
+EOKUBE
+EOUSER
 exit 0
 }
 
