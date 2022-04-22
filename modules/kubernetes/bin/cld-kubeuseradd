@@ -1,0 +1,125 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+CLD kubernetes namespace limited user add
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--cluster=kubeprod              Kubernetes cluster name - default is current
+--namespace=default             Kubernetes namespace - default is "dev"
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-kubeuseradd
+cld-kubeuseradd --cluster=kubeprod --namespace=cld
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+  case $i in
+    -c=*|-cluster=*|--cluster=*) CLUSTER_NAME="${i#*=}"   ;;
+    -n=*|-namespace=*|--namespace=*) NAMESPACE="${i#*=}"  ;;
+    -*)                                                   ;;
+    *) let ii++; declare ARG$ii=${i}                      ;;
+  esac
+done
+
+[ "${NAMESPACE}" ] || { echo NAMESPACE is not defined ; exit 1 }
+
+if [ "${CLUSTER_NAME}" ]; then
+CLUSTER_EXIST=$(grep -q -s ",${CLUSTER_NAME}$" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
+[ "${CLUSTER_EXIST}" = "1" ] && CLUSTER_CONFIG="/var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME}"
+else
+CLUSTER_CONFIG="$(readlink -e /root/.kube/config)"
+CLUSTER_NAME=$(basename ${CLUSTER_CONFIG})
+fi
+
+CLUSTER_CONFIG_CHECK=$(grep -s -q "apiVersion" /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME} && echo 1 || echo 0)
+
+[ "${CLUSTER_CONFIG}" != "" -a "${CLUSTER_CONFIG_CHECK}" = "1" ] || { echo Cluster not exist - use cld-kubecluster to  check cluster set and try again - exit ; exit 1 ; }
+
+SERVER=$(grep server: ${CLUSTER_CONFIG}  | awk '{print $2}')
+
+[ -f /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user ] && {
+echo User exist:
+tail -n 1000 /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user*
+exit 0
+}
+
+kubectl create namespace ${NAMESPACE}
+kubectl create -f <(cat << EOL
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${NAMESPACE}-user
+  namespace: ${NAMESPACE}
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ${NAMESPACE}-user-full-access
+  namespace: ${NAMESPACE}
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  - cronjobs
+  verbs: ["*"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ${NAMESPACE}-user-view
+  namespace: ${NAMESPACE}
+subjects:
+- kind: ServiceAccount
+  name: ${NAMESPACE}-user
+  namespace: ${NAMESPACE}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ${NAMESPACE}-user-full-access
+EOL
+)
+
+SECRETNAME=$(kubectl describe sa ${NAMESPACE}-user -n ${NAMESPACE} | grep Tokens: | awk '{print $2}')
+USERTOKEN=$(kubectl get secret ${SECRETNAME} -n ${NAMESPACE} -o "jsonpath={.data.token}" | base64 -d)
+CERTIFICATE=$(kubectl get secret ${SECRETNAME} -n ${NAMESPACE} -o "jsonpath={.data['ca\.crt']}")
+
+[ -d /var/cld/modules/kubernetes/data/kubectllimited ] || mkdir -p /var/cld/modules/kubernetes/data/kubectllimited
+cat > /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user << EOL
+apiVersion: v1
+kind: Config
+preferences: {}
+
+clusters:
+- cluster:
+    certificate-authority-data: ${CERTIFICATE}
+    server: ${SERVER}
+  name: cluster.local
+
+users:
+- name: ${NAMESPACE}-user
+  user:
+    as-user-extra: {}
+    client-key-data: ${CERTIFICATE}
+    token: ${USERTOKEN}
+
+contexts:
+- context:
+    cluster: cluster.local
+    namespace: ${NAMESPACE}
+    user: ${NAMESPACE}-user
+  name: ${NAMESPACE}
+
+current-context: ${NAMESPACE}
+EOL
+tail -n 1000 /var/cld/modules/kubernetes/data/kubectllimited/${NAMESPACE}-user*
