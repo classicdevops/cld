@@ -161,10 +161,10 @@
     });
     }
     
-    function modaleditor(file, content) {
+    async function modaleditor(file, content) {
         var id = idgen();
         var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-        $("body").append(`\
+        await $("body").append(`\
           <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 1280px; height: 720px;">
               <div id="`+id+`-content" class="modal-content">
