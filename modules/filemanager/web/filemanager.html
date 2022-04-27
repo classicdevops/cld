@@ -186,7 +186,7 @@
             </div>
           </div>
         `)
-        sleep(200).then(() => {
+        sleep(500).then(() => {
             document.querySelector('#'+id).addEventListener("keydown", event => {
               const isCtrlS = event.ctrlKey && event.key.toLowerCase() === "s"
               if (!isCtrlS) {
@@ -216,7 +216,7 @@
                 $('#'+id).remove();
                 window.history.pushState("", "", "/filemanager?dir="+currentdir);
             });
-        }
+        });
         };
         </script>
         <div class="container"><br><br>
