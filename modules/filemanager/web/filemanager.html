@@ -164,29 +164,30 @@
     function modaleditor(file, content) {
         var id = idgen();
         var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-        $("body").append(`\
-          <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 1280px; height: 720px;">
-              <div id="`+id+`-content" class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '/admin/deletefile', '`+id+`')" class="btn btn-danger bt mb-2" style="float: right;margin-right: 10%;font-size: smaller;padding: 3px;">Delete `+file+`</button>
-                  <h4 class="modal-title" id="`+id+`Label" style="font-family: monospace; font-weight: 700;">`+file+`</h4>
-                </div>
-                <div id="`+id+`-body" class="modal-body" style="padding: 0px; line-height: 0; margin-block-end: 0px;">
-                            <div id="`+fileid+`div">
-                            <form id="`+fileid+`" style="margin-block-end: 0px;">
-                               <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
-                               <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
-                            </form>
-                            <pre id="`+fileid+`Pre">`+content+`</pre>
-                            <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2" style="float: right;">Save `+file+`</button>
+        sleep(100).then(() => {
+            $("body").append(`\
+              <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 1280px; height: 720px;">
+                  <div id="`+id+`-content" class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '/admin/deletefile', '`+id+`')" class="btn btn-danger bt mb-2" style="float: right;margin-right: 10%;font-size: smaller;padding: 3px;">Delete `+file+`</button>
+                      <h4 class="modal-title" id="`+id+`Label" style="font-family: monospace; font-weight: 700;">`+file+`</h4>
+                    </div>
+                    <div id="`+id+`-body" class="modal-body" style="padding: 0px; line-height: 0; margin-block-end: 0px;">
+                                <div id="`+fileid+`div">
+                                <form id="`+fileid+`" style="margin-block-end: 0px;">
+                                   <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                                   <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                                </form>
+                                <pre id="`+fileid+`Pre">`+content+`</pre>
+                                <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '/admin/savefile')" class="btn btn-primary bt mb-2" style="float: right;">Save `+file+`</button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        `)
-        sleep(500).then(() => {
+            `)
+
             document.querySelector('#'+id).addEventListener("keydown", event => {
               const isCtrlS = event.ctrlKey && event.key.toLowerCase() === "s"
               if (!isCtrlS) {
