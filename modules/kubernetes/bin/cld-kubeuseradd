@@ -9,7 +9,7 @@ HELP_ARGS=$(cat << 'EOL'
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
-cld-kubeuseradd
+cld-kubeuseradd --namespace=cld
 cld-kubeuseradd --cluster=kubeprod --namespace=cld
 EOL
 )
@@ -54,7 +54,7 @@ exit 0
 }
 
 kubectl create namespace ${NAMESPACE}
-kubectl create -f <(cat << EOL
+kubectl apply -f <(cat << EOL
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -76,6 +76,10 @@ rules:
   resources:
   - jobs
   - cronjobs
+  verbs: ["*"]
+- apiGroups: ["networking.k8s.io"]
+  resources:
+  - ingresses
   verbs: ["*"]
 
 ---
