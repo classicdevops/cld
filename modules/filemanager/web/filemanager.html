@@ -161,10 +161,10 @@
     });
     }
     
-    async function modaleditor(file, content) {
+    function modaleditor(file, content) {
         var id = idgen();
         var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
-        await $("body").append(`\
+        $("body").append(`\
           <div class="modal fade" id="`+id+`" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div id="`+id+`-dialog" class="modal-dialog" role="document" style="width: 1280px; height: 720px;">
               <div id="`+id+`-content" class="modal-content">
@@ -186,37 +186,37 @@
             </div>
           </div>
         `)
+        sleep(200).then(() => {
+            document.querySelector('#'+id).addEventListener("keydown", event => {
+              const isCtrlS = event.ctrlKey && event.key.toLowerCase() === "s"
+              if (!isCtrlS) {
+                return
+              }
 
-        document.querySelector('#'+id).addEventListener("keydown", event => {
-          const isCtrlS = event.ctrlKey && event.key.toLowerCase() === "s"
-          if (!isCtrlS) {
-            return
-          }
+              event.preventDefault()
 
-          event.preventDefault()
+              savefile(fileid.toString(), '/admin/savefile')
+            })
 
-          savefile(fileid.toString(), '/admin/savefile')
-        })
-
-        aceactivate(fileid);
-        $('#'+id+'-content').resizable({
-          alsoResize: ".modal-dialog",
-          minHeight: 480,
-          minWidth: 640
-        });
-        // $('#'+id+'-dialog').draggable();
-        
-        $('#'+id).modal({
-          backdrop: true
-        })
-        
-        $('#'+id).modal('show')
-        
-        $('#'+id).on('hidden.bs.modal', function () {
-            $('#'+id).remove();
-            window.history.pushState("", "", "/filemanager?dir="+currentdir);
-        });
-        
+            aceactivate(fileid);
+            $('#'+id+'-content').resizable({
+              alsoResize: ".modal-dialog",
+              minHeight: 480,
+              minWidth: 640
+            });
+            // $('#'+id+'-dialog').draggable();
+            
+            $('#'+id).modal({
+              backdrop: true
+            })
+            
+            $('#'+id).modal('show')
+            
+            $('#'+id).on('hidden.bs.modal', function () {
+                $('#'+id).remove();
+                window.history.pushState("", "", "/filemanager?dir="+currentdir);
+            });
+        }
         };
         </script>
         <div class="container"><br><br>
