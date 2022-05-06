@@ -122,6 +122,7 @@ EOACCESSLIST
 
 fullaccesslist()
 {
+[ "${CLD_IP}" ] || init-load-constant --constant=CLD_IP --example=1.2.3.4 --default='$(wget -qO- ip.cldcloud.com)'
 local i ii ARG1 ARG2 ARG3 CIDR_OUTPUT CIDRV4 CIDRV6 CLD_GROUPS CLD_ALL_GROUPS_ARG
 for i in "${@:1}"
 do
