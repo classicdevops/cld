@@ -21,6 +21,9 @@
 !/modules/ansible/
 !/modules/backup/
 !/modules/cm/
+!/modules/cmd/
+/modules/cmd/bin/cld-cmd*
+!/modules/cmd/bin/cld-cmd
 !/modules/spamcheck/
 !/modules/doc/
 !/modules/deploy/

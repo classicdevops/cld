@@ -1,0 +1,95 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Create any custom CLD command tool for sharing any user
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+--name="mycmd"               Name of custom CMD - should be unique
+--command=/cmd,args,ARG1     Custom command with arguments - comma separated and absolute path - ARG1-20 will take value of passing arguments to custom tool while using
+--debug                      Debug output of created CLD tool
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-cmd --name=my_cmd --command=helm,upgrade,somehelm,--set=git.commit=ARG1
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+  case $i in
+    -n=*|-name=*|--name=*) CUSTOM_NAME="${i#*=}" ;;
+    -c=*|-command=*|--command=*) CUSTOM_COMMAND="${i#*=}" ;;
+    -d|-debug|--debug) DEBUG="1"                    ;;
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
+done
+
+CUSTOM_NAME=$(tr -d -c '[:alnum:]' <<< "$CUSTOM_NAME")
+
+if [ "$CUSTOM_NAME" == "" ]
+then
+while ! [[ "$CUSTOM_NAME" =~  ^[a-z0-9-]{3,25}$ ]]
+do
+echo "Please enter new CUSTOM COMMAND NAME name using only 'a-z 0-9 -' symbols
+Example: somename"
+echo -n '#? '; read CUSTOM_NAME
+echo
+[ -f /var/cld/modules/cmd/bin/cld-cmd${CUSTOM_NAME} ] && unset CUSTOM_NAME && echo NAME already in use
+done
+fi
+
+if [ "$CUSTOM_COMMAND" == "" ]
+then
+while ! [[ "$CUSTOM_COMMAND" =~  ^[A-Za-z0-9_\ -]{3,256}$ ]]
+do
+echo "Please enter new CUSTOM COMMAND with arguments using only 'A-z 0-9' symbols
+Example: helm upgrade somehelm --set=git.commit=ARG1"
+echo -n '#? '; read CUSTOM_COMMAND
+echo
+done
+fi
+
+[ -f /var/cld/modules/cmd/bin/cld-cmd${CUSTOM_NAME} ] && { echo Command name already in use - exit ; exit 1 ; }
+
+CUSTOM_COMMAND_USE="$(echo "${CUSTOM_COMMAND}" | tr ',' ' ' | sed -e 's#ARG1#"$ARG1"#g')"
+
+cat > /var/cld/modules/cmd/bin/cld-cmd${CUSTOM_NAME} << EOCUSTOMCMD
+#!/bin/bash
+HELP_DESC=\$(cat << 'EOL'
+Custom CLD tool for command "$CUSTOM_COMMAND_USE"
+EOL
+)
+HELP_ARGS=\$(cat << 'EOL'
+\$1                       ARG1
+\$2                       ARG2
+\$20                      ARG20
+EOL
+)
+HELP_EXAMPLES=\$(cat << 'EOL'
+cld-cmd${CUSTOM_NAME} arg1 arg2 arg3
+EOL
+)
+
+source /var/cld/bin/include/cldfuncs
+
+for i in \${CLDOPTS}
+do
+  case \$i in
+    -*)                                             ;;
+    *) let ii++; declare ARG\$ii=\${i}                ;;
+  esac
+done
+
+set -e
+
+${CUSTOM_COMMAND_USE}
+EOCUSTOMCMD
+chmod 700 /var/cld/modules/cmd/bin/cld-cmd${CUSTOM_NAME}
+
+[ "$DEBUG" ] && {
+echo /var/cld/modules/cmd/bin/cld-cmd${CUSTOM_NAME}
+cat /var/cld/modules/cmd/bin/cld-cmd${CUSTOM_NAME}
+}
