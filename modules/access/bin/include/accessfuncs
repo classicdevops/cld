@@ -160,7 +160,7 @@ updateaccesslists()
     egrep "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/32;"}' > /etc/nginx/accesslist && systemctl reload nginx
     egrep "(([a-f0-9:]+:+)+[a-f0-9]+)" /var/cld/api/accesslist | sort -u | awk '{print "allow "$1"/128;"}' >> /etc/nginx/accesslist && systemctl reload nginx
     #Deploy current accesslist
-    ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || /var/cld/modules/access/bin/cld-accesslistdeploy &>/dev/null
+    ps axfu | grep -v grep | grep -q "cld-accesslistdeploy" || source <(grep -v "^#\|^$" /etc/cron.d/* -h | grep "cld-accesslistdeploy" | cut -d ' ' -f 7-) &>/dev/null
 
     #Update squid lists
     egrep "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" /var/cld/api/accesslist | uniq | awk '{print "acl localnet src "$1"/32"}' > /etc/squid/allow_hosts ; systemctl reload squid &

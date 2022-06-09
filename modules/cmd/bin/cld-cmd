@@ -43,7 +43,7 @@ fi
 
 if [ "$CUSTOM_COMMAND" == "" ]
 then
-while ! [[ "$CUSTOM_COMMAND" =~  ^[A-Za-z0-9_\ -]{3,1024}$ ]]
+while ! [[ "$CUSTOM_COMMAND" =~  ^[A-Za-z0-9=/\"_.\ -]{3,1024}$ ]]
 do
 echo "Please enter new CUSTOM COMMAND with arguments using only 'A-z 0-9' symbols
 Example: helm upgrade somehelm --set=git.commit=ARG1"
