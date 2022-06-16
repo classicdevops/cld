@@ -1,0 +1,8 @@
+curl -s -H "X-Auth-Token: $SCALEWAYTOKEN" https://api.scaleway.com/instance/v1/zones/fr-par-1/servers | jq -r '.servers[] | .hostname+"_"+.public_ip.address+"_22_root"' > /var/cld/access/groups/${GROUP}/clouds_tmp
+unalias mv &>/dev/null
+INSTANCE_LIST=$(cat /var/cld/access/groups/${GROUP}/clouds_tmp)
+[ "${INSTANCE_LIST}" ] && {
+echo "${INSTANCE_LIST}" > /var/cld/access/groups/${GROUP}/clouds_tmp
+
+mv /var/cld/access/groups/${GROUP}/clouds_tmp /var/cld/access/groups/${GROUP}/clouds
+}
