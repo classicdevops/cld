@@ -137,6 +137,7 @@ switchcluster()
   [ -d /root/.kube ] || mkdir -p /root/.kube &>/dev/null
   [ -f /root/.kube/config ] && rm -f /root/.kube/config
   ln -s /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME} /root/.kube/config
+  chmod 600 /var/cld/modules/kubernetes/data/kubectlconfig/*
 }
 
 deletecluster()
