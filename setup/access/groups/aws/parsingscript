@@ -1,0 +1,13 @@
+aws ec2 describe-instances --filters "Name=tag:Name,Values=CLUSTER-NODEGROUPNAME-Node" --query Reservations[*].Instances[*].[PrivateDnsName,PublicIpAddress] | egrep -o ".*\t.*" --color=never| awk '{print "eks-"$1"_"$2"_22_root" }' | sed 's#.compute.internal##g' > /var/cld/access/groups/${GROUP}/clouds_tmp
+unalias mv &>/dev/null
+INSTANCE_LIST=$(cat /var/cld/access/groups/${GROUP}/clouds_tmp)
+[ "${INSTANCE_LIST}" ] && {
+echo "${INSTANCE_LIST}" > /var/cld/access/groups/${GROUP}/clouds_tmp
+
+for awsinstance in $(grep -v -f  /var/cld/access/groups/${GROUP}/clouds  /var/cld/access/groups/${GROUP}/clouds_tmp)
+do
+timeout 10s ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$(echo $awsinstance | cut -d _ -f 2) "sudo sed -i -r 's#.*(ssh-rsa.*)#\1#g' /root/.ssh/authorized_keys" & &>/dev/null
+done
+
+mv /var/cld/access/groups/${GROUP}/clouds_tmp /var/cld/access/groups/${GROUP}/clouds
+}

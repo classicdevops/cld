@@ -46,10 +46,12 @@ choosecluster()
 chooseaction()
 {
   echo Please choose action:
-  select ACTION in new_cluster switch_cluster delete_cluster
+  select ACTION in new_self_hosted_cluster new_managed_cluster switch_cluster delete_cluster
   do
-  if [ "${ACTION}" = "new_cluster" ]; then
+  if [ "${ACTION}" = "new_self_hosted_cluster" ]; then
     NEW_CLUSTER="1"
+  elif [ "${ACTION}" = "new_managed_cluster" ]; then
+    NEW_MANAGED_CLUSTER="1"
   elif [ "${ACTION}" = "switch_cluster" ]; then
     SET_CLUSTER="1"
   elif [ "${ACTION}" = "delete_cluster" ]; then
@@ -104,11 +106,38 @@ newcluster()
   grep -s -q "apiVersion" /root/.kube/config || switchcluster
 }
 
+newmanagedcluster()
+{
+REGEX_CLUSTER_NAME='[A-Za-z0-9-]+'
+CLUSTER_NAME_REGEX="eksprod"
+while ! egrep -q "^${REGEX_CLUSTER_NAME}$" <<< "$CLUSTER_NAME"
+do
+echo -e "Please enter the custom cluster name - use $(echo -n "${REGEX_CLUSTER_NAME}") - symbols\nEXAMPLE: ${CLUSTER_NAME_REGEX}"
+echo -n "#: " ; read -t 60 CLUSTER_NAME
+echo
+grep -q ",${CLUSTER_NAME}$" /var/cld/modules/kubernetes/data/clustersets && { echo cluster name already exist in cluster sets - try again ; unset CLUSTER_NAME ; }
+done
+
+REGEX_KUBECTL_CONFIG_PATH='/[A-Za-z0-9/_.-]+'
+KUBECTL_CONFIG_PATH_EXAMPLE="/root/kubectl_eks_config"
+while ! [ -f "$KUBECTL_CONFIG_PATH" ]
+do
+echo -e "Please enter the existing kubectl config path - use $(echo -n "${REGEX_KUBECTL_CONFIG_PATH}") - symbols\nEXAMPLE: ${KUBECTL_CONFIG_PATH_EXAMPLE}"
+echo -n "#: " ; read -t 60 KUBECTL_CONFIG_PATH
+echo
+[ -f "$KUBECTL_CONFIG_PATH" ] || echo file $KUBECTL_CONFIG_PATH not found
+done
+
+cat ${KUBECTL_CONFIG_PATH} > /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME}
+echo managed_kubernetes_cluster,${CLUSTER_NAME} >> /var/cld/modules/kubernetes/data/clustersets
+}
+
 switchcluster()
 {
   [ -d /root/.kube ] || mkdir -p /root/.kube &>/dev/null
   [ -f /root/.kube/config ] && rm -f /root/.kube/config
   ln -s /var/cld/modules/kubernetes/data/kubectlconfig/${CLUSTER_NAME} /root/.kube/config
+  chmod 600 /var/cld/modules/kubernetes/data/kubectlconfig/*
 }
 
 deletecluster()
@@ -120,6 +149,11 @@ deletecluster()
 
 if [ "${SET_CLUSTER}" = "" -a "${DEL_CLUSTER}" = "" -a "${NEW_CLUSTER}" = "" ]; then
   chooseaction
+fi
+
+if [ "${NEW_MANAGED_CLUSTER}" = "1" ]; then
+  newmanagedcluster
+  exit 0
 fi
 
 if [ "$ARG1" = "" ]; then
@@ -134,10 +168,12 @@ fi
 MASTER_INSTANCE=$(cut -d , -f 1 <<< ${CLUSTER_SET})
 CLUSTER_NAME=$(cut -d , -f 2 <<< ${CLUSTER_SET})
 
+if [ "${MASTER_INSTANCE}" != "managed_kubernetes_cluster" ] ; then
 [ "${MASTER_INSTANCE}" ] || { echo Master instance failed to parse from cluster set - exit ; exit 1 ; }
 MASTER_INSTANCE=$(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "${MASTER_INSTANCE}" "$CLD_ALL_GROUPS_ARG")
 [ "${MASTER_INSTANCE}" ] || { echo Master instance not found in CLD - add it or user --all argument - exit ; exit 1 ; }
 [ "${CLUSTER_NAME}" ] || { echo Cluster name failed to parse from cluster set - exit ; exit 1 ; }
+fi
 
 CLUSTER_SET_EXIST=$(grep -q -s "${CLUSTER_SET}" /var/cld/modules/kubernetes/data/clustersets && echo 1 || echo 0)
 
