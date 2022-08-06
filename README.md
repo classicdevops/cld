@@ -1,9 +1,27 @@
 # Introduction
-CLD is a system for differentiating access to servers and scripts with the ability to quick and unify develop custom modules and automation tools based on this functionality.
-This project does not set itself the goal of replacing any existing automation tool or CI/CD/deployment/etc, to the contrary, it is designed to combine everything in one centralized self-documenting place, with secure, transparent and logged access to any server and tool, simultaneously through several available user interfaces.
+CLD is a system for differentiating access to to servers and scripts with the ability to quickly implement custom modules and automation tools.
+All of toolkit available though several user interfaces: CLI, API, Web based terminal, Chat bots (Discord, Telegram, MatterMost, Slack), also it have simple web interface for administration purposes.
+The project aims to combine all the technologies used in one centralized and self-documented place, with secure, transparent and logged access to any server and tool through several user interfaces at once.
 
-The main components of the system are bash-based utilities, API, chat bots and web interface are just additional data validators and access rights for broadcasting to these bash scripts.
-To access any tool, several factor validation operates for the user, at the application/web server and/or operating system level (sudoers file generated based on the CLD access permissions matrix), so any new module and script can be shared for execution for certain users via any interface (CLI, API, Chat bot, Web), excluding direct access to their content as well as to the entire application directory.
+It's developed it in accordance with the most principles and rules of the "Unix" philosophy, the system is based on shell utilities and additional user interfaces (Web, API, Telegram, Discord, Mattermost, Slack) in Python, each of the utilities connects a basic micro library and performs a specific task, together they form the logical core.
+All data is stored in text files with limited access, the kernel, in turn, supports working with modules.
+Each module can contain: utilities, additional user interface plugins, a readme file, an auditor file (if the module requires a separate watchdog), and module initialization scripts.
+All module components are automatically parsed by the corresponding kernel components and connected to the system, the Readme file is also parsed and help output of available utilities by blocks (description, arguments, usage examples) for subsequent automatic generation of project documentation.
+
+Additional user interfaces are a generic authorization tool for using kernel utilities and modules.
+When the system is initialized, validation methods are generated in each additional interface to be able to use all detected scripts.
+Then any existing or custom CLI scripts also can be used in the browser through the web interface console, via the API and via the chat bot in supported messengers.
+
+The web interface contains section of the terminal in the browser with the ability to upload and download files from any instance and an administration section available to users with the admin role
+The web interface also provides module sections if the module has web interface support.
+
+When accessing the system, PAM authentication and trusted lists of IP addresses are primarily used at the OS and web server level, authorization of access to the tool uses several validation factors at the application / web server level and / or at the system level (sudoers file generated based on the matrix access), any available module or tool can be shared for use by a specific user through any available interface, excluding direct user access to script code, module content, and the entire system directory.
+
+The access module provides the basis for project security.
+It provides users with the ability to generate personal VPN keys and update IP addresses from which trusted lists for instances are compiled in accordance with the network security policy mode.
+Module is also responsible for centralized management of SSH keys and deployment to remote servers of trusted lists and firewall rules (iptables) to close sensitive(or all non open) ports with the ability to fine-tune for individual instances or groups.
+
+Documentation itself plays an important role in the project. Each new tool and module is included in the automatically generated documentation, which allows you to avoid losing information about its purpose and reduce the cost of communication in the team.
 
 # Use cases
 Here are a few of the many use cases with a brief description to visualize the application of the system.
