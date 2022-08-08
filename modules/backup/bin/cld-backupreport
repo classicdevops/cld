@@ -43,13 +43,15 @@ BACKUP_VARS_DIR="/var/cld/modules/backup/data/instances/${INSTANCE}"
 elif [ -d "/var/cld/modules/backup/data/groups/${GROUP}" ]; then
 BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${GROUP}"
 else
-return 1
+[ "${BACKUP_VARS_DIR}" ] || return 1
 fi
 }
 
 definemethods()
 {
+unset BACKUP_METHODS
 BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null)"
+[ "${BACKUP_METHODS}" ] || BACKUP_METHODS="$(ls /var/cld/modules/backup/data/groups/${GROUP}/ 2>/dev/null)"
 [ "${BACKUP_METHODS}" ] || return 1
 }
 
