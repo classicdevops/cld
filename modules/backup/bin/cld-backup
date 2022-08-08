@@ -39,12 +39,14 @@ if [ -d "/var/cld/modules/backup/data/instances/${INSTANCE}" ]; then
 BACKUP_VARS_DIR="/var/cld/modules/backup/data/instances/${INSTANCE}"
 elif [ -d "/var/cld/modules/backup/data/groups/${GROUP}" ]; then
 BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${GROUP}"
+    if ! [ "${BACKUP_VARS_DIR}" ]; then
+        for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
+        do
+            [ -d "/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}" ] && BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}"
+            [ "${BACKUP_VARS_DIR}" ] && break
+        done
+    fi
 else
-for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
-do
-    [ -d "/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}" ] && BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}"
-    [ "${BACKUP_VARS_DIR}" ] && break
-done
 [ "${BACKUP_VARS_DIR}" ] || return 1
 fi
 }
@@ -53,6 +55,7 @@ definemethods()
 {
 unset BACKUP_METHODS
 BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null)"
+[ "${BACKUP_METHODS}" ] || BACKUP_METHODS="$(ls /var/cld/modules/backup/data/groups/${GROUP}/ 2>/dev/null)"
 if ! [ "${BACKUP_METHODS}" ]; then
     for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
     do
@@ -203,11 +206,11 @@ EOINST
 for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG" | grep -f <(echo "${BACKUP_INSTANCES_ALL}" | head -c -1))
 do
 (
+INSTANCE_GROUP_FUNCS
 definevarsdir || continue
 definemethods || continue
 echo
 echo "${INSTANCE}"
-INSTANCE_GROUP_FUNCS
 for BACKUP_METHOD in ${BACKUP_METHODS}
 do
 validatemethod
