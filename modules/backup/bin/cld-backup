@@ -40,13 +40,26 @@ BACKUP_VARS_DIR="/var/cld/modules/backup/data/instances/${INSTANCE}"
 elif [ -d "/var/cld/modules/backup/data/groups/${GROUP}" ]; then
 BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${GROUP}"
 else
-return 1
+for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
+do
+    [ -d "/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}" ] && BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}"
+    [ "${BACKUP_VARS_DIR}" ] && break
+done
+[ "${BACKUP_VARS_DIR}" ] || return 1
 fi
 }
 
 definemethods()
 {
+unset BACKUP_METHODS
 BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null)"
+if ! [ "${BACKUP_METHODS}" ]; then
+    for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
+    do
+        BACKUP_METHODS=$(ls /var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}/ 2>/dev/null)
+        [ "${BACKUP_METHODS}" ] && break
+    done
+fi
 [ "${BACKUP_METHODS}" ] || return 1
 }
 
