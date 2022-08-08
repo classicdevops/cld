@@ -187,6 +187,7 @@ mkdir -p /var/cld/tmp/backup/report_${REPORTID} &>/dev/null
 ############## Report generator begin ##############
 for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
 do
+INSTANCE_GROUP_FUNCS
 definevarsdir || continue
 definemethods || continue
 #INSTANCE_GROUP_FUNCS
