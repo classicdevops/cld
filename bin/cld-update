@@ -34,6 +34,7 @@ cld-stop()
 {
 echo Stop services
 systemctl stop cld
+/var/cld/bin/cld-auditor --kill &>/dev/null
 systemctl stop cron &>/dev/null
 systemctl stop crond &>/dev/null
 echo Check and wait if there current access list deploy
