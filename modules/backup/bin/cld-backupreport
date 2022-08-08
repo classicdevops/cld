@@ -42,14 +42,14 @@ if [ -d "/var/cld/modules/backup/data/instances/${INSTANCE}" ]; then
 BACKUP_VARS_DIR="/var/cld/modules/backup/data/instances/${INSTANCE}"
 elif [ -d "/var/cld/modules/backup/data/groups/${GROUP}" ]; then
 BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${GROUP}"
-    if ! [ "${BACKUP_VARS_DIR}" ]; then
-        for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
-        do
-            [ -d "/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}" ] && BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}"
-            [ "${BACKUP_VARS_DIR}" ] && break
-        done
-    fi
 else
+if ! [ "${BACKUP_VARS_DIR}" ]; then
+    for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
+    do
+        [ -d "/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}" ] && BACKUP_VARS_DIR="/var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}"
+        [ "${BACKUP_VARS_DIR}" ] && break
+    done
+fi
 [ "${BACKUP_VARS_DIR}" ] || return 1
 fi
 }
