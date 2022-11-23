@@ -16,7 +16,7 @@ initjson['info']['x-logo']['href'] = '/'
 initjson['info']['x-logo']['altText'] = 'ClassicDevOps logo'
 
 cld_domain = bash('''grep CLD_DOMAIN /var/cld/creds/creds | cut -d = -f 2 | tr -d '"' ''')
-repo_modules = bash('''grep '!/modules' /var/cld/.gitignore | cut -d / -f 3 | head -c -1 | tr '\n' ',' ''')
+repo_modules = bash('''grep '!/modules' /var/cld/.gitignore | cut -d / -f 3 | sort -u | head -c -1 | tr '\n' ',' ''')
 modules = bash("find /var/cld/ /var/cld/modules/{"+repo_modules+"}/ -maxdepth 1 -name 'bin' -o -name 'README.md'").split('\n')
 
 itter = 0
