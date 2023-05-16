@@ -277,7 +277,6 @@ done)
 $THIRD_PART
 EOSTATE
 )
-echo "$NEW_STATE" | grep "cldinput\|cldforward\|cldaccess\|cldchain" | sort -u
 NEW_STATE_HASH=$(echo "$NEW_STATE" | grep "cldinput\|cldforward\|cldaccess\|cldchain" | sort -u | md5sum | awk '{print $1}')
 if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" ]
 then
