@@ -51,6 +51,6 @@ else
 ovpngenerate --id=${USERNAME}-${USERID} --mode=${VPN_MODE}
 fi
 
-{ grep -s "^server " /etc/openvpn/server_*.conf | awk '{print $2"/24"}' ; cat /var/cld/modules/access/data/instances/cld/local_nets ; } | sort -u > /var/cld/modules/access/data/instances/cld/local_nets.tmp ; mv -f /var/cld/modules/access/data/instances/cld/local_nets.tmp /var/cld/modules/access/data/instances/cld/local_nets
+{ grep -s "^server " /etc/openvpn/server_*.conf | awk '{print $2"/28"}' ; cat /var/cld/modules/access/data/instances/cld/local_nets ; } | sort -u > /var/cld/modules/access/data/instances/cld/local_nets.tmp ; mv -f /var/cld/modules/access/data/instances/cld/local_nets.tmp /var/cld/modules/access/data/instances/cld/local_nets
 
 [ "${TG_GROUP}" != "" -a "${MESSAGE_ID}" != "" ] && curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageText?chat_id=${TG_GROUP}&message_id=${MESSAGE_ID}&parse_mode=markdown&text=\`OpenVPN key sent - token cleared\`" &>/dev/null
