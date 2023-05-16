@@ -277,8 +277,9 @@ done)
 $THIRD_PART
 EOSTATE
 )
+DOCKER_RULE_AHEAD=$(grep -m 1 -B1 cldforward <<< "${IPTABLES_CHECK_STATE}" | head -1 | grep -q "FORWARD" && echo "1")
 NEW_STATE_HASH=$(echo "$NEW_STATE" | grep "cldinput\|cldforward\|cldaccess\|cldchain" | sort -u | md5sum | awk '{print $1}')
-if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" ]
+if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" -o "${DOCKER_RULE_AHEAD}" ]
 then
 iptables-restore << EOACCESS
 ${NEW_STATE}
