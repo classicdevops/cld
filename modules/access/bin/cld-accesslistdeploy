@@ -235,7 +235,6 @@ NEW_STATE=$(cat << EOSTATE
 $FIRST_PART
 
 -A INPUT -m comment --comment cldinput -j CLDFILTER
--A INPUT -m comment --comment cldinput -j CLDDROP
 
 $(
 which docker &>/dev/null && {
@@ -265,6 +264,7 @@ do
 echo "-A CLDFILTER -s ${IP}/32 -m comment --comment cldaccess -j CLDACCEPT"
 done
 )
+-A CLDFILTER -m comment --comment cldaccess -j CLDDROP
 $(for LOOPPORT in ${LOOPPORTS}; do
 cat << EOLOOPPORT
 -A CLDACCEPT -p tcp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j ACCEPT
