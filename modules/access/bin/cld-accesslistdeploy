@@ -230,14 +230,14 @@ echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDDROP" || ${IPTABLES} -N CLDDROP
 # if there is multiple cldinput
 if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "cldinput" | wc -l)" -gt "1" ]; then
   # echo there is multiple cldinput
-  ${IPTABLES}-save | grep -vi "cldinput -j CLDFILTER" | ${IPTABLES}-restore
+  ${IPTABLES}-save | grep -vi "cldinput" | ${IPTABLES}-restore
   ${IPTABLES} -I INPUT 1 -m comment --comment cldinput -j CLDFILTER
   IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
 fi
 # if cldinput not on top of INPUT chain
 if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "^-A INPUT" | head -1 | grep -q "cldinput -j CLDFILTER" && echo 0 || echo 1)" = "1" ] ; then
   # echo cldinput not on top of INPUT chain
-  ${IPTABLES}-save | grep -vi "cldinput -j CLDFILTER" | ${IPTABLES}-restore
+  ${IPTABLES}-save | grep -vi "cldinput" | ${IPTABLES}-restore
   ${IPTABLES} -I INPUT 1 -m comment --comment cldinput -j CLDFILTER
   IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
 fi
@@ -248,14 +248,14 @@ if which docker &>/dev/null; then
 # if cldforward not on top of FORWARD chain
 if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "^-A FORWARD" | head -1 | grep -q "cldforward -j CLDFILTER" && echo 0 || echo 1)" = "1" ] ; then
   # echo cldforward not on top of FORWARD chain
-  ${IPTABLES}-save | grep -vi "cldforward -j CLDFILTER" | ${IPTABLES}-restore
+  ${IPTABLES}-save | grep -vi "cldforward" | ${IPTABLES}-restore
   ${IPTABLES} -I FORWARD 1 -m comment --comment cldforward -j CLDFILTER
   IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
 fi
 # if there is multiple cldforward
 if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "cldforward" | wc -l)" -gt "1" ]; then
   # echo there is multiple cldforward
-  ${IPTABLES}-save | grep -vi "cldforward -j CLDFILTER" | ${IPTABLES}-restore
+  ${IPTABLES}-save | grep -vi "cldforward" | ${IPTABLES}-restore
   ${IPTABLES} -I FORWARD 1 -m comment --comment cldforward -j CLDFILTER
   IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
 fi
