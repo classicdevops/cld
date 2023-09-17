@@ -1,9 +1,12 @@
 generate_access_map()
 {
-local CLD_USER CLD_INSTANCE
+local CLD_USER CLD_INSTANCE SUDO_USER ACCESS_MAP_TASK_ID
 export ACCESS_MAP_TASK_ID=$(passwordgen 7)
 
+if ! [ "${ALL_CLD_USERS}" ]; then
 export ALL_CLD_USERS="$(grep -v "^#\|^$" /var/cld/creds/passwd | cut -d : -f 1)"
+fi
+
 export ALL_CLD_INSTANCES=$(/var/cld/bin/cld -a -l -g="$CLD_GROUP")
 
 mkdir -p /var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID}/{users,instances}
@@ -11,13 +14,19 @@ export CLD_FILTER_DIR="/var/cld/tmp/access_instances_${ACCESS_MAP_TASK_ID}"
 
 for CLD_USER in ${ALL_CLD_USERS}
 do
-SUDO_USER=${CLD_USER} /var/cld/bin/cld -l > ${CLD_FILTER_DIR}/users/${CLD_USER} 2>/dev/null
+sudo -u ${CLD_USER} sudo /var/cld/bin/cld -l > ${CLD_FILTER_DIR}/users/${CLD_USER} 2>/dev/null
 done
 
 for CLD_INSTANCE in ${ALL_CLD_INSTANCES}
 do
 grep -lr "^${CLD_INSTANCE}$" ${CLD_FILTER_DIR}/users/  | cut -d / -f 7 | sort -u > ${CLD_FILTER_DIR}/instances/${CLD_INSTANCE}
 done
+
+if [ "$1" = "default" ]; then
+echo "${CLD_FILTER_DIR}" > /var/cld/tmp/auditor/current_access_map_tmp
+unset mv &>/dev/null
+mv -f /var/cld/tmp/auditor/current_access_map_tmp /var/cld/tmp/auditor/current_access_map
+fi
 }
 
 instancelistgen()

@@ -187,24 +187,6 @@ EOPORTS
 )
 fi
 
-IPTABLES_CHECK_STATE=$(iptables-save)
-echo "${IPTABLES_CHECK_STATE}" | grep -q cldinput ||  { iptables-save | grep -vi "cld" | iptables-restore ; IPTABLES_CHECK_STATE=$(iptables-save) ; }
-echo "${IPTABLES_CHECK_STATE}" | grep -q cldinput || iptables -A INPUT -m comment --comment cldinput
-echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDFILTER" || iptables -N CLDFILTER
-echo "${IPTABLES_CHECK_STATE}" | grep -q cldaccess || iptables -A CLDFILTER -m comment --comment cldaccess
-echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDACCEPT" || iptables -N CLDACCEPT
-echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDDROP" || iptables -N CLDDROP
-echo "${IPTABLES_CHECK_STATE}" | grep -q cldchain || iptables -A CLDACCEPT -m comment --comment cldchain
-
-IPTABLES_CHECK_STATE6=$(ip6tables-save)
-echo "${IPTABLES_CHECK_STATE6}" | grep -q cldinput ||  { ip6tables-save | grep -vi "cld" | ip6tables-restore ; IPTABLES_CHECK_STATE6=$(ip6tables-save) ; }
-echo "${IPTABLES_CHECK_STATE6}" | grep -q cldinput || ip6tables -A INPUT -m comment --comment cldinput
-echo "${IPTABLES_CHECK_STATE6}" | grep -q ":CLDFILTER" || ip6tables -N CLDFILTER
-echo "${IPTABLES_CHECK_STATE6}" | grep -q cldaccess || ip6tables -A CLDFILTER -m comment --comment cldaccess
-echo "${IPTABLES_CHECK_STATE6}" | grep -q ":CLDACCEPT" || ip6tables -N CLDACCEPT
-echo "${IPTABLES_CHECK_STATE6}" | grep -q ":CLDDROP" || ip6tables -N CLDDROP
-echo "${IPTABLES_CHECK_STATE6}" | grep -q cldchain || ip6tables -A CLDACCEPT -m comment --comment cldchain
-
 if [ "$ALLOWED_IPS_LINES" -lt "3" ]
 then
 iptables-save | grep -v DROP | iptables-restore
@@ -219,37 +201,6 @@ truncate -s 0 /etc/hosts.deny
 exit 1
 fi
 
-IPTABLES_STATE="$(iptables-save)"
-
-if grep -q "cldaccess" <<< "${IPTABLES_STATE}"
-then
-FIRST_LINE=$(grep -nh "^-A CLD" <<< "${IPTABLES_STATE}" | head -1 | cut -d : -f 1)
-SECOND_LINE=$(grep -nh "^-A CLD" <<< "${IPTABLES_STATE}" | tail -1 | cut -d : -f 1)
-FIRST_PART=$(head -n $((${FIRST_LINE})) <<< "${IPTABLES_STATE}" | grep -v " CLD\| cldaccess")
-SECOND_PART=$(tail -n +$((${SECOND_LINE}+1)) <<< "${IPTABLES_STATE}" | grep -v " CLD\| cldaccess")
-CURRENT_STATE_HASH=$(echo "${IPTABLES_STATE}" | grep " CLD\| cld" | sort -u | md5sum | awk '{print $1}')
-DOCKER_PART="$(
-which docker &>/dev/null && {
-for network in $(docker network ls --format '{{.Name}}' | grep bridge);
-do
-    docker network inspect $network | grep "com.docker.network.bridge.name" | cut -d '"' -f 4 | awk '{print "-A FORWARD -o "$1" -m comment --comment cldforward -j CLDFILTER" }'
-done
-}
-)"
-IPS_PART="$(for BAN_IP in $BAN_IPS
-do
-echo "-A CLDFILTER -s ${BAN_IP}/32 -m comment --comment cldaccess -j DROP"
-done
-echo "-A CLDFILTER -m state --state RELATED,ESTABLISHED -m comment --comment cldaccess -j ACCEPT"
-for LOCAL_NET in $LOCAL_NETS
-do
-echo "-A CLDFILTER -s ${LOCAL_NET} -m comment --comment cldaccess -j CLDACCEPT"
-done
-for IP in $ALLOWED_IPS
-do
-echo "-A CLDFILTER -s ${IP}/32 -m comment --comment cldaccess -j CLDACCEPT"
-done)"
-
 PORTS_PART="$(for LOOPPORT in ${LOOPPORTS}; do
 cat << EOLOOPPORT
 -A CLDACCEPT -p tcp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j ACCEPT
@@ -259,78 +210,84 @@ cat << EOLOOPPORT
 EOLOOPPORT
 done)"
 
+for IPTABLES in iptables ip6tables
+do
+IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
 
-NEW_STATE=$(cat << EOSTATE
-$FIRST_PART
--A INPUT -m comment --comment cldinput -j CLDFILTER
-$DOCKER_PART
-$PORTS_PART
-$IPS_PART
--A CLDFILTER -m comment --comment cldaccess -j CLDDROP
-$SECOND_PART
-EOSTATE
-)
-
-
-DOCKER_RULE_AHEAD=$(grep -m 1 -B1 cldforward <<< "${IPTABLES_CHECK_STATE}" | head -1 | grep -q "FORWARD" && echo "1")
-NEW_STATE_HASH=$(echo "$NEW_STATE" | grep " CLD\| cld" | sort -u | md5sum | awk '{print $1}')
-if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" -o "${DOCKER_RULE_AHEAD}" ]
-then
-iptables-restore << EOACCESS
-${NEW_STATE}
-EOACCESS
-fi
+# if there is no cldinput in iptables
+if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep -q cldinput && echo 0 || echo 1)" = "1" ]; then
+  echo there is no cldinput in iptables
+  ${IPTABLES}-save | grep -vi "cld" | ${IPTABLES}-restore
+  ${IPTABLES} -N CLDFILTER; ${IPTABLES} -N CLDACCEPT; ${IPTABLES} -N CLDDROP
+  ${IPTABLES} -I INPUT 1 -m comment --comment cldinput -j CLDFILTER
+  IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
 fi
 
+echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDFILTER" || ${IPTABLES} -N CLDFILTER
+echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDACCEPT" || ${IPTABLES} -N CLDACCEPT
+echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDDROP" || ${IPTABLES} -N CLDDROP
 
-unset FIRST_PART DOCKER_PART PORTS_PART IPS_PART SECOND_PART FIRST_LINE SECOND_LINE CURRENT_STATE_HASH NEW_STATE
+# if there is multiple cldinput
+if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "cldinput" | wc -l)" -gt "1" ]; then
+  echo there is multiple cldinput
+  ${IPTABLES}-save | grep -vi "cldinput -j CLDFILTER" | ${IPTABLES}-restore
+  ${IPTABLES} -I INPUT 1 -m comment --comment cldinput -j CLDFILTER
+  IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
+fi
+# if cldinput not on top of INPUT chain
+if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "^-A INPUT" | head -1 | grep -q "cldinput -j CLDFILTER" && echo 0 || echo 1)" = "1" ] ; then
+  echo cldinput not on top of INPUT chain
+  ${IPTABLES}-save | grep -vi "cldinput -j CLDFILTER" | ${IPTABLES}-restore
+  ${IPTABLES} -I INPUT 1 -m comment --comment cldinput -j CLDFILTER
+  IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
+fi
 
+echo "${IPTABLES_CHECK_STATE}" | grep -q cldaccess || ${IPTABLES} -I CLDFILTER 1 -m comment --comment cldaccess
 
-IPTABLES_STATE="$(ip6tables-save)"
+if which docker &>/dev/null; then
+echo "${IPTABLES_CHECK_STATE}" | grep "^-A FORWARD" | head -1 | grep -q "cldforward -j CLDFILTER" || {
+      ${IPTABLES} -I FORWARD 1 -m comment --comment cldforward -j CLDFILTER
+}
+fi
+
+IPTABLES_STATE="$(${IPTABLES}-save)"
+
+if [ "${IPTABLES}" = "iptables" ]; then
+BAN_LIST=$BAN_IPS
+NET_LIST=$LOCAL_NETS
+IP_LIST=$ALLOWED_IPS
+SINGLE_CIDR=/32
+elif [ "${IPTABLES}" = "ip6tables" ]; then
+BAN_LIST=$BAN_IPS6
+NET_LIST=$LOCAL_NETS6
+IP_LIST=$ALLOWED_IPS6
+SINGLE_CIDR=/128
+fi
 
 if grep -q "cldaccess" <<< "${IPTABLES_STATE}"
 then
 FIRST_LINE=$(grep -nh "^-A CLD" <<< "${IPTABLES_STATE}" | head -1 | cut -d : -f 1)
 SECOND_LINE=$(grep -nh "^-A CLD" <<< "${IPTABLES_STATE}" | tail -1 | cut -d : -f 1)
-FIRST_PART=$(head -n $((${FIRST_LINE})) <<< "${IPTABLES_STATE}" | grep -v " CLD\| cldaccess")
-SECOND_PART=$(tail -n +$((${SECOND_LINE}+1)) <<< "${IPTABLES_STATE}" | grep -v " CLD\| cldaccess")
-CURRENT_STATE_HASH=$(echo "${IPTABLES_STATE}" | grep " CLD\| cld" | sort -u | md5sum | awk '{print $1}')
-DOCKER_PART="$(
-which docker &>/dev/null && {
-for network in $(docker network ls --format '{{.Name}}' | grep bridge);
+FIRST_PART=$(head -n $((${FIRST_LINE})) <<< "${IPTABLES_STATE}" | grep -v " cldaccess\| cldchain")
+SECOND_PART=$(tail -n +$((${SECOND_LINE}+1)) <<< "${IPTABLES_STATE}" | grep -v " cldaccess\| cldchain")
+CURRENT_STATE_HASH=$(echo "${IPTABLES_STATE}" | grep -i "cld" | grep -v ":CLD" | sort -u | md5sum | awk '{print $1}')
+
+IPS_PART="$(for BAN_IP in $BAN_LIST
 do
-    docker network inspect $network | grep "com.docker.network.bridge.name" | cut -d '"' -f 4 | awk '{print "-A FORWARD -o "$1" -m comment --comment cldforward -j CLDFILTER" }'
-done
-}
-)"
-IPS_PART="$(for BAN_IP in $BAN_IPS6
-do
-echo "-A CLDFILTER -s ${BAN_IP}/32 -m comment --comment cldaccess -j DROP"
+echo "-A CLDFILTER -s ${BAN_IP}${SINGLE_CIDR} -m comment --comment cldaccess -j DROP"
 done
 echo "-A CLDFILTER -m state --state RELATED,ESTABLISHED -m comment --comment cldaccess -j ACCEPT"
-for LOCAL_NET in $LOCAL_NETS6
+for LOCAL_NET in $NET_LIST
 do
 echo "-A CLDFILTER -s ${LOCAL_NET} -m comment --comment cldaccess -j CLDACCEPT"
 done
-for IP in $ALLOWED_IPS6
+for IP in $IP_LIST
 do
-echo "-A CLDFILTER -s ${IP}/32 -m comment --comment cldaccess -j CLDACCEPT"
+echo "-A CLDFILTER -s ${IP}${SINGLE_CIDR} -m comment --comment cldaccess -j CLDACCEPT"
 done)"
-
-PORTS_PART="$(for LOOPPORT in ${LOOPPORTS}; do
-cat << EOLOOPPORT
--A CLDACCEPT -p tcp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j ACCEPT
--A CLDACCEPT -p udp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j ACCEPT
--A CLDDROP -p tcp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j DROP
--A CLDDROP -p udp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j DROP
-EOLOOPPORT
-done)"
-
 
 NEW_STATE=$(cat << EOSTATE
 $FIRST_PART
--A INPUT -m comment --comment cldinput -j CLDFILTER
-$DOCKER_PART
 $PORTS_PART
 $IPS_PART
 -A CLDFILTER -m comment --comment cldaccess -j CLDDROP
@@ -338,16 +295,18 @@ $SECOND_PART
 EOSTATE
 )
 
-
-DOCKER_RULE_AHEAD=$(grep -m 1 -B1 cldforward <<< "${IPTABLES_CHECK_STATE}" | head -1 | grep -q "FORWARD" && echo "1")
-NEW_STATE_HASH=$(echo "$NEW_STATE" | grep " CLD\| cld" | sort -u | md5sum | awk '{print $1}')
-if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" -o "${DOCKER_RULE_AHEAD}" ]
+NEW_STATE_HASH=$(echo "$NEW_STATE" | grep -i "cld" | grep -v ":CLD" | sed 's#0000:0000:0000:0000#:#g' | sort -u | md5sum | awk '{print $1}')
+if [ "$CURRENT_STATE_HASH" != "$NEW_STATE_HASH" ]
 then
-ip6tables-restore << EOACCESS
+${IPTABLES}-restore << EOACCESS
 ${NEW_STATE}
 EOACCESS
 fi
 fi
+
+unset IPTABLES_STATE IPTABLES_CHECK_STATE FIRST_PART DOCKER_PART PORTS_PART IPS_PART SECOND_PART FIRST_LINE SECOND_LINE CURRENT_STATE_HASH NEW_STATE_HASH NEW_STATE BAN_LIST NET_LIST IP_LIST
+
+done
 EOIPTABLES
 chmod 700 /root/sbin/iptables_access
 ps axfu | grep -v grep | grep -q accesslist || /bin/bash -l <(cat /root/sbin/iptables_access) accesslist
