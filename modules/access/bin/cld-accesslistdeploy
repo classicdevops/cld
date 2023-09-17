@@ -240,7 +240,7 @@ echo "${IPTABLES_CHECK_STATE}" | grep -q cldaccess || ${IPTABLES} -I CLDFILTER 1
 if which docker &>/dev/null; then
 # if cldforward not on top of FORWARD chain
 DOCKER_NETWORK=$(docker network inspect bridge | grep "com.docker.network.bridge.name" | cut -d '"' -f 4)
-if [ "$(echo "${IPTABLES_CHECK_STATE}" |  "$DOCKER_NETWORK" | head -1 | grep -q "cldforward -j CLDFILTER" && echo 0 || echo 1)" = "1" ] ; then
+if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "$DOCKER_NETWORK" | head -1 | grep -q "cldforward -j CLDFILTER" && echo 0 || echo 1)" = "1" ] ; then
   # echo cldforward not on top of FORWARD chain
   ${IPTABLES}-save | grep -vi "cldforward" | ${IPTABLES}-restore
   ${IPTABLES} -I FORWARD 1 -o "$DOCKER_NETWORK" -m comment --comment cldforward -j CLDFILTER
