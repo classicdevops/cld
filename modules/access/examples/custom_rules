@@ -1,0 +1,2 @@
+#Custom iptables rules which will be inserted after CLD generated rules list - should contain iptables comment "-m comment --comment cldcustom"
+-A INPUT -m comment --comment cldcustom -j ACCEPT
