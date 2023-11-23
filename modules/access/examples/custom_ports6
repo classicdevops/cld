@@ -1,0 +1,6 @@
+# Set custom CIDR of networks to generate rules for them on targeted ports "-" is a delimeter between pairs of cidrs/ports
+CIDRS=2a01:4f8:c0c:ed56::1/128,2a01:4f8:c0c:ed56::2/128
+PORTS=22,33,44:45
+-
+CIDRS=2a01:4f8:c0c:ed56::3/128,fdfb:bb7c:5000:553a::/128
+PORTS=21,32,42:43

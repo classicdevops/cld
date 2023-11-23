@@ -49,7 +49,7 @@ grep -svh "^$\|^#" /var/cld/modules/access/data/banips | awk -F"_" '{print "sshd
 )
 EOHOSTSBAN
 cat > /etc/hosts.ports.tmp << 'EOHOSTSPORTS'
-$(cat /var/cld/creds/protected_ports 2>/dev/null)
+$(grep -svh "^$\|^#" /var/cld/creds/protected_ports 2>/dev/null)
 EOHOSTSPORTS
 
 cat > /etc/hosts.localnets.tmp << 'EOHOSTSLOCALS'
@@ -60,11 +60,39 @@ cat > /etc/hosts.localnets6.tmp << 'EOHOSTSLOCALS'
 $([ -s /var/cld/creds/local_nets6 ] && cat /var/cld/creds/local_nets6 || echo fdfb:bb7c:5000:553a:0000:0000:0000:0000/120)
 EOHOSTSLOCALS
 
+cat > /etc/hosts.custom_ports.tmp << 'EOHOSTSCUSTOMPORTS'
+$(
+grep -svh "^$\|^#" /var/cld/creds/custom_ports 2>/dev/null
+)
+EOHOSTSCUSTOMPORTS
+
+cat > /etc/hosts.custom_rules.tmp << 'EOHOSTSCUSTOMRULES'
+$(
+grep -svh "^$\|^#" /var/cld/creds/custom_rules 2>/dev/null
+)
+EOHOSTSCUSTOMRULES
+
+cat > /etc/hosts.custom_ports6.tmp << 'EOHOSTSCUSTOMPORTS'
+$(
+grep -svh "^$\|^#" /var/cld/creds/custom_ports6 2>/dev/null
+)
+EOHOSTSCUSTOMPORTS
+
+cat > /etc/hosts.custom_rules6.tmp << 'EOHOSTSCUSTOMRULES'
+$(
+grep -svh "^$\|^#" /var/cld/creds/custom_rules6 2>/dev/null
+)
+EOHOSTSCUSTOMRULES
+
 unalias mv &>/dev/null
 mv /etc/hosts.allow.tmp /etc/hosts.allow
 mv /etc/hosts.ports.tmp /etc/hosts.ports
 mv /etc/hosts.localnets.tmp /etc/hosts.localnets
 mv /etc/hosts.localnets6.tmp /etc/hosts.localnets6
+mv /etc/hosts.custom_ports.tmp /etc/hosts.custom_ports
+mv /etc/hosts.custom_rules.tmp /etc/hosts.custom_rules
+mv /etc/hosts.custom_ports6.tmp /etc/hosts.custom_ports6
+mv /etc/hosts.custom_rules6.tmp /etc/hosts.custom_rules6
 EOACCESSLIST
 )
 
@@ -210,6 +238,86 @@ cat << EOLOOPPORT
 EOLOOPPORT
 done)"
 
+for CCP_FILE in /etc/hosts.custom_ports /etc/hosts.custom_ports6
+do
+[ "$CCP_FILE" = "/etc/hosts.custom_ports" ] && CCP_VER=4 || CCP_VER=6
+[ -f "${CCP_FILE}" ] || continue
+IFS_BACK=$IFS
+IFS='-'
+ITTERCPS=0
+for CPS in $(grep -svh "^$\|#" ${CCP_FILE})
+do
+let ITTERCPS++
+CC_LIST="$(grep "CIDRS" <<< "${CPS}" | cut -d = -f 2- | tr ',' '\n')"
+CP_LIST="$(grep "PORTS" <<< "${CPS}" | cut -d = -f 2- | tr ',' '\n')"
+declare CC_LIST_${ITTERCPS}=$CC_LIST
+declare CP_LIST_${ITTERCPS}=$CP_LIST
+done
+IFS=$IFS_BACK
+
+[ "${CCP_VER}" = "4" ] && ITTERCPS_4=$ITTERCPS || ITTERCPS_6=$ITTERCPS
+for ICPS in $(seq 1 ${ITTERCPS})
+do
+CC_LIST_VAR=CC_LIST_${ICPS}
+CP_LIST_VAR=CP_LIST_${ICPS}
+LOOP_PORTS_VAR="LOOPPORTS_$ICPS"
+[ "${!CC_LIST_VAR}" ] || continue
+[ "${!CP_LIST_VAR}" ] || continue
+
+unset LOOPPORTS_$ICPS
+itterp=0
+
+for i in ${!CP_LIST_VAR}; do
+if [ "$itterp" -eq "0" ]; then
+declare LOOPPORTS_$ICPS="${!LOOP_PORTS_VAR} $i"; let itterp++
+elif [ "$itterp" -eq "${ALLOWED_PORTS_COUNT}" ]; then
+declare LOOPPORTS_$ICPS="${!LOOP_PORTS_VAR} $i"; itterp=1
+else
+declare LOOPPORTS_$ICPS="${!LOOP_PORTS_VAR},$i"; let itterp++
+fi
+done
+
+declare CP_PART_${ICPS}="$(for LOOPPORT in ${!LOOP_PORTS_VAR}; do
+cat << EOLOOPPORT
+-A CLDACCEPT${ICPS} -p tcp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j ACCEPT
+-A CLDACCEPT${ICPS} -p udp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j ACCEPT
+-A CLDDROP${ICPS} -p tcp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j DROP
+-A CLDDROP${ICPS} -p udp -m multiport --dports ${LOOPPORT} -m comment --comment cldchain -j DROP
+EOLOOPPORT
+done)"
+
+declare CC_PART_${ICPS}="$(
+for CC_CIDR in ${!CC_LIST_VAR}
+do
+echo "-A CLDFILTER -s ${CC_CIDR} -m comment --comment cldaccess -j CLDACCEPT${ICPS}"
+done)"
+
+CC_PART_VAR="CC_PART_${ICPS}"
+CC_FULL_PART_VAR="CUSTOM_CIDRS_PART_$CCP_VER"
+declare CUSTOM_CIDRS_PART_$CCP_VER="$(cat << EOCC | grep -vs "^$"
+${!CC_FULL_PART_VAR}
+${!CC_PART_VAR}
+EOCC
+)"
+
+CP_PART_VAR="CP_PART_${ICPS}"
+CP_FULL_PART_VAR="CUSTOM_PORTS_PART_$CCP_VER"
+declare CUSTOM_PORTS_PART_$CCP_VER="$(cat << EOCP | grep -vs "^$"
+${!CP_FULL_PART_VAR}
+${!CP_PART_VAR}
+EOCP
+)"
+
+CP_DROP_PART_VAR="CUSTOM_DROP_PART_$CCP_VER"
+declare CUSTOM_DROP_PART_$CCP_VER="$(cat << EOCPDROP | grep -vs "^$"
+${!CP_DROP_PART_VAR}
+-A CLDFILTER -m comment --comment cldaccess -j CLDDROP${ICPS}
+EOCPDROP
+)"
+
+[ "${!CC_FULL_PART_VAR}" -a "${!CP_FULL_PART_VAR}" -a "${!CP_DROP_PART_VAR}" ] || declare CUSTOM_DROP_PART_$CCP_VER=''
+done
+done
 for IPTABLES in iptables ip6tables
 do
 IPTABLES_CHECK_STATE=$(${IPTABLES}-save)
@@ -226,6 +334,12 @@ fi
 echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDFILTER" || ${IPTABLES} -N CLDFILTER
 echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDACCEPT" || ${IPTABLES} -N CLDACCEPT
 echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDDROP" || ${IPTABLES} -N CLDDROP
+
+[ "$IPTABLES" = "iptables" ] && ITTERCPVAR=${ITTERCPS_4} || ITTERCP=${ITTERCPS_6}
+for ITTERCP in $([ "${ITTERCPVAR}" -ge "0" ] && seq 1 ${ITTERCPVAR}); do
+echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDACCEPT$ITTERCP" || ${IPTABLES} -N CLDACCEPT$ITTERCP
+echo "${IPTABLES_CHECK_STATE}" | grep -q ":CLDDROP$ITTERCP" || ${IPTABLES} -N CLDDROP$ITTERCP
+done
 
 # if there is multiple cldinput
 if [ "$(echo "${IPTABLES_CHECK_STATE}" | grep "cldinput" | wc -l)" -gt "1" ]; then
@@ -262,11 +376,17 @@ BAN_LIST=$BAN_IPS
 NET_LIST=$LOCAL_NETS
 IP_LIST=$ALLOWED_IPS
 SINGLE_CIDR=/32
+CUSTOM_CIDRS_PART=${CUSTOM_CIDRS_PART_4}
+CUSTOM_PORTS_PART=${CUSTOM_PORTS_PART_4}
+CUSTOM_DROP_PART=${CUSTOM_DROP_PART_4}
 elif [ "${IPTABLES}" = "ip6tables" ]; then
 BAN_LIST=$BAN_IPS6
 NET_LIST=$LOCAL_NETS6
 IP_LIST=$ALLOWED_IPS6
 SINGLE_CIDR=/128
+CUSTOM_CIDRS_PART=${CUSTOM_CIDRS_PART_6}
+CUSTOM_PORTS_PART=${CUSTOM_PORTS_PART_6}
+CUSTOM_DROP_PART=${CUSTOM_DROP_PART_6}
 fi
 
 if grep -q "cldaccess" <<< "${IPTABLES_STATE}"
@@ -294,8 +414,11 @@ done)"
 NEW_STATE=$(cat << EOSTATE
 $FIRST_PART
 $PORTS_PART
+$CUSTOM_PORTS_PART
 $IPS_PART
+$CUSTOM_CIDRS_PART
 -A CLDFILTER -m comment --comment cldaccess -j CLDDROP
+$CUSTOM_DROP_PART
 $SECOND_PART
 EOSTATE
 )

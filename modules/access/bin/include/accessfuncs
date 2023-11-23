@@ -71,11 +71,39 @@ fi
 )
 EOHOSTSLOCALS
 
+cat > /etc/hosts.custom_ports.tmp << 'EOHOSTSCUSTOMPORTS'
+$(
+[ -s "/var/cld/modules/access/data/instances/$1/custom_ports" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/instances/$1/custom_ports  || grep -svh "^$\|^#" /var/cld/creds/custom_ports 2>/dev/null
+)
+EOHOSTSCUSTOMPORTS
+
+cat > /etc/hosts.custom_rules.tmp << 'EOHOSTSCUSTOMRULES'
+$(
+[ -s "/var/cld/modules/access/data/instances/$1/custom_rules" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/instances/$1/custom_rules  || grep -svh "^$\|^#" /var/cld/creds/custom_rules 2>/dev/null
+)
+EOHOSTSCUSTOMRULES
+
+cat > /etc/hosts.custom_ports6.tmp << 'EOHOSTSCUSTOMPORTS6'
+$(
+[ -s "/var/cld/modules/access/data/instances/$1/custom_ports6" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/instances/$1/custom_ports6  || grep -svh "^$\|^#" /var/cld/creds/custom_ports6 2>/dev/null
+)
+EOHOSTSCUSTOMPORTS6
+
+cat > /etc/hosts.custom_rules6.tmp << 'EOHOSTSCUSTOMRULES6'
+$(
+[ -s "/var/cld/modules/access/data/instances/$1/custom_rules6" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/instances/$1/custom_rules6  || grep -svh "^$\|^#" /var/cld/creds/custom_rules6 2>/dev/null
+)
+EOHOSTSCUSTOMRULES6
+
 unalias mv &>/dev/null
 mv /etc/hosts.allow.tmp /etc/hosts.allow
 mv /etc/hosts.ports.tmp /etc/hosts.ports
 mv /etc/hosts.localnets.tmp /etc/hosts.localnets
 mv /etc/hosts.localnets6.tmp /etc/hosts.localnets6
+mv /etc/hosts.custom_ports.tmp /etc/hosts.custom_ports
+mv /etc/hosts.custom_rules.tmp /etc/hosts.custom_rules
+mv /etc/hosts.custom_ports6.tmp /etc/hosts.custom_ports6
+mv /etc/hosts.custom_rules6.tmp /etc/hosts.custom_rules6
 EOACCESSLIST
 }
 
@@ -121,11 +149,39 @@ fi
 )
 EOHOSTSLOCALS
 
+cat > /etc/hosts.custom_ports.tmp << 'EOHOSTSCUSTOMPORTS'
+$(
+[ -s "/var/cld/modules/access/data/groups/$1/custom_ports" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/groups/$1/custom_ports  || grep -svh "^$\|^#" /var/cld/creds/custom_ports 2>/dev/null
+)
+EOHOSTSCUSTOMPORTS
+
+cat > /etc/hosts.custom_rules.tmp << 'EOHOSTSCUSTOMRULES'
+$(
+[ -s "/var/cld/modules/access/data/groups/$1/custom_rules" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/groups/$1/custom_rules  || grep -svh "^$\|^#" /var/cld/creds/custom_rules 2>/dev/null
+)
+EOHOSTSCUSTOMRULES
+
+cat > /etc/hosts.custom_ports6.tmp << 'EOHOSTSCUSTOMPORTS6'
+$(
+[ -s "/var/cld/modules/access/data/groups/$1/custom_ports6" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/groups/$1/custom_ports6  || grep -svh "^$\|^#" /var/cld/creds/custom_ports6 2>/dev/null
+)
+EOHOSTSCUSTOMPORTS6
+
+cat > /etc/hosts.custom_rules6.tmp << 'EOHOSTSCUSTOMRULES6'
+$(
+[ -s "/var/cld/modules/access/data/groups/$1/custom_rules6" ] && grep -svh "^$\|^#" /var/cld/modules/access/data/groups/$1/custom_rules6  || grep -svh "^$\|^#" /var/cld/creds/custom_rules6 2>/dev/null
+)
+EOHOSTSCUSTOMRULES6
+
 unalias mv &>/dev/null
 mv /etc/hosts.allow.tmp /etc/hosts.allow
 mv /etc/hosts.ports.tmp /etc/hosts.ports
 mv /etc/hosts.localnets.tmp /etc/hosts.localnets
 mv /etc/hosts.localnets6.tmp /etc/hosts.localnets6
+mv /etc/hosts.custom_ports.tmp /etc/hosts.custom_ports
+mv /etc/hosts.custom_rules.tmp /etc/hosts.custom_rules
+mv /etc/hosts.custom_ports6.tmp /etc/hosts.custom_ports6
+mv /etc/hosts.custom_rules6.tmp /etc/hosts.custom_rules6
 EOACCESSLIST
 }
 
