@@ -8,6 +8,7 @@
 #local files
 *.local
 *.local/*
+.idea*
 
 #temp folder
 /tmp/

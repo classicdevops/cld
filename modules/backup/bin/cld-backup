@@ -54,7 +54,7 @@ fi
 definemethods()
 {
 unset BACKUP_METHODS
-BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null | xargs I ^ )"
+BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null | xargs -I ^ echo ^)"
 [ "${BACKUP_METHODS}" ] || BACKUP_METHODS="$(ls /var/cld/modules/backup/data/groups/${GROUP}/ 2>/dev/null)"
 if ! [ "${BACKUP_METHODS}" ]; then
     for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
@@ -63,25 +63,25 @@ if ! [ "${BACKUP_METHODS}" ]; then
         [ "${BACKUP_METHODS}" ] && break
     done
 fi
-BACKUP_METHODS_SET="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null | xargs I ^ echo  )"
+BACKUP_METHODS_SET="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null | xargs -I ^ echo ^)"
 [ "${BACKUP_METHODS}" ] || return 1
 }
 
-findmethods()
-{
-unset INSTANCE_BACKUP_METHODS
-unset INSTANCE_GROUP_METHODS
-INSTANCE_BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null)"
-INSTANCE_BACKUP_METHODS_SET="$(echo "${INSTANCE_BACKUP_METHODS}" | xargs I ^ ^,/var/cld/modules/backup/data/instances/${INSTANCE}/)"
-GROUP_BACKUP_METHODS=$(for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
-do
-    ls /var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}/ 2>/dev/null | grep -vf <(xargs -I {} echo ^{}$ <<< "${INSTANCE_BACKUP_METHODS}"))
-    [ "${BACKUP_METHODS}" ] && break
-done)
-
-BACKUP_METHODS_SET="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null | xargs I ^ echo  )"
-[ "${BACKUP_METHODS}" ] || return 1
-}
+#findmethods()
+#{
+#unset INSTANCE_BACKUP_METHODS
+#unset INSTANCE_GROUP_METHODS
+#INSTANCE_BACKUP_METHODS="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null)"
+#INSTANCE_BACKUP_METHODS_SET="$(echo "${INSTANCE_BACKUP_METHODS}" | xargs I ^ ^,/var/cld/modules/backup/data/instances/${INSTANCE}/)"
+#GROUP_BACKUP_METHODS=$(for BACKUP_INSTANCE_GROUP in $(grep ${INSTANCE} /var/cld/access/groups/*/clouds -l | cut -d / -f 6)
+#do
+#    ls /var/cld/modules/backup/data/groups/${BACKUP_INSTANCE_GROUP}/ 2>/dev/null | grep -vf <(xargs -I {} echo ^{}$ <<< "${INSTANCE_BACKUP_METHODS}"))
+#    [ "${BACKUP_METHODS}" ] && break
+#done)
+#
+#BACKUP_METHODS_SET="$(ls /var/cld/modules/backup/data/instances/${INSTANCE}/ 2>/dev/null | xargs I ^ echo  )"
+#[ "${BACKUP_METHODS}" ] || return 1
+#}
 
 loadmethodvars()
 {
