@@ -158,9 +158,14 @@ source /var/cld/bin/include/cldfuncs
 init-load-constants CLD_DOMAIN\|cld.yourdomain.com
 
 #parsing arguments
-for OPTS in ${@:1}
+for i in ${CLDOPTS}
 do
-echo $OPTS | grep -q '^\--filter=\|^\-filter=' && PATTERN=$(echo $OPTS | cut -d '=' -f 2)
+  case $i in
+    -f=*|-filter=*|--filter=*) PATTERN="${i#*=}"    ;;
+    -l|-list|--list) LIST=1                         ;;
+    -*)                                             ;;
+    *) let ii++; declare ARG$ii=${i}                ;;
+  esac
 done
 
 

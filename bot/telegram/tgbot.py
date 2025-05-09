@@ -8,6 +8,8 @@ import re
 import sys
 import os
 from time import sleep
+from glob import glob
+from pathlib import Path
 types = telebot.types
 
 def bash(cmd):
@@ -106,10 +108,34 @@ def cmd_getid(message):
     return bot.send_message(message.chat.id, 'chat_id: '+message_chat_id+', user_id: '+str(message.from_user.id))
 
 def allowmodule(cldmodule):
-  return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$4}' | grep "'''+vld(cldmodule)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
+    allowed_users = set()
+    with open('/var/cld/creds/passwd', 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):  # Skip empty lines and comments
+                parts = line.split(':')
+                if len(parts) >= 4 and parts[1] and parts[3]:  # Ensure user_id and module_info exist
+                    user_ids, module_info = parts[1], parts[3]
+                    if cldmodule in module_info or 'ALL' in module_info:
+                        for user_id in user_ids.split(','):
+                            if user_id:
+                                allowed_users.add(user_id)
+    return allowed_users
 
 def allowutility(cldutility):
-  return set(bash('''grep -v "^#\|^$" /var/cld/creds/passwd | awk -F ":" '{print $2":"$5}' | grep "'''+vld(cldutility)+'''\|ALL" | grep -v "^:" | cut -d : -f 1 | tr ',' '\n' ''').split('\n'))
+    allowed_users = set()
+    with open('/var/cld/creds/passwd', 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):  # Skip empty lines and comments
+                parts = line.split(':')
+                if len(parts) >= 5 and parts[1] and parts[4]:  # Ensure user_id and utility_info exist
+                    user_ids, utility_info = parts[1], parts[4]
+                    if cldutility in utility_info or 'ALL' in utility_info:
+                        for user_id in user_ids.split(','):
+                            if user_id:
+                                allowed_users.add(user_id)
+    return allowed_users
 
 def checkperms(cldmodule, cldutility, user_id, chat_id, user_name):
   user_id_str=str(user_id)
@@ -133,29 +159,55 @@ for botfile in bash("ls /var/cld/modules/*/bot.py").split('\n'):
   print(cldmodule)
   exec(open(botfile).read().replace('cldmodule', 'cldm["'+cldmodule+'"]'))
 
-exec(bash('''
-for CLD_FILE in $(find /var/cld/bin/ /var/cld/modules/*/bin/ -type f -maxdepth 1 -name 'cld*')
-do
-CLD_MODULE=$(rev <<< ${CLD_FILE} | cut -d / -f 3 | rev)
-CLD_UTIL=$(rev <<< ${CLD_FILE} | cut -d / -f 1 | rev)
-cat << EOL
-@bot.message_handler(commands=["${CLD_UTIL/cld-/}"])
-def cmd_${CLD_UTIL//[.-]/_}(message):
-    checkresult = checkperms("${CLD_MODULE}", "${CLD_UTIL}", message.from_user.id, message.chat.id, message.from_user.username)
-    if checkresult[0] != "granted": return
-    user = bash('grep "[:,]'+checkresult[1]+'[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
-    cmd_args=''
-    try:
-      for arg in message.text.split()[1:]:
-        cmd_args=cmd_args+" "+re.match('^[A-z0-9.,@*=/:_-]+$', arg).string
-    except:
-      pass
-    print('sudo -u '+user+' sudo FROM=BOT BOTSOURCE='+checkresult[2]+' ${CLD_FILE} '+cmd_args, flush=True)
-    return bot_bash_stream("sudo -u "+user+" sudo FROM=BOT BOTSOURCE="+checkresult[2]+" "+vld('${CLD_FILE}')+" "+cmd_args, message)
+CLD_UTILITIES = {}
 
-EOL
-done
-'''))
+def init_cld_utilities():
+    """Initialize the global CLD_UTILITIES dictionary with utilities from /var/cld/bin/ and /var/cld/modules/*/bin/"""
+    # Check /var/cld/bin/
+    bin_path = '/var/cld/bin/'
+    if os.path.exists(bin_path):
+        for utility in os.listdir(bin_path):
+            full_path = os.path.join(bin_path, utility)
+            if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                CLD_UTILITIES[utility] = full_path
+    
+    # Check /var/cld/modules/*/bin/
+    module_bins = glob('/var/cld/modules/*/bin/')
+    for module_bin in module_bins:
+        for utility in os.listdir(module_bin):
+            full_path = os.path.join(module_bin, utility)
+            if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                CLD_UTILITIES[utility] = full_path
+
+# Initialize utilities on startup
+init_cld_utilities()
+
+def register_bot_commands():
+    for cld_util, cld_file in CLD_UTILITIES.items():
+        command = cld_util.replace('cld-', '', 1)
+        @bot.message_handler(commands=[command])
+        def cmd_handler(message, cld_file=cld_file, cld_util=cld_util):
+            # Get module name
+            cld_module = Path(cld_file).parent.parent.name if Path(cld_file).parent.name == 'bin' and Path(cld_file).parent.parent.parent == Path('/var/cld/modules') else ''
+            # Check permissions
+            checkresult = checkperms(cld_module, cld_util, message.from_user.id, message.chat.id, message.from_user.username)
+            if checkresult[0] != "granted":
+                return
+            # Get user
+            user = bash(f'grep "[:,]{checkresult[1]}[:,]" /var/cld/creds/passwd | cut -d : -f 1 | head -1 | tr -d "\\n"')
+            # Sanitize command arguments
+            cmd_args = ''
+            try:
+                for arg in message.text.split()[1:]:
+                    cmd_args += " " + re.match('^[A-z0-9.,@*=/:_-]+$', arg).string
+            except:
+                pass
+            # Execute command
+            print(f'sudo -u {user} sudo FROM=BOT BOTSOURCE={checkresult[2]} {cld_file} {cmd_args}', flush=True)
+            return bot_bash_stream(f"sudo -u {user} sudo FROM=BOT BOTSOURCE={checkresult[2]} {vld(cld_file)} {cmd_args}", message)
+
+# Register all bot commands
+register_bot_commands()
 
 bash("/var/cld/modules/doc/bin/cld-tgcmdgen")
 
