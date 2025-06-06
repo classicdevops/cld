@@ -19,9 +19,9 @@ def access_index():
     for req_file in req_files + ipfiles + defaultfiles + tokenfiles:
       if os.path.exists(req_file):
           os.utime(req_file, None)
-          os.open('filepath', os.O_CREAT | os.O_WRONLY, 0o600)
+          os.open(req_file, os.O_CREAT | os.O_WRONLY, 0o600)
       else:
-          open(req_file, 'a').close()
+          os.open(req_file, os.O_CREAT | os.O_WRONLY, 0o600)
     if os.stat("/etc/cron.d/cld_access").st_size == 0:
       open("/etc/cron.d/cld_access", "a").write('#* * * * * root bash -lc /var/cld/modules/access/bin/cld-accesslistdeploy --all --groups=default --allowedgroups=default" &>/dev/null # uncomment this cron to enable access lists deploy\n#* * * * * root bash -lc /var/cld/modules/access/bin/cld-sshkeysdeploy --all --groups=default" &>/dev/null # uncomment this cron to enable SSH keys deploy\n@reboot root source <(cat /etc/openvpn/iptables_*@*.rules)\n')
     files = {}
