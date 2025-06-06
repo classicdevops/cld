@@ -16,9 +16,9 @@ def backup_index():
     for req_file in req_files:
       if os.path.exists(req_file):
           os.utime(req_file, None)
-          os.open('filepath', os.O_CREAT | os.O_WRONLY, 0o600)
+          os.open(req_file, os.O_CREAT | os.O_WRONLY, 0o600)
       else:
-          open(req_file, 'a').close()
+          os.open(req_file, os.O_CREAT | os.O_WRONLY, 0o600)
     if os.stat("/etc/cron.d/cld_backup").st_size == 0:
       open("/etc/cron.d/cld_backup", "a").write('#* * * * * root bash -lc "/var/cld/modules/backup/bin/cld-backup -a" &>/dev/null # uncomment this cron to enable backup script deploy\n')
     if os.stat("/var/cld/modules/backup/data/servers").st_size == 0:
