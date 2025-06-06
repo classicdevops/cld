@@ -9,7 +9,7 @@ PASSWD_CURRENT_HASH=$(md5sum /var/cld/creds/passwd | cut -d ' ' -f 1)
 PASSWD_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_passwd_hash)
 echo "${PASSWD_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_passwd_hash
 
-ACCESS_CURRENT_HASH=$({ echo ${PASSWD_CURRENT_HASH} ; du -b -d 0 /var/cld/access/ /var/cld/creds/passwd ; } | md5sum | awk '{print $1}')
+ACCESS_CURRENT_HASH=$({ echo ${PASSWD_CURRENT_HASH} ; du -b -d 0 /var/cld/access/ /var/cld/creds/passwd /var/cld/modules/access/data/{instances,groups,myips,enabledips,banips ; } | md5sum | awk '{print $1}')
 ACCESS_PREVIOUS_HASH=$(cat /var/cld/tmp/auditor/prev_access_hash)
 echo "${ACCESS_CURRENT_HASH}" > /var/cld/tmp/auditor/prev_access_hash
 CURRENT_ACCESS_MAP_DIR=$(head -1 /var/cld/tmp/auditor/current_access_map)
