@@ -16,6 +16,11 @@
 #temp folder
 /tmp/
 
+# runtime data for Docker deployment
+/docker/etc/
+/docker/home/
+/docker/root/
+
 #access
 /access/
 

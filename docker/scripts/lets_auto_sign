@@ -1,0 +1,11 @@
+#!/bin/bash
+if ps axfu | grep -v grep | grep -q "certonly"; then
+    echo There is already exist running letsencrypt instance
+    exit 1
+else
+    for DOMAIN in $(grep 'cannot load certificate' /var/log/nginx-ssl-error.log | cut -d '"' -f 2 | cut -d / -f 5 | egrep "^[0-9a-z-]+\.([0-9a-z-]+\.)?[a-z]+$" | sort -u)
+    do
+        letsencrypt certonly -a webroot -n -m certbot@cldcloud.com --agree-tos --webroot-path=/usr/share/nginx/html -d ${DOMAIN} ; chmod  755 /etc/letsencrypt /etc/letsencrypt/{live,archive} ; chmod -R 755 /etc/letsencrypt/live/$DOMAIN ; chmod -R 755 /etc/letsencrypt/archive/$DOMAIN
+    done
+    truncate -s 0 /var/log/nginx-ssl-error.log
+fi
