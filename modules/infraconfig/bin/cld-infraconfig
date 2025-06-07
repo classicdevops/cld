@@ -1,0 +1,127 @@
+#!/bin/bash
+HELP_DESC=$(cat <<'EOL'
+Collect infrastructure configuration from remote instances
+EOL
+)
+HELP_ARGS=$(cat <<'EOL'
+$1                       First PATTERN filtering allowed instances
+$2                       Second PATTERN filtering allowed instances
+$3                       Third PATTERN filtering allowed instances
+--groups=GROUP1,GROUP2   Filtering by instance groups - default "default"
+--dirs=/etc,/opt/conf    Comma separated list of directories to copy
+--commit                 Commit collected data with AI generated message
+--all                    Admin option - run with all groups
+EOL
+)
+HELP_EXAMPLES=$(cat <<'EOL'
+cld-infraconfig jenkins.srv_1.2.3.4_22_root
+cld-infraconfig --groups=prod --dirs=/etc,/usr/local/etc --commit
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+init-load-constants OPENAI_API_KEY\|sk-your-openai-api-key
+
+define_cmdfile() {
+  unset CMD_FILE
+  if [ -f "/var/cld/modules/infraconfig/data/instances/${VM}/commands" ]; then
+    CMD_FILE="/var/cld/modules/infraconfig/data/instances/${VM}/commands"
+  elif [ -f "/var/cld/modules/infraconfig/data/groups/${GROUP}/commands" ]; then
+    CMD_FILE="/var/cld/modules/infraconfig/data/groups/${GROUP}/commands"
+  else
+    for CFG_GROUP in $(grep ${VM} /var/cld/access/groups/*/clouds -l 2>/dev/null | cut -d / -f 6); do
+      if [ -f "/var/cld/modules/infraconfig/data/groups/${CFG_GROUP}/commands" ]; then
+        CMD_FILE="/var/cld/modules/infraconfig/data/groups/${CFG_GROUP}/commands"
+        break
+      fi
+    done
+  fi
+}
+
+define_dirsfile() {
+  unset DIRS_FILE
+  if [ -f "/var/cld/modules/infraconfig/data/instances/${VM}/dirs" ]; then
+    DIRS_FILE="/var/cld/modules/infraconfig/data/instances/${VM}/dirs"
+  elif [ -f "/var/cld/modules/infraconfig/data/groups/${GROUP}/dirs" ]; then
+    DIRS_FILE="/var/cld/modules/infraconfig/data/groups/${GROUP}/dirs"
+  else
+    for CFG_GROUP in $(grep ${VM} /var/cld/access/groups/*/clouds -l 2>/dev/null | cut -d / -f 6); do
+      if [ -f "/var/cld/modules/infraconfig/data/groups/${CFG_GROUP}/dirs" ]; then
+        DIRS_FILE="/var/cld/modules/infraconfig/data/groups/${CFG_GROUP}/dirs"
+        break
+      fi
+    done
+  fi
+}
+for i in ${CLDOPTS}
+do
+  case $i in
+    -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
+    -d=*|-dirs=*|--dirs=*) COPY_DIRS="${i#*=}" ;;
+    -c|-commit|--commit) COMMIT=1 ;;
+    -a|-all|--all) CLD_ALL_GROUPS_ARG="--all" ;;
+    -*) ;;
+    *) let ii++; declare ARG$ii=${i} ;;
+  esac
+done
+COPY_DIRS_ARG=${COPY_DIRS}
+COPY_DIRS=${COPY_DIRS:-/etc}
+for VM in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
+do
+  CLD_LOGS
+  INSTANCE_GROUP_FUNCS
+  $CLD_VARS
+  define_dirsfile
+  define_cmdfile
+  if [ "$COPY_DIRS_ARG" ]; then
+    CURRENT_DIRS="$COPY_DIRS_ARG"
+  elif [ "$DIRS_FILE" ]; then
+    CURRENT_DIRS="$(tr '\n' ' ' < "$DIRS_FILE")"
+  else
+    CURRENT_DIRS="$COPY_DIRS"
+  fi
+  INST_DIR="/var/cld/modules/infraconfig/data/instances/${VM}"
+  mkdir -p "$INST_DIR" || continue
+  if $CLD_MOUNT
+  then
+    for DIR in $(echo "$CURRENT_DIRS" | tr ',' ' ')
+    do
+      SRC="${LOCALMOUNTPATH}${DIR}"
+      if [ -d "$SRC" ]; then
+        DEST="$INST_DIR/$(basename $DIR)"
+        mkdir -p "$DEST"
+        cp -a "$SRC" "$DEST" 2>/dev/null
+      fi
+    done
+    $CLD_UMOUNT
+  fi
+  if [ "$CMD_FILE" ]; then
+    { cat "$CMD_FILE"; echo exit; } | $CLD_DEPLOY > "$INST_DIR/info.txt"
+  else
+    $CLD_DEPLOY <<'EOSSH' > "$INST_DIR/info.txt"
+netstat -plunt
+nproc
+free -h
+df -h
+exit
+EOSSH
+  fi
+done
+if [ "$COMMIT" == "1" ]
+then
+  REPO_DIR="$(git -C /var/cld rev-parse --show-toplevel 2>/dev/null)"
+  [ "$REPO_DIR" ] || REPO_DIR="/var/cld"
+  cd "$REPO_DIR" || exit 0
+  git add modules/infraconfig/data/instances/* >/dev/null 2>&1
+  DIFF=$(git diff --cached)
+  if [ "$OPENAI_API_KEY" ] && [ "$DIFF" ]; then
+    COMMIT_MSG=$(curl -s https://api.openai.com/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $OPENAI_API_KEY" \
+      -d '{"model":"gpt-4.1-mini","messages":[{"role":"user","content":"summarize git diff for commit message"},{"role":"user","content":"'"$(echo "$DIFF" | sed 's/"/\\"/g')"'"}]}')
+    COMMIT_MSG=$(echo "$COMMIT_MSG" | jq -r '.choices[0].message.content' 2>/dev/null)
+    [ "$COMMIT_MSG" ] || COMMIT_MSG="collect infra config"
+  else
+    COMMIT_MSG="collect infra config"
+  fi
+  git commit -m "$COMMIT_MSG" >/dev/null 2>&1
+fi

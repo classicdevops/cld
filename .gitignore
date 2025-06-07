@@ -3,6 +3,9 @@
 
 #cld modules generated data and temp
 /modules/*/data/
+!/modules/infraconfig/data/
+!/modules/infraconfig/data/instances/
+!/modules/infraconfig/data/groups/
 /modules/*/tmp/
 
 #local files
@@ -36,6 +39,7 @@
 !/modules/kubernetes/
 !/modules/telegramcloud/
 !/modules/zabbix/
+!/modules/infraconfig/
 
 #built-in backup methods
 /modules/backup/methods/*
