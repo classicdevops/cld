@@ -2,47 +2,177 @@
   <head>
     <title>CLD Web - Infraconfig</title>
     {% include 'html/include/head.html' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/keybinding-sublime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.9/ext-modelist.js"></script>
   </head>
   <body>
     <div class="page-container">
       {% include 'html/include/navbar.html' %}
+      <script>
+        var editor = [];
+        function aceactivate(file) {
+          var modelist = ace.require("ace/ext/modelist")
+          var acemode = modelist.getModeForPath(file.replaceAll('_', '.')).mode
+          if (acemode == "ace/mode/text") { acemode = "ace/mode/sh"};
+          ace.edit(file+'Pre', {
+              theme: "ace/theme/monokai",
+              keyboardHandler: "ace/keyboard/sublime",
+              foldStyle: "markbeginend",
+              mode: acemode,
+              maxLines: 40,
+              minLines: 5,
+              fontSize: 16,
+              wrap: true,
+              showPrintMargin: false,
+              autoScrollEditorIntoView: true,
+              highlightSelectedWord: true
+          });
+          editor[file+'Pre'] = ace.edit(file+'Pre');
+          editor[file+'Pre'].renderer.setScrollMargin(10, 15, 0, 0);
+          $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+          editor[file+'Pre'].getSession().on('change', function () {
+             $('#'+file+'Area').val(editor[file+'Pre'].getSession().getValue());
+          });
+        }
+        function savefile(id, url) {
+            $.ajax({
+                url : url,
+                type: "POST",
+                data : $('#'+id).serialize(),
+                cache: false,
+                processData:false,
+                success: function (data) {
+                    $('#'+id+'-button').addClass('btn-success').removeClass('btn-primary');
+                    sleep(500).then(() => {
+                    $('#'+id+'-button').addClass('btn-primary').removeClass('btn-success');
+                    });
+                    console.log('File saved');
+                    },
+                error: function (data) {
+                    $('#'+id+'-button').addClass('btn-danger').removeClass('btn-primary');
+                    sleep(500).then(() => {
+                    $('#'+id+'-button').addClass('btn-primary').removeClass('btn-danger');
+                    });
+                    console.log('An error occurred while saving data');
+                    }
+            })
+        }
+        function deletefile(id, url) {
+            $.ajax({
+                url : url,
+                type: "POST",
+                data : $('#'+id).serialize(),
+                cache: false,
+                processData:false,
+                success: function (data) {
+                    $('#'+id+'-button-del').addClass('btn-success').removeClass('btn-danger');
+                    sleep(500).then(() => {
+                       console.log('File deleted');
+                       $('#'+id+'div').remove();
+                       let parentli = $('#'+id+'-li').closest('ul');
+                       $('#'+id+'-li').remove();
+                       parentli.children('li').children('a')[1] && parentli.children('li').children('a')[1].click();
+                       parentli.children('li').children('a')[1] || parentli.remove();
+                    });
+                    },
+                error: function (data) {
+                    $('#'+id+'-button-del').addClass('btn-warning').removeClass('btn-danger');
+                    sleep(500).then(() => {
+                    $('#'+id+'-button-del').addClass('btn-danger').removeClass('btn-warning');
+                    });
+                    console.log('An error occurred while deleting file');
+                    }
+            })
+        }
+        function newconfig(type, object, config) {
+                var file = '/var/cld/modules/infraconfig/data/'+type+'/'+document.getElementById(object).value+'/'+document.getElementById(config).value;
+                var fileid = file.replaceAll('/', '_').replaceAll('.', '_');
+                $('#configtabs').prepend(`
+                <div id="`+fileid+`div">
+                <form id="`+fileid+`">
+                   <textarea id="`+fileid+`Name" name="file" style="display: none;">`+file+`</textarea>
+                   <textarea id="`+fileid+`Area" name="content" style="display: none;"></textarea>
+                </form>
+                <div class="prefile">`+file+`<button id="`+fileid+`-button-del" onclick="deletefile('`+fileid+`', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                <pre id="`+fileid+`Pre"></pre>
+                <button id="`+fileid+`-button" onclick="savefile('`+fileid+`', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save `+file+`</button>
+                <br><br>
+                </div>
+                `);
+                aceactivate(fileid);
+        }
+      </script>
       <div class="container"><br><br>
-        <h4 class="panel-title">Infra configuration collection</h4><br>
-        <form onsubmit="return runInfraconfig();">
-          <label>Group:</label>
-          <select id="groupSelect" class="form-control" style="width:auto;display:inline-block">
-            <option value="">--any--</option>
-            {% for cld_group in cld_groups %}
-              <option value="{{ cld_group }}">{{ cld_group }}</option>
-            {% endfor %}
+        <h4 class="panel-title">Infra configuration</h4>
+        <h4 class="panel-title">
+          Create config for group:
+        </h4>
+        <form style="display: -webkit-inline-box;" onsubmit="newconfig('groups','inputgroup','groupconfig');return false;">
+          <pre style="padding: 7;margin-right: -5px;border-radius: 4px 0px 0px 4px;max-height: 34px;overflow: hidden;">/var/cld/modules/infraconfig/data/groups/</pre>
+          <select type="text" class="form-control" id="inputgroup" style="width: fit-content;min-width: 100px;padding-top: 3px;border-radius: 0px;margin-right: -1px;" required="">
+          {% for cld_group in cld_groups %}
+            <option value="{{ cld_group }}">{{ cld_group }}</option>
+          {% endfor %}
           </select>
-          <label>Instance:</label>
-          <select id="instanceSelect" class="form-control" style="width:auto;display:inline-block">
-            {% for cld_instance in cld_instances %}
-              <option value="{{ cld_instance }}">{{ cld_instance }}</option>
-            {% endfor %}
+          <select type="text" class="form-control" id="groupconfig" style="width: fit-content;min-width: 100px;padding-top: 3;border-radius: 0px;margin-right: 4px;" required="">
+            <option value="dirs">dirs</option>
+            <option value="commands">commands</option>
           </select>
-          <label style="margin-left:10px"><input type="checkbox" id="commitCheck" value="1"> Commit</label>
-          <button type="submit" class="btn btn-primary" style="margin-left:10px">Run</button>
+          <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
+        </form><br>
+        <h4 class="panel-title">
+          Create config for instance:
+        </h4>
+        <form style="display: -webkit-inline-box;" onsubmit="newconfig('instances','inputinstance','instanceconfig');return false;">
+          <pre style="padding: 7;margin-right: -5px;border-radius: 4px 0px 0px 4px;max-height: 34px;overflow: hidden;">/var/cld/modules/infraconfig/data/instances/</pre>
+          <select type="text" class="form-control" id="inputinstance" style="width: fit-content;min-width: 300px;padding-top: 3px;border-radius: 0px;margin-right: -1px;" required="">
+          {% for cld_instance in cld_instances %}
+            <option value="{{ cld_instance }}">{{ cld_instance }}</option>
+          {% endfor %}
+          </select>
+          <select type="text" class="form-control" id="instanceconfig" style="width: fit-content;min-width: 100px;padding-top: 3;border-radius: 0px;margin-right: 4px;" required="">
+            <option value="dirs">dirs</option>
+            <option value="commands">commands</option>
+          </select>
+          <button type="submit" class="btn btn-primary" style="margin-left: -5; border-radius: 0px 4px 4px 0px;">Create</button>
         </form>
-        <div id="output" style="margin-top:10px"></div>
-        <script>
-          function runInfraconfig() {
-            var group = document.getElementById('groupSelect').value;
-            var inst = document.getElementById('instanceSelect').value;
-            var commit = document.getElementById('commitCheck').checked;
-            var args = inst;
-            if (group) args += ' --groups=' + group;
-            if (commit) args += ' --commit';
-            var frame = document.createElement('iframe');
-            frame.style = 'width:100%;height:400px;border:0;';
-            frame.src = '/tool/cld-infraconfig/' + encodeURIComponent(args.trim());
-            var out = document.getElementById('output');
-            out.innerHTML = '';
-            out.appendChild(frame);
-            return false;
-          }
-        </script>
+        <br>
+        <section id="configtabs">
+        {% for config_name in configs['instances']['dirs'] + configs['groups']['dirs'] %}
+          <ul class="nav nav-tabs" id="{{ config_name['name'] }}" role="tablist" style="border-bottom: 0px;">
+               <li class="nav-item">
+                  <a class="nav-link active" role="tab">{{ config_name['name'] }}</a>
+               </li>
+          {% for file in config_name['dirs'] %}
+          {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+          <li class="nav-item {% if loop.index == 1 %}active{% endif %}" id="{{ fileid }}-li">
+            <a class="nav-link" id="{{ fileid }}-tab" data-toggle="tab" href="#{{ fileid }}-content" role="tab" aria-controls="{{ fileid }}" aria-selected="false" aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}">{{ file['name'] }}</a>
+          </li>
+          {% endfor %}
+          </ul>
+            <div class="tab-content" id="{{ config_name['name'] }}">
+          {% for file in config_name['dirs'] %}
+          {% set fileid = file['path'].replace('/', '_').replace('.', '_') %}
+                <div class="tab-pane fade{% if loop.index == 1 %} active in{% endif %}" id="{{ fileid }}-content" role="tabpanel" aria-labelledby="{{ fileid }}-tab" style="padding: 0px;margin-top: -14px;">
+                <div id="{{ fileid }}div">
+                <form id="{{ fileid }}">
+                   <textarea id="{{ fileid }}Name" name="file" style="display: none;">{{ file['path'] }}</textarea>
+                   <textarea id="{{ fileid }}Area" name="content" style="display: none;"></textarea>
+                </form>
+                <div class="prefile" style="border: 1px solid #1e88e5;">{{ file['path'] }}<button id="{{ fileid }}-button-del" onclick="deletefile('{{ fileid }}', '{{ url_for('admindeletefile') }}')" class="btn btn-danger btn-sm" style="float: right;padding: 2px;line-height: 1;margin-top: -6px;">Delete file</button></div>
+                <pre id="{{ fileid }}Pre">{{ file['content'] }}</pre>
+                <button id="{{ fileid }}-button" onclick="savefile('{{ fileid }}', '{{ url_for('adminsavefile') }}')" class="btn btn-primary bt mb-2">Save {{ file['path'] }}</button>
+                <br><br>
+                <script>
+                   aceactivate('{{ fileid }}')
+                </script>
+                </div>
+                </div>
+          {% endfor %}
+            </div>
+        {% endfor %}
+        </section>
       </div>
     </div>
   </body>
