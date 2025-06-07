@@ -1,4 +1,4 @@
-cryptography==36.0.1
+cryptography==44.0.1
 Flask==1.1.2
 Flask-Session==0.3.2
 Flask-SocketIO==5.0.1
