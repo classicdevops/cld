@@ -1,0 +1,4 @@
+#!/bin/bash
+source /var/cld/bin/include/cldfuncs
+init-load-constants OPENAI_API_KEY\|sk-your-openai-api-key
+mkdir -p /var/cld/modules/infraconfig/data/groups /var/cld/modules/infraconfig/data/instances
