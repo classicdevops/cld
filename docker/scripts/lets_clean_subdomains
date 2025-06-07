@@ -1,0 +1,6 @@
+#!/bin/bash
+for DOMAIN in $(ls /etc/letsencrypt/live/ | egrep "[a-z0-9-]+\.[a-z0-9-]+\.[a-z0-9-]+")
+do
+    echo "${DOMAIN}"
+    find /etc/letsencrypt/ -name "${DOMAIN}*" | egrep -o "/etc/letsencrypt/.*" | xargs -d "\n" -I {} rm -rf "{}"
+done

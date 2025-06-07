@@ -522,3 +522,31 @@ During the installation process, all init scripts of the system and modules will
 An example input will be provided for each type of data requested
 
 Upon completion of the installation, a `password` for the `admin` user and a `link` to the `web interface` will be provided in console.
+### Running via Docker
+1. Build the image and export default credentials using the helper script:
+   ```bash
+   sudo ./docker/docker_init.sh /var/cld
+   ```
+   This exports the container's `/etc`, `/home`, and `/root` into `/var/cld/docker`.
+   A default credentials file is created at `/var/cld/creds/creds_static` with a
+   symlink `/var/cld/creds/creds` pointing to it.
+2. Start the container using docker compose:
+```bash
+docker-compose up -d
+```
+The compose file mounts `/var/cld` to `/var/cld`, `/var/cld/docker/etc` to `/etc`,
+`/var/cld/docker/home` to `/home`, and `/var/cld/docker/root` to `/root`.
+Ports `22`, `80` and `443` are exposed. The image runs sshd, nginx, cron and all
+CLD services under Supervisor. Let’s Encrypt helper scripts placed under
+`/root/sbin` handle automatic certificate generation for detected domains.
+
+You can provide initial credentials through environment variables when running
+the container. Any variable with the `CLD_CFG_` prefix will be written to
+`/var/cld/creds/creds_env` and used instead of the default
+`creds_static` file. For example:
+
+```yaml
+environment:
+  - CLD_CFG_CLD_DOMAIN=cld.example.com
+  - CLD_CFG_ADMIN_PASSWORD=secret
+```

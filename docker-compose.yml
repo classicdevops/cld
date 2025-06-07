@@ -1,0 +1,16 @@
+services:
+  cld:
+    build: .
+    volumes:
+      - /var/cld:/var/cld
+      - /var/cld/docker/etc:/etc
+      - /var/cld/docker/home:/home
+      - /var/cld/docker/root:/root
+    environment:
+      # Example credentials passed via environment variables
+      - CLD_CFG_CLD_DOMAIN=cld.example.com
+      # CLD_CFG_* variables will be written to /var/cld/creds/creds_env
+    ports:
+      - "22:22"
+      - "80:80"
+      - "443:443"
