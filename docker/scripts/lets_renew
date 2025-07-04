@@ -1,0 +1,27 @@
+#!/bin/bash
+check_ssl()
+{
+    expr \( `echo|timeout 5s openssl s_client -connect ${DOMAIN}:443 -servername ${DOMAIN} 2>/dev/null| timeout 5s openssl x509 -noout -enddate|cut -d'=' -f2|xargs -I ^ date +%s -d "^"` - `date +%s` \) / 24 / 3600
+}
+
+truncate -s 0 /tmp/ssl_domains
+for DOMAIN in $(ls /etc/letsencrypt/live/ | grep -v README)
+do
+    echo Check $DOMAIN
+    unset DAYS_LEFT
+    DAYS_LEFT=$(check_ssl 2>/dev/null)
+    [ "$DAYS_LEFT" ] || { echo Certificate not defined for $DOMAIN - skip ; continue ; }
+    echo ${DAYS_LEFT}_$DOMAIN >> /tmp/ssl_domains
+    done
+
+cat /tmp/ssl_domains
+
+for EXDOMAIN in $(cat /tmp/ssl_domains | uniq)
+do
+    EXDAYS=$(echo $EXDOMAIN | cut -d _ -f 1)
+    DOMAIN=$(echo $EXDOMAIN | cut -d _ -f 2)
+    if [ "$EXDAYS" -lt "30" ]
+    then
+        letsencrypt certonly -a webroot -n -m certbot@cldcloud.com --agree-tos --webroot-path=/usr/share/nginx/html -d ${DOMAIN} ; chmod -R 755 /etc/letsencrypt
+    fi
+done

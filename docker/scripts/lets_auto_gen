@@ -1,0 +1,3 @@
+MAILTO=""
+* * * * * root /root/sbin/lets_auto_sign
+0 14 * * 1 root /root/sbin/lets_renew
