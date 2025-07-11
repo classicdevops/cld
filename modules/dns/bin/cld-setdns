@@ -29,7 +29,7 @@ source /var/cld/modules/dns/bin/include/dnsfuncs
 for i in ${CLDOPTS}
 do
   case $i in
-    -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;;
+    -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}" ; CFACC_SET=1    ;;
     -p|-proxy|--proxy) CFPROXY=1                ;;
     -f|-force|--force) FORCE=1                  ;;
     -r|--replace) REPLACE=1                     ;; # ADDED: Handle --replace flag
@@ -54,7 +54,6 @@ echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 [ "$CONTENT" == "@" ] && CONTENT=$MAIN_ZONE
 [ "$NEW_CONTENT" == "@" ] && NEW_CONTENT=$MAIN_ZONE
 [ "$CONTENT" == "$NEW_CONTENT" ] && echoexit1 Old and New DNS record content are the same - exit
-
 [ "$CFACC" ] && {
 CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 cf-dns-api-creds
@@ -68,8 +67,10 @@ CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
 done
 (
 [ "$CF_ZONE_ID" ] || echo "domain $MAIN_ZONE not found in known accounts - trying to add"
+if ! [ "${CFACC_SET}" ] ; then
 [ "$CF_ZONE_ID" ] || cf-dns-define-cf-api
 [ "$CF_ZONE_ID" ] || cf-dns-api-creds
+fi
 
 [ "$CF_ZONE_ID" ] || for ITTER in $(seq 1 10)
 do
