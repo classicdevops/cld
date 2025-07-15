@@ -5,22 +5,32 @@ EOL
 )
 HELP_ARGS=$(cat << 'EOL'
 $1                       DNS zone - FQDN
+--cfacc=youracc@at.cf    Email of your CloudFlare account - if you have several at /var/cld/creds/creds_dns_cf_api_list
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-getns example.com
+cld-getns example.com --cfacc=user@example.com
 EOL
 )
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/dns/bin/include/dnsfuncs
-DNS_ZONE=${1,,}
+
+for i in ${CLDOPTS}
+do
+case $i in
+-c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"        ;;
+-*)                                             ;;
+*) let ii++; declare ARG$ii=${i}                ;;
+esac
+done
+
+DNS_ZONE=${ARG1,,}
 MAIN_ZONE=$(echo $DNS_ZONE | rev | cut -d . -f -2 | rev)
 
 echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 || echoexit1 "incorrect domain - only full domain names allowed: example.com test.example.com"
 
-#[ $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
-#[ $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
 [ "$CFACC" ] && {
 CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 cf-dns-api-creds
