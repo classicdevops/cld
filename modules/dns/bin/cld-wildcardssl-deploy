@@ -1,0 +1,80 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Certificates deploy tool
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                             First PATTERN filtering allowed instances
+$2                             Second PATTERN filtering allowed instances
+$3                             Third PATTERN filtering allowed instances
+--groups=GROUP1,GROUP2         Filtering by instance groups - default value is "default" group
+--domains=example.com             Single domain or list with comma separated
+--all                          Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix - it will impact just allowed instances for current user - groups argument will still filtering as well
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-certdeploy jenkins.srv_194.96.224.91_22_root --domains=example.com
+cld-certdeploy --groups=default,prod,hypervisors --domains=example.com
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+
+for i in ${CLDOPTS}
+do
+case $i in
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"                         ;;
+    -d=*|-domain=*|--domain=*|-domains=*|--domains=*) DOMAINS="${i#*=}" ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all"                               ;;
+-*)                                                                     ;;
+*) let ii++; declare ARG$ii=${i}                                        ;;
+esac
+done
+
+if ! [ "${CLD_GROUPS}" = "" -a "${CLD_ALL_GROUPS_ARG}" = "--all" ]; then
+CLD_GROUPS=${CLD_GROUPS:-default}
+fi
+
+# Validate domains
+for DOMAIN in ${DOMAINS}
+do
+  echo "${DOMAIN}" | egrep -q "^[a-z0-9.-]+\.[a-z0-9.-]+$" \
+  || echoexit1 "incorrect domain - only full domain names allowed: example.com"
+  [ -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ] || echoexit1 "Certificate for domain ${DOMAIN} not found"
+  [ -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ] || echoexit1 "Key for domain ${DOMAIN} not found"
+done
+
+
+
+############## Deploy begin ##############
+for INSTANCE in $(CLOUDS_USER_ALLOWED --groups="${CLD_GROUPS}" "$ARG1" "$ARG2" "$ARG3" "$CLD_ALL_GROUPS_ARG")
+do
+INSTANCE_GROUP_FUNCS
+$CLD_VARS
+TIMEOUT_NOTTY=15
+
+echo
+echo "Deploy certificates to ${INSTANCE}"
+
+for DOMAIN in ${DOMAINS}
+do
+DOMAIN_DIR=$(ls -d /etc/letsencrypt/live/${DOMAIN}* | sort | tail -1)
+mkdir /var/cld/modules/dns/data/deployssl/${DOMAIN} -p
+cat ${DOMAIN_DIR}/fullchain.pem > /var/cld/modules/dns/data/deployssl/${DOMAIN}/fullchain.pem
+cat ${DOMAIN_DIR}/privkey.pem > /var/cld/modules/dns/data/deployssl/${DOMAIN}/privkey.pem
+chmod 644 /var/cld/modules/dns/data/deployssl/${DOMAIN}/fullchain.pem
+chmod 644 /var/cld/modules/dns/data/deployssl/${DOMAIN}/privkey.pem
+chown 0:113 /var/cld/modules/dns/data/deployssl/${DOMAIN}/*
+
+rsync -avP /var/cld/modules/dns/data/deployssl/${DOMAIN}/ ${INSTANCE}:/etc/letsencrypt/live/${DOMAIN}/
+
+$CLD_DEPLOY_NOTTY << EOPERMS
+chmod 755 /etc/letsencrypt/live/${DOMAIN}
+chmod 644 /etc/letsencrypt/live/${DOMAIN}/fullchain.pem
+chmod 644 /etc/letsencrypt/live/${DOMAIN}/privkey.pem
+chown 0:0 /etc/letsencrypt/live/${DOMAIN}/*
+EOPERMS
+done
+echo "Deploy certificates to ${INSTANCE} - done"
+echo;echo;echo
+
+done
