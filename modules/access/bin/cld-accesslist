@@ -4,56 +4,81 @@ Show trusted IP address list
 EOL
 )
 HELP_ARGS=$(cat << 'EOL'
---cidr                        Show trusted list with CIDR's
---noinfo                      No print address information
---json                        Json outout option
+--cidr                        Show trusted list with CIDRs (default on)
+--no-cidr                     Show trusted list without CIDRs
+--info                        Show address information (default off for text, on for json)
+--no-info                     Do not show address information
+--ipv6                        Include IPv6 addresses
+--json                        Json output option
 --beauty                      Using together with --json option to beautify json output
---groups=GROUP1,GROUP2        Filtering by instance groups for
---all                    Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
+--groups=GROUP1,GROUP2        Filtering by instance groups for (default is "default")
+--localnets                   Include local networks from /var/cld/creds/local_nets (default on)
+--no-localnets                Do not include local networks
+--all                         Admin user option - setting up for one time run with all groups existing at CLD server regardless to access matrix
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-accesslist
-cld-accesslist --json
-cld-accesslist --cidr --noinfo
+cld-accesslist --info --ipv6
+cld-accesslist --json --groups=prod,dev
+cld-accesslist --no-cidr --no-info --no-localnets
 EOL
 )
 
 source /var/cld/bin/include/cldfuncs
 source /var/cld/modules/access/bin/include/accessfuncs
 
+# Default values
+CIDR=1
+INFO=0
+IPV6=0
+LOCALNETS=1
+CLD_GROUPS_SET=0
+JSON=0
+JSON_BEAUTY=0
+CLD_ALL_GROUPS_ARG=""
+
+# If json is requested, default info to on
+echo "${@:1}" | grep -qE -- '-j|--json|-b|--beauty' && INFO=1
+
 for i in ${CLDOPTS}
 do
 case $i in
--j|-json|--json) JSON=1                            ;;
--b|-beauty|--beauty) JSON_BEAUTY=1                 ;;
--c|-cidr|--cidr) CIDR=1                            ;;
--n|-noinfo|--noinfo) NOINFO=1                      ;;
--g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"    ;;
--a|-all|--all) CLD_ALL_GROUPS_ARG="--all"          ;;
--*)                                                ;;
-*) let ii++; declare ARG$ii=${i}                   ;;
+-j|-json|--json) JSON=1 ;;
+-b|-beauty|--beauty) JSON_BEAUTY=1; JSON=1 ;;
+-c|-cidr|--cidr) CIDR=1 ;;
+--no-cidr) CIDR=0 ;;
+--info) INFO=1 ;;
+-n|--no-info) INFO=0 ;;
+--ipv6) IPV6=1 ;;
+-g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}"; CLD_GROUPS_SET=1 ;;
+--localnets) LOCALNETS=1 ;;
+--no-localnets) LOCALNETS=0 ;;
+-a|-all|--all) CLD_ALL_GROUPS_ARG="--all" ;;
+*) let ii++; declare ARG$ii=${i} ;;
 esac
 done
 
-if [ "$CIDR" == "1" ]; then
-  CIDR_ARG='--cidr'
-fi
+[ "$CLD_GROUPS_SET" == "0" ] && CLD_GROUPS="default"
+
+[ "$CIDR" == "1" ] && CIDR_ARG='--cidr'
+[ "$IPV6" == "0" ] && IPV4_ONLY_ARG='--ipv4only'
+[ "$LOCALNETS" == "1" ] && LOCALNETS_ARG='--localnets'
 
 if [ "${JSON}" = "1" ]; then
-  if [ "${NOINFO}" != "1" ]; then
+  if [ "${INFO}" == "1" ]; then
 JSON_ARG=$(cat << 'EOJSONARG'
-| head -c -1 | jq -R -s -c 'split("\n") | .[] | [ { "ip": sub(" # .*";""), "info": sub(".* # ";"") } ]' | jq -s add
+| head -c -1 | jq -R -s -c 'split("\n") | .[] | [ { "ip": sub(" # .*";""), "info": sub(".* # ";"") } ] | select(.[0].ip != "")' | jq -s add
 EOJSONARG
 )
-  elif [ "${NOINFO}" = "1" ]; then
+  else
 JSON_ARG=$(cat << 'EOJSONARG'
-| head -c -1 | jq -R -s -c 'split("\n") | .[] | [ sub(" # .*";"") ]' | jq -s add
+| head -c -1 | jq -R -s -c 'split("\n") | .[] | [ sub(" # .*";"") ] | select(.[0] != "")' | jq -s add
 EOJSONARG
 )
  fi
 else
-  if [ "${NOINFO}" = "1" ]; then
+  if [ "${INFO}" = "0" ]; then
     NOINFO_ARG='| cut -d "#" -f 1 | tr -d " "' 
   fi
 fi
@@ -66,4 +91,4 @@ elif [ "$JSON" == "1" ]; then
   JSON_BEAUTY_ARG='| jq -c .'
 fi
 
-source <(echo -n fullaccesslist $CLD_ALL_GROUPS_ARG --groups="${CLD_GROUPS}" ${CIDR_ARG} ${NOINFO_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
+source <(echo -n fullaccesslist $CLD_ALL_GROUPS_ARG --groups="${CLD_GROUPS}" ${CIDR_ARG} ${IPV4_ONLY_ARG} ${LOCALNETS_ARG} ${NOINFO_ARG} ${JSON_ARG} ${JSON_BEAUTY_ARG})
