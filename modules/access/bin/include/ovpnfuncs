@@ -1,16 +1,22 @@
 get_gray_ip()
 {
-ip route get 1.1.1.1 | awk '{print $NF;exit}'
+ip route get 1.1.1.1 | grep src | awk '{print $7}'
 }
 
-easyrsa-install()
+easyrsainstall()
 {
 cd /var/cld/tmp/
-wget -O /tmp/easyrsa https://github.com/OpenVPN/easy-rsa-old/archive/2.3.3.tar.gz
+wget -O /tmp/easyrsa https://github.com/OpenVPN/easy-rsa/releases/download/v3.2.0/EasyRSA-3.2.0.tgz
 tar xfz /tmp/easyrsa
 mkdir /etc/openvpn/easy-rsa
-cp -rf easy-rsa-old-2.3.3/easy-rsa/2.0/* /etc/openvpn/easy-rsa
-cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+/usr/bin/cp -rf EasyRSA-3.2.0/* /etc/openvpn/easy-rsa
+}
+
+openvpninstall()
+{
+dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+dnf install -y openvpn wget expect opensc openssl-pkcs11
+easyrsainstall
 }
 
 package-install()
@@ -22,32 +28,6 @@ elif grep -qi debian /etc/*-release
 then
 apt install $1 -y
 fi
-}
-
-openvpnsystemdservice()
-{
-if grep -qi "centos\|rhel" /etc/*-release
-then
-USR_PATH="/usr"
-elif grep -qi "debian\|ubuntu" /etc/*-release
-then
-USR_PATH=""
-fi
-
-cat > ${USR_PATH}/lib/systemd/system/openvpn@.service << 'EOL'
-[Unit]
-Description=OpenVPN Robust And Highly Flexible Tunneling Application On %I
-After=network.target
-
-[Service]
-Type=notify
-PrivateTmp=true
-ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/ --config %i.conf
-
-[Install]
-WantedBy=multi-user.target
-EOL
-systemctl daemon-reload
 }
 
 checkvpnmode()
@@ -82,11 +62,10 @@ ovpngenerate()
 {
 unalias cp &>/dev/null
 
-which openvpn || package-install openvpn
-which expect || package-install expect
-which ntpdate || package-install ntpdate
-
-[ -d "/etc/openvpn/easy-rsa" ] || easyrsa-install
+which openvpn || openvpninstall
+which expect || dnf install expect
+which ntpdate || dnf install ntpdate
+[ -f "/etc/openvpn/easy-rsa/easyrsa" ] || easyrsainstall
 
 for i in ${@:1}
 do
@@ -107,11 +86,11 @@ echo ${@:1} | grep -q '\-\-ip=' || VPN_IP=""
 echo ${@:1} | grep -q '\-\-id=' || VPN_ID=""
 
 if [ "$VPN_ID" = "" ] ; then exit 1 ; fi ; echo $VPN_ID
-if [ "$PORT" = "" ] ; then PORT=$(grep port /etc/openvpn/server*.conf | cut -d ' ' -f 2 | sort -n | tail -1) ; let "PORT++" ; fi ; echo $PORT
+if [ "$PORT" = "" ] ; then PORT=$(grep port /etc/openvpn/server/server*.conf | cut -d ' ' -f 2 | sort -n | tail -1) ; let "PORT++" ; fi ; echo $PORT
 if [ "$PORT" = "1" ] ; then PORT=1194 ; fi ; echo $PORT
 
 if ! [ "$NETWORK" ] ; then
-NETWORK=$(grep server /etc/openvpn/server*.conf -h | grep "^server 10" | awk '{print $2}' |  sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1)
+NETWORK=$(grep server /etc/openvpn/server/server*.conf -h | grep "^server 10" | awk '{print $2}' |  sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1)
     if ! [ "$NETWORK" ] ; then
         NETWORK=${NETWORK:-10.8.0.0}
     else
@@ -120,139 +99,143 @@ NETWORK=$(grep server /etc/openvpn/server*.conf -h | grep "^server 10" | awk '{p
     fi
 fi
 echo $NETWORK
-
-if ! [ "$VPN_IP" ] ; then VPN_IP=$(wget -qO- ip.cldcloud.com) ; fi ; echo $VPN_IP
-
+VPN_IP=$(wget -qO- ip.cldcloud.com)
 export VPN_IP
 export VPN_ID
 export PORT
 export NETWORK
 export NETIP=$VPN_IP
 ip addr show | grep -q ${VPN_IP} || export NETIP=$(get_gray_ip)
+timedatectl set-local-rtc 1
+chronyc -a makestep
 
-timedatectl set-local-rtc 1 &
-ntpdate 0.nl.pool.ntp.org 1.nl.pool.ntp.org &
-
-cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
-
-export DHKS=4096
-
-cat > /etc/openvpn/server_${VPN_ID}.conf << EOALL
+cat > /etc/openvpn/server/server_${VPN_ID}.conf << EOALL
 port ${PORT}
-proto tcp
+proto udp
 dev tun
 ca ca_${VPN_ID}.crt
 cert server_${VPN_ID}.crt
 key server_${VPN_ID}.key  # This file should be kept secret
-dh dh${DHKS}_${VPN_ID}.pem
+dh dh.pem
 server ${NETWORK} 255.255.255.240
+ifconfig-pool-persist ipp.txt
 $(checkvpnmode)
 ;client-to-client
 duplicate-cn
 keepalive 10 120
-tls-auth ta_${VPN_ID}.key 0 # This file is secret
+;tls-auth ta_${VPN_ID}.key 0 # This file is secret
+tls-crypt-v2 tcv2_${VPN_ID}.key
 key-direction 0
-cipher AES-128-CBC   # AES
-auth SHA256
-comp-lzo
+cipher AES-256-GCM   # AES
+# auth SHA256
+# comp-lzo
+user root
+group root
+ncp-disable
 persist-key
 persist-tun
-status /var/log/openvpn-status-${VPN_ID}.log
+status openvpn-status.log
 verb 3
-script-security 2
-client-connect "/usr/bin/sudo /etc/openvpn/ovpnipinit ${VPN_ID}"
-$(cat /var/cld/access/data/vpn/server.d/main.conf /var/cld/access/data/vpn/server.d/${USERID}.conf 2>/dev/null)
+script-security 3
+# client-connect "/usr/bin/sudo /etc/openvpn/ovpnipinit ${VPN_ID}"
 EOALL
 
-openvpn --genkey --secret /etc/openvpn/myvpn.tlsauth_${VPN_ID}
+openvpn --genkey --secret /etc/openvpn/server/myvpn.tlsauth_${VPN_ID}
 
-cat > /etc/openvpn/easy-rsa/vars_${VPN_ID} << EOL
-export EASY_RSA="/etc/openvpn/easy-rsa"
-export OPENSSL="openssl"
-export PKCS11TOOL="pkcs11-tool"
-export GREP="grep"
-export KEY_CONFIG=\`\$EASY_RSA/whichopensslcnf \$EASY_RSA\`
-export KEY_DIR="\$EASY_RSA/keys_${VPN_ID}"
-echo NOTE: If you run ./clean-all, I will be doing a rm -rf on \$KEY_DIR
-export PKCS11_MODULE_PATH="dummy"
-export PKCS11_PIN="dummy"
-export DH_KEY_SIZE=${DHKS}
-export KEY_SIZE=${DHKS}
-export CA_EXPIRE=3650
-export KEY_EXPIRE=3650
-
-export KEY_COUNTRY="US"
-export KEY_PROVINCE="NY"
-export KEY_CITY="New York"
-export KEY_ORG="Example"
-export KEY_EMAIL="my@example.com"
-export KEY_EMAIL=my@example.com
-export KEY_CN=openvpn.example.com
-export KEY_NAME="server"
-export KEY_OU="Community"
-EOL
-
-mkdir -p /etc/openvpn/easy-rsa/keys_${VPN_ID} &>/dev/null
-rm -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/* 
+rm -f /etc/openvpn/easy-rsa/keys/*
 cd /etc/openvpn/easy-rsa
-source /etc/openvpn/easy-rsa/vars_${VPN_ID}
-./clean-all
-/etc/openvpn/easy-rsa/pkitool --initca
-/etc/openvpn/easy-rsa/pkitool --server server
-openssl dhparam -dsaparam -out ${KEY_DIR}/dh${DH_KEY_SIZE}.pem ${DH_KEY_SIZE}
 
-cd /etc/openvpn/easy-rsa/keys_${VPN_ID}
-unalias cp &>/dev/null
-cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/dh${DHKS}.pem /etc/openvpn/dh${DHKS}_${VPN_ID}.pem
-cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/ca.crt /etc/openvpn/ca_${VPN_ID}.crt
-cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/server.crt /etc/openvpn/server_${VPN_ID}.crt
-cp -f /etc/openvpn/easy-rsa/keys_${VPN_ID}/server.key /etc/openvpn/server_${VPN_ID}.key
+# # Generate a static OpenVPN key
+# openvpn --genkey secret /etc/openvpn/myvpn.tlsauth_${VPN_ID}
+openvpn --genkey tls-crypt-v2-server /etc/openvpn/server/myvpn.tlscryptv2_server_${VPN_ID}
+openvpn --genkey tls-crypt-v2-client --tls-crypt-v2 /etc/openvpn/server/myvpn.tlscryptv2_server_${VPN_ID} > /etc/openvpn/server/myvpn.tlscryptv2_client_${VPN_ID}
 
-cd /etc/openvpn/easy-rsa
-source /etc/openvpn/easy-rsa/vars_${VPN_ID}
-expect << EOF
-spawn /etc/openvpn/easy-rsa/pkitool --interact id_${VPN_ID}
-expect "Country Name"
-send "\n"
-expect "State or Province Name"
-send "\n"
-expect "Locality Name"
-send "\n"
-expect "Organization Name"
-send "\n"
-expect "Organizational Unit Name"
-send "\n"
-expect "Common Name"
-send "\n"
-expect "Name"
-send "\n"
-expect "Email Address"
-send "\n"
-expect "A challenge password"
-send "\n"
-expect "An optional company name"
-send "\n"
-expect "Sign the certificate"
-send "y\n"
-expect "commit"
-send "y\n"
-expect eof;
-EOF
 
-cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/ta_${VPN_ID}.key
-cp -f /etc/openvpn/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys_${VPN_ID}/ta_${VPN_ID}.key
+# Set up Easy-RSA 3 environment
+export EASYRSA_DIR="/etc/openvpn/easy-rsa"
+mkdir -p ${EASYRSA_DIR}
+cd ${EASYRSA_DIR}
 
-INET_DEVICE=$(ip route show | grep default | egrep -o "dev\ [A-Za-z0-9]+\ " | cut -d ' ' -f 2)
+# Initialize Easy-RSA 3 directory and configuration
+./easyrsa --batch init-pki
+
+# Copy default vars file and modify it if needed
+/usr/bin/cp -f /etc/openvpn/easy-rsa/vars.example /etc/openvpn/easy-rsa/vars
+
+cat >> vars << EOVARS
+set_var EASYRSA_DIR "/etc/openvpn/easy-rsa"
+set_var EASYRSA_REQ_COUNTRY    "US"
+set_var EASYRSA_REQ_PROVINCE   "NY"
+set_var EASYRSA_REQ_CITY       "New York"
+set_var EASYRSA_REQ_ORG        "Example"
+set_var EASYRSA_REQ_EMAIL      "my@example.com"
+set_var EASYRSA_REQ_OU         "Community"
+set_var EASYRSA_CA_EXPIRE      3650
+set_var EASYRSA_CERT_EXPIRE    3650
+set_var EASYRSA_CRL_DAYS       3650
+EOVARS
+
+
+# Clean up any previous keys
+./easyrsa --batch clean-all
+
+./easyrsa --batch init-pki
+
+# Build CA and server certificate
+./easyrsa --batch build-ca nopass
+# /etc/openvpn/easy-rsa/pki/ca.crt
+
+./easyrsa --batch gen-req server nopass
+# /etc/openvpn/easy-rsa/pki/reqs/server.req
+# /etc/openvpn/easy-rsa/pki/private/server.key
+
+./easyrsa --batch sign-req server server
+# /etc/openvpn/easy-rsa/pki/issued/server.crt
+
+# Generate Diffie-Hellman parameters
+[ -f "/etc/openvpn/server/dh.pem" ] || ./easyrsa gen-dh
+
+# Generate client certificate
+./easyrsa --batch gen-req id_${VPN_ID} nopass
+# /etc/openvpn/easy-rsa/pki/reqs/id_99541.req
+# /etc/openvpn/easy-rsa/pki/private/id_99541.key
+
+./easyrsa --batch sign-req client id_${VPN_ID}
+# /etc/openvpn/easy-rsa/pki/issued/id_99541.crt
+
+mkdir -p /etc/openvpn/easy-rsa/keys/ &>/dev/null
+
+# Copy certificates and keys to OpenVPN directory
+[ -f "/etc/openvpn/server/dh.pem" ] || cp pki/dh.pem /etc/openvpn/server/dh.pem
+
+unalias cp
+
+/usr/bin/cp -f pki/ca.crt /etc/openvpn/server/ca_${VPN_ID}.crt
+/usr/bin/cp -f pki/issued/server.crt /etc/openvpn/server/server_${VPN_ID}.crt
+/usr/bin/cp -f pki/private/server.key /etc/openvpn/server/server_${VPN_ID}.key
+/usr/bin/cp -f pki/issued/id_${VPN_ID}.crt /etc/openvpn/server/id_${VPN_ID}.crt
+/usr/bin/cp -f pki/private/id_${VPN_ID}.key /etc/openvpn/server/id_${VPN_ID}.key
+
+/usr/bin/cp -f pki/private/id_${VPN_ID}.key /etc/openvpn/easy-rsa/keys/
+/usr/bin/cp -f pki/issued/id_${VPN_ID}.crt /etc/openvpn/easy-rsa/keys/
+/usr/bin/cp -f pki/ca.crt /etc/openvpn/easy-rsa/keys/
+
+# /usr/bin/cp -f /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+# /usr/bin/cp -f /etc/openvpn/server/myvpn.tlsauth_${VPN_ID} /etc/openvpn/server/ta_${VPN_ID}.key
+/usr/bin/cp -f /etc/openvpn/server/myvpn.tlscryptv2_server_${VPN_ID} /etc/openvpn/server/tcv2_${VPN_ID}.key
+# /usr/bin/cp -f /etc/openvpn/server/myvpn.tlsauth_${VPN_ID} /etc/openvpn/easy-rsa/keys/ta_${VPN_ID}.key
+/usr/bin/cp -f /etc/openvpn/server/myvpn.tlscryptv2_client_${VPN_ID} /etc/openvpn/easy-rsa/keys/tcv2_${VPN_ID}.key
+rm -f /etc/openvpn/myvpn.tlsauth_${VPN_ID}
 
 export SERVERIP=$(wget -qO- ip.cldcloud.com)
 
 if [ "${VPN_MODE}" != "AUTH"  -a "${NETWORK_POLICY}" = "general" ]; then
-cat > /etc/openvpn/iptables_${VPN_ID}.rules << EOTABLES
+cat > /etc/openvpn/server/iptables_${VPN_ID}.rules << EOTABLES
     iptables -A FORWARD -s ${NETWORK}/28 -j ACCEPT -m comment --comment cldovpn
     iptables -t nat -A POSTROUTING -s ${NETWORK}/28 -j SNAT --to ${NETIP} -m comment --comment cldovpn
 EOTABLES
 else
-    touch /etc/openvpn/iptables_${VPN_ID}.rules
+    touch /etc/openvpn/server/iptables_${VPN_ID}.rules
 fi
 
 mkdir /root/sbin
@@ -264,8 +247,7 @@ EOIPTABLES
 chmod 700 /root/sbin/cld_ovpn_iptables
 echo '@reboot root /root/sbin/cld_ovpn_iptables' > /etc/cron.d/ovpn_iptables
 
-iptables -P INPUT ACCEPT ; iptables -P FORWARD ACCEPT ; iptables -P OUTPUT ACCEPT ; iptables -t nat -F ; iptables -t mangle -F
-iptables-save | grep -v "cldovpn" | iptables-restore ; source <(cat /etc/openvpn/iptables_*.rules)
+iptables-save | grep -v "cldovpn" | iptables-restore ; source <(cat /etc/openvpn/server/iptables_*.rules)
 
 grep "net.ipv4.ip_forward = 1" /etc/sysctl.conf || echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
 sysctl -w net.ipv4.ip_forward=1
@@ -276,11 +258,11 @@ setenforce 0
 systemctl stop firewalld
 systemctl disable firewalld
 
-systemctl cat openvpn@ &>/dev/null || openvpnsystemdservice
-
-systemctl -f enable openvpn@server_${VPN_ID}.service
-systemctl start openvpn@server_${VPN_ID}.service
-systemctl restart openvpn@server_${VPN_ID}.service
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl -f enable openvpn-server@server_${VPN_ID}.service
+systemctl start openvpn-server@server_${VPN_ID}.service
+systemctl restart openvpn-server@server_${VPN_ID}.service
 
 export SERVERIP=$(wget -qO- ip.cldcloud.com)
 mkdir /var/cld/tmp/ovpn/user-configs/ -p
@@ -290,32 +272,48 @@ mkdir /var/cld/tmp/ovpn/user-configs/files/
 cat > /var/cld/tmp/ovpn/user-configs/base.conf << EOL
 client
 dev tun
-proto tcp
+proto udp
+
+sndbuf 262144
+rcvbuf 262144
+
+dhcp-option DNS 1.1.1.1
+redirect-gateway def1
+
 remote $VPN_IP ${PORT}
 resolv-retry infinite
 nobind
-user nobody
-group nobody
+# user nobody
+# group nobody
 persist-key
 persist-tun
 remote-cert-tls server
-cipher AES-128-CBC
-auth SHA256
-key-direction 1
-comp-lzo
+cipher AES-256-GCM
+# auth SHA256
+auth-nocache
+# key-direction 1
+# comp-lzo
 verb 3
+mute 20
+explicit-exit-notify
 $(cat /var/cld/access/data/vpn/client.d/main.conf 2>/dev/null; cat /var/cld/access/data/vpn/client.d/${USERID}.conf 2>/dev/null)
 EOL
 
-KEY_DIR=/etc/openvpn/easy-rsa/keys_${VPN_ID}
-OUTPUT_DIR=/var/cld/tmp/ovpn/user-configs/files
-BASE_CONFIG=/var/cld/tmp/ovpn/user-configs/base.conf
-
-cat ${BASE_CONFIG} <(echo -e '<ca>') ${KEY_DIR}/ca.crt \
-<(echo -e '</ca>\n<cert>') ${KEY_DIR}/id_${VPN_ID}.crt \
-<(echo -e '</cert>\n<key>') ${KEY_DIR}/id_${VPN_ID}.key \
-<(echo -e '</key>\n<tls-auth>') ${KEY_DIR}/ta_${VPN_ID}.key \
-<(echo -e '</tls-auth>') > ${OUTPUT_DIR}/id_${VPN_ID}.ovpn
+cat > /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn << EOOVPNKEY
+$(cat /var/cld/tmp/ovpn/user-configs/base.conf)
+<ca>
+$(cat /etc/openvpn/easy-rsa/keys/ca.crt)
+</ca>
+<cert>
+$(cat /etc/openvpn/easy-rsa/keys/id_${VPN_ID}.crt)
+</cert>
+<key>
+$(cat /etc/openvpn/easy-rsa/keys/id_${VPN_ID}.key)
+</key>
+<tls-crypt-v2>
+$(cat /etc/openvpn/easy-rsa/keys/tcv2_${VPN_ID}.key)
+</tls-crypt-v2>
+EOOVPNKEY
 
 cp /var/cld/tmp/ovpn/user-configs/files/id_${VPN_ID}.ovpn /var/cld/modules/access/data/ovpn/${CLD_DOMAIN}_${VPN_ID}.ovpn
 
@@ -326,7 +324,7 @@ USER_NAMESET=$(cut -d - -f 1 <<< ${USER_SET})
 USER_CLD_NAME=$(cut -d '@' -f 1 <<< ${USER_NAMESET})
 USER_BOT_NAME=$(cut -d '@' -f 2 <<< ${USER_NAMESET})
 USER_ID=$(cut -d - -f 2- <<< ${USER_SET})
-USER_IP=$(journalctl -eu openvpn@server_${USER_SET}.service | grep "Peer Connection Initiated with" | tail -1 | cut -d ']' -f 4 | cut -d : -f 1)
+USER_IP=$(journalctl -eu openvpn-server@server_${USER_SET}.service | grep "Peer Connection Initiated with" | tail -1 | cut -d ']' -f 4 | cut -d : -f 1)
 
 sudo -u ${USER_CLD_NAME} FROM=BOT sudo /var/cld/modules/access/bin/cld-myipbot ${USER_ID} ${USER_BOT_NAME} ${USER_IP}
 EOL
