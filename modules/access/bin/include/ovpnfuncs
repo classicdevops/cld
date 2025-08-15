@@ -129,8 +129,8 @@ key-direction 0
 cipher AES-256-GCM   # AES
 # auth SHA256
 # comp-lzo
-user root
-group root
+user nobody
+group nobody
 ncp-disable
 persist-key
 persist-tun
