@@ -188,11 +188,13 @@ EOACCESSLIST
 fullaccesslist()
 {
 [ "${CLD_IP}" ] || init-load-constant --constant=CLD_IP --example=1.2.3.4 --default='$(wget -qO- ip.cldcloud.com)'
-local i ii ARG1 ARG2 ARG3 CIDR_OUTPUT CIDRV4 CIDRV6 CLD_GROUPS CLD_ALL_GROUPS_ARG
+local i ii ARG1 ARG2 ARG3 CIDR_OUTPUT CIDRV4 CIDRV6 CLD_GROUPS CLD_ALL_GROUPS_ARG IPV4_ONLY LOCALNETS
 for i in "${@:1}"
 do
   case $i in
     -c|-cidr|--cidr) CIDR_OUTPUT=1  ;;
+    --ipv4only) IPV4_ONLY=1 ;;
+    --localnets) LOCALNETS=1 ;;
     -g=*|-groups=*|--groups=*) CLD_GROUPS="${i#*=}" ;;
     -a|-all|--all) CLD_ALL_GROUPS_ARG="--all"       ;;
     *)                              ;;
@@ -203,16 +205,23 @@ if [ "${CIDR_OUTPUT}" = "1" ]; then
 CIDRV4='/32'
 CIDRV6='/128'
 fi
+
+[ "${LOCALNETS}" = "1" ] && [ -f /var/cld/creds/local_nets ] && cat /var/cld/creds/local_nets 2>/dev/null | sed 's/$/ # local net/'
+
 echo "127.0.0.1" | awk -v cidr="${CIDRV4}" '{print $1cidr" # localhost"}'
 echo "$CLD_IP" | egrep -o "${IPV4REGEX}" | awk -v cidr="${CIDRV4}" '{print $1cidr" # CLD ip"}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $1cidr" # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $1cidr" # manual enabled ip of "$2}'
+[ -f /var/cld/modules/access/data/myips ] && grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $1cidr" # private ip of "$3"-"$4}'
+[ -f /var/cld/modules/access/data/enabledips ] && grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $1cidr" # manual enabled ip of "$2}'
 CLOUDS_USER_ALLOWED ${CLD_ALL_GROUPS_ARG} --groups="${CLD_GROUPS}" | egrep "${IPV4REGEX}_" | awk -v cidr="${CIDRV4}" -F"_" '{print $2cidr" # auto enabled ip of "$1}'
-echo "::1" | awk -v cidr=${CIDRV6} '{print $1cidr" # localhost"}'
-echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk -v cidr=${CIDRV6} '{print $1cidr" # CLD ip"}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $1cidr" # private ip of "$3"-"$4}'
-grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $1cidr" # manual enabled ip of "$2}'
-CLOUDS_USER_ALLOWED ${CLD_ALL_GROUPS_ARG} --groups="${CLD_GROUPS}" | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $2cidr" # auto enabled ip of "$1}'
+
+if [ "${IPV4_ONLY}" != "1" ]; then
+    [ "${LOCALNETS}" = "1" ] && [ -f /var/cld/creds/local_nets6 ] && cat /var/cld/creds/local_nets6 2>/dev/null | sed 's/$/ # local net v6/'
+    echo "::1" | awk -v cidr=${CIDRV6} '{print $1cidr" # localhost"}'
+    echo "$CLD_IP" | egrep -o "${IPV6REGEX}" | awk -v cidr=${CIDRV6} '{print $1cidr" # CLD ip"}'
+    [ -f /var/cld/modules/access/data/myips ] && grep -vh "^$\|^#" /var/cld/modules/access/data/myips | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $1cidr" # private ip of "$3"-"$4}'
+    [ -f /var/cld/modules/access/data/enabledips ] && grep -vh "^$\|^#" /var/cld/modules/access/data/enabledips | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $1cidr" # manual enabled ip of "$2}'
+    CLOUDS_USER_ALLOWED ${CLD_ALL_GROUPS_ARG} --groups="${CLD_GROUPS}" | egrep "${IPV6REGEX}_" | awk -v cidr=${CIDRV6} -F"_" '{print $2cidr" # auto enabled ip of "$1}'
+fi
 }
 
 updateaccesslists()

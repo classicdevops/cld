@@ -1,8 +1,48 @@
 
 /* BASIC */
 
+:root {
+  --login-bg: #56baed;
+  --form-bg: #fff;
+  --form-content-shadow: rgba(0,0,0,0.3);
+  --form-footer-bg: #f6f6f6;
+  --form-footer-border: #dce8f1;
+  --text-color: #0d0d0d;
+  --link-color: #92badd;
+  --inactive-tab-color: #cccccc;
+  --active-tab-border: #5fbae9;
+  --input-bg: #f6f6f6;
+  --input-border: #f6f6f6;
+  --input-focus-border: #5fbae9;
+  --input-placeholder-color: #cccccc;
+  --button-bg: #296ea6;
+  --button-hover-bg: #39ace7;
+  --button-shadow: rgba(95,186,233,0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --login-bg: #1e1e1e;
+    --form-bg: #2c2c2c;
+    --form-content-shadow: rgba(255,255,255,0.1);
+    --form-footer-bg: #3c3c3c;
+    --form-footer-border: #444;
+    --text-color: #e0e0e0;
+    --link-color: #56baed;
+    --inactive-tab-color: #666;
+    --active-tab-border: #56baed;
+    --input-bg: #3c3c3c;
+    --input-border: #444;
+    --input-focus-border: #56baed;
+    --input-placeholder-color: #666;
+    --button-bg: #56baed;
+    --button-hover-bg: #8acff3;
+    --button-shadow: rgba(86,186,237,0.4);
+  }
+}
+
 html {
-  background-color: #56baed;
+  background-color: var(--login-bg);
 }
 
 body {
@@ -11,7 +51,7 @@ body {
 }
 
 a {
-  color: #92badd;
+  color: var(--link-color);
   display:inline-block;
   text-decoration: none;
   font-weight: 400;
@@ -24,7 +64,7 @@ h2 {
   text-transform: uppercase;
   display:inline-block;
   margin: 40px 8px 10px 8px; 
-  color: #cccccc;
+  color: var(--inactive-tab-color);
 }
 
 
@@ -44,20 +84,20 @@ h2 {
 #formContent {
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
-  background: #fff;
+  background: var(--form-bg);
   padding: 30px;
   width: 90%;
   max-width: 450px;
   position: relative;
   padding: 0px;
-  -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
-  box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0 30px 60px 0 var(--form-content-shadow);
+  box-shadow: 0 30px 60px 0 var(--form-content-shadow);
   text-align: center;
 }
 
 #formFooter {
-  background-color: #f6f6f6;
-  border-top: 1px solid #dce8f1;
+  background-color: var(--form-footer-bg);
+  border-top: 1px solid var(--form-footer-border);
   padding: 25px;
   text-align: center;
   -webkit-border-radius: 0 0 10px 10px;
@@ -69,12 +109,12 @@ h2 {
 /* TABS */
 
 h2.inactive {
-  color: #cccccc;
+  color: var(--inactive-tab-color);
 }
 
 h2.active {
-  color: #0d0d0d;
-  border-bottom: 2px solid #5fbae9;
+  color: var(--text-color);
+  border-bottom: 2px solid var(--active-tab-border);
 }
 
 
@@ -82,7 +122,7 @@ h2.active {
 /* FORM TYPOGRAPHY*/
 
 input[type=button], input[type=submit], input[type=reset]  {
-  background-color: #296ea6;
+  background-color: var(--button-bg);
   border: none;
   color: white;
   padding: 15px 80px;
@@ -91,8 +131,8 @@ input[type=button], input[type=submit], input[type=reset]  {
   display: inline-block;
   text-transform: uppercase;
   font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-  box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+  -webkit-box-shadow: 0 10px 30px 0 var(--button-shadow);
+  box-shadow: 0 10px 30px 0 var(--button-shadow);
   -webkit-border-radius: 5px 5px 5px 5px;
   border-radius: 5px 5px 5px 5px;
   margin: 5px 20px 40px 20px;
@@ -104,7 +144,7 @@ input[type=button], input[type=submit], input[type=reset]  {
 }
 
 input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
-  background-color: #39ace7;
+  background-color: var(--button-hover-bg);
 }
 
 input[type=button]:active, input[type=submit]:active, input[type=reset]:active  {
@@ -116,9 +156,9 @@ input[type=button]:active, input[type=submit]:active, input[type=reset]:active  
 }
 
 input[type=text] {
-  background-color: #f6f6f6;
+  background-color: var(--input-bg);
   border: none;
-  color: #0d0d0d;
+  color: var(--text-color);
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
@@ -126,7 +166,7 @@ input[type=text] {
   font-size: 16px;
   margin: 5px;
   width: 85%;
-  border: 2px solid #f6f6f6;
+  border: 2px solid var(--input-border);
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -137,9 +177,9 @@ input[type=text] {
 }
 
 input[type=password] {
-  background-color: #f6f6f6;
+  background-color: var(--input-bg);
   border: none;
-  color: #0d0d0d;
+  color: var(--text-color);
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
@@ -147,7 +187,7 @@ input[type=password] {
   font-size: 16px;
   margin: 5px;
   width: 85%;
-  border: 2px solid #f6f6f6;
+  border: 2px solid var(--input-border);
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -158,12 +198,17 @@ input[type=password] {
 }
 
 input[type=text]:focus {
-  background-color: #fff;
-  border-bottom: 2px solid #5fbae9;
+  background-color: var(--form-bg);
+  border-bottom: 2px solid var(--input-focus-border);
+}
+input[type=password]:focus {
+  background-color: var(--form-bg);
+  border-bottom: 2px solid var(--input-focus-border);
 }
 
+
 input[type=text]:placeholder {
-  color: #cccccc;
+  color: var(--input-placeholder-color);
 }
 
 
@@ -257,7 +302,7 @@ input[type=text]:placeholder {
   bottom: -10px;
   width: 0;
   height: 2px;
-  background-color: #56baed;
+  background-color: var(--login-bg);
   content: "";
   transition: width 0.2s;
 }

@@ -1,0 +1,95 @@
+#!/bin/bash
+HELP_DESC=$(cat << 'EOL'
+Issue wildcard certificates for provided list of domains using Cloudflare DNS accounts
+EOL
+)
+HELP_ARGS=$(cat << 'EOL'
+$1                       Single domain or list with comma separated
+--domains=example.com   Single domain or list with comma separated
+EOL
+)
+HELP_EXAMPLES=$(cat << 'EOL'
+cld-wildcard-ssl example.com
+cld-wildcard-ssl --domains=example.com
+cld-wildcard-ssl example.com,domain.com
+EOL
+)
+source /var/cld/bin/include/cldfuncs
+init-load-constants CLD_DOMAIN\|cldapi.yourdomain.com
+
+# Parse input arguments
+for i in ${CLDOPTS}
+do
+  case $i in
+    -d=*|-domain=*|--domain=*|-domains=*|--domains=*) DOMAINS="${i#*=}" ;;
+    -*) ;;
+    *) let ii++; declare ARG$ii=${i} ;;
+  esac
+done
+
+[ "${DOMAINS}" ] || DOMAINS=${ARG1}
+[ "${DOMAINS}" ] || echoexit1 "DOMAINS are not set - exit"
+DOMAINS=$(echo "${DOMAINS}" | tr ',' ' ')
+
+# Validate domains
+for DOMAIN in ${DOMAINS}
+do
+  echo "${DOMAIN}" | egrep -q "^[a-z0-9.-]+\.[a-z0-9.-]+$" \
+  || echoexit1 "incorrect domain - only full domain names allowed: example.com"
+done
+
+CLD_TIMESTAMP=$(date +%s)
+[ -e /var/cld/modules/dns/data ] || mkdir -p /var/cld/modules/dns/data
+
+# Temporary file for certbot credentials
+CREDENTIALS_FILE="/var/cld/modules/dns/data/current_domain_creds_${CLD_TIMESTAMP}"
+chmod 600 "${CREDENTIALS_FILE}" 2>/dev/null || touch "${CREDENTIALS_FILE}" && chmod 600 "${CREDENTIALS_FILE}"
+
+for DOMAIN in ${DOMAINS}
+do
+  MAIN_ZONE=$(echo "${DOMAIN}" | rev | cut -d . -f -2 | rev)
+  CFKEY=""
+  CFACC=""
+
+  # Find the Cloudflare account managing the domain
+  for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+  do
+    CFACC=$(echo "${CFAPI}" | cut -d "_" -f 1)
+    CFKEY=$(echo "${CFAPI}" | cut -d "_" -f 2)
+    ZONES=$(curl -sX GET "https://api.cloudflare.com/client/v4/zones?page=1&per_page=1000&order=status&direction=desc&match=all" \
+           -H "X-Auth-Email: ${CFACC}" \
+           -H "X-Auth-Key: ${CFKEY}" \
+           -H "Content-Type: application/json")
+    echo "${ZONES}" | jq -e . >/dev/null 2>&1 || { echo "Failed to fetch domains for account ${CFACC}: invalid response from Cloudflare API" >&2; continue; }
+    echo "${ZONES}" | jq -r ".result[] | .name" | grep -Fx "${MAIN_ZONE}" >/dev/null && {
+      CFKEY="${CFKEY}"
+      CFACC="${CFACC}"
+      break
+    }
+  done
+
+  [ -z "${CFKEY}" ] && { echo "Domain ${MAIN_ZONE} not found in any Cloudflare account - skipping" >&2; continue; }
+
+  echo "Issuing certificate for ${DOMAIN} using account ${CFACC}"
+
+  # Write credentials for the specific account
+  cat > "${CREDENTIALS_FILE}" << EOSSL
+dns_cloudflare_email = ${CFACC}
+dns_cloudflare_api_key = ${CFKEY}
+EOSSL
+  chmod 600 "${CREDENTIALS_FILE}"
+
+  # Run certbot for the domain
+  certbot certonly -n -m admin@${CLD_DOMAIN} --agree-tos --expand \
+    --dns-cloudflare \
+    --dns-cloudflare-credentials "${CREDENTIALS_FILE}" \
+    --dns-cloudflare-propagation-seconds 30 \
+    -d "${DOMAIN}" -d "*.${DOMAIN}" || {
+    echo "Failed to issue certificate for ${DOMAIN}" >&2
+    continue
+  }
+  echo "Certificate issued for ${DOMAIN}"
+done
+
+# Cleanup
+rm -f "${CREDENTIALS_FILE}" 2>/dev/null

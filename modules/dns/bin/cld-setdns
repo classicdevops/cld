@@ -10,13 +10,15 @@ $2                       DNS zone - FQDN
 $3                       DNS zone content
 --proxy                  Set up CloudFlare proxyfying
 --force                  Use if you need several record for one DNS zone - using for DNS roundrobin
+--replace                Delete existing record for this FQDN and TYPE before adding the new one.
 --cfacc=youracc@at.cf    Email of your CloudFlare account - if you have several at /var/cld/creds/creds_dns_cf_api_list
 EOL
 )
 HELP_EXAMPLES=$(cat << 'EOL'
 cld-setdns a subdomain.example.com 1.2.3.4
-cld-setdns a subdomain.example.com 1.2.3.4 -proxy
-cld-setdns a subdomain.example.com 1.2.3.4 -force
+cld-setdns a subdomain.example.com 1.2.3.4 --proxy
+cld-setdns a subdomain.example.com 1.2.3.4 --force
+cld-setdns a subdomain.example.com 1.2.3.4 --replace
 cld-setdns a subdomain.example.com 1.2.3.4_2.3.4.5
 cld-setdns a subdomain.example.com 1.2.3.4_2.3.4.5 -proxy -force
 EOL
@@ -27,9 +29,10 @@ source /var/cld/modules/dns/bin/include/dnsfuncs
 for i in ${CLDOPTS}
 do
   case $i in
-    -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}"    ;;
+    -c=*|-cfacc=*|--cfacc=*) CFACC="${i#*=}" ; CFACC_SET=1    ;;
     -p|-proxy|--proxy) CFPROXY=1                ;;
     -f|-force|--force) FORCE=1                  ;;
+    -r|--replace) REPLACE=1                     ;; # ADDED: Handle --replace flag
     -*)                                         ;;
     *) let ii++; declare ARG$ii=${i}            ;;
   esac
@@ -51,9 +54,11 @@ echo $DNS_ZONE | egrep -q "^[a-z0-9.*-]+\.[a-z0-9.-]+$" \
 [ "$CONTENT" == "@" ] && CONTENT=$MAIN_ZONE
 [ "$NEW_CONTENT" == "@" ] && NEW_CONTENT=$MAIN_ZONE
 [ "$CONTENT" == "$NEW_CONTENT" ] && echoexit1 Old and New DNS record content are the same - exit
-#test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F)/cf_dns_list | head -1 | cut -d _ -f 3)
-#test $CFACC || CFACC=$(grep -s "${MAIN_ZONE}" /var/cld/modules/dns/data/cf/$(TZ=Europe/Moscow date +%F --date=yesterday)/cf_dns_list | head -1 | cut -d _ -f 3)
-[ "$CFACC" ] && CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+[ "$CFACC" ] && {
+CFAPI=$(grep "$CFACC" /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
+cf-dns-api-creds
+CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
+}
 [ "$CFAPI" ] || for CFAPI in $(cat /var/cld/creds/creds_dns_cf_api_list | grep -v "^#")
 do
 cf-dns-api-creds
@@ -62,8 +67,10 @@ CF_ZONE_ID=$(cf-dns-get-zone-id ${MAIN_ZONE})
 done
 (
 [ "$CF_ZONE_ID" ] || echo "domain $MAIN_ZONE not found in known accounts - trying to add"
-[ "$CF_ZONE_ID" ] || cf-dns-define-cf-api 
+if ! [ "${CFACC_SET}" ] ; then
+[ "$CF_ZONE_ID" ] || cf-dns-define-cf-api
 [ "$CF_ZONE_ID" ] || cf-dns-api-creds
+fi
 
 [ "$CF_ZONE_ID" ] || for ITTER in $(seq 1 10)
 do
@@ -80,10 +87,25 @@ CF_RECORD_CONTENT=$(echo "${CF_RECORD_RESULT}" |  jq -r .content)
 [ "$CF_RECORD_CONTENT" == "$CONTENT" -a "$NEW_CONTENT" == "" -a "$FORCE" == "" ] && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT already exist"
 [ "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" != "" -a "$FORCE" == "" ] && echoexit1 "Record $TYPE $DNS_ZONE $CONTENT doesn't exist"
 
-[ "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" -a "$FORCE" == "" ] && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT
+# MODIFIED: Added check for $REPLACE to bypass this error
+[ "$CF_RECORD_CONTENT" != "" -a "$CF_RECORD_CONTENT" != "$CONTENT" -a "$NEW_CONTENT" == "" -a "$FORCE" == "" -a "$REPLACE" == "" ] && echoexit1 "There is already exist record $TYPE $DNS_ZONE $CF_RECORD_CONTENT
 To aprove changes use arguments: $TYPE $DNS_ZONE ${CF_RECORD_CONTENT}_${CONTENT}
-or use -force argument"
+or use -force or --replace argument"
 
+# ADDED: Logic block to handle --replace
+# If --replace is used, an old record exists, and its content is different, delete it.
+if [ "$REPLACE" == "1" ] && [ "$CF_RECORD_ID" != "" ] && [ "$CF_RECORD_CONTENT" != "$CONTENT" ]; then
+  echo "Replacing existing record $TYPE $DNS_ZONE $CF_RECORD_CONTENT with new content $CONTENT"
+  # Note: we use CF_RECORD_CONTENT for the delete operation as that is what currently exists.
+  CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CF_RECORD_CONTENT | jq -r .success)
+  if [ "$CF_RECORD_DELETE_RESULT" == "true" ]; then
+    echo "Old DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT successfully deleted"
+  else
+    echoexit1 "DNS record $TYPE $DNS_ZONE $CF_RECORD_CONTENT delete error during replace operation"
+  fi
+fi
+
+# This block handles the original OLD_CONTENT_NEW_CONTENT syntax
 [ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" ] && CF_RECORD_DELETE_RESULT=$(cf-dns-record-delete $TYPE $DNS_ZONE $CONTENT | jq -r .success)
 [ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "true" ] && echo "DNS record $TYPE $DNS_ZONE $CONTENT successfully deleted"
 [ "$CF_RECORD_ID" != "" -a "$NEW_CONTENT" != "" -a "$CF_RECORD_DELETE_RESULT" == "false" ] && echoexit1 "DNS record $TYPE $DNS_ZONE $CONTENT delete error"

@@ -103,21 +103,35 @@ def allowutilityusers(cldutility):
     return allowed_users
 
 def checkperms(cldmodule, cldutility, token):
-    token = re.match("[A-z0-9_.-]+", token)[0]
+    if not isinstance(token, str): return ["denied", "DENIED"]
+    match = re.match("[A-z0-9_.-]+", token)
+    if not match: return ["denied", "DENIED"]
+    token = match.group(0)
+
+    user = userbytoken(token)
+    if not user: return ["denied", "DENIED"]
+
     cldmodule = str(cldmodule)
     cldutility = str(cldutility)
-    if token in allowmoduleusers(cldmodule) or token in allowutilityusers(cldutility):
+    if user in allowmoduleusers(cldmodule) or user in allowutilityusers(cldutility):
         return ["granted", token]
     return ["denied", "DENIED"]
 
 def checkpermswhiteip(cldmodule, cldutility, token, remoteaddr):
-    token = re.match("[A-z0-9_.-]+", token)[0]
+    if not isinstance(token, str): return ["denied", "DENIED"]
+    match = re.match("[A-z0-9_.-]+", token)
+    if not match: return ["denied", "DENIED"]
+    token = match.group(0)
+
+    user = userbytoken(token)
+    if not user: return ["denied", "DENIED"]
+        
     cldmodule = str(cldmodule)
     cldutility = str(cldutility)
-    if token in allowmoduleusers(cldmodule) and remoteaddr in accesslist():
+    
+    if (user in allowmoduleusers(cldmodule) or user in allowutilityusers(cldutility)) and remoteaddr in accesslist():
         return ["granted", token]
-    elif token in allowutilityusers(cldutility) and remoteaddr in accesslist():
-        return ["granted", token]
+        
     return ["denied", "DENIED"]
 
 def userbytoken(token):
