@@ -1,7 +1,8 @@
 [ "${DIR_LIST}" ] || DIR_LIST="/etc/"
 EXCLUDE_LIST="${EXCLUDE_LIST:-'*.log,*.gz,*/selinux/targeted/*'}"
+EXCLUDE_ARGS=$(echo "${EXCLUDE_LIST}" | tr ',' '\n' | xargs -I ^ echo -n "--exclude='^' ")
 $CLD_VARS
 for BACKUP_ITEM in $(tr ',' ' ' <<< "${DIR_LIST}")
 do
-$CLD_DEPLOY_NOTTY <<< "ionice -c3 tar czf - ${BACKUP_ITEM}" > ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${BACKUP_ITEM//\//_}.tar.gz $(echo $EXCLUDE_LIST | tr ',' '\n' | xargs -I ^ echo -n "--exclude=^ ")
+$CLD_DEPLOY_NOTTY <<< "ionice -c3 tar czf - ${EXCLUDE_ARGS} ${BACKUP_ITEM}" > ${SERVER_BACKUP_DIR}/${INSTANCE}/${DATE}/${BACKUP_METHOD}/${BACKUP_ITEM//\//_}.tar.gz
 done
