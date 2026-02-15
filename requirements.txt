@@ -3,7 +3,7 @@ Flask==1.1.2
 Flask-Session==0.3.2
 Flask-SocketIO==5.0.1
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==3.1.6
 lxml==4.6.5
 MarkupSafe==0.23
 PySocks==1.7.1
